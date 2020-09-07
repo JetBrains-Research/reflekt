@@ -1,4 +1,3 @@
-/create-plugin/build/
-/use-plugin/build/
-/.idea/
-/.gradle/
+build
+.idea
+.gradle
