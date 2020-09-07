@@ -10,6 +10,6 @@ class MetaPlugin : Meta {
     override fun intercept(ctx: CompilerContext): List<CliPlugin> =
         listOf(
             annotation,
-            runAnnotatedFunctions
+            replacing
         )
 }

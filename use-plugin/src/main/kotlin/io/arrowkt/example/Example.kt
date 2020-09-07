@@ -5,13 +5,21 @@ annotation class Route
 //metadebug
 
 @Route
-fun A() = println("test A")
+fun a() = println("test A")
 
 @Route
-fun B() = println("test B")
+fun b() = println("test B")
+
+
+object AllRoutes {
+
+  fun init() {
+    println("AllRoutes")
+  }
+
+}
 
 
 fun main() {
-  // Call A and print an additional line
-  B()
+   AllRoutes.init()
 }

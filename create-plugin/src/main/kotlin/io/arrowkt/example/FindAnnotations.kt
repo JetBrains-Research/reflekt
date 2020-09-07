@@ -15,14 +15,14 @@ import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
 const val ROUTE_ANNOTATION = "Route"
 
-val functionsNamesWithAnnotations = mutableListOf<String?>()
+val functionsNamesWithAnnotations = mutableListOf<KtNamedFunction>()
 
 val Meta.annotation: CliPlugin
     get() =
         "Annotation" {
             meta(
                     namedFunction(this, { validateFunction() }) { c ->
-                        functionsNamesWithAnnotations.add(c.name)
+                        functionsNamesWithAnnotations.add(c)
                         Transform.empty
                     }
             )
