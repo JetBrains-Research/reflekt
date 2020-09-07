@@ -5,12 +5,17 @@ import arrow.meta.Meta
 import arrow.meta.invoke
 import arrow.meta.quotes.*
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.resolve.calls.callUtil.getType
+
+
+const val ROUTES_OBJECT = "AllRoutes"
 
 val Meta.replacing: CliPlugin
     get() =
         "Replace assignments" {
             meta(
-                dotQualifiedExpression(this, { true }) { c ->
+                // Todo: check selectorExpression too
+                dotQualifiedExpression(this, { receiverExpression.text == ROUTES_OBJECT }) { c ->
                     Transform.replace(
                         replacing = c,
                         newDeclaration = replaceIntoFunctions(functionsNamesWithAnnotations).block

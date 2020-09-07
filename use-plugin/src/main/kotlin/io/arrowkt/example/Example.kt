@@ -12,14 +12,20 @@ fun b() = println("test B")
 
 
 object AllRoutes {
+//
+//  fun init() {
+//    println("AllRoutes")
+//  }
 
-  fun init() {
-    println("AllRoutes")
-  }
+    // Todo: return List<Unit> instead of () -> List<Unit>
+    fun init(): () -> List<Unit> {
+        println("AllRoutes")
+        TODO()
+    }
 
 }
 
 
 fun main() {
-   AllRoutes.init()
+   println(AllRoutes.init()())
 }
