@@ -1,21 +1,21 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
+group = "io.reflekt"
+version = "0.1.0"
+
 plugins {
     id("tanvd.kosogor") version "1.0.9" apply true
-    id("com.github.johnrengelman.shadow") version "6.0.0" apply true
-    kotlin("jvm") version "1.3.61" apply true
+    kotlin("jvm") version "1.3.72" apply true
 }
 
 allprojects {
     apply {
         plugin("tanvd.kosogor")
         plugin("kotlin")
-        plugin("com.github.johnrengelman.shadow")
     }
 
     repositories {
         jcenter()
-        maven { setUrl("https://oss.jfrog.org/artifactory/oss-snapshot-local/") }
     }
 
     tasks.withType<KotlinJvmCompile> {
