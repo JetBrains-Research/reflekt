@@ -1,2 +1,4 @@
-include(":create-plugin")
-include(":use-plugin")
+rootProject.name = "reflekt"
+
+include(":reflekt")
+include(":reflekt-plugin")
