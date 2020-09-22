@@ -10,6 +10,3 @@ fun main() {
     val classes = Reflekt.classes().withSubType<BInterface>("io.reflekt.example.BInterface").toList()
     println(classes.joinToString { it.toString() })
 }
-
-// io.reflekt.Reflekt.Objects.withSubType
-// io.reflekt.Reflekt.Classes.withSubType

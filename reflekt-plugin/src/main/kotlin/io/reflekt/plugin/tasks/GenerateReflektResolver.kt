@@ -29,7 +29,7 @@ open class GenerateReflektResolver : DefaultTask() {
 
     @get:InputFiles
     val classPath: Set<File>
-        get() = project.configurations.getByName("runtimeClasspath").files()
+        get() = project.configurations.getByName("compileClasspath").files()
 
     private fun getInvokedElements(fqName: String, analyzer: KFunction1<Array<out String>, Set<KtClassOrObject>>, asSuffix: String)
         = analyzer(arrayOf(fqName)).joinToString { "${it.fqName.toString()}$asSuffix" }
@@ -50,7 +50,8 @@ open class GenerateReflektResolver : DefaultTask() {
 
         val analyzer = ReflektAnalyzer(ktFiles, resolved.bindingContext)
         // Todo: get it by analyzer
-        val fqNameList = listOf("io.reflekt.example.AInterface")
+        val fqNameListObjects = listOf("io.reflekt.example.AInterface")
+        val fqNameListClasses = listOf("io.reflekt.example.BInterface")
 
 
         with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
@@ -69,7 +70,7 @@ open class GenerateReflektResolver : DefaultTask() {
                     
                             class WithSubType<T>(val fqName: String) {
                                 fun toList(): List<T> = when(fqName) {
-                                    ${getFqNamesWithInvokedElements(fqNameList, analyzer::objects, " as T")}
+                                    ${getFqNamesWithInvokedElements(fqNameListObjects, analyzer::objects, " as T")}
                                     else -> error("Unknown fqName")
                                 }
                                 fun toSet(): Set<T> = toList().toSet()
@@ -81,7 +82,7 @@ open class GenerateReflektResolver : DefaultTask() {
                     
                             class WithSubType<T: Any>(val fqName: String) {
                                 fun toList(): List<KClass<T>> = when(fqName) {
-                                    ${getFqNamesWithInvokedElements(fqNameList, analyzer::classes, "::class as KClass<T>")}
+                                    ${getFqNamesWithInvokedElements(fqNameListClasses, analyzer::classes, "::class as KClass<T>")}
                                     else -> error("Unknown fqName")
                                 }
                                 fun toSet(): Set<KClass<T>> = toList().toSet()
