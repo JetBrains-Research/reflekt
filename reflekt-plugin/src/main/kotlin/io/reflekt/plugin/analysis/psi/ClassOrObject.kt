@@ -42,8 +42,7 @@ fun KtElement.visitObject(filter: (KtObjectDeclaration) -> Boolean = { true }, b
     })
 }
 
-@ExperimentalStdlibApi
-fun KtElement.findReflektInvokes(filter: (KtReferenceExpression) -> Boolean = { true }, body: (KtReferenceExpression) -> Unit) {
+fun KtElement.visitReferenceExpression(filter: (KtReferenceExpression) -> Boolean = { true }, body: (KtReferenceExpression) -> Unit) {
     acceptChildren(object : KtDefaultVisitor() {
         override fun visitReferenceExpression(expression: KtReferenceExpression) {
             if (filter(expression)) body(expression)

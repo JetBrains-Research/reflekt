@@ -1,5 +1,6 @@
 package io.reflekt.plugin.tasks
 
+import io.reflekt.Reflekt
 import io.reflekt.plugin.analysis.ReflektAnalyzer
 import io.reflekt.plugin.dsl.reflekt
 import io.reflekt.plugin.utils.Groups
@@ -39,10 +40,9 @@ open class GenerateReflektResolver : DefaultTask() {
         fqNameList.forEach {
             builder.append("\"$it\" -> listOf(${getInvokedElements(it, analyzer, asSuffix)})\n")
         }
-        return builder.toString().removeSuffix("\n")
+        return builder.toString().removeSuffix("\n").trimIndent()
     }
 
-    @ExperimentalStdlibApi
     @TaskAction
     fun act() {
         val environment = EnvironmentManager.create(classPath)
@@ -50,7 +50,9 @@ open class GenerateReflektResolver : DefaultTask() {
         val resolved = ResolveUtil.analyze(ktFiles, environment)
 
         val analyzer = ReflektAnalyzer(ktFiles, resolved.bindingContext)
-        val (fqNameListObjects, fqNameListClasses) = analyzer.invokes()
+        // Todo: Can I get full name automatically?
+        val (fqNameListObjects, fqNameListClasses) = analyzer.invokes("${Reflekt.Objects::class.qualifiedName}.withSubType",
+            "${Reflekt.Classes::class.qualifiedName}.withSubType")
 
         with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
             delete()
