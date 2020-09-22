@@ -29,7 +29,7 @@ open class GenerateReflektResolver : DefaultTask() {
 
     @get:InputFiles
     val classPath: Set<File>
-        get() = project.configurations.getByName("compileClasspath").files()
+        get() = project.configurations.getByName("runtimeClasspath").files
 
     private fun getInvokedElements(fqName: String, analyzer: KFunction1<Array<out String>, Set<KtClassOrObject>>, asSuffix: String)
         = analyzer(arrayOf(fqName)).joinToString { "${it.fqName.toString()}$asSuffix" }
@@ -42,6 +42,7 @@ open class GenerateReflektResolver : DefaultTask() {
         return builder.toString().removeSuffix("\n")
     }
 
+    @ExperimentalStdlibApi
     @TaskAction
     fun act() {
         val environment = EnvironmentManager.create(classPath)
@@ -49,10 +50,7 @@ open class GenerateReflektResolver : DefaultTask() {
         val resolved = ResolveUtil.analyze(ktFiles, environment)
 
         val analyzer = ReflektAnalyzer(ktFiles, resolved.bindingContext)
-        // Todo: get it by analyzer
-        val fqNameListObjects = listOf("io.reflekt.example.AInterface")
-        val fqNameListClasses = listOf("io.reflekt.example.BInterface")
-
+        val (fqNameListObjects, fqNameListClasses) = analyzer.invokes()
 
         with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
             delete()
