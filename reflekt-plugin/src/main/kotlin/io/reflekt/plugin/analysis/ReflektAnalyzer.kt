@@ -10,11 +10,6 @@ import java.util.*
 import kotlin.collections.HashSet
 import kotlin.reflect.KFunction3
 
-enum class ElementType(val value: String) {
-    TYPE_ARGUMENT_LIST("TYPE_ARGUMENT_LIST"),
-    REFERENCE_EXPRESSION("REFERENCE_EXPRESSION"),
-}
-
 class ReflektAnalyzer(private val ktFiles: Set<KtFile>, private val binding: BindingContext) {
     fun objects(vararg subtypes: String) = classesOrObjects(subtypes.toSet(), KtFile::visitObject)
 
@@ -29,14 +24,14 @@ class ReflektAnalyzer(private val ktFiles: Set<KtFile>, private val binding: Bin
         return classesOrObjects
     }
 
-    fun invokes(reflektObjectsName: String, reflektClassesName: String): Pair<List<String>, List<String>> {
+    fun invokes(reflektNames:FunctionsFqNames): Pair<List<String>, List<String>> {
         val fqNameObjects = mutableListOf<String>()
         val fqNameClasses = mutableListOf<String>()
         ktFiles.forEach { file ->
             file.visitReferenceExpression {
                 when (it.getFqName(binding)) {
-                    reflektObjectsName -> getFqName(it)?.let { fqNameObjects.add(it) }
-                    reflektClassesName -> getFqName(it)?.let { fqNameClasses.add(it) }
+                    reflektNames.withSubTypeObjects -> getFqName(it)?.let { fqNameObjects.add(it) }
+                    reflektNames.withSubTypeClasses -> getFqName(it)?.let { fqNameClasses.add(it) }
                 }
             }
         }
