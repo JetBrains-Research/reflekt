@@ -41,7 +41,7 @@ open class GenerateReflektResolver : DefaultTask() {
         = analyzer(arrayOf(fqName), filter).joinToString { "${it.fqName.toString()}$asSuffix" }
 
     // Todo: rename, indents
-    private fun getWhenBodyForInvokes(fqNameList: List<String>, analyzer: KFunction2<Array<out String>, KFunction3<KtClassOrObject, Set<String>, BindingContext, Boolean>, Set<KtClassOrObject>>,
+    private fun getWhenBodyForInvokes(fqNameList: Set<String>, analyzer: KFunction2<Array<out String>, KFunction3<KtClassOrObject, Set<String>, BindingContext, Boolean>, Set<KtClassOrObject>>,
                                       asSuffix: String): String {
         val builder = StringBuilder()
         //language=kotlin

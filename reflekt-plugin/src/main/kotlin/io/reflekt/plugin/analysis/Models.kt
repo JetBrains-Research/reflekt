@@ -32,8 +32,8 @@ data class FunctionsFqNames(
 }
 
 data class Invokes(
-    val withSubTypeObjects: MutableList<String> = mutableListOf(),
-    val withSubTypeClasses: MutableList<String> = mutableListOf(),
+    val withSubTypeObjects: MutableSet<String> = mutableSetOf(),
+    val withSubTypeClasses: MutableSet<String> = mutableSetOf(),
     val withAnnotationObjects: MutableMap<String, MutableList<String>> = mutableMapOf(),
     val withAnnotationClasses: MutableMap<String, MutableList<String>> = mutableMapOf()
 )
