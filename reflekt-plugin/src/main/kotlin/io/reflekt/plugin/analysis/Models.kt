@@ -1,10 +1,12 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.Reflekt
+import kotlin.reflect.full.declaredMemberProperties
 
 enum class ElementType(val value: String) {
     TYPE_ARGUMENT_LIST("TYPE_ARGUMENT_LIST"),
     REFERENCE_EXPRESSION("REFERENCE_EXPRESSION"),
+    CALL_EXPRESSION("CALL_EXPRESSION")
 }
 
 data class FunctionsFqNames(
@@ -19,9 +21,19 @@ data class FunctionsFqNames(
             return FunctionsFqNames(
                 "${Reflekt.Objects::class.qualifiedName}.withSubType",
                 "${Reflekt.Classes::class.qualifiedName}.withSubType",
-                "${Reflekt.Objects::class.qualifiedName}.withSubType.withAnnotation",
-                "${Reflekt.Classes::class.qualifiedName}.withSubType.withAnnotation"
+                "${Reflekt.Objects.WithSubType::class.qualifiedName}.withAnnotation",
+                "${Reflekt.Classes.WithSubType::class.qualifiedName}.withAnnotation"
             )
         }
     }
+
+    val names: List<String>
+        get() = listOf(withSubTypeObjects, withSubTypeClasses, withAnnotationObjects, withAnnotationClasses)
 }
+
+data class Invokes(
+    val withSubTypeObjects: MutableList<String> = mutableListOf(),
+    val withSubTypeClasses: MutableList<String> = mutableListOf(),
+    val withAnnotationObjects: MutableMap<String, MutableList<String>> = mutableMapOf(),
+    val withAnnotationClasses: MutableMap<String, MutableList<String>> = mutableMapOf()
+)

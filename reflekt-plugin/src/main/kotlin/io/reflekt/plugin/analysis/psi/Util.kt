@@ -2,6 +2,7 @@ package io.reflekt.plugin.analysis.psi
 
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.psi.KtAnnotated
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.synthetics.findClassDescriptor
@@ -20,6 +21,12 @@ fun KtClassOrObject.isSubtypeOf(klasses: Set<String>, context: BindingContext): 
     return findClassDescriptor(context).getAllSuperClassifiers().filter { it is ClassDescriptor }.any {
         it.fqNameOrNull()?.asString() in klasses
     }
+}
+
+fun KtClassOrObject.isAnnotatedWith(klasses: Set<String>, context: BindingContext): Boolean {
+    return (this as? KtAnnotated)?.annotations?.any{
+        it.getFqName(context) in klasses
+    } ?: false
 }
 
 fun KtExpression.getFqName(binding: BindingContext): String? {
