@@ -36,6 +36,7 @@ open class GenerateReflektResolver : DefaultTask() {
     val classPath: Set<File>
         get() = project.configurations.getByName("runtimeClasspath").files
 
+    //TODO-birillo please split all those functions up and move somewhere near reflekt analyzer
     private fun getInvokedElements(fqName: String, analyzer: KFunction2<Array<out String>, KFunction3<KtClassOrObject, Set<String>, BindingContext, Boolean>, Set<KtClassOrObject>>,
                                    filter: KFunction3<KtClassOrObject, Set<String>, BindingContext, Boolean>, asSuffix: String)
         = analyzer(arrayOf(fqName), filter).joinToString { "${it.fqName.toString()}$asSuffix" }

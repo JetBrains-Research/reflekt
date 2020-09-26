@@ -32,6 +32,7 @@ data class FunctionsFqNames(
 }
 
 data class Invokes(
+    //TODO-birillo please, use `MutableSet()` or `HashSet` instead of mutableSetOf(). *Of() constructors should not be used for creation of empty arrays
     val withSubTypeObjects: MutableSet<String> = mutableSetOf(),
     val withSubTypeClasses: MutableSet<String> = mutableSetOf(),
     val withAnnotationObjects: MutableMap<String, MutableList<String>> = mutableMapOf(),

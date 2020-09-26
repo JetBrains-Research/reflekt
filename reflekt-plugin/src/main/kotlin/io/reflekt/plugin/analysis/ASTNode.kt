@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import java.util.*
 
 fun ASTNode.getFqNameOfTypeArgument(binding: BindingContext): String? {
+    //TODO-birillo replace it with require(this.elementType.toString() == ElementType.CALL_EXPRESSION.value) { "Invalid element type ${this.elementType} of the parent node" }
     if (this.elementType.toString() != ElementType.CALL_EXPRESSION.value) {
         error("Invalid element type ${this.elementType} of the parent node")
     }
@@ -23,6 +24,7 @@ fun ASTNode.withSubTypeRoot(): ASTNode {
     return this.parents().first().children().first().children().last()
 }
 
+//TODO-tanvd you may try to use findChildByType
 fun ASTNode.findNodeByNodeType(elementType: ElementType): ASTNode? {
     val nodes: Queue<ASTNode> = LinkedList<ASTNode>(listOf(this))
     nodes.addAll(this.children())
