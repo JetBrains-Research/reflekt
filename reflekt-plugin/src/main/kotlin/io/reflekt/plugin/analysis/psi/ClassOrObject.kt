@@ -1,15 +1,16 @@
 package io.reflekt.plugin.analysis.psi
 
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtClassOrObject
-import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtObjectDeclaration
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.synthetics.findClassDescriptor
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
 import org.jetbrains.kotlin.resolve.descriptorUtil.getAllSuperClassifiers
-import kotlin.reflect.KClass
+import org.jetbrains.kotlin.resolve.bindingContextUtil.getReferenceTargets
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
+
+
 
 fun KtElement.visitClassOrObject(filter: (KtClassOrObject) -> Boolean = { true }, body: (KtClassOrObject) -> Unit) {
     acceptChildren(object : KtDefaultVisitor() {
@@ -41,9 +42,26 @@ fun KtElement.visitObject(filter: (KtObjectDeclaration) -> Boolean = { true }, b
     })
 }
 
+fun KtElement.visitReferenceExpression(filter: (KtReferenceExpression) -> Boolean = { true }, body: (KtReferenceExpression) -> Unit) {
+    acceptChildren(object : KtDefaultVisitor() {
+        override fun visitReferenceExpression(expression: KtReferenceExpression) {
+            if (filter(expression)) body(expression)
+
+            super.visitReferenceExpression(expression)
+        }
+    })
+}
 
 fun KtClassOrObject.isSubtypeOf(klasses: Set<String>, context: BindingContext): Boolean {
     return findClassDescriptor(context).getAllSuperClassifiers().filter { it is ClassDescriptor }.any {
         it.fqNameOrNull()?.asString() in klasses
     }
+}
+
+fun KtExpression.getFqName(binding: BindingContext): String? {
+    return getReferenceTargets(binding).singleOrNull()?.fqNameSafe?.asString()
+}
+
+fun PsiElement.getFqName(binding: BindingContext): String? {
+    return (this as? KtExpression)?.getFqName(binding)
 }

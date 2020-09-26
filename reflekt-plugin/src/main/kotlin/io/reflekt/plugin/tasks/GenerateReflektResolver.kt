@@ -1,5 +1,6 @@
 package io.reflekt.plugin.tasks
 
+import io.reflekt.Reflekt
 import io.reflekt.plugin.analysis.ReflektAnalyzer
 import io.reflekt.plugin.dsl.reflekt
 import io.reflekt.plugin.utils.Groups
@@ -9,7 +10,9 @@ import io.reflekt.plugin.utils.compiler.ResolveUtil
 import io.reflekt.plugin.utils.myKtSourceSet
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import java.io.File
+import kotlin.reflect.KFunction1
 
 open class GenerateReflektResolver : DefaultTask() {
     init {
@@ -27,7 +30,18 @@ open class GenerateReflektResolver : DefaultTask() {
 
     @get:InputFiles
     val classPath: Set<File>
-        get() = project.configurations.getByName("runtimeClasspath").files()
+        get() = project.configurations.getByName("runtimeClasspath").files
+
+    private fun getInvokedElements(fqName: String, analyzer: KFunction1<Array<out String>, Set<KtClassOrObject>>, asSuffix: String)
+        = analyzer(arrayOf(fqName)).joinToString { "${it.fqName.toString()}$asSuffix" }
+
+    private fun getFqNamesWithInvokedElements(fqNameList: List<String>, analyzer: KFunction1<Array<out String>, Set<KtClassOrObject>>, asSuffix: String): String {
+        val builder = StringBuilder()
+        fqNameList.forEach {
+            builder.append("\"$it\" -> listOf(${getInvokedElements(it, analyzer, asSuffix)})\n")
+        }
+        return builder.toString().removeSuffix("\n").trimIndent()
+    }
 
     @TaskAction
     fun act() {
@@ -36,7 +50,9 @@ open class GenerateReflektResolver : DefaultTask() {
         val resolved = ResolveUtil.analyze(ktFiles, environment)
 
         val analyzer = ReflektAnalyzer(ktFiles, resolved.bindingContext)
-
+        // Todo: Can I get full name automatically?
+        val (fqNameListObjects, fqNameListClasses) = analyzer.invokes("${Reflekt.Objects::class.qualifiedName}.withSubType",
+            "${Reflekt.Classes::class.qualifiedName}.withSubType")
 
         with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
             delete()
@@ -50,19 +66,25 @@ open class GenerateReflektResolver : DefaultTask() {
                     
                     object ReflektImpl {
                         class Objects {
-                            fun <T> withSubType() = Objects.WithSubType<T>()
+                            fun <T> withSubType(fqName: String) = Objects.WithSubType<T>(fqName)
                     
-                            class WithSubType<T> {
-                                fun toList(): List<T> = listOf(${analyzer.objects("io.reflekt.example.AInterface").joinToString { it.fqName.toString() + " as T" }})
+                            class WithSubType<T>(val fqName: String) {
+                                fun toList(): List<T> = when(fqName) {
+                                    ${getFqNamesWithInvokedElements(fqNameListObjects, analyzer::objects, " as T")}
+                                    else -> error("Unknown fqName")
+                                }
                                 fun toSet(): Set<T> = toList().toSet()
                             }
                         }
                     
                         class Classes {
-                            fun <T: Any> withSubType() = Classes.WithSubType<T>()
+                            fun <T: Any> withSubType(fqName: String) = Classes.WithSubType<T>(fqName)
                     
-                            class WithSubType<T: Any> {
-                                fun toList(): List<KClass<T>> = listOf(${analyzer.classes("io.reflekt.example.BInterface").joinToString { it.fqName.toString() + "::class as KClass<T>" }})
+                            class WithSubType<T: Any>(val fqName: String) {
+                                fun toList(): List<KClass<T>> = when(fqName) {
+                                    ${getFqNamesWithInvokedElements(fqNameListClasses, analyzer::classes, "::class as KClass<T>")}
+                                    else -> error("Unknown fqName")
+                                }
                                 fun toSet(): Set<KClass<T>> = toList().toSet()
                             }
                         }
