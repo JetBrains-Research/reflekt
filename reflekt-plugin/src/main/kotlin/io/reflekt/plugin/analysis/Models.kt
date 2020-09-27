@@ -1,6 +1,7 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.Reflekt
+import org.jetbrains.kotlin.codegen.intrinsics.MutableMapSet
 import kotlin.reflect.full.declaredMemberProperties
 
 enum class ElementType(val value: String) {
@@ -17,7 +18,7 @@ data class FunctionsFqNames(
 ) {
     companion object {
         fun getReflektNames(): FunctionsFqNames {
-            // Todo: Can I get full name automatically?
+            // Todo-birillo: Can I get full name automatically?
             return FunctionsFqNames(
                 "${Reflekt.Objects::class.qualifiedName}.withSubType",
                 "${Reflekt.Classes::class.qualifiedName}.withSubType",
@@ -32,9 +33,8 @@ data class FunctionsFqNames(
 }
 
 data class Invokes(
-    //TODO-birillo please, use `MutableSet()` or `HashSet` instead of mutableSetOf(). *Of() constructors should not be used for creation of empty arrays
-    val withSubTypeObjects: MutableSet<String> = mutableSetOf(),
-    val withSubTypeClasses: MutableSet<String> = mutableSetOf(),
+    val withSubTypeObjects: MutableSet<String> = HashSet(),
+    val withSubTypeClasses: MutableSet<String> = HashSet(),
     val withAnnotationObjects: MutableMap<String, MutableList<String>> = mutableMapOf(),
     val withAnnotationClasses: MutableMap<String, MutableList<String>> = mutableMapOf()
 )

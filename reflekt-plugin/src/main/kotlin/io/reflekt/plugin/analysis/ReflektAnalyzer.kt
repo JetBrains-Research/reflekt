@@ -5,18 +5,17 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
 import kotlin.collections.HashSet
-import kotlin.reflect.KFunction3
 
 class ReflektAnalyzer(private val ktFiles: Set<KtFile>, private val binding: BindingContext) {
-    fun objects(vararg subtypes: String, filter: KFunction3<KtClassOrObject, Set<String>, BindingContext, Boolean>)
+    fun objects(vararg subtypes: String, filter: (KtClassOrObject, Set<String>, BindingContext) -> Boolean)
         = classesOrObjects(subtypes.toSet(), KtFile::visitObject, filter)
 
-    fun classes(vararg subtypes: String, filter: KFunction3<KtClassOrObject, Set<String>, BindingContext, Boolean>)
+    fun classes(vararg subtypes: String, filter: (KtClassOrObject, Set<String>, BindingContext) -> Boolean)
         = classesOrObjects(subtypes.toSet(), KtFile::visitClass, filter)
 
     private fun classesOrObjects(subtypes: Set<String>,
-                                 visitor: KFunction3<KtFile, (KtClassOrObject) -> Boolean, (KtClassOrObject) -> Unit, Unit>,
-                                 filter: KFunction3<KtClassOrObject, Set<String>, BindingContext, Boolean>): Set<KtClassOrObject> {
+                                 visitor: (KtFile, (KtClassOrObject) -> Boolean, (KtClassOrObject) -> Unit) -> Unit,
+                                 filter: (KtClassOrObject, Set<String>, BindingContext) -> Boolean): Set<KtClassOrObject> {
         val classesOrObjects = HashSet<KtClassOrObject>()
         ktFiles.forEach { file ->
             visitor(file, { filter(it, subtypes, binding) }, { classesOrObjects.add(it) })
