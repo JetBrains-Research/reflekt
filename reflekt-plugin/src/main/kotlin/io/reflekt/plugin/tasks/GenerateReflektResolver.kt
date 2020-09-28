@@ -84,11 +84,11 @@ open class GenerateReflektResolver : DefaultTask() {
                                 fun toSet(): Set<KClass<T>> = toList().toSet()
                                 
                                 class WithAnnotation<T: Annotation>(private val fqName: String, val withSubtypeFqName: String) {
-                                    fun toList(): List<T> = when(withSubtypeFqName) {
-                                        ${getWhenBodyForInvokes(invokes.withAnnotationClasses, analyzer::objects, "::class as KClass<T>")}
+                                    fun toList(): List<KClass<T>> = when(withSubtypeFqName) {
+                                        ${getWhenBodyForInvokes(invokes.withAnnotationClasses, analyzer::classes, "::class as KClass<T>")}
                                         else -> error("Unknown fqName")
                                     }
-                                    fun toSet(): Set<T> = toList().toSet()
+                                    fun toSet(): Set<KClass<T>> = toList().toSet()
                                 }
                     
                                 fun <T: Annotation> withAnnotation(fqName: String, withSubtypeFqName: String) = WithAnnotation<T>(fqName, withSubtypeFqName)

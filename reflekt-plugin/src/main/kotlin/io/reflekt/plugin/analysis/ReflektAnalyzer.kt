@@ -7,18 +7,17 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import kotlin.collections.HashSet
 
 class ReflektAnalyzer(private val ktFiles: Set<KtFile>, private val binding: BindingContext) {
-    fun objects(vararg subtypes: String, filter: (KtClassOrObject, Set<String>, BindingContext) -> Boolean)
-        = classesOrObjects(subtypes.toSet(), KtFile::visitObject, filter)
+    fun objects(filter: (KtClassOrObject, BindingContext) -> Boolean)
+        = classesOrObjects(KtFile::visitObject, filter)
 
-    fun classes(vararg subtypes: String, filter: (KtClassOrObject, Set<String>, BindingContext) -> Boolean)
-        = classesOrObjects(subtypes.toSet(), KtFile::visitClass, filter)
+    fun classes(filter: (KtClassOrObject, BindingContext) -> Boolean)
+        = classesOrObjects(KtFile::visitClass, filter)
 
-    private fun classesOrObjects(subtypes: Set<String>,
-                                 visitor: (KtFile, (KtClassOrObject) -> Boolean, (KtClassOrObject) -> Unit) -> Unit,
-                                 filter: (KtClassOrObject, Set<String>, BindingContext) -> Boolean): Set<KtClassOrObject> {
+    private fun classesOrObjects(visitor: (KtFile, (KtClassOrObject) -> Boolean, (KtClassOrObject) -> Unit) -> Unit,
+                                 filter: (KtClassOrObject, BindingContext) -> Boolean): Set<KtClassOrObject> {
         val classesOrObjects = HashSet<KtClassOrObject>()
         ktFiles.forEach { file ->
-            visitor(file, { filter(it, subtypes, binding) }, { classesOrObjects.add(it) })
+            visitor(file, { filter(it, binding) }, { classesOrObjects.add(it) })
         }
         return classesOrObjects
     }
@@ -28,7 +27,7 @@ class ReflektAnalyzer(private val ktFiles: Set<KtFile>, private val binding: Bin
         ktFiles.forEach { file ->
             file.visitReferenceExpression { expression ->
                 val fqName = expression.getFqName(binding)
-                if (reflektNames.names.contains(fqName)) {
+                if (fqName in reflektNames.names) {
                     val callExpressionRoot = expression.node.parents().first()
                     callExpressionRoot.getFqNameOfTypeArgument(binding)?.let {
                         when (fqName) {

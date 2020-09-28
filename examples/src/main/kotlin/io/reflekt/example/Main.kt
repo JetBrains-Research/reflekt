@@ -12,7 +12,9 @@ fun main() {
 
 
     val classes = Reflekt.classes().withSubType<BInterface>().toList()
-//    val classes1 = Reflekt.classes().withSubType<BInterface>().withAnnotation<SecondAnnotation>().toList()
+    val classes1 = Reflekt.classes().withSubType<BInterface>().withAnnotation<SecondAnnotation>().toList()
+    val classes2 = Reflekt.classes().withSubType<BInterface>().withAnnotation<FirstAnnotation>().toList()
     println(classes.joinToString { it.toString() })
-//    println(classes1.joinToString { it.toString() })
+    println(classes1.joinToString { it.toString() })
+    println(classes2.joinToString { it.toString() })
 }

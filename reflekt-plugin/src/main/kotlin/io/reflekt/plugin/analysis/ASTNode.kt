@@ -21,7 +21,7 @@ fun ASTNode.withSubTypeRoot(): ASTNode {
     return this.parents().first().children().first().children().last()
 }
 
-//TODO-birillo you may try to use findChildByType
+//TODO-birillo you may try to use findChildByType with REFERENCE_EXPRESSION from KtNodeTypes
 fun ASTNode.findNodeByNodeType(elementType: ElementType): ASTNode? {
     val nodes: Queue<ASTNode> = LinkedList<ASTNode>(listOf(this))
     nodes.addAll(this.children())
