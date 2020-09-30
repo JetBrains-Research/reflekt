@@ -1,8 +1,6 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.Reflekt
-import org.jetbrains.kotlin.codegen.intrinsics.MutableMapSet
-import kotlin.reflect.full.declaredMemberProperties
 
 enum class ElementType(val value: String) {
     TYPE_ARGUMENT_LIST("TYPE_ARGUMENT_LIST"),
@@ -22,7 +20,7 @@ data class FunctionsFqNames(
             return FunctionsFqNames(
                 "${Reflekt.Objects::class.qualifiedName}.withSubType",
                 "${Reflekt.Classes::class.qualifiedName}.withSubType",
-                "${Reflekt.Objects.WithSubType::class.qualifiedName}.withAnnotation",
+                "${Reflekt.Objects.WithSubTypes::class.qualifiedName}.withAnnotation",
                 "${Reflekt.Classes.WithSubType::class.qualifiedName}.withAnnotation"
             )
         }
