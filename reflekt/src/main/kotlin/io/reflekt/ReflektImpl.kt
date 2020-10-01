@@ -1,6 +1,7 @@
 package io.reflekt
 
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 
 object ReflektImpl {
     class Objects {
@@ -19,20 +20,31 @@ object ReflektImpl {
     }
 
     class Classes {
-        fun <T: Any> withSubType(fqName: String) = Classes.WithSubType<T>(fqName)
+        fun <T: Any> withSubTypes(fqNames: Set<String>) = WithSubTypes<T>(fqNames)
+        fun <T: Any> withAnnotations(annotationFqNames: Set<String>, subtypeFqName: String) = WithAnnotations<T>(annotationFqNames, subtypeFqName)
 
-        class WithSubType<T: Any>(val fqName: String) {
-            class WithAnnotation<T: Annotation>(private val fqName: String, val withSubtypeFqName: String) {
-                fun toList(): List<T> = error("This method should be replaced during compilation")
-                fun toSet(): Set<T> = toList().toSet()
-            }
+        class WithSubTypes<T: Any>(val fqNames: Set<String>) {
+            fun toList(): List<KClass<T>> = error("This method should be replaced during compilation")
+            fun toSet(): Set<KClass<T>> = toList().toSet()
+        }
 
-            fun <T: Annotation> withAnnotation(fqName: String, withSubtypeFqName: String) = WithAnnotation<T>(fqName, withSubtypeFqName)
-            fun toList(): List<KClass<T>> =  error("This method should be replaced during compilation")
+        class WithAnnotations<T: Any>(val annotationFqNames: Set<String>, subtypeFqName: String) {
+            fun toList(): List<KClass<T>> = error("This method should be replaced during compilation")
             fun toSet(): Set<KClass<T>> = toList().toSet()
         }
     }
 
+    class Functions {
+        // T - returned class
+        class WithAnnotations<T: Any>(private val annotationFqNames: Set<String>) {
+            fun toList(): List<KFunction<T>> = error("This method should be replaced during compilation")
+            fun toSet(): Set<KFunction<T>> = toList().toSet()
+        }
+
+        fun <T: Any> withAnnotations(fqNames: Set<String>) = WithAnnotations<T>(fqNames)
+    }
+
     fun objects() = Objects()
     fun classes() = Classes()
+    fun functions() = Functions()
 }

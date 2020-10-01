@@ -21,7 +21,7 @@ data class FunctionsFqNames(
                 "${Reflekt.Objects::class.qualifiedName}.withSubType",
                 "${Reflekt.Classes::class.qualifiedName}.withSubType",
                 "${Reflekt.Objects.WithSubTypes::class.qualifiedName}.withAnnotation",
-                "${Reflekt.Classes.WithSubType::class.qualifiedName}.withAnnotation"
+                "${Reflekt.Classes.WithSubTypes::class.qualifiedName}.withAnnotation"
             )
         }
     }
