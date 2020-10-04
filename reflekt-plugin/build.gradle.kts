@@ -12,7 +12,7 @@ dependencies {
     implementation(gradleApi())
     implementation(gradleKotlinDsl())
     implementation(kotlin("gradle-plugin-api"))
-
+    implementation("com.squareup:kotlinpoet:1.6.0")
 }
 
 publishPlugin {
