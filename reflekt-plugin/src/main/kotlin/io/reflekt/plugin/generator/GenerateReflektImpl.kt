@@ -14,6 +14,7 @@ import io.reflekt.plugin.generator.GeneratorConstants.reflektImplObject
 
 fun generateReflektImpl(invokes: Invokes, analyzer: ReflektAnalyzer): String
     = FileSpec.builder(packageName, fileName)
+    .indent("    ")
     .addImport("kotlin.reflect", "KClass")
     .addType(TypeSpec.objectBuilder(reflektImplObject)
         .addType(ClassesOrObjectsGenerator(
