@@ -1,6 +1,9 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.Reflekt
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtFunction
+import org.jetbrains.kotlin.psi.KtObjectDeclaration
 
 enum class ElementType(val value: String) {
     TYPE_ARGUMENT_LIST("TYPE_ARGUMENT_LIST"),
@@ -8,31 +11,28 @@ enum class ElementType(val value: String) {
     CALL_EXPRESSION("CALL_EXPRESSION")
 }
 
-data class FunctionsFqNames(
-    val withSubTypeObjects: String,
-    val withSubTypeClasses: String,
-    val withAnnotationObjects: String,
-    val withAnnotationClasses: String
-) {
-    companion object {
-        fun getReflektNames(): FunctionsFqNames {
-            // Todo-birillo: Can I get full name automatically?
-            return FunctionsFqNames(
-                "${Reflekt.Objects::class.qualifiedName}.withSubType",
-                "${Reflekt.Classes::class.qualifiedName}.withSubType",
-                "${Reflekt.Objects.WithSubTypes::class.qualifiedName}.withAnnotation",
-                "${Reflekt.Classes.WithSubTypes::class.qualifiedName}.withAnnotation"
-            )
-        }
-    }
 
-    val names: List<String>
-        get() = listOf(withSubTypeObjects, withSubTypeClasses, withAnnotationObjects, withAnnotationClasses)
-}
+/*
+ * If the function [withAnnotations] is called without subtypes then [subTypes] is [setOf(Any::class::qualifiedName)]
+ * If the function [withSubTypes] is called without annotations then [annotations] is empty
+ */
+data class SubTypesToAnnotations(
+    val subTypes: Set<String> = emptySet(),
+    val annotations: Set<String> = emptySet()
+)
 
-data class Invokes(
-    val withSubTypeObjects: MutableSet<String> = HashSet(),
-    val withSubTypeClasses: MutableSet<String> = HashSet(),
-    val withAnnotationObjects: MutableMap<String, MutableList<String>> = mutableMapOf(),
-    val withAnnotationClasses: MutableMap<String, MutableList<String>> = mutableMapOf()
+data class ReflektInvokes(
+    val objects: MutableSet<SubTypesToAnnotations> = HashSet(),
+    val classes: MutableSet<SubTypesToAnnotations> = HashSet(),
+    val functions: MutableSet<Set<String>> = HashSet()
+)
+
+/*
+ * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]
+ */
+// Todo: rename
+data class ReflektUses(
+    val objects: MutableMap<SubTypesToAnnotations, Set<String>> = mutableMapOf(),
+    val classes: MutableMap<SubTypesToAnnotations, Set<String>> = mutableMapOf(),
+    val functions: MutableMap<Set<String>, String> = mutableMapOf()
 )
