@@ -27,12 +27,15 @@ data class ReflektInvokes(
     val functions: MutableSet<Set<String>> = HashSet()
 )
 
+typealias ClassOrObjectUses = MutableMap<SubTypesToAnnotations, Set<String>>
+typealias FunctionUses = MutableMap<SubTypesToAnnotations, Set<String>>
+
 /*
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]
  */
 // Todo: rename
 data class ReflektUses(
-    val objects: MutableMap<SubTypesToAnnotations, Set<String>> = mutableMapOf(),
-    val classes: MutableMap<SubTypesToAnnotations, Set<String>> = mutableMapOf(),
-    val functions: MutableMap<Set<String>, String> = mutableMapOf()
+    val objects: ClassOrObjectUses = mutableMapOf(),
+    val classes: ClassOrObjectUses = mutableMapOf(),
+    val functions: FunctionUses = mutableMapOf()
 )

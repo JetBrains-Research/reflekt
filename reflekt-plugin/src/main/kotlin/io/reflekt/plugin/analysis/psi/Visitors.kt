@@ -2,24 +2,23 @@ package io.reflekt.plugin.analysis.psi
 
 import io.reflekt.plugin.analysis.processor.Processor
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.resolve.BindingContext
 
 
 // TODO: rename??
-fun KtElement.visit(processor: Processor<*>) {
+fun KtElement.visit(processors: Set<Processor<*>>) {
     acceptChildren(object : KtDefaultVisitor() {
         override fun visitObjectDeclaration(declaration: KtObjectDeclaration) {
-            if (processor.shouldRunOn(declaration)) processor.process(declaration)
+            processors.filter { it.shouldRunOn(declaration) }.forEach { it.process(declaration) }
             super.visitObjectDeclaration(declaration)
         }
 
         override fun visitClass(klass: KtClass) {
-            if (processor.shouldRunOn(klass)) processor.process(klass)
+            processors.filter { it.shouldRunOn(klass) }.forEach { it.process(klass) }
             super.visitClass(klass)
         }
 
         override fun visitReferenceExpression(expression: KtReferenceExpression) {
-            if (processor.shouldRunOn(expression)) processor.process(expression)
+            processors.filter { it.shouldRunOn(expression) }.forEach { it.process(expression) }
             super.visitReferenceExpression(expression)
         }
     })

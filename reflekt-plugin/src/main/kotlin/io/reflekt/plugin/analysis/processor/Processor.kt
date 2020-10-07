@@ -7,5 +7,5 @@ import org.jetbrains.kotlin.resolve.BindingContext
 abstract class Processor<Output : Any>(protected open val binding: BindingContext){
     abstract fun process(element: KtElement): Output
 
-    fun shouldRunOn(element: KtElement) = true
+    abstract fun shouldRunOn(element: KtElement): Boolean
 }

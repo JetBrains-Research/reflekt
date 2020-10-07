@@ -19,5 +19,7 @@ class InvokesProcessor(override val binding: BindingContext): Processor<ReflektI
         TODO("Not yet implemented")
     }
 
-    fun shouldRunOn(expression: KtReferenceExpression) = expression.getFqName(binding) in ReflektNames.values().map { it.key }
+    private fun isValidExpression(expression: KtReferenceExpression) = expression.getFqName(binding) in ReflektNames.values().map { it.key }
+
+    override fun shouldRunOn(element: KtElement) = (element as? KtReferenceExpression)?.let{ isValidExpression(it) } ?: false
 }
