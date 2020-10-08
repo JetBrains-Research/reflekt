@@ -1,4 +1,4 @@
-package io.reflekt.plugin.analysis.processor
+package io.reflekt.plugin.analysis.processor.uses
 
 import io.reflekt.plugin.analysis.FunctionUses
 import io.reflekt.plugin.analysis.ReflektInvokes
@@ -6,8 +6,8 @@ import io.reflekt.plugin.analysis.psi.annotation.getAnnotations
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
-class FunctionProcessor(override val binding: BindingContext, private val reflektInvokes: ReflektInvokes) : Processor<FunctionUses>(binding) {
-    val functions: FunctionUses = mutableMapOf()
+class FunctionUsesProcessor(override val binding: BindingContext, private val reflektInvokes: ReflektInvokes) : BaseUsesProcessor<FunctionUses>(binding) {
+    override val uses: FunctionUses = mutableMapOf()
 
     override fun process(element: KtElement): FunctionUses {
         TODO("Not yet implemented")
