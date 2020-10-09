@@ -4,6 +4,11 @@ import io.reflekt.Reflekt
 
 class Test(var a: List<Any>, b: List<Any>)
 
+@FirstAnnotation
+fun foo() {
+
+}
+
 fun main() {
     val tmp = Test(emptyList(), emptyList())
     tmp.a = listOf(Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface1>(FirstAnnotation::class))
@@ -22,4 +27,6 @@ fun main() {
     val objects5 = Reflekt.objects().withAnnotations<AInterface>(FirstAnnotation::class)
     val objects6 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSubType<AInterface>()
     val objects7 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSubTypes(AInterface::class)
+
+    val functions = Reflekt.functions().withAnnotations<Unit>(FirstAnnotation::class)
 }

@@ -23,7 +23,6 @@ class ReflektAnalyzer(private val ktFiles: Set<KtFile>, private val binding: Bin
     fun invokes(): ReflektInvokes {
         val processors = setOf(ClassInvokesProcessor(binding), ObjectInvokesProcessor(binding), FunctionInvokesProcessor(binding))
         ktFiles.forEach { file ->
-            println(file.name)
             file.visit(processors)
         }
         return ReflektInvokes.createByProcessors(processors)
