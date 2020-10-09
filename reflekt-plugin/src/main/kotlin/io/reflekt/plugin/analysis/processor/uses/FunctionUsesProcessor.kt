@@ -10,7 +10,8 @@ class FunctionUsesProcessor(override val binding: BindingContext, private val re
     override val uses: FunctionUses = mutableMapOf()
 
     override fun process(element: KtElement): FunctionUses {
-        TODO("Not yet implemented")
+        // TODO: Not yet implemented
+        return uses
     }
 
     private fun isValidFunction(function: KtFunction) = reflektInvokes.functions.map { function.getAnnotations(binding, it) }.any { it.isNotEmpty() }

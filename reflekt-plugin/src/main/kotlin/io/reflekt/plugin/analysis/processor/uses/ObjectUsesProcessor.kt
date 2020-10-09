@@ -9,10 +9,12 @@ class ObjectUsesProcessor(override val binding: BindingContext, private val refl
     override val uses: ClassOrObjectUses = mutableMapOf()
 
     override fun process(element: KtElement): ClassOrObjectUses {
-        TODO("Not yet implemented")
+        // TODO: Not yet implemented
+        return uses
     }
 
-    private fun isValidObject(obj: KtObjectDeclaration): Boolean = TODO("Not yet implemented")
+    // TODO: Not yet implemented
+    private fun isValidObject(obj: KtObjectDeclaration): Boolean = false
 
     override fun shouldRunOn(element: KtElement) = (element as? KtObjectDeclaration)?.let{ isValidObject(it) } ?: false
 }

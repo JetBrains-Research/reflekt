@@ -10,8 +10,9 @@ class FunctionInvokesProcessor (override val binding: BindingContext): BaseInvok
     override val invokes: FunctionInvokes = HashSet()
 
     override fun process(element: KtElement): FunctionInvokes {
-        TODO("Not yet implemented")
+        // TODO: Not yet implemented
+        return invokes
     }
 
-    override fun isValidExpression(expression: KtReferenceExpression) = expression.getFqName(binding) == ReflektNames.OBJECTS.fqName
+    override fun isValidExpression(expression: KtReferenceExpression) = expression.getFqName(binding) == ReflektFqNames.FUNCTIONS.fqName
 }
