@@ -3,18 +3,15 @@ package io.reflekt.example
 import io.reflekt.Reflekt
 
 fun main() {
-    val objects = Reflekt.objects().withSubType<AInterface>().withAnnotation<FirstAnnotation>().toList()
-    val objects2 = Reflekt.objects().withSubType<AInterface>().withAnnotation<SecondAnnotation>().toList()
-    val objects3 = Reflekt.objects().withSubType<BInterface>().withAnnotation<SecondAnnotation>().toList()
-    println(objects.joinToString { it.toString() })
-    println(objects2.joinToString { it.toString() })
-    println(objects3.joinToString { it.toString() })
-
-
-    val classes = Reflekt.classes().withSubType<BInterface>().toList()
-    val classes1 = Reflekt.classes().withSubType<BInterface>().withAnnotation<SecondAnnotation>().toList()
-    val classes2 = Reflekt.classes().withSubType<BInterface>().withAnnotation<FirstAnnotation>().toList()
-    println(classes.joinToString { it.toString() })
-    println(classes1.joinToString { it.toString() })
-    println(classes2.joinToString { it.toString() })
+    val objects = Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface1>(FirstAnnotation::class)
+    val objects1 = Reflekt.objects().withSubType<AInterface>()
+        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class)
+    val objects2 = Reflekt.objects().withSubTypes(AInterface::class, A1::class)
+        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class)
+    val objects3 = Reflekt.objects().withSubTypes(AInterface::class, A1::class)
+        .withAnnotations<AInterface>(FirstAnnotation::class)
+    val objects4 = Reflekt.objects().withAnnotations<AInterface>(FirstAnnotation::class)
+    val objects5 = Reflekt.objects().withAnnotations<AInterface>(FirstAnnotation::class)
+    val objects6 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSubType<AInterface>()
+    val objects7 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSubTypes(AInterface::class)
 }
