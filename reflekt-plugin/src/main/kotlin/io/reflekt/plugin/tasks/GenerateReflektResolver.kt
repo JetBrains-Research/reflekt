@@ -3,7 +3,7 @@ package io.reflekt.plugin.tasks
 import io.reflekt.plugin.analysis.FunctionsFqNames
 import io.reflekt.plugin.analysis.ReflektAnalyzer
 import io.reflekt.plugin.dsl.reflekt
-import io.reflekt.plugin.generator.generateReflektImpl
+import io.reflekt.plugin.generator.ReflektImplGenerator
 import io.reflekt.plugin.utils.Groups
 import io.reflekt.plugin.utils.compiler.EnvironmentManager
 import io.reflekt.plugin.utils.compiler.ParseUtil
@@ -44,7 +44,8 @@ open class GenerateReflektResolver : DefaultTask() {
             delete()
             parentFile.mkdirs()
             writeText(
-                generateReflektImpl(invokes, analyzer)
+                // TODO-isomethane use analyzer
+                ReflektImplGenerator().generate()
             )
         }
     }
