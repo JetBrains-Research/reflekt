@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class ClassUsesProcessor(override val binding: BindingContext, private val reflektInvokes: ReflektInvokes) : BaseUsesProcessor<ClassOrObjectUses>(binding) {
-    override val uses: ClassOrObjectUses = mutableMapOf()
+    override val uses: ClassOrObjectUses = HashMap()
 
     override fun process(element: KtElement): ClassOrObjectUses {
         // TODO: Not yet implemented

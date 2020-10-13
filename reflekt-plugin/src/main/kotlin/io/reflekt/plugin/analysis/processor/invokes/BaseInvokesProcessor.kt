@@ -24,19 +24,17 @@ abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingC
         WITH_ANNOTATIONS("withAnnotations")
     }
 
-    protected fun findClassOrObjectInvokes(nodes: List<ASTNode>): SubTypesToAnnotations {
-        val subtypes = mutableSetOf<String>()
-        val annotations = mutableSetOf<String>()
+    protected fun findClassOrObjectInvokes(nodes: Sequence<ASTNode>): SubTypesToAnnotations {
+        val subtypes = HashSet<String>()
+        val annotations = HashSet<String>()
 
-        nodes.forEach { node ->
-            val callExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CALL_EXPRESSION.value }
-            callExpressionRoot?.let {
-                when(node.text) {
-                    ReflektFunctionsNames.WITH_SUBTYPE.functionName -> callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
-                    ReflektFunctionsNames.WITH_SUBTYPES.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { subtypes.addAll(it) }
-                    ReflektFunctionsNames.WITH_ANNOTATIONS.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
-                    else -> error("Found an unexpected node text: ${node.text}")
-                }
+        for (node in nodes) {
+            val callExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CALL_EXPRESSION.value } ?: continue
+            when(node.text) {
+                ReflektFunctionsNames.WITH_SUBTYPE.functionName -> callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
+                ReflektFunctionsNames.WITH_SUBTYPES.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { subtypes.addAll(it) }
+                ReflektFunctionsNames.WITH_ANNOTATIONS.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
+                else -> error("Found an unexpected node text: ${node.text}")
             }
         }
         if (subtypes.size == 0) {

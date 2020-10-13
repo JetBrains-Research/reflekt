@@ -54,9 +54,9 @@ typealias FunctionUses = MutableMap<SubTypesToAnnotations, Set<String>>
  */
 // Todo: rename
 data class ReflektUses(
-    val objects: ClassOrObjectUses = mutableMapOf(),
-    val classes: ClassOrObjectUses = mutableMapOf(),
-    val functions: FunctionUses = mutableMapOf()
+    val objects: ClassOrObjectUses = HashMap(),
+    val classes: ClassOrObjectUses = HashMap(),
+    val functions: FunctionUses = HashMap()
 ) {
     companion object{
         // TODO: should I handle errors?

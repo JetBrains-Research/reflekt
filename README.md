@@ -13,7 +13,7 @@ creation was the necessity of GraalVM support in modern Java applications.
 
 ## Getting started
 
-Just clone the repo by `git clone https://github.com/nbirillo/reflekt.git`, 
-push the plugin into the local maven repository by `./gradlew publishToMavenLocal`, and finally 
-add the dependency `implementation("io.reflekt", "io.reflekt.gradle.plugin", "0.1.0")` 
+Just clone the repo by `git clone https://github.com/nbirillo/reflekt.git` and 
+push the plugin into the local maven repository by `./gradlew publishToMavenLocal`. 
+If you would like to debug this library add the dependency `implementation("io.reflekt", "io.reflekt.gradle.plugin", "0.1.0")` 
 into `build.gradle.kts` file in the `examples` folder.

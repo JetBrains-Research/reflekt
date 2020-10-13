@@ -20,7 +20,7 @@ fun ASTNode.findLastParentByType(elementType: ElementType): ASTNode? {
 fun ASTNode.getFqNamesOf(rootType: ElementType, type: ElementType, binding: BindingContext): List<String> {
     require(this.elementType.toString() == rootType.value) { "Invalid element type ${this.elementType} of the parent node ${this.text}" }
     val typeArgumentNode = this.children().find { it.elementType.toString() == type.value }!!
-    val filtered = typeArgumentNode.filterChildren { n: ASTNode -> n.elementType.toString() == ElementType.REFERENCE_EXPRESSION.value }
+    val filtered = typeArgumentNode.filterChildren { n: ASTNode -> n.elementType.toString() == ElementType.REFERENCE_EXPRESSION.value }.toList()
     return filtered.mapNotNull { it.psi?.getFqName(binding) }
 }
 
@@ -28,9 +28,11 @@ fun ASTNode.getFqNamesOfTypeArgument(binding: BindingContext) = getFqNamesOf(Ele
 
 fun ASTNode.getFqNamesOfValueArguments(binding: BindingContext) = getFqNamesOf(ElementType.CALL_EXPRESSION, ElementType.VALUE_ARGUMENT_LIST, binding)
 
-// TODO: create an iterator with an argument - condition???
-fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): List<ASTNode> {
-    val filtered = mutableListOf<ASTNode>()
+/*
+ * Traverse all children of the node (use BFS order) and return all children nodes which satisfy the filter condition
+ */
+fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode> {
+    val filtered = ArrayList<ASTNode>()
     val nodes: Queue<ASTNode> = LinkedList<ASTNode>(listOf(this))
     nodes.addAll(this.children())
     while(nodes.isNotEmpty()) {
@@ -40,5 +42,5 @@ fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): List<ASTNode> {
         }
         nodes.addAll(currentNode.children())
     }
-    return filtered
+    return filtered.asSequence()
 }
