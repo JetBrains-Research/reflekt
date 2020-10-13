@@ -1,14 +1,21 @@
 package io.reflekt.plugin.analysis
 
-import io.reflekt.Reflekt
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtFunction
-import org.jetbrains.kotlin.psi.KtObjectDeclaration
+import io.reflekt.plugin.analysis.processor.invokes.BaseInvokesProcessor
+import io.reflekt.plugin.analysis.processor.invokes.ClassInvokesProcessor
+import io.reflekt.plugin.analysis.processor.invokes.FunctionInvokesProcessor
+import io.reflekt.plugin.analysis.processor.invokes.ObjectInvokesProcessor
+import io.reflekt.plugin.analysis.processor.uses.BaseUsesProcessor
+import io.reflekt.plugin.analysis.processor.uses.ClassUsesProcessor
+import io.reflekt.plugin.analysis.processor.uses.FunctionUsesProcessor
+import io.reflekt.plugin.analysis.processor.uses.ObjectUsesProcessor
 
 enum class ElementType(val value: String) {
     TYPE_ARGUMENT_LIST("TYPE_ARGUMENT_LIST"),
     REFERENCE_EXPRESSION("REFERENCE_EXPRESSION"),
-    CALL_EXPRESSION("CALL_EXPRESSION")
+    CALL_EXPRESSION("CALL_EXPRESSION"),
+    DOT_QUALIFIED_EXPRESSION("DOT_QUALIFIED_EXPRESSION"),
+    VALUE_ARGUMENT_LIST("VALUE_ARGUMENT_LIST"),
+    VALUE_ARGUMENT("VALUE_ARGUMENT")
 }
 
 
@@ -21,11 +28,23 @@ data class SubTypesToAnnotations(
     val annotations: Set<String> = emptySet()
 )
 
+typealias ClassOrObjectInvokes = MutableSet<SubTypesToAnnotations>
+typealias FunctionInvokes = MutableSet<Set<String>>
+
 data class ReflektInvokes(
-    val objects: MutableSet<SubTypesToAnnotations> = HashSet(),
-    val classes: MutableSet<SubTypesToAnnotations> = HashSet(),
-    val functions: MutableSet<Set<String>> = HashSet()
-)
+    val objects: ClassOrObjectInvokes = HashSet(),
+    val classes: ClassOrObjectInvokes = HashSet(),
+    val functions: FunctionInvokes = HashSet()
+) {
+    companion object{
+        // TODO: should I handle errors?
+        fun createByProcessors(processors: Set<BaseInvokesProcessor<*>>) = ReflektInvokes(
+            objects = processors.mapNotNull { it as? ObjectInvokesProcessor }.first().invokes,
+            classes = processors.mapNotNull { it as? ClassInvokesProcessor }.first().invokes,
+            functions = processors.mapNotNull { it as? FunctionInvokesProcessor }.first().invokes
+        )
+    }
+}
 
 typealias ClassOrObjectUses = MutableMap<SubTypesToAnnotations, Set<String>>
 typealias FunctionUses = MutableMap<SubTypesToAnnotations, Set<String>>
@@ -35,7 +54,16 @@ typealias FunctionUses = MutableMap<SubTypesToAnnotations, Set<String>>
  */
 // Todo: rename
 data class ReflektUses(
-    val objects: ClassOrObjectUses = mutableMapOf(),
-    val classes: ClassOrObjectUses = mutableMapOf(),
-    val functions: FunctionUses = mutableMapOf()
-)
+    val objects: ClassOrObjectUses = HashMap(),
+    val classes: ClassOrObjectUses = HashMap(),
+    val functions: FunctionUses = HashMap()
+) {
+    companion object{
+        // TODO: should I handle errors?
+        fun createByProcessors(processors: Set<BaseUsesProcessor<*>>) = ReflektUses(
+            objects = processors.mapNotNull { it as? ObjectUsesProcessor }.first().uses,
+            classes = processors.mapNotNull { it as? ClassUsesProcessor }.first().uses,
+            functions = processors.mapNotNull { it as? FunctionUsesProcessor }.first().uses
+        )
+    }
+}
