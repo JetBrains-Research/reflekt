@@ -1,9 +1,12 @@
-package io.reflekt.plugin.generator
+package io.reflekt.plugin.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import io.reflekt.plugin.generator.generateFunction
+import io.reflekt.plugin.generator.singleLineCode
+import io.reflekt.plugin.generator.toParameterSpecs
 
-abstract class BaseHelperClassGenerator : ClassGenerator() {
+abstract class HelperClassGenerator : ClassGenerator() {
     abstract val typeVariable: TypeVariableName
     abstract val returnParameter: TypeName
 
@@ -49,19 +52,26 @@ abstract class BaseHelperClassGenerator : ClassGenerator() {
         ))
     }
 
-    protected abstract inner class WithSubTypesGenerator : BaseSelectorClassGenerator() {
-        override val typeName = this@BaseHelperClassGenerator.typeName.nestedClass(WITH_SUBTYPES_CLASS_NAME)
-        override val typeVariable = this@BaseHelperClassGenerator.typeVariable
-        override val parameters = this@BaseHelperClassGenerator.withSubTypesParameters
-        override val returnParameter = this@BaseHelperClassGenerator.returnParameter
-    }
+    protected abstract class SelectorClassGeneratorWrapper(
+        override val typeName: ClassName,
+        override val typeVariable: TypeVariableName,
+        override val parameters: List<ParameterSpec>,
+        override val returnParameter: TypeName
+    ) : SelectorClassGenerator()
 
-    protected abstract inner class WithAnnotationsGenerator : BaseSelectorClassGenerator() {
-        override val typeName = this@BaseHelperClassGenerator.typeName.nestedClass(WITH_ANNOTATIONS_CLASS_NAME)
-        override val typeVariable = this@BaseHelperClassGenerator.typeVariable
-        override val parameters = this@BaseHelperClassGenerator.withAnnotationsParameters
-        override val returnParameter = this@BaseHelperClassGenerator.returnParameter
-    }
+    protected abstract inner class WithSubTypesGenerator : SelectorClassGeneratorWrapper(
+        typeName = this.typeName.nestedClass(WITH_SUBTYPES_CLASS_NAME),
+        typeVariable = this.typeVariable,
+        parameters = this.withSubTypesParameters,
+        returnParameter = this.returnParameter
+    )
+
+    protected abstract inner class WithAnnotationsGenerator : SelectorClassGeneratorWrapper(
+        typeName = this.typeName.nestedClass(WITH_ANNOTATIONS_CLASS_NAME),
+        typeVariable = this.typeVariable,
+        parameters = this.withAnnotationsParameters,
+        returnParameter = this.returnParameter
+    )
 
     protected companion object {
         const val WITH_SUBTYPES_FUNCTION_NAME = "withSubTypes"

@@ -1,12 +1,13 @@
-package io.reflekt.plugin.generator
+package io.reflekt.plugin.generator.models
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asClassName
+import io.reflekt.plugin.generator.singleLineCode
 import kotlin.reflect.KFunction
 
-class FunctionsGenerator(enclosingClassName: ClassName) : BaseHelperClassGenerator() {
+class FunctionsGenerator(enclosingClassName: ClassName) : HelperClassGenerator() {
     override val typeName: ClassName = enclosingClassName.nestedClass("Functions")
     override val typeVariable = TypeVariableName("T", Any::class)
     override val returnParameter = KFunction::class.asClassName().parameterizedBy(typeVariable)
@@ -15,12 +16,7 @@ class FunctionsGenerator(enclosingClassName: ClassName) : BaseHelperClassGenerat
         generateWithAnnotationsFunction()
 
         addNestedType(object : WithAnnotationsGenerator() {
-            override val toSetFunctionBody = singleLineCode("error(%S)", "Not implemented")
-
-            override fun generateImpl() {
-                generateToListFunction()
-                generateToSetFunction()
-            }
+            override val toListFunctionBody = singleLineCode("error(%S)", "Not implemented")
         }.generate())
     }
 }

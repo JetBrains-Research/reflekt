@@ -1,10 +1,12 @@
-package io.reflekt.plugin.generator
+package io.reflekt.plugin.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import io.reflekt.plugin.generator.generateFunction
+import io.reflekt.plugin.generator.singleLineCode
 import kotlin.reflect.KClass
 
-abstract class BaseSelectorClassGenerator : ClassGenerator() {
+abstract class SelectorClassGenerator : ClassGenerator() {
     protected abstract val typeVariable: TypeVariableName
     protected abstract val returnParameter: TypeName
     protected abstract val parameters: List<ParameterSpec>
@@ -14,7 +16,7 @@ abstract class BaseSelectorClassGenerator : ClassGenerator() {
     protected open val toSetFunctionBody
         = singleLineCode("return toList().toSet()")
 
-    override fun initBuilder() {
+    final override fun initBuilder() {
         super.initBuilder()
         builder.addTypeVariable(typeVariable)
         builder.primaryConstructor(FunSpec.constructorBuilder().addParameters(parameters).build())
@@ -23,22 +25,22 @@ abstract class BaseSelectorClassGenerator : ClassGenerator() {
         })
     }
 
-    fun generateToListFunction() {
-        generateConversionFunction(List::class, toListFunctionBody)
+    override fun generateImpl() {
+        generateToListFunction()
+        generateToSetFunction()
     }
 
-    fun generateToSetFunction() {
-        generateConversionFunction(Set::class, toSetFunctionBody)
-    }
+    private fun generateToListFunction() = generateConversionFunction(List::class, toListFunctionBody)
+
+    private fun generateToSetFunction() = generateConversionFunction(Set::class, toSetFunctionBody)
 
     private fun generateConversionFunction(
         klass: KClass<*>,
         body: CodeBlock
-    ) {
+    ) =
         addFunction(generateFunction(
             name = "to${klass.simpleName}",
             body = body,
             returnType = klass.asClassName().parameterizedBy(returnParameter)
         ))
-    }
 }

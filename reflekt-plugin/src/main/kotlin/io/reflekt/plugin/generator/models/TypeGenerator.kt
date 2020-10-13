@@ -1,18 +1,15 @@
-package io.reflekt.plugin.generator
+package io.reflekt.plugin.generator.models
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeSpec
 
-abstract class AbstractTypeGenerator {
+abstract class TypeGenerator : Generator<TypeSpec>() {
     abstract val typeName: ClassName
 
     protected lateinit var builder: TypeSpec.Builder
 
-    abstract fun initBuilder()
-    abstract fun generateImpl()
-
-    fun generate(): TypeSpec {
+    final override fun generate(): TypeSpec {
         initBuilder()
         generateImpl()
         return builder.build()
@@ -35,13 +32,13 @@ abstract class AbstractTypeGenerator {
     }
 }
 
-abstract class ClassGenerator : AbstractTypeGenerator() {
+abstract class ClassGenerator : TypeGenerator() {
     override fun initBuilder() {
         builder = TypeSpec.classBuilder(typeName)
     }
 }
 
-abstract class ObjectGenerator : AbstractTypeGenerator() {
+abstract class ObjectGenerator : TypeGenerator() {
     override fun initBuilder() {
         builder = TypeSpec.objectBuilder(typeName)
     }
