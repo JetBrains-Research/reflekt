@@ -1,44 +1,25 @@
 package io.reflekt.plugin.analysis.psi
 
+import io.reflekt.plugin.analysis.processor.Processor
 import org.jetbrains.kotlin.psi.*
 
-fun KtElement.visitClassOrObject(filter: (KtClassOrObject) -> Boolean = { true }, body: (KtClassOrObject) -> Unit) {
-    acceptChildren(object : KtDefaultVisitor() {
-        override fun visitClassOrObject(classOrObject: KtClassOrObject) {
-            if (filter(classOrObject)) body(classOrObject)
 
-            super.visitClassOrObject(classOrObject)
-        }
-    })
-}
-
-fun KtElement.visitClass(filter: (KtClass) -> Boolean = { true }, body: (KtClass) -> Unit) {
-    acceptChildren(object : KtDefaultVisitor() {
-        override fun visitClass(klass: KtClass) {
-            if (filter(klass)) body(klass)
-
-            super.visitClass(klass)
-        }
-    })
-}
-
-fun KtElement.visitObject(filter: (KtObjectDeclaration) -> Boolean = { true }, body: (KtObjectDeclaration) -> Unit) {
+// TODO: rename??
+fun KtElement.visit(processors: Set<Processor<*>>) {
     acceptChildren(object : KtDefaultVisitor() {
         override fun visitObjectDeclaration(declaration: KtObjectDeclaration) {
-            if (filter(declaration)) body(declaration)
-
+            processors.filter { it.shouldRunOn(declaration) }.forEach { it.process(declaration) }
             super.visitObjectDeclaration(declaration)
         }
-    })
-}
 
-fun KtElement.visitReferenceExpression(filter: (KtReferenceExpression) -> Boolean = { true }, body: (KtReferenceExpression) -> Unit) {
-    acceptChildren(object : KtDefaultVisitor() {
+        override fun visitClass(klass: KtClass) {
+            processors.filter { it.shouldRunOn(klass) }.forEach { it.process(klass) }
+            super.visitClass(klass)
+        }
+
         override fun visitReferenceExpression(expression: KtReferenceExpression) {
-            if (filter(expression)) body(expression)
-
+            processors.filter { it.shouldRunOn(expression) }.forEach { it.process(expression) }
             super.visitReferenceExpression(expression)
         }
     })
 }
-

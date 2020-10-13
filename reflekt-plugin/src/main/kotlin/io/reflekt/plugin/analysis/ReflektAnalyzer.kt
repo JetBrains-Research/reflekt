@@ -1,55 +1,30 @@
 package io.reflekt.plugin.analysis
 
+import io.reflekt.plugin.analysis.processor.invokes.ClassInvokesProcessor
+import io.reflekt.plugin.analysis.processor.invokes.FunctionInvokesProcessor
+import io.reflekt.plugin.analysis.processor.invokes.ObjectInvokesProcessor
+import io.reflekt.plugin.analysis.processor.uses.ClassUsesProcessor
+import io.reflekt.plugin.analysis.processor.uses.FunctionUsesProcessor
+import io.reflekt.plugin.analysis.processor.uses.ObjectUsesProcessor
 import io.reflekt.plugin.analysis.psi.*
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
-import kotlin.collections.HashSet
 
 class ReflektAnalyzer(private val ktFiles: Set<KtFile>, private val binding: BindingContext) {
-    fun objects(filter: (KtClassOrObject, BindingContext) -> Boolean)
-        = classesOrObjects(KtFile::visitObject, filter)
-
-    fun classes(filter: (KtClassOrObject, BindingContext) -> Boolean)
-        = classesOrObjects(KtFile::visitClass, filter)
-
-    private fun classesOrObjects(visitor: (KtFile, (KtClassOrObject) -> Boolean, (KtClassOrObject) -> Unit) -> Unit,
-                                 filter: (KtClassOrObject, BindingContext) -> Boolean): Set<KtClassOrObject> {
-        val classesOrObjects = HashSet<KtClassOrObject>()
+    // TODO: rename
+    fun uses(invokes: ReflektInvokes): ReflektUses {
+        val processors = setOf(ClassUsesProcessor(binding, invokes), ObjectUsesProcessor(binding, invokes), FunctionUsesProcessor(binding, invokes))
         ktFiles.forEach { file ->
-            visitor(file, { filter(it, binding) }, { classesOrObjects.add(it) })
+            file.visit(processors)
         }
-        return classesOrObjects
+        return ReflektUses.createByProcessors(processors)
     }
 
-    fun invokes(reflektNames: FunctionsFqNames): Invokes {
-        val invokes = Invokes()
+    fun invokes(): ReflektInvokes {
+        val processors = setOf(ClassInvokesProcessor(binding), ObjectInvokesProcessor(binding), FunctionInvokesProcessor(binding))
         ktFiles.forEach { file ->
-            file.visitReferenceExpression { expression ->
-                val fqName = expression.getFqName(binding)
-                if (fqName in reflektNames.names) {
-                    val callExpressionRoot = expression.node.parents().first()
-                    callExpressionRoot.getFqNameOfTypeArgument(binding)?.let {
-                        when (fqName) {
-                            reflektNames.withSubTypeObjects -> invokes.withSubTypeObjects.add(it)
-                            reflektNames.withSubTypeClasses -> invokes.withSubTypeClasses.add(it)
-                            reflektNames.withAnnotationObjects -> {
-                                callExpressionRoot.withSubTypeRoot().getFqNameOfTypeArgument(binding)?.let { withSubTypeFqName ->
-                                    invokes.withAnnotationObjects.getOrPut(withSubTypeFqName, { mutableListOf() }).add(it)
-                                }
-                            }
-                            reflektNames.withAnnotationClasses -> {
-                                callExpressionRoot.withSubTypeRoot().getFqNameOfTypeArgument(binding)?.let { withSubTypeFqName ->
-                                    invokes.withAnnotationClasses.getOrPut(withSubTypeFqName, { mutableListOf() }).add(it)
-                                }
-                            }
-                            else -> {
-                            }
-                        }
-                    }
-                }
-            }
+            file.visit(processors)
         }
-        return invokes
+        return ReflektInvokes.createByProcessors(processors)
     }
 }

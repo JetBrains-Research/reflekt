@@ -1,39 +1,75 @@
 package io.reflekt
 
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 
 object Reflekt {
     class Objects {
-        inline fun <reified T> withSubType() = WithSubType<T>(T::class.qualifiedName!!)
+        // T - returned class
+        inline fun <reified T: Any> withSubType() = WithSubTypes<T>(setOf(T::class.qualifiedName!!))
+        fun withSubTypes(vararg klasses: KClass<out Any>) = WithSubTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
 
-        class WithSubType<T>(val fqName: String) {
-            class WithAnnotation<T>(private val fqName: String, private val withSubtype: ReflektImpl.Objects.WithSubType<T>) {
-                fun toList(): List<T> = withSubtype.withAnnotation<T>(fqName, withSubtype.fqName).toList()
-                fun toSet(): Set<T> = toList().toSet()
-            }
-            inline fun <reified T: Annotation> withAnnotation() = WithAnnotation<T>(T::class.qualifiedName!!, ReflektImpl.objects().withSubType(fqName))
+        // T - returned class
+        inline fun <reified T: Any> withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet(), setOf(Any::class.qualifiedName!!))
 
-            fun toList(): List<T> = ReflektImpl.objects().withSubType<T>(fqName).toList()
+        class WithSubTypes<T: Any>(val fqNames: Set<String>) {
+            fun toList(): List<T> = ReflektImpl.objects().withSubTypes<T>(fqNames).toList()
             fun toSet(): Set<T> = toList().toSet()
+
+            // T - returned class
+            inline fun <reified Q: T> withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<Q>(klasses.mapNotNull { it.qualifiedName }.toSet(), fqNames)
+        }
+
+        // T - returned class
+        class WithAnnotations<T: Any>(private val annotationFqNames: Set<String>, private val subtypeFqNames: Set<String>) {
+            fun toList(): List<T> = ReflektImpl.objects().withAnnotations<T>(annotationFqNames, subtypeFqNames).toList()
+            fun toSet(): Set<T> = toList().toSet()
+
+            // T - returned class
+            inline fun <reified T: Any> withSubType() = WithSubTypes<T>(setOf(T::class.qualifiedName!!))
+            fun withSubTypes(vararg klasses: KClass<out Any>) = WithSubTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
         }
     }
 
     class Classes {
-        inline fun <reified T: Any> withSubType() = WithSubType<T>(T::class.qualifiedName!!)
+        // T - returned class
+        inline fun <reified T: Any> withSubType() = WithSubTypes<T>(setOf(T::class.qualifiedName!!))
+        fun withSubTypes(vararg klasses: KClass<out Any>) = WithSubTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
 
-        class WithSubType<T: Any>(val fqName: String) {
-            class WithAnnotation<T: Annotation>(private val fqName: String, private val withSubtype: ReflektImpl.Classes.WithSubType<T>) {
-                fun toList(): List<T> = withSubtype.withAnnotation<T>(fqName, withSubtype.fqName).toList()
-                fun toSet(): Set<T> = toList().toSet()
-            }
-            inline fun <reified T: Annotation> withAnnotation() = WithAnnotation<T>(T::class.qualifiedName!!, ReflektImpl.classes().withSubType(fqName))
+        // T - returned class
+        inline fun <reified T: Any> withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet(), setOf(Any::class.qualifiedName!!))
 
-            fun toList(): List<KClass<T>> = ReflektImpl.classes().withSubType<T>(fqName).toList()
+        class WithSubTypes<T: Any>(val fqNames: Set<String>) {
+            fun toList(): List<KClass<T>> = ReflektImpl.classes().withSubTypes<T>(fqNames).toList()
             fun toSet(): Set<KClass<T>> = toList().toSet()
+
+            // T - returned class
+            inline fun <reified Q: T> withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<Q>(klasses.mapNotNull { it.qualifiedName }.toSet(), fqNames)
         }
+
+        // T - returned class
+        class WithAnnotations<T: Any>(private val annotationFqNames: Set<String>, private val subtypeFqNames: Set<String>) {
+            fun toList(): List<KClass<T>> = ReflektImpl.classes().withAnnotations<T>(annotationFqNames, subtypeFqNames).toList()
+            fun toSet(): Set<KClass<T>> = toList().toSet()
+
+            // T - returned class
+            inline fun <reified T: Any> withSubType() = WithSubTypes<T>(setOf(T::class.qualifiedName!!))
+            fun withSubTypes(vararg klasses: KClass<out Any>) = WithSubTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
+        }
+    }
+
+    class Functions {
+        // T - returned class
+        class WithAnnotations<T: Any>(private val annotationFqNames: Set<String>) {
+            fun toList(): List<KFunction<T>> = ReflektImpl.functions().withAnnotations<T>(annotationFqNames).toList()
+            fun toSet(): Set<KFunction<T>> = toList().toSet()
+        }
+
+        // T - returned class
+        inline fun <reified T: Any> withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet())
     }
 
     fun objects() = Objects()
     fun classes() = Classes()
+    fun functions() = Functions()
 }
-

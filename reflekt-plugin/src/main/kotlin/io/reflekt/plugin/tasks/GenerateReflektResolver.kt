@@ -1,6 +1,5 @@
 package io.reflekt.plugin.tasks
 
-import io.reflekt.plugin.analysis.FunctionsFqNames
 import io.reflekt.plugin.analysis.ReflektAnalyzer
 import io.reflekt.plugin.generator.getWhenBodyForInvokes
 import io.reflekt.plugin.dsl.reflekt
@@ -38,7 +37,10 @@ open class GenerateReflektResolver : DefaultTask() {
         val resolved = ResolveUtil.analyze(ktFiles, environment)
 
         val analyzer = ReflektAnalyzer(ktFiles, resolved.bindingContext)
-        val invokes = analyzer.invokes(FunctionsFqNames.getReflektNames())
+        val invokes = analyzer.invokes()
+        val uses = analyzer.uses(invokes)
+
+        // TODO: use info from [uses] for generating ReflektImpl.kt
 
         with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
             delete()
@@ -56,14 +58,12 @@ open class GenerateReflektResolver : DefaultTask() {
                     
                             class WithSubType<T>(val fqName: String) {
                                 fun toList(): List<T> = when(fqName) {
-                                    ${getWhenBodyForInvokes(invokes.withSubTypeObjects, analyzer::objects, " as T")}
                                     else -> error("Unknown fqName")
                                 }
                                 fun toSet(): Set<T> = toList().toSet()
                                 
                                 class WithAnnotation<T>(private val fqName: String, val withSubtypeFqName: String) {
                                     fun toList(): List<T> = when(withSubtypeFqName) {
-                                        ${getWhenBodyForInvokes(invokes.withAnnotationObjects, analyzer::objects, " as T")}
                                         else -> error("Unknown fqName")
                                     }
                                     fun toSet(): Set<T> = toList().toSet()
@@ -78,14 +78,12 @@ open class GenerateReflektResolver : DefaultTask() {
                     
                             class WithSubType<T: Any>(val fqName: String) {
                                 fun toList(): List<KClass<T>> = when(fqName) {
-                                    ${getWhenBodyForInvokes(invokes.withSubTypeClasses, analyzer::classes, "::class as KClass<T>")}
                                     else -> error("Unknown fqName")
                                 }
                                 fun toSet(): Set<KClass<T>> = toList().toSet()
                                 
                                 class WithAnnotation<T: Annotation>(private val fqName: String, val withSubtypeFqName: String) {
                                     fun toList(): List<KClass<T>> = when(withSubtypeFqName) {
-                                        ${getWhenBodyForInvokes(invokes.withAnnotationClasses, analyzer::classes, "::class as KClass<T>")}
                                         else -> error("Unknown fqName")
                                     }
                                     fun toSet(): Set<KClass<T>> = toList().toSet()
