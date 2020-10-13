@@ -9,11 +9,7 @@ abstract class FileGenerator : Generator<String>() {
     protected abstract val fileName: String
 
     companion object {
-        private var indent: String = " ".repeat(4)
-
-        fun setIndent(indent: String) {
-            this.indent = indent
-        }
+        var indent: String = " ".repeat(4)
     }
 
     private lateinit var builder: FileSpec.Builder
