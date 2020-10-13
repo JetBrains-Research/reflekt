@@ -1,6 +1,5 @@
 package io.reflekt.plugin.tasks
 
-import io.reflekt.plugin.analysis.FunctionsFqNames
 import io.reflekt.plugin.analysis.ReflektAnalyzer
 import io.reflekt.plugin.dsl.reflekt
 import io.reflekt.plugin.generator.ReflektImplGenerator
@@ -38,7 +37,10 @@ open class GenerateReflektResolver : DefaultTask() {
         val resolved = ResolveUtil.analyze(ktFiles, environment)
 
         val analyzer = ReflektAnalyzer(ktFiles, resolved.bindingContext)
-        val invokes = analyzer.invokes(FunctionsFqNames.getReflektNames())
+        val invokes = analyzer.invokes()
+        val uses = analyzer.uses(invokes)
+
+        // TODO: use info from [uses] for generating ReflektImpl.kt
 
         with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
             delete()
