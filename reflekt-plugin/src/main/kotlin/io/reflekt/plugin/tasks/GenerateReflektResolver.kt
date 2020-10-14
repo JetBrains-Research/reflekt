@@ -38,7 +38,8 @@ open class GenerateReflektResolver : DefaultTask() {
 
         val analyzer = ReflektAnalyzer(ktFiles, resolved.bindingContext)
         val invokes = analyzer.invokes()
-        val uses = analyzer.uses(invokes)
+        // TODO implements uses processors
+        // val uses = analyzer.uses(invokes)
 
         // TODO: use info from [uses] for generating ReflektImpl.kt
 
