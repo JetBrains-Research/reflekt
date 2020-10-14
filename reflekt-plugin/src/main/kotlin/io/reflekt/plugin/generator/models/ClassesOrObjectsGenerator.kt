@@ -4,7 +4,6 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asClassName
-import io.reflekt.plugin.generator.singleLineCode
 import kotlin.reflect.KClass
 
 abstract class ClassesOrObjectsGenerator : HelperClassGenerator() {
@@ -13,11 +12,11 @@ abstract class ClassesOrObjectsGenerator : HelperClassGenerator() {
         generateWithAnnotationsFunction()
 
         addNestedTypes(object : WithSubTypesGenerator() {
-            override val toListFunctionBody = singleLineCode("error(%S)", "Not implemented")
+            // TODO implement toList()
         }.generate())
 
         addNestedTypes(object : WithAnnotationsGenerator() {
-            override val toListFunctionBody = singleLineCode("error(%S)", "Not implemented")
+            // TODO implement toList()
         }.generate())
     }
 }

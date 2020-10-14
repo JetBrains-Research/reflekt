@@ -2,11 +2,11 @@ package io.reflekt.plugin.generator
 
 import com.squareup.kotlinpoet.*
 
-fun singleLineCode(format: String, vararg args: Any?): CodeBlock
-    = CodeBlock.of("$format\n", *args)
+fun singleLineCode(format: String, vararg args: Any?): CodeBlock = CodeBlock.of("$format\n", *args)
 
-fun Map<String, TypeName>.toParameterSpecs(): List<ParameterSpec>
-    = entries.map { ParameterSpec(it.key, it.value) }
+fun notImplementedError(): CodeBlock = singleLineCode("error(%S)", "Not implemented")
+
+fun Map<String, TypeName>.toParameterSpecs(): List<ParameterSpec> = entries.map { ParameterSpec(it.key, it.value) }
 
 fun generateFunction(
     name: String,

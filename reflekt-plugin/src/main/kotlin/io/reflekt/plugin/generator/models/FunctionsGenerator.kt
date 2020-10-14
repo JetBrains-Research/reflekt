@@ -16,7 +16,7 @@ class FunctionsGenerator(enclosingClassName: ClassName) : HelperClassGenerator()
         generateWithAnnotationsFunction()
 
         addNestedTypes(object : WithAnnotationsGenerator() {
-            override val toListFunctionBody = singleLineCode("error(%S)", "Not implemented")
+            // TODO implement toList()
         }.generate())
     }
 }
