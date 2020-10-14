@@ -26,8 +26,8 @@ class ReflektImplGenerator : FileGenerator() {
 
             addFunctions(innerGenerators.map {
                 generateFunction(
-                        name = it.typeName.simpleName.decapitalize(),
-                        body = singleLineCode("return %T()", it.typeName)
+                    name = it.typeName.simpleName.decapitalize(),
+                    body = singleLineCode("return %T()", it.typeName)
                 )
             })
             addNestedTypes(innerGenerators.map { it.generate() })
