@@ -12,11 +12,11 @@ abstract class ClassesOrObjectsGenerator : HelperClassGenerator() {
         generateWithSubTypesFunction()
         generateWithAnnotationsFunction()
 
-        addNestedType(object : WithSubTypesGenerator() {
+        addNestedTypes(object : WithSubTypesGenerator() {
             override val toListFunctionBody = singleLineCode("error(%S)", "Not implemented")
         }.generate())
 
-        addNestedType(object : WithAnnotationsGenerator() {
+        addNestedTypes(object : WithAnnotationsGenerator() {
             override val toListFunctionBody = singleLineCode("error(%S)", "Not implemented")
         }.generate())
     }

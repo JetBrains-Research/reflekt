@@ -15,16 +15,16 @@ abstract class TypeGenerator : Generator<TypeSpec>() {
         return builder.build()
     }
 
-    fun addNestedType(nestedType: TypeSpec) {
-        builder.addType(nestedType)
+    fun addNestedTypes(vararg nestedTypes: TypeSpec) {
+        addNestedTypes(listOf(*nestedTypes))
     }
 
     fun addNestedTypes(nestedTypes: Iterable<TypeSpec>) {
         builder.addTypes(nestedTypes)
     }
 
-    fun addFunction(function: FunSpec) {
-        builder.addFunction(function)
+    fun addFunctions(vararg functions: FunSpec) {
+        addFunctions(listOf(*functions))
     }
 
     fun addFunctions(functions: Iterable<FunSpec>) {

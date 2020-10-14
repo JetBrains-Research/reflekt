@@ -24,11 +24,15 @@ abstract class FileGenerator : Generator<String>() {
         return builder.build().toString()
     }
 
-    fun addType(type: TypeSpec) {
-        builder.addType(type)
+    fun addTypes(vararg types: TypeSpec) {
+        for (type in types) {
+            builder.addType(type)
+        }
     }
 
-    fun addFunction(function: FunSpec) {
-        builder.addFunction(function)
+    fun addFunctions(vararg functions: FunSpec) {
+        for (function in functions) {
+            builder.addFunction(function)
+        }
     }
 }

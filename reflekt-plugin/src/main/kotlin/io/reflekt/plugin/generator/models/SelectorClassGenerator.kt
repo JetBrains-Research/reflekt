@@ -38,7 +38,7 @@ abstract class SelectorClassGenerator : ClassGenerator() {
         klass: KClass<*>,
         body: CodeBlock
     ) =
-        addFunction(generateFunction(
+        addFunctions(generateFunction(
             name = "to${klass.simpleName}",
             body = body,
             returnType = klass.asClassName().parameterizedBy(returnParameter)

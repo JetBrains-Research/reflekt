@@ -8,7 +8,7 @@ class ReflektImplGenerator : FileGenerator() {
     override val fileName = "ReflektImpl"
 
     override fun generateImpl() {
-        addType(ReflektImplClassGenerator(packageName, fileName).generate())
+        addTypes(ReflektImplClassGenerator(packageName, fileName).generate())
     }
 
     private class ReflektImplClassGenerator(
@@ -26,8 +26,8 @@ class ReflektImplGenerator : FileGenerator() {
 
             addFunctions(innerGenerators.map {
                 generateFunction(
-                    name = it.typeName.simpleName.decapitalize(),
-                    body = singleLineCode("return %T()", it.typeName)
+                        name = it.typeName.simpleName.decapitalize(),
+                        body = singleLineCode("return %T()", it.typeName)
                 )
             })
             addNestedTypes(innerGenerators.map { it.generate() })
