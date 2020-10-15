@@ -1,5 +1,6 @@
 package io.reflekt.plugin.utils
 
+import io.reflekt.plugin.utils.file.FileUtil.toKotlinFilesSet
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.HasConvention
@@ -22,4 +23,10 @@ val SourceSet.kotlin: SourceDirectorySet
             .kotlin
 
 internal val Project.myKtSourceSet: Set<File>
-    get() = mySourceSets.asMap["main"]!!.allSource.files.filter { it.isKotlinFile(sourceFilesExtensions = listOf("kt")) }.toSet()
+    get() = mySourceSets.asMap["main"]!!.allSource.files.toKotlinFilesSet(listOf("kt"))
+
+internal val Project.myIntrospectSourceSetName: String
+    get() = "IntrospectSourceSet"
+
+internal val Project.myIntrospectSourceSet: Set<File>
+    get() = myExtByName<List<File>>(myIntrospectSourceSetName).toKotlinFilesSet(listOf("kt"))

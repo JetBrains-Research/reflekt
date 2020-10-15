@@ -2,7 +2,9 @@ package io.reflekt.plugin
 
 import io.reflekt.plugin.dsl.reflekt
 import io.reflekt.plugin.tasks.GenerateReflektResolver
+import io.reflekt.plugin.utils.file.FileUtil.extractAllFiles
 import io.reflekt.plugin.utils.kotlin
+import io.reflekt.plugin.utils.myIntrospectSourceSetName
 import io.reflekt.plugin.utils.mySourceSets
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,6 +18,7 @@ class ReflektPlugin : Plugin<Project> {
                 target.mySourceSets.apply {
                     this["main"].kotlin.srcDir(reflekt.generationPathOrDefault(target))
                 }
+                target.extensions.add(target.myIntrospectSourceSetName, getFilesToIntrospect(getJarFilesToIntrospect(target)))
             }
 
             val generate = tasks.create("reflekt", GenerateReflektResolver::class.java)
@@ -23,7 +26,15 @@ class ReflektPlugin : Plugin<Project> {
         }
     }
 
-    private fun getFilesToIntrospect(target: Project): Set<File> {
+    private fun getFilesToIntrospect(jarFiles: Set<File>): List<File> {
+        val files: MutableList<File> = ArrayList()
+        jarFiles.forEach {
+            files.addAll(extractAllFiles(it))
+        }
+        return files
+    }
+
+    private fun getJarFilesToIntrospect(target: Project): Set<File> {
         val filesToIntrospect: MutableSet<File> = HashSet()
         target.configurations.forEach { configuration ->
             val filtered = configuration.dependencies
