@@ -7,6 +7,7 @@ import io.reflekt.plugin.utils.mySourceSets
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.get
+import java.io.File
 
 class ReflektPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -20,5 +21,15 @@ class ReflektPlugin : Plugin<Project> {
             val generate = tasks.create("reflekt", GenerateReflektResolver::class.java)
             tasks.getByName("classes").dependsOn(generate)
         }
+    }
+
+    private fun getFilesToIntrospect(target: Project): Set<File> {
+        val filesToIntrospect: MutableSet<File> = HashSet()
+        target.configurations.forEach { configuration ->
+            val filtered = configuration.dependencies
+                .filter { "${it.group}:${it.name}:${it.version}" in reflekt.librariesToIntrospect }
+            filesToIntrospect.addAll(configuration.files(*filtered.toTypedArray()))
+        }
+        return filesToIntrospect
     }
 }
