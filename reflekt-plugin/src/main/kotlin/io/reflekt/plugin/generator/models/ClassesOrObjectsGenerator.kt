@@ -41,8 +41,8 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) 
     /*
     * Get something like this: setOf("invokes[0]", "invokes[1]" ...) -> listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
     * */
-    private fun getWhenOption(invokes: Set<String>, rightPart: CodeBlock, ind: String = indent): String {
-        return "${ind}setOf(${invokes.joinToString(separator = ", ") { "\"${it}\"" }}) -> $rightPart"
+    private fun getWhenOption(invokes: Set<String>, rightPart: CodeBlock): String {
+        return "setOf(${invokes.joinToString(separator = ", ") { "\"${it}\"" }}) -> $rightPart"
     }
 
     private fun <T> generateWhenBody(uses: Iterable<T>, conditionVariable: String, mainFunction: (T) -> String, toAddReturn: Boolean = true): CodeBlock.Builder {
@@ -50,13 +50,13 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) 
         if (toAddReturn) {
             builder.add("return ")
         }
-        builder.add("when(%N) {\n", conditionVariable)
+        builder.beginControlFlow("when(%N) {", conditionVariable)
         uses.forEach{
             // TODO: what should I do with indents?? Is it a normal way??
             builder.add(mainFunction(it))
         }
-        builder.add("${indent}else -> error(%S)", UNKNOWN_FQ_NAME)
-        builder.add("\n}")
+        builder.add("else -> error(%S)", UNKNOWN_FQ_NAME)
+        builder.endControlFlow()
         return builder
     }
 
