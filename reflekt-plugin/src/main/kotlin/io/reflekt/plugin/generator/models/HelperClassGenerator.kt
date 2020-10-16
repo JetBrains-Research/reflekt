@@ -84,6 +84,8 @@ abstract class HelperClassGenerator : ClassGenerator() {
         const val ANNOTATION_FQ_NAMES = "annotationFqNames"
         const val SUBTYPE_FQ_NAMES = "subtypeFqNames"
 
+        const val UNKNOWN_FQ_NAME = "Unknown fully qualified names set"
+
         val SET_OF_STRINGS = Set::class.parameterizedBy(String::class)
     }
 }

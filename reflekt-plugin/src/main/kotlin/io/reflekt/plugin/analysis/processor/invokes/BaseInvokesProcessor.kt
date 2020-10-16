@@ -29,7 +29,7 @@ abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingC
         val annotations = HashSet<String>()
 
         for (node in nodes) {
-            val callExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CALL_EXPRESSION.value } ?: continue
+            val callExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CallExpression.value } ?: continue
             when(node.text) {
                 ReflektFunctionsNames.WITH_SUBTYPE.functionName -> callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
                 ReflektFunctionsNames.WITH_SUBTYPES.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { subtypes.addAll(it) }
@@ -37,7 +37,7 @@ abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingC
                 else -> error("Found an unexpected node text: ${node.text}")
             }
         }
-        if (subtypes.size == 0) {
+        if (subtypes.isEmpty()) {
             subtypes.add(Any::class.qualifiedName!!)
         }
         return SubTypesToAnnotations(subtypes, annotations)
@@ -53,7 +53,7 @@ abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingC
              * and find the root of the nested DOT_QUALIFIED_EXPRESSION nodes
              */
             val callExpressionRoot = expression.node.parents().first()
-            callExpressionRoot.findLastParentByType(ElementType.DOT_QUALIFIED_EXPRESSION)?.let { node ->
+            callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
                 /*
                  * Now we should find all current withSubTypes and withAnnotations invokes
                  */

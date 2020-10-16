@@ -1,27 +1,29 @@
 package io.reflekt.plugin.generator
 
 import com.squareup.kotlinpoet.ClassName
+import io.reflekt.plugin.analysis.ReflektUses
 import io.reflekt.plugin.generator.models.*
 
-class ReflektImplGenerator : FileGenerator() {
+class ReflektImplGenerator(private val uses: ReflektUses) : FileGenerator() {
     override val packageName = "io.reflekt"
     override val fileName = "ReflektImpl"
 
     override fun generateImpl() {
-        addTypes(ReflektImplClassGenerator(packageName, fileName).generate())
+        addTypes(ReflektImplClassGenerator(packageName, fileName, uses).generate())
     }
 
     private class ReflektImplClassGenerator(
         packageName: String,
-        fileName: String
+        fileName: String,
+        private val uses: ReflektUses
     ) : ObjectGenerator() {
         override val typeName = ClassName(packageName, fileName)
 
         override fun generateImpl() {
             val innerGenerators = listOf(
-                ObjectsGenerator(typeName),
-                ClassesGenerator(typeName),
-                FunctionsGenerator(typeName)
+                ObjectsGenerator(typeName, uses.objects),
+                ClassesGenerator(typeName, uses.classes),
+                FunctionsGenerator(typeName, uses.functions)
             )
 
             addFunctions(innerGenerators.map {
