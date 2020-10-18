@@ -1,12 +1,15 @@
 package io.reflekt.plugin.generator
 
 import com.squareup.kotlinpoet.*
-import io.reflekt.plugin.analysis.ClassOrObjectUses
-import io.reflekt.plugin.analysis.SubTypesToAnnotations
 
-fun singleLineCode(format: String, vararg args: Any?): CodeBlock = CodeBlock.of("$format\n", *args)
+fun statement(format: String, vararg args: Any?): CodeBlock = CodeBlock.builder().addStatement(format, *args).build()
 
-fun notImplementedError(): CodeBlock = singleLineCode("error(%S)", "Not implemented")
+fun controlFlow(code: CodeBlock, format: String, vararg args: Any?): CodeBlock =
+    CodeBlock.builder().beginControlFlow(format, *args).add(code).endControlFlow().build()
+
+fun wrappedCode(code: CodeBlock): CodeBlock = controlFlow(code, "")
+
+fun notImplementedError(): CodeBlock = statement("error(%S)", "Not implemented")
 
 fun Map<String, TypeName>.toParameterSpecs(): List<ParameterSpec> = entries.map { ParameterSpec(it.key, it.value) }
 

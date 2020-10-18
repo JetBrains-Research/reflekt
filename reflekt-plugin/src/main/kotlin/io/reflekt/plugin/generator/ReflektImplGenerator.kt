@@ -29,7 +29,7 @@ class ReflektImplGenerator(private val uses: ReflektUses) : FileGenerator() {
             addFunctions(innerGenerators.map {
                 generateFunction(
                     name = it.typeName.simpleName.decapitalize(),
-                    body = singleLineCode("return %T()", it.typeName)
+                    body = statement("return %T()", it.typeName)
                 )
             })
             addNestedTypes(innerGenerators.map { it.generate() })

@@ -6,7 +6,6 @@ import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asClassName
 import io.reflekt.plugin.analysis.FunctionUses
 import io.reflekt.plugin.generator.notImplementedError
-import io.reflekt.plugin.generator.singleLineCode
 import kotlin.reflect.KFunction
 
 class FunctionsGenerator(enclosingClassName: ClassName, uses: FunctionUses) : HelperClassGenerator() {

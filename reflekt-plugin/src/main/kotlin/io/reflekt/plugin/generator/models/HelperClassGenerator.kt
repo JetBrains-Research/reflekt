@@ -3,7 +3,7 @@ package io.reflekt.plugin.generator.models
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import io.reflekt.plugin.generator.generateFunction
-import io.reflekt.plugin.generator.singleLineCode
+import io.reflekt.plugin.generator.statement
 import io.reflekt.plugin.generator.toParameterSpecs
 
 abstract class HelperClassGenerator : ClassGenerator() {
@@ -11,14 +11,14 @@ abstract class HelperClassGenerator : ClassGenerator() {
     abstract val returnParameter: TypeName
 
     open val withSubTypesFunctionBody: CodeBlock
-        get() = singleLineCode(
+        get() = statement(
             "return %T(%N)",
             typeName.nestedClass(WITH_SUBTYPES_CLASS_NAME).parameterizedBy(typeVariable),
             FQ_NAMES
         )
 
     open val withAnnotationsFunctionBody: CodeBlock
-        get() = singleLineCode(
+        get() = statement(
             "return %T(%N, %N)",
             typeName.nestedClass(WITH_ANNOTATIONS_CLASS_NAME).parameterizedBy(typeVariable),
             ANNOTATION_FQ_NAMES,
