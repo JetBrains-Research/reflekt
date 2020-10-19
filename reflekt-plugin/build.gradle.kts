@@ -4,6 +4,11 @@ import tanvd.kosogor.proxy.publishPlugin
 group = rootProject.group
 version = rootProject.version
 
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
 dependencies {
     api(project(":reflekt"))
 
@@ -13,6 +18,7 @@ dependencies {
     implementation(gradleKotlinDsl())
     implementation(kotlin("gradle-plugin-api"))
 
+    implementation("com.squareup", "kotlinpoet", "1.6.0")
 }
 
 publishPlugin {
