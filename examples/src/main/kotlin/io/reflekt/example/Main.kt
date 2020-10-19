@@ -27,6 +27,11 @@ fun main() {
     val objects5 = Reflekt.objects().withAnnotations<AInterface>(FirstAnnotation::class)
     val objects6 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSubType<AInterface>()
     val objects7 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSubTypes(AInterface::class)
+    val objects8 = Reflekt.objects().withSubType<AInterface>()
+
+    val classes1 = Reflekt.classes().withSubType<AInterface>()
+    val classes2 = Reflekt.classes().withSubType<BInterface>()
+    val classes3 = Reflekt.classes().withAnnotations<B2>(FirstAnnotation::class, SecondAnnotation::class)
 
     val functions = Reflekt.functions().withAnnotations<Unit>(FirstAnnotation::class)
 }
