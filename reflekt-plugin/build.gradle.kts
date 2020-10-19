@@ -4,6 +4,11 @@ import tanvd.kosogor.proxy.publishPlugin
 group = rootProject.group
 version = rootProject.version
 
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
 dependencies {
     api(project(":reflekt"))
 
@@ -14,7 +19,6 @@ dependencies {
     implementation(kotlin("gradle-plugin-api"))
 
     implementation("net.lingala.zip4j", "zip4j", "2.6.1")
-
 }
 
 publishPlugin {

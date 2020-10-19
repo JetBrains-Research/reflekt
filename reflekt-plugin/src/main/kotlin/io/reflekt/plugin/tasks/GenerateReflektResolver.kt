@@ -1,8 +1,8 @@
 package io.reflekt.plugin.tasks
 
 import io.reflekt.plugin.analysis.ReflektAnalyzer
-import io.reflekt.plugin.generator.getWhenBodyForInvokes
 import io.reflekt.plugin.dsl.reflekt
+import io.reflekt.plugin.generator.ReflektImplGenerator
 import io.reflekt.plugin.utils.Groups
 import io.reflekt.plugin.utils.compiler.EnvironmentManager
 import io.reflekt.plugin.utils.compiler.ParseUtil
@@ -39,7 +39,8 @@ open class GenerateReflektResolver : DefaultTask() {
 
         val analyzer = ReflektAnalyzer(ktFiles, resolved.bindingContext)
         val invokes = analyzer.invokes()
-        val uses = analyzer.uses(invokes)
+        // TODO implements uses processors
+        // val uses = analyzer.uses(invokes)
 
         // TODO: use info from [uses] for generating ReflektImpl.kt
 
@@ -47,58 +48,8 @@ open class GenerateReflektResolver : DefaultTask() {
             delete()
             parentFile.mkdirs()
             writeText(
-                //language=kotlin
-                """
-                    package io.reflekt
-                    
-                    import kotlin.reflect.KClass
-                    
-                    object ReflektImpl {
-                        class Objects {
-                            fun <T> withSubType(fqName: String) = Objects.WithSubType<T>(fqName)
-                    
-                            class WithSubType<T>(val fqName: String) {
-                                fun toList(): List<T> = when(fqName) {
-                                    else -> error("Unknown fqName")
-                                }
-                                fun toSet(): Set<T> = toList().toSet()
-                                
-                                class WithAnnotation<T>(private val fqName: String, val withSubtypeFqName: String) {
-                                    fun toList(): List<T> = when(withSubtypeFqName) {
-                                        else -> error("Unknown fqName")
-                                    }
-                                    fun toSet(): Set<T> = toList().toSet()
-                                }
-                    
-                                fun <T> withAnnotation(fqName: String, withSubtypeFqName: String) = WithAnnotation<T>(fqName, withSubtypeFqName)
-                            }
-                        }
-                    
-                        class Classes {
-                            fun <T: Any> withSubType(fqName: String) = Classes.WithSubType<T>(fqName)
-                    
-                            class WithSubType<T: Any>(val fqName: String) {
-                                fun toList(): List<KClass<T>> = when(fqName) {
-                                    else -> error("Unknown fqName")
-                                }
-                                fun toSet(): Set<KClass<T>> = toList().toSet()
-                                
-                                class WithAnnotation<T: Annotation>(private val fqName: String, val withSubtypeFqName: String) {
-                                    fun toList(): List<KClass<T>> = when(withSubtypeFqName) {
-                                        else -> error("Unknown fqName")
-                                    }
-                                    fun toSet(): Set<KClass<T>> = toList().toSet()
-                                }
-                    
-                                fun <T: Annotation> withAnnotation(fqName: String, withSubtypeFqName: String) = WithAnnotation<T>(fqName, withSubtypeFqName)
-                            }
-                        }
-                    
-                        fun objects() = Objects()
-                    
-                        fun classes() = Classes()
-                    }
-                """.trimIndent()
+                // TODO-isomethane use analyzer
+                ReflektImplGenerator().generate()
             )
         }
     }
