@@ -16,3 +16,12 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("io.reflekt", "reflekt", "0.1.0")
 }
+
+tasks {
+    compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+}
