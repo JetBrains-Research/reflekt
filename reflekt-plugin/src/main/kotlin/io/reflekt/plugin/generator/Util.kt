@@ -8,6 +8,8 @@ fun singleLineCode(format: String, vararg args: Any?): CodeBlock = CodeBlock.of(
 
 fun notImplementedError(): CodeBlock = singleLineCode("error(%S)", "Not implemented")
 
+fun emptyListCode(): CodeBlock = singleLineCode("emptyList()")
+
 fun Map<String, TypeName>.toParameterSpecs(): List<ParameterSpec> = entries.map { ParameterSpec(it.key, it.value) }
 
 fun generateFunction(
@@ -37,4 +39,4 @@ private fun FunSpec.Builder.generateBody(
     return build()
 }
 
-fun addSuffix(str: String, suffix: String = ""): String = "${str}$suffix"
+fun addSuffix(str: String, suffix: String = ""): String = "$str$suffix"
