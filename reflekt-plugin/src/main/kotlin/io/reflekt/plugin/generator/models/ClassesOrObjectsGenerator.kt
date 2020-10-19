@@ -5,7 +5,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asClassName
 import io.reflekt.plugin.analysis.ClassOrObjectUses
-import io.reflekt.plugin.generator.notImplementedError
+import io.reflekt.plugin.generator.emptyListCode
 import kotlin.reflect.KClass
 
 abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) : HelperClassGenerator() {
@@ -18,7 +18,7 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) 
                 // Get item without annotations
                 uses[emptySet()]?.let {
                     generateWhenBody(it, FQ_NAMES)
-                } ?: notImplementedError()
+                } ?: emptyListCode()
             }
         }.generate())
 

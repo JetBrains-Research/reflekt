@@ -11,6 +11,8 @@ fun wrappedCode(code: CodeBlock): CodeBlock = controlFlow(code, "")
 
 fun notImplementedError(): CodeBlock = statement("error(%S)", "Not implemented")
 
+fun emptyListCode(): CodeBlock = statement("emptyList()")
+
 fun Map<String, TypeName>.toParameterSpecs(): List<ParameterSpec> = entries.map { ParameterSpec(it.key, it.value) }
 
 fun generateFunction(
@@ -40,4 +42,4 @@ private fun FunSpec.Builder.generateBody(
     return build()
 }
 
-fun addSuffix(str: String, suffix: String = ""): String = "${str}$suffix"
+fun addSuffix(str: String, suffix: String = ""): String = "$str$suffix"
