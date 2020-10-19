@@ -40,14 +40,12 @@ open class GenerateReflektResolver : DefaultTask() {
 
         val analyzer = ReflektAnalyzer(ktFiles, resolved.bindingContext)
         val invokes = analyzer.invokes()
-        // TODO implements uses processors
-         val uses = analyzer.uses(invokes)
+        val uses = analyzer.uses(invokes)
 
         with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
             delete()
             parentFile.mkdirs()
             writeText(
-                // TODO-isomethane use analyzer
                 ReflektImplGenerator(uses).generate()
             )
         }

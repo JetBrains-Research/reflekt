@@ -2,13 +2,13 @@ package io.reflekt.plugin.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import io.reflekt.plugin.generator.generateFunction
-import io.reflekt.plugin.generator.statement
-import io.reflekt.plugin.generator.toParameterSpecs
+import io.reflekt.plugin.analysis.ClassOrObjectUses
+import io.reflekt.plugin.generator.*
 
 abstract class HelperClassGenerator : ClassGenerator() {
     abstract val typeVariable: TypeVariableName
     abstract val returnParameter: TypeName
+    protected open val typeSuffix: String = ""
 
     open val withSubTypesFunctionBody: CodeBlock
         get() = statement(
@@ -72,6 +72,44 @@ abstract class HelperClassGenerator : ClassGenerator() {
         parameters = this.withAnnotationsParameters,
         returnParameter = this.returnParameter
     )
+
+    protected open fun listOfWhenRightPart(uses: List<String>) = statement(" listOf(${uses.joinToString(separator = ", ") { "${addSuffix(it, typeSuffix)} as %T" }})", *(MutableList(uses.size) { returnParameter }).toTypedArray())
+
+    /*
+     * Get something like this: setOf("invokes[0]", "invokes[1]" ...) -> listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
+     * */
+    protected fun getWhenOption(invokes: Set<String>, rightPart: CodeBlock): CodeBlock {
+        return CodeBlock.builder()
+            .add("setOf(${invokes.joinToString(separator = ", ") { "\"$it\"" }}) ->")
+            .add(rightPart)
+            .build()
+    }
+
+    protected fun <T> generateWhenBody(uses: Iterable<T>, conditionVariable: String, mainFunction: (T) -> CodeBlock, toAddReturn: Boolean = true): CodeBlock {
+        val builder = CodeBlock.builder()
+        if (toAddReturn) {
+            builder.add("return ")
+        }
+        builder.beginControlFlow("when (%N)", conditionVariable)
+        uses.forEach{
+            builder.add(mainFunction(it))
+        }
+        builder.addStatement("else -> error(%S)", UNKNOWN_FQ_NAME)
+        builder.endControlFlow()
+        return builder.build()
+    }
+
+    protected fun generateWhenBody(uses: Map<Set<String>, List<String>>, conditionVariable: String, toAddReturn: Boolean = true): CodeBlock {
+        val mainFunction = { (k, v): Map.Entry<Set<String>, List<String>> -> getWhenOption(k, listOfWhenRightPart(v)) }
+        return generateWhenBody(uses.asIterable(), conditionVariable, mainFunction, toAddReturn)
+    }
+
+    protected fun generateNestedWhenBody(uses: ClassOrObjectUses, annotationFqNames: String, subtypeFqNames: String): CodeBlock {
+        val mainFunction = { o: Map.Entry<Set<String>, Map<Set<String>, List<String>>> ->
+            getWhenOption(o.key, wrappedCode(generateWhenBody(o.value, subtypeFqNames, false)))
+        }
+        return generateWhenBody(uses.asIterable(), annotationFqNames, mainFunction)
+    }
 
     protected companion object {
         const val WITH_SUBTYPES_FUNCTION_NAME = "withSubTypes"
