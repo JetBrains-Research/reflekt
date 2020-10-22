@@ -9,27 +9,23 @@ class ReflektImplGenerator(private val uses: ReflektUses) : FileGenerator() {
     override val fileName = "ReflektImpl"
 
     override fun generateImpl() {
-        addTypes(ReflektImplClassGenerator(packageName, fileName, uses).generate())
+        addTypes(ReflektImplClassGenerator().generate())
     }
 
-    private class ReflektImplClassGenerator(
-        packageName: String,
-        fileName: String,
-        private val uses: ReflektUses
-    ) : ObjectGenerator() {
+    private inner class ReflektImplClassGenerator : ObjectGenerator() {
         override val typeName = ClassName(packageName, fileName)
 
         override fun generateImpl() {
             val innerGenerators = listOf(
                 ObjectsGenerator(typeName, uses.objects),
                 ClassesGenerator(typeName, uses.classes),
-                FunctionsGenerator(typeName, uses.functions)
+                FunctionsGenerator(typeName, uses.functions, this@ReflektImplGenerator)
             )
 
             addFunctions(innerGenerators.map {
                 generateFunction(
                     name = it.typeName.simpleName.decapitalize(),
-                    body = singleLineCode("return %T()", it.typeName)
+                    body = statement("return %T()", it.typeName)
                 )
             })
             addNestedTypes(innerGenerators.map { it.generate() })

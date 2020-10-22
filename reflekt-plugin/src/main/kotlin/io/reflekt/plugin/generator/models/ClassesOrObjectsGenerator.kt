@@ -1,19 +1,14 @@
 package io.reflekt.plugin.generator.models
 
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asClassName
 import io.reflekt.plugin.analysis.ClassOrObjectUses
-import io.reflekt.plugin.generator.addSuffix
 import io.reflekt.plugin.generator.emptyListCode
-import io.reflekt.plugin.generator.singleLineCode
 import kotlin.reflect.KClass
 
 abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) : HelperClassGenerator() {
-    protected open val typeSuffix: String = ""
-
     override fun generateImpl() {
         generateWithSubTypesFunction()
         generateWithAnnotationsFunction()
@@ -22,7 +17,7 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) 
             override val toListFunctionBody = run {
                 // Get item without annotations
                 uses[emptySet()]?.let {
-                    generateWhenBody(it, FQ_NAMES).build()
+                    generateWhenBody(it, FQ_NAMES)
                 } ?: emptyListCode()
             }
         }.generate())
@@ -30,47 +25,9 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) 
         addNestedTypes(object : WithAnnotationsGenerator() {
             override val toListFunctionBody = run {
                 // Delete items which don't have annotations
-                val filtered = uses.filter { it.key.isNotEmpty() } as ClassOrObjectUses
-                if (uses.isEmpty()) {
-                    emptyListCode()
-                } else {
-                    generateNestedWhenBody(filtered, ANNOTATION_FQ_NAMES, SUBTYPE_FQ_NAMES).build()
-                }
+                generateNestedWhenBody(uses.filter { it.key.isNotEmpty() } as ClassOrObjectUses, ANNOTATION_FQ_NAMES, SUBTYPE_FQ_NAMES)
             }
         }.generate())
-    }
-
-    private fun listOfWhenRightPart(uses: List<String>) = singleLineCode("listOf(${uses.joinToString(separator = ", ") { "${addSuffix(it, typeSuffix)} as %T" }})", *(MutableList(uses.size) { returnParameter }).toTypedArray())
-
-    /*
-    * Get something like this: setOf("invokes[0]", "invokes[1]" ...) -> listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
-    * */
-    private fun getWhenOption(invokes: Set<String>, rightPart: CodeBlock): String {
-        return "setOf(${invokes.joinToString(separator = ", ") { "\"${it}\"" }}) -> $rightPart"
-    }
-
-    private fun <T> generateWhenBody(uses: Iterable<T>, conditionVariable: String, generateBranchForWhenOption: (T) -> String, toAddReturn: Boolean = true): CodeBlock.Builder {
-        val builder = CodeBlock.builder()
-        if (toAddReturn) {
-            builder.add("return ")
-        }
-        builder.beginControlFlow("when(%N) {", conditionVariable)
-        uses.forEach{
-            builder.add(generateBranchForWhenOption(it))
-        }
-        builder.add("else -> error(%S)", UNKNOWN_FQ_NAME)
-        builder.endControlFlow()
-        return builder
-    }
-
-    private fun generateWhenBody(uses: Map<Set<String>, List<String>>, conditionVariable: String, toAddReturn: Boolean = true): CodeBlock.Builder {
-        val generateBranchForWhenOption = { (k, v): Map.Entry<Set<String>, List<String>> -> getWhenOption(k, listOfWhenRightPart(v)) }
-        return generateWhenBody(uses.asIterable(), conditionVariable, generateBranchForWhenOption, toAddReturn)
-    }
-
-    private fun generateNestedWhenBody(uses: ClassOrObjectUses, annotationFqNames: String, subtypeFqNames: String): CodeBlock.Builder {
-        val generateBranchForWhenOption = { o: Map.Entry<Set<String>, Map<Set<String>, List<String>>> -> getWhenOption(o.key, CodeBlock.builder().add("{\n${generateWhenBody(o.value, subtypeFqNames, false).build()}\n}\n").build()) }
-        return generateWhenBody(uses.asIterable(), annotationFqNames, generateBranchForWhenOption)
     }
 }
 

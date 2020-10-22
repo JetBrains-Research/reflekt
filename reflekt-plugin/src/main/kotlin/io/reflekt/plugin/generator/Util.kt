@@ -1,14 +1,19 @@
 package io.reflekt.plugin.generator
 
 import com.squareup.kotlinpoet.*
-import io.reflekt.plugin.analysis.ClassOrObjectUses
-import io.reflekt.plugin.analysis.SubTypesToAnnotations
 
-fun singleLineCode(format: String, vararg args: Any?): CodeBlock = CodeBlock.of("$format\n", *args)
+fun statement(format: String, args: List<Any>): CodeBlock = statement(format, *args.toTypedArray())
 
-fun notImplementedError(): CodeBlock = singleLineCode("error(%S)", "Not implemented")
+fun statement(format: String, vararg args: Any?): CodeBlock = CodeBlock.builder().addStatement(format, *args).build()
 
-fun emptyListCode(): CodeBlock = singleLineCode("emptyList()")
+fun controlFlow(code: CodeBlock, format: String, vararg args: Any?): CodeBlock =
+    CodeBlock.builder().beginControlFlow(format, *args).add(code).endControlFlow().build()
+
+fun wrappedCode(code: CodeBlock): CodeBlock = controlFlow(code, "{")
+
+fun notImplementedError(): CodeBlock = statement("error(%S)", "Not implemented")
+
+fun emptyListCode(): CodeBlock = statement("emptyList()")
 
 fun Map<String, TypeName>.toParameterSpecs(): List<ParameterSpec> = entries.map { ParameterSpec(it.key, it.value) }
 
@@ -38,5 +43,3 @@ private fun FunSpec.Builder.generateBody(
     returnType?.let { returns(it) }
     return build()
 }
-
-fun addSuffix(str: String, suffix: String = ""): String = "$str$suffix"

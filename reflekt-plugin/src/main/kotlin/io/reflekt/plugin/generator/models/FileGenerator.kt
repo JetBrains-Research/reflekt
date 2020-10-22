@@ -2,11 +2,13 @@ package io.reflekt.plugin.generator.models
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.TypeSpec
 
 abstract class FileGenerator : Generator<String>() {
     protected abstract val packageName: String
     protected abstract val fileName: String
+    private val aliases: MutableMap<String, Int> = HashMap()
 
     companion object {
         var indent: String = " ".repeat(4)
@@ -34,5 +36,17 @@ abstract class FileGenerator : Generator<String>() {
         for (function in functions) {
             builder.addFunction(function)
         }
+    }
+
+    fun addUniqueAliasedImport(memberName: MemberName): String {
+        val index = aliases.getOrPut(memberName.simpleName, { 1 })
+        val alias = "${memberName.simpleName}N$index"
+        aliases[memberName.simpleName] = index + 1
+        addAliasedImport(memberName, alias)
+        return alias
+    }
+
+    private fun addAliasedImport(memberName: MemberName, `as`: String) {
+        builder.addAliasedImport(memberName, `as`);
     }
 }
