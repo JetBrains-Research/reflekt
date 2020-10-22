@@ -5,6 +5,7 @@ import io.reflekt.util.FileUtil
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
 
 @AutoService(ComponentRegistrar::class)
@@ -17,9 +18,11 @@ class ReflektComponentRegistrar : ComponentRegistrar {
             return
         }
         val filesToIntrospect = getFilesToIntrospect(configuration[KEY_JAR_FILES])
-        val srcFiles = project.baseDir?.path?.let { FileUtil.getNestedFiles(it) } ?: emptyList()
 
-
+        AnalysisHandlerExtension.registerExtension(
+            project,
+            ReflektAnalysisExtension(filesToIntrospect = filesToIntrospect)
+        )
         // TODO: registerExtension
     }
 
