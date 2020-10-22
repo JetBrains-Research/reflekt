@@ -33,12 +33,12 @@ abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingC
             when(node.text) {
                 ReflektFunctionsNames.WITH_SUBTYPE.functionName -> callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
                 ReflektFunctionsNames.WITH_SUBTYPES.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { subtypes.addAll(it) }
-                ReflektFunctionsNames.WITH_ANNOTATIONS.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
+                ReflektFunctionsNames.WITH_ANNOTATIONS.functionName -> {
+                    callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
+                    callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
+                }
                 else -> error("Found an unexpected node text: ${node.text}")
             }
-        }
-        if (subtypes.isEmpty()) {
-            subtypes.add(Any::class.qualifiedName!!)
         }
         return SubTypesToAnnotations(subtypes, annotations)
     }
