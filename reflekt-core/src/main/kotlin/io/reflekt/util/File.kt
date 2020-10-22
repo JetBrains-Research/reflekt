@@ -1,18 +1,13 @@
-package io.reflekt.plugin.util
+package io.reflekt.util
 
 import net.lingala.zip4j.ZipFile
-import org.jetbrains.kotlin.incremental.isKotlinFile
 import java.io.File
 
 object FileUtil {
 
     fun extractAllFiles(zipFile: File): List<File> = getNestedFiles(unZipFile(zipFile))
 
-    private fun List<File>.toKotlinFilesSet(extensions: List<String>): Set<File> = this.filter { it.isKotlinFile(sourceFilesExtensions = extensions) }.toSet()
-
-    fun Set<File>.toKotlinFilesSet(extensions: List<String>): Set<File> = this.toList().toKotlinFilesSet(extensions)
-
-    private fun getNestedFiles(rootPath: String, files: MutableList<File> = ArrayList()): List<File> {
+    fun getNestedFiles(rootPath: String, files: MutableList<File> = ArrayList()): List<File> {
         val root = File(rootPath)
         root.listFiles()?.forEach {
             if (it.isFile) {

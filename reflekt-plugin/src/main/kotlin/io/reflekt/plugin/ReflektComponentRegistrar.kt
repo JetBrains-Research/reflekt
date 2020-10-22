@@ -1,7 +1,7 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
-import io.reflekt.plugin.util.FileUtil
+import io.reflekt.util.FileUtil
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
@@ -17,8 +17,8 @@ class ReflektComponentRegistrar : ComponentRegistrar {
             return
         }
         val filesToIntrospect = getFilesToIntrospect(configuration[KEY_JAR_FILES])
+        val srcFiles = project.baseDir?.path?.let { FileUtil.getNestedFiles(it) } ?: emptyList()
 
-//        project.baseDir
 
         // TODO: registerExtension
     }

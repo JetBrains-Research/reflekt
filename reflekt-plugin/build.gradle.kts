@@ -1,12 +1,18 @@
 group = rootProject.group
 version = rootProject.version
 
+plugins {
+    kotlin("jvm")
+    kotlin("kapt")
+}
+
 repositories {
     mavenCentral()
     jcenter()
 }
 
 dependencies {
+    implementation(kotlin("stdlib"))
     implementation(kotlin("compiler-embeddable"))
     implementation(gradleKotlinDsl())
     implementation(kotlin("gradle-plugin-api"))

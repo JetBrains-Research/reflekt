@@ -1,7 +1,7 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
-import io.reflekt.plugin.util.FileUtil.extractAllFiles
+import io.reflekt.util.FileUtil.extractAllFiles
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.AbstractCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
