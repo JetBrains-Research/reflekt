@@ -1,6 +1,8 @@
 package io.reflekt.plugin.tasks
 
 import io.reflekt.plugin.analysis.ReflektAnalyzer
+import io.reflekt.plugin.analysis.ReflektUses
+import io.reflekt.plugin.analysis.SubTypesToAnnotations
 import io.reflekt.plugin.dsl.reflekt
 import io.reflekt.plugin.generator.ReflektImplGenerator
 import io.reflekt.plugin.utils.Groups
@@ -38,17 +40,13 @@ open class GenerateReflektResolver : DefaultTask() {
 
         val analyzer = ReflektAnalyzer(ktFiles, resolved.bindingContext)
         val invokes = analyzer.invokes()
-        // TODO implements uses processors
-        // val uses = analyzer.uses(invokes)
-
-        // TODO: use info from [uses] for generating ReflektImpl.kt
+        val uses = analyzer.uses(invokes)
 
         with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
             delete()
             parentFile.mkdirs()
             writeText(
-                // TODO-isomethane use analyzer
-                ReflektImplGenerator().generate()
+                ReflektImplGenerator(uses).generate()
             )
         }
     }

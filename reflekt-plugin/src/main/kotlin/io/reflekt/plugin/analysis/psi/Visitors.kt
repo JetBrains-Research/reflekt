@@ -17,6 +17,11 @@ fun KtElement.visit(processors: Set<Processor<*>>) {
             super.visitClass(klass)
         }
 
+        override fun visitNamedFunction(function: KtNamedFunction) {
+            processors.filter { it.shouldRunOn(function) }.forEach { it.process(function) }
+            super.visitNamedFunction(function)
+        }
+
         override fun visitReferenceExpression(expression: KtReferenceExpression) {
             processors.filter { it.shouldRunOn(expression) }.forEach { it.process(expression) }
             super.visitReferenceExpression(expression)

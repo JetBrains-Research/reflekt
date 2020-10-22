@@ -1,13 +1,12 @@
 package io.reflekt.plugin.generator.models
 
-import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeVariableName
-import com.squareup.kotlinpoet.asClassName
-import io.reflekt.plugin.generator.singleLineCode
+import io.reflekt.plugin.analysis.FunctionUses
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import kotlin.reflect.KFunction
 
-class FunctionsGenerator(enclosingClassName: ClassName) : HelperClassGenerator() {
+class FunctionsGenerator(enclosingClassName: ClassName, private val uses: FunctionUses, private val fileGenerator: FileGenerator) : HelperClassGenerator() {
     override val typeName: ClassName = enclosingClassName.nestedClass("Functions")
     override val typeVariable = TypeVariableName("T", Any::class)
     override val returnParameter = KFunction::class.asClassName().parameterizedBy(typeVariable)
@@ -16,7 +15,17 @@ class FunctionsGenerator(enclosingClassName: ClassName) : HelperClassGenerator()
         generateWithAnnotationsFunction()
 
         addNestedTypes(object : WithAnnotationsGenerator() {
-            // TODO implement toList()
+            override val toListFunctionBody = generateWhenBody(uses, ANNOTATION_FQ_NAMES, ::functionReference)
         }.generate())
     }
+
+    private fun functionReference(function: KtNamedFunction): String =
+        if (function.isTopLevel) {
+            val packageName = function.fqName!!.parent().toString()
+            val name = function.name!!
+            val memberName = MemberName(packageName, name)
+            "::${fileGenerator.addUniqueAliasedImport(memberName)}"
+        } else {
+            "${function.fqName!!.parent()}::${function.name}"
+        }
 }

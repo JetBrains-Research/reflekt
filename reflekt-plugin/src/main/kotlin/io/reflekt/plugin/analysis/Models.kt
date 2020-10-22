@@ -8,14 +8,14 @@ import io.reflekt.plugin.analysis.processor.uses.BaseUsesProcessor
 import io.reflekt.plugin.analysis.processor.uses.ClassUsesProcessor
 import io.reflekt.plugin.analysis.processor.uses.FunctionUsesProcessor
 import io.reflekt.plugin.analysis.processor.uses.ObjectUsesProcessor
+import org.jetbrains.kotlin.psi.KtNamedFunction
 
 enum class ElementType(val value: String) {
-    TYPE_ARGUMENT_LIST("TYPE_ARGUMENT_LIST"),
-    REFERENCE_EXPRESSION("REFERENCE_EXPRESSION"),
-    CALL_EXPRESSION("CALL_EXPRESSION"),
-    DOT_QUALIFIED_EXPRESSION("DOT_QUALIFIED_EXPRESSION"),
-    VALUE_ARGUMENT_LIST("VALUE_ARGUMENT_LIST"),
-    VALUE_ARGUMENT("VALUE_ARGUMENT")
+    TypeArgumentList("TYPE_ARGUMENT_LIST"),
+    ReferenceExpression("REFERENCE_EXPRESSION"),
+    CallExpression("CALL_EXPRESSION"),
+    DotQualifiedExpression("DOT_QUALIFIED_EXPRESSION"),
+    ValueArgumentList("VALUE_ARGUMENT_LIST")
 }
 
 
@@ -46,8 +46,11 @@ data class ReflektInvokes(
     }
 }
 
-typealias ClassOrObjectUses = MutableMap<SubTypesToAnnotations, Set<String>>
-typealias FunctionUses = MutableMap<SubTypesToAnnotations, Set<String>>
+// We store the following structure:
+// The map, where key is a set of annotationsFqNames, and value is
+// a map, where key is a set of subTypesFqNames, and value is a list of fqNames
+typealias ClassOrObjectUses = MutableMap<Set<String>, MutableMap<Set<String>, MutableList<String>>>
+typealias FunctionUses = MutableMap<Set<String>, MutableList<KtNamedFunction>>
 
 /*
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]

@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import io.reflekt.plugin.generator.generateFunction
 import io.reflekt.plugin.generator.notImplementedError
-import io.reflekt.plugin.generator.singleLineCode
+import io.reflekt.plugin.generator.statement
 import kotlin.reflect.KClass
 
 abstract class SelectorClassGenerator : ClassGenerator() {
@@ -13,7 +13,7 @@ abstract class SelectorClassGenerator : ClassGenerator() {
     protected abstract val parameters: List<ParameterSpec>
 
     protected open val toListFunctionBody = notImplementedError()
-    protected open val toSetFunctionBody = singleLineCode("return toList().toSet()")
+    protected open val toSetFunctionBody = statement("return toList().toSet()")
 
     final override fun initBuilder() {
         super.initBuilder()
