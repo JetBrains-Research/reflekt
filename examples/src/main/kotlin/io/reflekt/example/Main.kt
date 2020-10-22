@@ -4,11 +4,6 @@ import io.reflekt.Reflekt
 
 class Test(var a: List<Any>, b: List<Any>)
 
-@FirstAnnotation
-fun foo() {
-
-}
-
 fun main() {
     val tmp = Test(emptyList(), emptyList())
     tmp.a = listOf(Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface1>(FirstAnnotation::class))
