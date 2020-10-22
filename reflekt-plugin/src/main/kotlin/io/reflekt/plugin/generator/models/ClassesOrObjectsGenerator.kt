@@ -25,7 +25,7 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) 
         addNestedTypes(object : WithAnnotationsGenerator() {
             override val toListFunctionBody = run {
                 // Delete items which don't have annotations
-                generateNestedWhenBody(uses.filter { it.key.isNotEmpty() } as ClassOrObjectUses, ANNOTATION_FQ_NAMES, SUBTYPE_FQ_NAMES)
+                generateNestedWhenBody(uses.filter { it.key.isNotEmpty() }, ANNOTATION_FQ_NAMES, SUBTYPE_FQ_NAMES)
             }
         }.generate())
     }
