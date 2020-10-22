@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
 
-class ReflektAnalysisExtension(private val filesToIntrospect: Set<File>) : AnalysisHandlerExtension {
+class ReflektAnalysisExtension(private val filesToIntrospect: Set<KtFile>) : AnalysisHandlerExtension {
 
     override fun doAnalysis(project: Project,
                             module: ModuleDescriptor,
@@ -19,8 +19,7 @@ class ReflektAnalysisExtension(private val filesToIntrospect: Set<File>) : Analy
                             files: Collection<KtFile>,
                             bindingTrace: BindingTrace,
                             componentProvider: ComponentProvider): AnalysisResult? {
-        // TODO: convert filesToIntrospect into Set<KtFile>
-        val analyzer = ReflektAnalyzer(files.toSet(), bindingTrace.bindingContext)
+        val analyzer = ReflektAnalyzer(files.toSet().union(filesToIntrospect), bindingTrace.bindingContext)
         val invokes = analyzer.invokes()
         val uses = analyzer.uses(invokes)
         println("USES: ${uses}")
