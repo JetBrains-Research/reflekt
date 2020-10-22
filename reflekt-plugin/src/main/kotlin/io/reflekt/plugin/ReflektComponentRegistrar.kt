@@ -18,6 +18,8 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         }
         val filesToIntrospect = getFilesToIntrospect(configuration[KEY_JAR_FILES])
 
+//        project.baseDir
+
         // TODO: registerExtension
     }
 

@@ -24,8 +24,17 @@ dependencies {
     compile(project(":reflekt-core"))
 }
 
+gradlePlugin {
+    plugins {
+        create("Reflekt") {
+            id = "io.reflekt"
+            implementationClass = "io.reflekt.plugin.ReflektPlugin"
+        }
+    }
+}
+
 publishPlugin {
-    id = "reflekt"
+    id = "io.reflekt"
     displayName = "Reflekt"
     implementationClass = "io.reflekt.plugin.ReflektPlugin"
     version = project.version.toString()

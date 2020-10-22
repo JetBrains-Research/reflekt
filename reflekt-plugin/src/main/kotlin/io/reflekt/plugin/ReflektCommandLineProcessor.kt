@@ -22,8 +22,8 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
           description = "whether to enable the debuglog plugin or not"
       ),
       CliOption(
-          optionName = "librariesToIntrospect", valueDescription = "<libraryName>",
-          description = "Paths to libraries to introspect JARS, which are in the project dependencies",
+          optionName = "librariesToIntrospect", valueDescription = "<libraryJar>",
+          description = "Paths to libraries to introspect JARS",
           required = true, allowMultipleOccurrences = true
       )
   )
