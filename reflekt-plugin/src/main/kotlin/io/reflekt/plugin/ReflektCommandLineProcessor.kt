@@ -23,11 +23,11 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
       ),
       CliOption(
           optionName = "librariesToIntrospect", valueDescription = "<libraryName>",
-          description = "Libraries to introspect, which are in the project dependencies in the format: \"\$group:\$name:\$version\"",
+          description = "Paths to libraries to introspect JARS, which are in the project dependencies",
           required = true, allowMultipleOccurrences = true
       )
   )
 }
 
 val KEY_ENABLED = CompilerConfigurationKey<Boolean>("whether the plugin is enabled")
-val KEY_LIBRARIES = CompilerConfigurationKey<List<String>>("libraries to introspect")
+val KEY_JAR_FILES = CompilerConfigurationKey<List<String>>("files to introspect from libraries JARS")

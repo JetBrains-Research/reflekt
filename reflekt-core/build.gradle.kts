@@ -7,10 +7,5 @@ version = rootProject.version
 dependencies {
     api(kotlin("stdlib"))
     api(kotlin("reflect"))
+    implementation("net.lingala.zip4j", "zip4j", "2.6.1")
 }
-
-jar("jar") {
-    this.exclude("io/reflekt/ReflektImpl.class")
-}
-
-publishJar {}
