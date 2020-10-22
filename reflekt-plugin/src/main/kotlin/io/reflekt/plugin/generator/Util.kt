@@ -9,7 +9,7 @@ fun statement(format: String, vararg args: Any?): CodeBlock = CodeBlock.builder(
 fun controlFlow(code: CodeBlock, format: String, vararg args: Any?): CodeBlock =
     CodeBlock.builder().beginControlFlow(format, *args).add(code).endControlFlow().build()
 
-fun wrappedCode(code: CodeBlock): CodeBlock = controlFlow(code, "")
+fun wrappedCode(code: CodeBlock): CodeBlock = controlFlow(code, "{")
 
 fun notImplementedError(): CodeBlock = statement("error(%S)", "Not implemented")
 
