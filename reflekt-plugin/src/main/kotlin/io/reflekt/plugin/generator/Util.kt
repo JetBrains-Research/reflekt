@@ -2,6 +2,8 @@ package io.reflekt.plugin.generator
 
 import com.squareup.kotlinpoet.*
 
+fun statement(format: String, args: List<Any>): CodeBlock = statement(format, *args.toTypedArray())
+
 fun statement(format: String, vararg args: Any?): CodeBlock = CodeBlock.builder().addStatement(format, *args).build()
 
 fun controlFlow(code: CodeBlock, format: String, vararg args: Any?): CodeBlock =
@@ -41,5 +43,3 @@ private fun FunSpec.Builder.generateBody(
     returnType?.let { returns(it) }
     return build()
 }
-
-fun addSuffix(str: String, suffix: String = ""): String = "$str$suffix"

@@ -73,40 +73,43 @@ abstract class HelperClassGenerator : ClassGenerator() {
         returnParameter = this.returnParameter
     )
 
-    protected open fun listOfWhenRightPart(uses: List<String>) = statement(" listOf(${uses.joinToString(separator = ", ") { "${addSuffix(it, typeSuffix)} as %T" }})", *(MutableList(uses.size) { returnParameter }).toTypedArray())
+    private fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String) =
+        statement(" listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)}$typeSuffix as %T" }})", List(uses.size) { returnParameter })
 
     /*
      * Get something like this: setOf("invokes[0]", "invokes[1]" ...) -> listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
      * */
-    protected fun getWhenOption(invokes: Set<String>, rightPart: CodeBlock): CodeBlock {
+    private fun getWhenOption(invokes: Set<String>, rightPart: CodeBlock): CodeBlock {
         return CodeBlock.builder()
             .add("setOf(${invokes.joinToString(separator = ", ") { "\"$it\"" }}) ->")
             .add(rightPart)
             .build()
     }
 
-    protected fun <T> generateWhenBody(uses: Iterable<T>, conditionVariable: String, mainFunction: (T) -> CodeBlock, toAddReturn: Boolean = true): CodeBlock {
+    private fun <T> generateWhenBody(uses: Iterable<T>, conditionVariable: String, generateBranchForWhenOption: (T) -> CodeBlock, toAddReturn: Boolean = true): CodeBlock {
         val builder = CodeBlock.builder()
         if (toAddReturn) {
             builder.add("return ")
         }
         builder.beginControlFlow("when (%N)", conditionVariable)
         uses.forEach{
-            builder.add(mainFunction(it))
+            builder.add(generateBranchForWhenOption(it))
         }
         builder.addStatement("else -> error(%S)", UNKNOWN_FQ_NAME)
         builder.endControlFlow()
         return builder.build()
     }
 
-    protected fun generateWhenBody(uses: Map<Set<String>, List<String>>, conditionVariable: String, toAddReturn: Boolean = true): CodeBlock {
-        val mainFunction = { (k, v): Map.Entry<Set<String>, List<String>> -> getWhenOption(k, listOfWhenRightPart(v)) }
-        return generateWhenBody(uses.asIterable(), conditionVariable, mainFunction, toAddReturn)
+    protected fun <T> generateWhenBody(
+        uses: Map<Set<String>, List<T>>, conditionVariable: String, getEntityName: (T) -> String = { it.toString() }, toAddReturn: Boolean = true
+    ): CodeBlock {
+        val generateBranchForWhenOption = { (k, v): Map.Entry<Set<String>, List<T>> -> getWhenOption(k, listOfWhenRightPart(v, getEntityName)) }
+        return generateWhenBody(uses.asIterable(), conditionVariable, generateBranchForWhenOption, toAddReturn)
     }
 
     protected fun generateNestedWhenBody(uses: ClassOrObjectUses, annotationFqNames: String, subtypeFqNames: String): CodeBlock {
         val mainFunction = { o: Map.Entry<Set<String>, Map<Set<String>, List<String>>> ->
-            getWhenOption(o.key, wrappedCode(generateWhenBody(o.value, subtypeFqNames, false)))
+            getWhenOption(o.key, wrappedCode(generateWhenBody(o.value, subtypeFqNames, toAddReturn = false)))
         }
         return generateWhenBody(uses.asIterable(), annotationFqNames, mainFunction)
     }
