@@ -20,13 +20,13 @@ fun ASTNode.findLastParentByType(elementType: ElementType): ASTNode? {
 fun ASTNode.getFqNamesOf(rootType: ElementType, type: ElementType, binding: BindingContext): List<String> {
     require(this.elementType.toString() == rootType.value) { "Invalid element type ${this.elementType} of the parent node ${this.text}" }
     val typeArgumentNode = this.children().find { it.elementType.toString() == type.value }!!
-    val filtered = typeArgumentNode.filterChildren { n: ASTNode -> n.elementType.toString() == ElementType.REFERENCE_EXPRESSION.value }.toList()
+    val filtered = typeArgumentNode.filterChildren { n: ASTNode -> n.elementType.toString() == ElementType.ReferenceExpression.value }.toList()
     return filtered.mapNotNull { it.psi?.getFqName(binding) }
 }
 
-fun ASTNode.getFqNamesOfTypeArgument(binding: BindingContext) = getFqNamesOf(ElementType.CALL_EXPRESSION, ElementType.TYPE_ARGUMENT_LIST, binding)
+fun ASTNode.getFqNamesOfTypeArgument(binding: BindingContext) = getFqNamesOf(ElementType.CallExpression, ElementType.TypeArgumentList, binding)
 
-fun ASTNode.getFqNamesOfValueArguments(binding: BindingContext) = getFqNamesOf(ElementType.CALL_EXPRESSION, ElementType.VALUE_ARGUMENT_LIST, binding)
+fun ASTNode.getFqNamesOfValueArguments(binding: BindingContext) = getFqNamesOf(ElementType.CallExpression, ElementType.ValueArgumentList, binding)
 
 /*
  * Traverse all children of the node (use BFS order) and return all children nodes which satisfy the filter condition
