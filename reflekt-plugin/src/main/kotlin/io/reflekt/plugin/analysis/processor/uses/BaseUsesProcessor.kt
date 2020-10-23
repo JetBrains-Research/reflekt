@@ -17,9 +17,17 @@ abstract class BaseUsesProcessor<Output : Any>(override val binding: BindingCont
         (element as? KtClassOrObject)?.let {
             invokes.forEach {
                 if (it.covers(element)) {
-                    uses.getOrPut(it.annotations, { HashMap() }).getOrPut(it.subTypes, { ArrayList() }).add(element.fqName!!.asString())
+                    uses.getValue(it.annotations).getValue(it.subTypes).add(element.fqName!!.asString())
                 }
             }
+        }
+        return uses
+    }
+
+    protected fun initClassOrObjectUses(invokes: ClassOrObjectInvokes): ClassOrObjectUses {
+        val uses = invokes.map { it.annotations to HashMap<Set<String>, MutableList<String>>() }.toMap()
+        for (invoke in invokes) {
+            uses.getValue(invoke.annotations)[invoke.subTypes] = ArrayList()
         }
         return uses
     }

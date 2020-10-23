@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class ObjectUsesProcessor(override val binding: BindingContext, private val reflektInvokes: ReflektInvokes) : BaseUsesProcessor<ClassOrObjectUses>(binding) {
-    override val uses: ClassOrObjectUses = HashMap()
+    override val uses: ClassOrObjectUses = initClassOrObjectUses(reflektInvokes.objects)
 
     override fun process(element: KtElement): ClassOrObjectUses = processClassOrObjectUses(element, reflektInvokes.objects, uses)
 

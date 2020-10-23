@@ -3,6 +3,8 @@ package io.reflekt.plugin.generator.models
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import io.reflekt.plugin.analysis.FunctionUses
+import io.reflekt.plugin.generator.statement
+import io.reflekt.plugin.generator.toParameterSpecs
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import kotlin.reflect.KFunction
 
@@ -10,6 +12,17 @@ class FunctionsGenerator(enclosingClassName: ClassName, private val uses: Functi
     override val typeName: ClassName = enclosingClassName.nestedClass("Functions")
     override val typeVariable = TypeVariableName("T", Any::class)
     override val returnParameter = KFunction::class.asClassName().parameterizedBy(typeVariable)
+
+    override val withAnnotationsFunctionBody: CodeBlock
+        get() = statement(
+            "return %T(%N)",
+            typeName.nestedClass(WITH_ANNOTATIONS_CLASS_NAME).parameterizedBy(typeVariable),
+            ANNOTATION_FQ_NAMES
+        )
+
+    override val withAnnotationsParameters = mapOf(
+        ANNOTATION_FQ_NAMES to SET_OF_STRINGS
+    ).toParameterSpecs()
 
     override fun generateImpl() {
         generateWithAnnotationsFunction()
