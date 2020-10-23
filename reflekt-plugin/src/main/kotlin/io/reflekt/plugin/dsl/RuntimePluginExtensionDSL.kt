@@ -9,6 +9,7 @@ annotation class ReflektDSLTag
 
 class ReflektPluginExtension : Serializable {
     var generationPath: File? = null
+    val librariesToIntrospect = HashSet<String>()
 
     internal fun generationPathOrDefault(project: Project): File {
         if (generationPath != null) return generationPath!!

@@ -9,6 +9,7 @@ import io.reflekt.plugin.utils.Groups
 import io.reflekt.plugin.utils.compiler.EnvironmentManager
 import io.reflekt.plugin.utils.compiler.ParseUtil
 import io.reflekt.plugin.utils.compiler.ResolveUtil
+import io.reflekt.plugin.utils.myIntrospectSourceSet
 import io.reflekt.plugin.utils.myKtSourceSet
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
@@ -26,7 +27,7 @@ open class GenerateReflektResolver : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     val myAllSources: Set<File>
-        get() = project.myKtSourceSet.toSet()
+        get() = project.myKtSourceSet.union(project.myIntrospectSourceSet)
 
     @get:InputFiles
     val classPath: Set<File>

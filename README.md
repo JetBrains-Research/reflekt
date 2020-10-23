@@ -1,3 +1,5 @@
+![Gradle Build](https://github.com/nbirillo/reflekt/workflows/Gradle%20Build/badge.svg?branch=master)
+
 # Reflekt
 
 Reflekt is a compile-time reflection library that leverages flows of standard reflection approach.

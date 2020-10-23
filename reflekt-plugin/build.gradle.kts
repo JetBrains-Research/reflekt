@@ -19,6 +19,7 @@ dependencies {
     implementation(kotlin("gradle-plugin-api"))
 
     implementation("com.squareup", "kotlinpoet", "1.6.0")
+    implementation("net.lingala.zip4j", "zip4j", "2.6.1")
 }
 
 publishPlugin {
