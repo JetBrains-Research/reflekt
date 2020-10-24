@@ -24,8 +24,8 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
             description = "whether to enable the debuglog plugin or not"
         ),
         CliOption(
-            optionName = "librariesToIntrospect", valueDescription = "<libraryJar>",
-            description = "Paths to libraries to introspect JARS",
+            optionName = "librariesToIntrospect", valueDescription = "<library>",
+            description = "Paths to files from the libraries to introspect",
             required = true, allowMultipleOccurrences = true
         )
     )
@@ -37,11 +37,11 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
     ) {
         return when (option.optionName) {
             "enabled" -> configuration.put(KEY_ENABLED, value.toBoolean())
-            "librariesToIntrospect" -> configuration.appendList(KEY_JAR_FILES, value)
+            "librariesToIntrospect" -> configuration.appendList(KEY_INTROSPECT_FILES, value)
             else -> error("Unexpected config option ${option.optionName}")
         }
     }
 }
 
 val KEY_ENABLED = CompilerConfigurationKey<Boolean>("whether the plugin is enabled")
-val KEY_JAR_FILES = CompilerConfigurationKey<List<String>>("files to introspect from libraries JARS")
+val KEY_INTROSPECT_FILES = CompilerConfigurationKey<List<String>>("files to introspect from libraries")

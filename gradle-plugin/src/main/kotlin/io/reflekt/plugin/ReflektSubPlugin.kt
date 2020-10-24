@@ -29,7 +29,7 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
             ?: ReflektGradleExtension()
 
         val filesToIntrospect: MutableSet<File> = HashSet()
-        project.configurations.forEach { configuration ->
+        project.configurations.forEach { _ ->
             filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(project, extension)))
         }
         val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = "fileToIntrospect", value = it.absolutePath) }

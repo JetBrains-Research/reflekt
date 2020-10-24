@@ -1,3 +1,6 @@
+import tanvd.kosogor.proxy.publishJar
+import tanvd.kosogor.proxy.publishPlugin
+
 group = rootProject.group
 version = rootProject.version
 
@@ -40,6 +43,15 @@ gradlePlugin {
     }
 }
 
-tasks.register("publish") {
-    dependsOn("publishPlugins")
+publishPlugin {
+    id = "io.reflekt"
+    displayName = "Reflekt"
+    implementationClass = "io.reflekt.plugin.ReflektPlugin"
+    version = project.version.toString()
+}
+
+publishJar {
+    publication {
+        artifactId = "io.reflekt.gradle.plugin"
+    }
 }

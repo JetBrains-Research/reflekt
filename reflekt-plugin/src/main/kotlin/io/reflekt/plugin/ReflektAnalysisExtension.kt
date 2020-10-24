@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
-import java.io.File
 
 class ReflektAnalysisExtension(private val filesToIntrospect: Set<KtFile>) : AnalysisHandlerExtension {
 

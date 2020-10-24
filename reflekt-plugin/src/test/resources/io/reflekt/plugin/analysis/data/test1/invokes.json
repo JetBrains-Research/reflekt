@@ -1,0 +1,25 @@
+{
+  "objects": {
+    "subTypesToAnnotations": [
+      {
+        "subTypes": [],
+        "annotations": []
+      }
+    ]
+  },
+  "classes": {
+    "subTypesToAnnotations": [
+      {
+        "subTypes": [],
+        "annotations": []
+      }
+    ]
+  },
+  "functions": {
+    "functionInvokes": [
+      {
+        "annotations": []
+      }
+    ]
+  }
+}

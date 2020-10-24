@@ -1,7 +1,6 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
-import io.reflekt.util.FileUtil
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.psi.PsiFileFactory
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
@@ -20,8 +19,7 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         if (configuration[KEY_ENABLED] == false) {
             return
         }
-        // TODO: I did not understand How can I get it from the gradle plugin????
-        val filesToIntrospect = getKtFiles(getFilesToIntrospect(configuration[KEY_JAR_FILES]), project)
+        val filesToIntrospect = getKtFiles(getFilesToIntrospect(configuration[KEY_INTROSPECT_FILES]), project)
         AnalysisHandlerExtension.registerExtension(
             project,
             ReflektAnalysisExtension(filesToIntrospect = filesToIntrospect)
@@ -36,19 +34,8 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         }.toSet()
     }
 
-    private fun getFilesToIntrospect(jars: List<String>?): Set<File> {
-        val filesToIntrospect: MutableSet<File> = HashSet()
-        jars?.forEach {
-            val file = File(it)
-            if (file.isFile) {
-                filesToIntrospect.addAll(FileUtil.extractAllFiles(file))
-            }
-        }
-        return filesToIntrospect
-    }
-
-    private fun getProjectFiles() {
-        TODO("Not implemented yet")
+    private fun getFilesToIntrospect(files: List<String>?): Set<File> {
+        return files?.map { File(it) }?.filter { it.isFile }?.toSet() ?: emptySet()
     }
 }
 
