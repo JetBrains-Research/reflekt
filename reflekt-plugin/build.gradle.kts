@@ -26,7 +26,23 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.6.0")
 }
 
-tasks.test {
-    useJUnitPlatform()
+tasks.withType<Test> {
+    useJUnitPlatform {
+        includeTags = setOf("analysis")
+    }
+
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}
+
+tasks.create("analysis", Test::class.java) {
+    useJUnitPlatform {
+        includeTags = setOf("analysis")
+    }
+
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 

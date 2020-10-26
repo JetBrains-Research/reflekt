@@ -5,6 +5,7 @@ import io.reflekt.plugin.util.Util.getResourcesRootPath
 import io.reflekt.util.FileUtil.getAllNestedFiles
 import io.reflekt.util.FileUtil.getNestedDirectories
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -44,6 +45,7 @@ class AnalysisTest {
         }
     }
 
+    @Tag("analysis")
     @MethodSource("data")
     @ParameterizedTest(name = "test number {index}")
     fun `project analyzer test`(classPath: Set<File>, sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektUses) {
