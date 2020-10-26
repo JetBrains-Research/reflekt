@@ -18,20 +18,28 @@ class AnalysisTest {
         @JvmStatic
         fun data(): List<Arguments> {
             return getNestedDirectories(getResourcesRootPath(::AnalysisTest)).map { directory ->
-                val classPath = getAllNestedFiles(directory.findInDirectory("classPath").absolutePath).toSet()
-                val project = getAllNestedFiles(directory.findInDirectory("project").absolutePath).toSet()
+                val classPath = getAllNestedFiles(directory.findInDirectory("classPath", true).absolutePath).toSet()
+                val project = getAllNestedFiles(directory.findInDirectory("project", true).absolutePath).toSet()
                 val invokes = parseInvokes(directory.findInDirectory("invokes.json"))
                 val uses = parseUses(directory.findInDirectory("uses.json"))
                 Arguments.of(classPath, project, invokes, uses)
             }
         }
 
-        private fun File.findInDirectory(name: String): File {
+        private fun File.findInDirectory(name: String, toCreateIfDoesNotExist: Boolean = false): File {
             if (!this.isDirectory) {
                 error("${this.absolutePath} is not a directory")
             }
             val baseErrorMessage = "in the directory ${this.name} was not found"
-            return this.listFiles()?.first { it.name == name } ?: error("$name $baseErrorMessage")
+            return this.listFiles()?.firstOrNull() { it.name == name } ?: run {
+                if (toCreateIfDoesNotExist) {
+                    val res = File("${this.absolutePath}/$name")
+                    res.mkdirs()
+                    res
+                } else {
+                    error("$name $baseErrorMessage")
+                }
+            }
         }
 
         private fun parseInvokes(json: File): ReflektInvokes {
@@ -47,7 +55,7 @@ class AnalysisTest {
 
     @Tag("analysis")
     @MethodSource("data")
-    @ParameterizedTest(name = "test number {index}")
+    @ParameterizedTest(name = "test {index}")
     fun `project analyzer test`(classPath: Set<File>, sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektUses) {
         val analyzer = getReflektAnalyzer(classPath, sources)
         val actualInvokes = analyzer.invokes()
