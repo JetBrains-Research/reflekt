@@ -2,6 +2,7 @@ package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.AnalysisUtil.getReflektAnalyzer
 import io.reflekt.plugin.util.Util.getResourcesRootPath
+import io.reflekt.util.FileUtil.getAllNestedFiles
 import io.reflekt.util.FileUtil.getNestedDirectories
 import org.gradle.internal.impldep.junit.framework.TestCase
 import org.gradle.internal.impldep.org.junit.Test
@@ -9,33 +10,39 @@ import org.gradle.internal.impldep.org.junit.runner.RunWith
 import org.gradle.internal.impldep.org.junit.runners.Parameterized
 import java.io.File
 
+
 @RunWith(Parameterized::class)
-class AnalysisTest: TestCase() {
+class AnalysisTest : TestCase() {
 
     companion object {
         @JvmStatic
         @Parameterized.Parameters(name = "{index}")
         fun getTestData(): List<Array<Any>> {
             return getNestedDirectories(getResourcesRootPath(::AnalysisTest)).map { directory ->
-                val classPath = directory.find("classPath")
-                val project = directory.find("project")
-                val invokes = parseInvokes(directory.find("invokes.json"))
-                val uses = parseUses(directory.find("uses.json"))
+                val classPath = getAllNestedFiles(directory.findInDirectory("classPath").absolutePath)
+                val project = getAllNestedFiles(directory.findInDirectory("project").absolutePath)
+                val invokes = parseInvokes(directory.findInDirectory("invokes.json"))
+                val uses = parseUses(directory.findInDirectory("uses.json"))
                 arrayOf(classPath, project, invokes, uses)
             }
         }
 
-        private fun File.find(name: String): File {
-            val baseErrorMessage = "in the directory $name was not found"
+        private fun File.findInDirectory(name: String): File {
+            if (!this.isDirectory) {
+                error("${this.absolutePath} is not a directory")
+            }
+            val baseErrorMessage = "in the directory ${this.name} was not found"
             return this.listFiles()?.first { it.name == name } ?: error("$name $baseErrorMessage")
         }
 
         private fun parseInvokes(json: File): ReflektInvokes {
-            TODO("Not implemented yet")
+            // TODO "Not implemented yet"
+            return ReflektInvokes()
         }
 
         private fun parseUses(json: File): ReflektUses {
-            TODO("Not implemented yet")
+            // TODO "Not implemented yet"
+            return ReflektUses()
         }
     }
 
