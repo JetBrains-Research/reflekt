@@ -17,6 +17,10 @@ dependencies {
     implementation("io.reflekt", "gradle-plugin", "0.1.0")
 }
 
+reflekt {
+    enabled = true
+}
+
 tasks {
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
