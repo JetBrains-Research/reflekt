@@ -1,6 +1,5 @@
 package io.reflekt.plugin.analysis.processor.invokes
 
-import io.reflekt.Reflekt
 import io.reflekt.plugin.analysis.*
 import io.reflekt.plugin.analysis.processor.Processor
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -8,6 +7,7 @@ import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
+import io.reflekt.Reflekt
 
 abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingContext): Processor<Output>(binding) {
     abstract val invokes: Output

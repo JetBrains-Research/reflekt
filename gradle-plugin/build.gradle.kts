@@ -14,8 +14,9 @@ plugins {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("gradle-plugin-api"))
-    compileOnly("com.google.auto.service", "auto-service", "1.0-rc4")
-    compile(project(":reflekt-core"))
+    implementation("com.google.auto.service", "auto-service", "1.0-rc4")
+    implementation(project(":reflekt-core"))
+    api(project(":reflekt-dsl"))
 }
 
 buildConfig {
@@ -44,7 +45,7 @@ gradlePlugin {
 }
 
 publishPlugin {
-    id = "io.reflekt.gradle.plugin"
+    id = "io.reflekt.gradle"
     displayName = "Reflekt"
     implementationClass = "io.reflekt.plugin.ReflektPlugin"
     version = project.version.toString()
@@ -52,6 +53,6 @@ publishPlugin {
 
 publishJar {
     publication {
-        artifactId = "io.reflekt.gradle.plugin"
+        artifactId = "io.reflekt.gradle"
     }
 }
