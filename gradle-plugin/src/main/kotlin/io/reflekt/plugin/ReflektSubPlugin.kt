@@ -25,6 +25,7 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
         androidProjectHandler: Any?,
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
     ): List<SubpluginOption> {
+        println("ReflektSubPlugin loaded")
         val extension = project.extensions.findByType(ReflektGradleExtension::class.java)
             ?: ReflektGradleExtension()
 
