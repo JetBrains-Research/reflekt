@@ -4,26 +4,24 @@ import io.reflekt.plugin.analysis.AnalysisUtil.getReflektAnalyzer
 import io.reflekt.plugin.util.Util.getResourcesRootPath
 import io.reflekt.util.FileUtil.getAllNestedFiles
 import io.reflekt.util.FileUtil.getNestedDirectories
-import org.gradle.internal.impldep.junit.framework.TestCase
-import org.gradle.internal.impldep.org.junit.Test
-import org.gradle.internal.impldep.org.junit.runner.RunWith
-import org.gradle.internal.impldep.org.junit.runners.Parameterized
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
 
 
-@RunWith(Parameterized::class)
-class AnalysisTest : TestCase() {
+class AnalysisTest {
 
     companion object {
         @JvmStatic
-        @Parameterized.Parameters(name = "{index}")
-        fun getTestData(): List<Array<Any>> {
+        fun data(): List<Arguments> {
             return getNestedDirectories(getResourcesRootPath(::AnalysisTest)).map { directory ->
-                val classPath = getAllNestedFiles(directory.findInDirectory("classPath").absolutePath)
-                val project = getAllNestedFiles(directory.findInDirectory("project").absolutePath)
+                val classPath = getAllNestedFiles(directory.findInDirectory("classPath").absolutePath).toSet()
+                val project = getAllNestedFiles(directory.findInDirectory("project").absolutePath).toSet()
                 val invokes = parseInvokes(directory.findInDirectory("invokes.json"))
                 val uses = parseUses(directory.findInDirectory("uses.json"))
-                arrayOf(classPath, project, invokes, uses)
+                Arguments.of(classPath, project, invokes, uses)
             }
         }
 
@@ -46,28 +44,13 @@ class AnalysisTest : TestCase() {
         }
     }
 
-    @JvmField
-    @Parameterized.Parameter(0)
-    var classPath: Set<File> = emptySet()
-
-    @JvmField
-    @Parameterized.Parameter(1)
-    var sources: Set<File> = emptySet()
-
-    @JvmField
-    @Parameterized.Parameter(2)
-    var expectedInvokes: ReflektInvokes? = null
-
-    @JvmField
-    @Parameterized.Parameter(3)
-    var expectedUses: ReflektUses? = null
-
-    @Test
-    fun `project analyzer test`() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "test number {index}")
+    fun `project analyzer test`(classPath: Set<File>, sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektUses) {
         val analyzer = getReflektAnalyzer(classPath, sources)
         val actualInvokes = analyzer.invokes()
-        assertEquals(actualInvokes, expectedInvokes)
+        Assertions.assertEquals(actualInvokes, expectedInvokes)
         val actualUses = analyzer.uses(actualInvokes)
-        assertEquals(actualUses, expectedUses)
+        Assertions.assertEquals(actualUses, expectedUses)
     }
 }
