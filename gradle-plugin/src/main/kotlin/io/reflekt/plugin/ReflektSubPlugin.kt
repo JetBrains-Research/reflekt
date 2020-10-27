@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
+import org.gradle.api.artifacts.Configuration
 import java.io.File
 
 @AutoService(KotlinGradleSubplugin::class)
@@ -25,14 +26,14 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
         androidProjectHandler: Any?,
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
     ): List<SubpluginOption> {
-        println("ReflektSubPlugin loaded")
+        println("Reflekt gradle sub plugin loaded")
         val extension = project.extensions.findByType(ReflektGradleExtension::class.java)
             ?: ReflektGradleExtension()
 
         val filesToIntrospect: MutableSet<File> = HashSet()
-//        project.configurations.forEach { _ ->
-//            filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(project, extension)))
-//        }
+        project.configurations.filter { it.isCanBeResolved }.forEach {
+            filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(it, extension)))
+        }
         val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = "fileToIntrospect", value = it.absolutePath) }
         return librariesToIntrospect + SubpluginOption(key = "enabled", value = extension.enabled.toString())
     }
@@ -45,14 +46,11 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
         return files
     }
 
-    private fun getJarFilesToIntrospect(target: Project, extension: ReflektGradleExtension): Set<File> {
-        val filesToIntrospect: MutableSet<File> = HashSet()
-        target.configurations.forEach { configuration ->
-            val filtered = configuration.dependencies
-                .filter { "${it.group}:${it.name}:${it.version}" in extension.librariesToIntrospect }
-            filesToIntrospect.addAll(configuration.files(*filtered.toTypedArray()))
-        }
-        return filesToIntrospect
+    private fun getJarFilesToIntrospect(configuration: Configuration, extension: ReflektGradleExtension): Set<File> {
+        val jarsToIntrospect: MutableSet<File> = HashSet()
+        val filtered = configuration.dependencies.filter { "${it.group}:${it.name}:${it.version}" in extension.librariesToIntrospect }
+        jarsToIntrospect.addAll(configuration.files(*filtered.toTypedArray()))
+        return jarsToIntrospect
     }
 
     /**
