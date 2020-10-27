@@ -1,7 +1,10 @@
 package io.reflekt.plugin
 
+import io.reflekt.util.FileUtil
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
+import java.io.File
 
 class ReflektPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -18,4 +21,7 @@ class ReflektPlugin : Plugin<Project> {
             ReflektGradleExtension::class.java
         )
     }
+
+
+
 }

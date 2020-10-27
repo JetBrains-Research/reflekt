@@ -6,4 +6,5 @@ open class ReflektGradleExtension {
 
     /** Libraries to introspect, which are in the project dependencies in the format: "$group:$name:$version" */
     var librariesToIntrospect: List<String> = emptyList()
+
 }
