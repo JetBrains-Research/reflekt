@@ -21,12 +21,12 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
     override val pluginOptions: Collection<CliOption> = listOf(
         CliOption(
             optionName = "enabled", valueDescription = "<true|false>",
-            description = "whether to enable the debuglog plugin or not"
+            description = "whether to enable the Reflekt plugin or not"
         ),
         CliOption(
             optionName = "librariesToIntrospect", valueDescription = "<library>",
             description = "Paths to files from the libraries to introspect",
-            required = true, allowMultipleOccurrences = true
+            allowMultipleOccurrences = true, required = false
         )
     )
 

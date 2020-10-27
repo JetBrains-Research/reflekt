@@ -9,14 +9,17 @@ plugins {
     kotlin("jvm")
     id("com.gradle.plugin-publish")
     id("com.github.gmazzo.buildconfig")
+    kotlin("kapt")
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("gradle-plugin-api"))
-    implementation("com.google.auto.service", "auto-service", "1.0-rc4")
     implementation(project(":reflekt-core"))
     api(project(":reflekt-dsl"))
+
+    implementation("com.google.auto.service", "auto-service-annotations", "1.0-rc7")
+    kapt("com.google.auto.service", "auto-service", "1.0-rc7")
 }
 
 buildConfig {

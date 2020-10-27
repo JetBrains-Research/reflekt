@@ -30,9 +30,9 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
             ?: ReflektGradleExtension()
 
         val filesToIntrospect: MutableSet<File> = HashSet()
-        project.configurations.forEach { _ ->
-            filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(project, extension)))
-        }
+//        project.configurations.forEach { _ ->
+//            filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(project, extension)))
+//        }
         val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = "fileToIntrospect", value = it.absolutePath) }
         return librariesToIntrospect + SubpluginOption(key = "enabled", value = extension.enabled.toString())
     }
@@ -62,7 +62,11 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
 
     override fun getPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
         groupId = "io.reflekt",
-        artifactId = "kotlin-plugin",
-        version = "0.0.1"
+        /**
+         * Just needs to be consistent with the artifactId in reflekt-plugin build.gradle.kts#publishJar
+         */
+        artifactId = "reflekt-compiler-plugin",
+        // Todo: get version from a variable
+        version = "0.1.0"
     )
 }
