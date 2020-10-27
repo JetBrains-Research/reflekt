@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
+import java.io.File
 
 @AutoService(CommandLineProcessor::class)
 class ReflektCommandLineProcessor : CommandLineProcessor {
