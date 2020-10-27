@@ -16,6 +16,7 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         project: MockProject,
         configuration: CompilerConfiguration
     ) {
+        println("ReflektComponentRegistrar loaded")
         if (configuration[KEY_ENABLED] == false) {
             return
         }

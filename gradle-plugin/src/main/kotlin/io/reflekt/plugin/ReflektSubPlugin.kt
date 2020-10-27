@@ -31,7 +31,7 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
         androidProjectHandler: Any?,
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
     ): List<SubpluginOption> {
-        println("Reflekt gradle sub plugin loaded")
+        println("ReflektSubPlugin loaded")
         val extension = project.extensions.findByType(ReflektGradleExtension::class.java)
             ?: ReflektGradleExtension()
 
@@ -41,6 +41,7 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
         }
         val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = "fileToIntrospect", value = it.absolutePath) }
         // We should resolve the files only in the second time
+        // TODO: can we do it better??
         toResolve = true
         return librariesToIntrospect + SubpluginOption(key = "enabled", value = extension.enabled.toString())
     }
