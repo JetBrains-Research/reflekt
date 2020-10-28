@@ -3,8 +3,6 @@ package io.reflekt.plugin
 import com.google.auto.service.AutoService
 import io.reflekt.plugin.utils.Util.initMessageCollector
 import io.reflekt.plugin.utils.Util.messageCollector
-import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.psi.PsiFileFactory
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar

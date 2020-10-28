@@ -17,7 +17,7 @@ dependencies {
     implementation("io.reflekt", "gradle-plugin", "0.1.0")
 }
 
-reflekt {
+reflekt{
     enabled = true
     librariesToIntrospect = listOf("lalal")
 }

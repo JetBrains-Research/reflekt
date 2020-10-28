@@ -18,7 +18,4 @@ class ReflektPlugin : Plugin<Project> {
             ReflektGradleExtension::class.java
         )
     }
-
-
-
 }
