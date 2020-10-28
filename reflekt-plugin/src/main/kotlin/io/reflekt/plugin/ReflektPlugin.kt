@@ -37,9 +37,10 @@ class ReflektPlugin : Plugin<Project> {
     private fun getJarFilesToIntrospect(target: Project): Set<File> {
         val filesToIntrospect: MutableSet<File> = HashSet()
         target.configurations.forEach { configuration ->
+            // TODO: resolve files
             val filtered = configuration.dependencies
                 .filter { "${it.group}:${it.name}:${it.version}" in reflekt.librariesToIntrospect }
-            filesToIntrospect.addAll(configuration.files(*filtered.toTypedArray()))
+          //  filesToIntrospect.addAll(configuration.files(*filtered.toTypedArray()))
         }
         return filesToIntrospect
     }
