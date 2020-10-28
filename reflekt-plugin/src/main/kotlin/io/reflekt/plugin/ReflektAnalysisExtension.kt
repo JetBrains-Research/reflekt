@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
+import java.io.File
 
 class ReflektAnalysisExtension(private val filesToIntrospect: Set<KtFile>) : AnalysisHandlerExtension {
 
@@ -21,7 +22,6 @@ class ReflektAnalysisExtension(private val filesToIntrospect: Set<KtFile>) : Ana
         val analyzer = ReflektAnalyzer(files.toSet().union(filesToIntrospect), bindingTrace.bindingContext)
         val invokes = analyzer.invokes()
         val uses = analyzer.uses(invokes)
-        println("USES: ${uses}")
         // TODO: add uses into bindingContext???
 
         return super.doAnalysis(project, module, projectContext, files, bindingTrace, componentProvider)

@@ -18,7 +18,7 @@ dependencies {
 }
 
 reflekt {
-    enabled = false
+    enabled = true
     librariesToIntrospect = listOf("lalal")
 }
 
