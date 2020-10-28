@@ -14,7 +14,12 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("io.reflekt", "reflekt", "0.1.0")
+    implementation("io.reflekt", "gradle-plugin", "0.1.0")
+}
+
+reflekt {
+    enabled = true
+    librariesToIntrospect = listOf("lalal")
 }
 
 tasks {
