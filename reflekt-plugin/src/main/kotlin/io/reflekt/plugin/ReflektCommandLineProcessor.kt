@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
+import java.io.File
 
 @AutoService(CommandLineProcessor::class)
 class ReflektCommandLineProcessor : CommandLineProcessor {
@@ -21,12 +22,12 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
     override val pluginOptions: Collection<CliOption> = listOf(
         CliOption(
             optionName = "enabled", valueDescription = "<true|false>",
-            description = "whether to enable the debuglog plugin or not"
+            description = "whether to enable the Reflekt plugin or not"
         ),
         CliOption(
-            optionName = "librariesToIntrospect", valueDescription = "<libraryJar>",
-            description = "Paths to libraries to introspect JARS",
-            required = true, allowMultipleOccurrences = true
+            optionName = "librariesToIntrospect", valueDescription = "<library>",
+            description = "Paths to files from the libraries to introspect",
+            allowMultipleOccurrences = true, required = false
         )
     )
 
@@ -37,11 +38,11 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
     ) {
         return when (option.optionName) {
             "enabled" -> configuration.put(KEY_ENABLED, value.toBoolean())
-            "librariesToIntrospect" -> configuration.appendList(KEY_JAR_FILES, value)
+            "librariesToIntrospect" -> configuration.appendList(KEY_INTROSPECT_FILES, value)
             else -> error("Unexpected config option ${option.optionName}")
         }
     }
 }
 
 val KEY_ENABLED = CompilerConfigurationKey<Boolean>("whether the plugin is enabled")
-val KEY_JAR_FILES = CompilerConfigurationKey<List<String>>("files to introspect from libraries JARS")
+val KEY_INTROSPECT_FILES = CompilerConfigurationKey<List<String>>("files to introspect from libraries")

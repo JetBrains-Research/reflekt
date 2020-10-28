@@ -12,9 +12,13 @@ class ReflektPlugin : Plugin<Project> {
          *   // ... set other members on the ReflektGradleExtension class
          * }
          */
+        println("ReflektPlugin plugin")
         target.extensions.create(
             "reflekt",
             ReflektGradleExtension::class.java
         )
     }
+
+
+
 }
