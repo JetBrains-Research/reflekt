@@ -1,6 +1,10 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
+import io.reflekt.plugin.utils.Util.initMessageCollector
+import io.reflekt.plugin.utils.Util.messageCollector
+import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.psi.PsiFileFactory
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
@@ -12,6 +16,9 @@ import java.io.File
 
 @AutoService(ComponentRegistrar::class)
 class ReflektComponentRegistrar : ComponentRegistrar {
+    // The path will be: pathToKotlin/daemon/reflekt-log.log
+    private val logFilePath = "reflekt-log.log"
+
     override fun registerProjectComponents(
         project: MockProject,
         configuration: CompilerConfiguration
@@ -19,10 +26,11 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         if (configuration[KEY_ENABLED] == false) {
             return
         }
+        configuration.initMessageCollector(logFilePath)
         val filesToIntrospect = getKtFiles(getFilesToIntrospect(configuration[KEY_INTROSPECT_FILES]), project)
         AnalysisHandlerExtension.registerExtension(
             project,
-            ReflektAnalysisExtension(filesToIntrospect = filesToIntrospect)
+            ReflektAnalysisExtension(filesToIntrospect = filesToIntrospect, messageCollector = configuration.messageCollector)
         )
         // TODO: update code
     }
