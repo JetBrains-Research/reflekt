@@ -34,7 +34,7 @@ class AnalysisSetupTest {
             if (SystemUtils.IS_OS_WINDOWS) {
                 error("Not supported yet")
             }
-            return runProcessBuilder(Command(listOf("/bin/bash", "-c", "echo \$HOME")))
+            return runProcessBuilder(Command(listOf("/bin/bash", "-c", "echo \$HOME"))).removeSuffix("/")
         }
     }
 
