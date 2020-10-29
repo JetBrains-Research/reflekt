@@ -1,6 +1,5 @@
 package io.reflekt.plugin.analysis
 
-import com.beust.klaxon.Klaxon
 import io.reflekt.plugin.analysis.AnalysisUtil.getReflektAnalyzer
 import io.reflekt.plugin.util.Util.getResourcesRootPath
 import io.reflekt.plugin.util.Util.parseJson

@@ -23,5 +23,8 @@ allprojects {
         mavenCentral()
         jcenter()
     }
-}
 
+    tasks.withType<Test> {
+        dependsOn(tasks.withType<PublishToMavenLocal>{})
+    }
+}
