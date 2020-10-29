@@ -17,6 +17,7 @@ class AnalysisTest {
     companion object {
         @JvmStatic
         fun data(): List<Arguments> {
+            // We change only the Main file in each test by using different configurations of the Reflekt invokes\uses
             val commonTestFiles = getAllNestedFiles(getResourcesRootPath(::AnalysisTest, "commonTestFiles")).toSet()
             return getNestedDirectories(getResourcesRootPath(::AnalysisTest)).map { directory ->
                 val project = getAllNestedFiles(directory.findInDirectory("project", true).absolutePath, ignoredDirectories = setOf(".idea")).toSet()
