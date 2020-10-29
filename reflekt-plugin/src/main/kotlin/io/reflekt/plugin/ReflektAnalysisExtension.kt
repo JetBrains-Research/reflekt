@@ -23,6 +23,7 @@ class ReflektAnalysisExtension(private val filesToIntrospect: Set<KtFile>,
                             componentProvider: ComponentProvider): AnalysisResult? {
         messageCollector?.log("ReflektAnalysisExtension is starting...")
         messageCollector?.log("FILES: ${files.joinToString(separator = ", ") { it.name }};")
+        // TODO: we have null fqNames :(
         val analyzer = ReflektAnalyzer(files.toSet().union(filesToIntrospect), bindingTrace.bindingContext)
         val invokes = analyzer.invokes()
         messageCollector?.log("INVOKES: $invokes;")

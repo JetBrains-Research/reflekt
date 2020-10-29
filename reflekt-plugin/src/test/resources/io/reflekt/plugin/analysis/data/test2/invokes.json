@@ -1,25 +1,10 @@
 {
-  "objects": {
-    "subTypesToAnnotations": [
-      {
-        "subTypes": [],
-        "annotations": []
-      }
-    ]
-  },
-  "classes": {
-    "subTypesToAnnotations": [
-      {
-        "subTypes": [],
-        "annotations": []
-      }
-    ]
-  },
-  "functions": {
-    "functionInvokes": [
-      {
-        "annotations": []
-      }
-    ]
-  }
+  "objects": [
+    {
+      "subTypes": ["io.reflekt.test.A1"],
+      "annotations": []
+    }
+  ],
+  "classes": [],
+  "functions": []
 }

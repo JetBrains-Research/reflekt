@@ -1,3 +1,9 @@
 {
-  
+  "objects": {
+    "[]": {
+      "[io.reflekt.test.A1]": ["io.reflekt.test.A1"]
+    }
+  },
+  "classes": {},
+  "functions": {}
 }

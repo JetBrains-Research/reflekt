@@ -1,7 +1,9 @@
 package io.reflekt.plugin.analysis
 
+import com.beust.klaxon.Klaxon
 import io.reflekt.plugin.analysis.AnalysisUtil.getReflektAnalyzer
 import io.reflekt.plugin.util.Util.getResourcesRootPath
+import io.reflekt.plugin.util.Util.parseJson
 import io.reflekt.util.FileUtil.getAllNestedFiles
 import io.reflekt.util.FileUtil.getNestedDirectories
 import org.junit.jupiter.api.Assertions
@@ -16,12 +18,12 @@ class AnalysisTest {
     companion object {
         @JvmStatic
         fun data(): List<Arguments> {
+            val commonTestFiles = getAllNestedFiles(getResourcesRootPath(::AnalysisTest, "commonTestFiles")).toSet()
             return getNestedDirectories(getResourcesRootPath(::AnalysisTest)).map { directory ->
-                val classPath = getAllNestedFiles(directory.findInDirectory("classPath", true).absolutePath).toSet()
-                val project = getAllNestedFiles(directory.findInDirectory("project", true).absolutePath).toSet()
+                val project = getAllNestedFiles(directory.findInDirectory("project", true).absolutePath, ignoredDirectories = setOf(".idea")).toSet()
                 val invokes = parseInvokes(directory.findInDirectory("invokes.json"))
                 val uses = parseUses(directory.findInDirectory("uses.json"))
-                Arguments.of(classPath, project, invokes, uses)
+                Arguments.of(commonTestFiles.union(project), invokes, uses)
             }
         }
 
@@ -30,7 +32,7 @@ class AnalysisTest {
                 error("${this.absolutePath} is not a directory")
             }
             val baseErrorMessage = "in the directory ${this.name} was not found"
-            return this.listFiles()?.firstOrNull() { it.name == name } ?: run {
+            return this.listFiles()?.firstOrNull { it.name == name } ?: run {
                 if (toCreateIfDoesNotExist) {
                     val res = File("${this.absolutePath}/$name")
                     res.mkdirs()
@@ -41,25 +43,21 @@ class AnalysisTest {
             }
         }
 
-        private fun parseInvokes(json: File): ReflektInvokes {
-            // TODO "Not implemented yet"
-            return ReflektInvokes()
-        }
+        private fun parseInvokes(json: File): ReflektInvokes = parseJson(json)
 
-        private fun parseUses(json: File): ReflektUses {
-            // TODO "Not implemented yet"
-            return ReflektUses()
-        }
+        private fun parseUses(json: File): ReflektUses = parseJson(json)
     }
 
     @Tag("analysis")
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
-    fun `project analyzer test`(classPath: Set<File>, sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektUses) {
-        val analyzer = getReflektAnalyzer(classPath, sources)
+    fun `project analyzer test`(sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektUses) {
+        val reflektClassPath = AnalysisSetupTest.getReflektJars()
+        val analyzer = getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
         val actualInvokes = analyzer.invokes()
-        Assertions.assertEquals(actualInvokes, expectedInvokes)
+        Assertions.assertEquals(expectedInvokes, actualInvokes)
         val actualUses = analyzer.uses(actualInvokes)
-        Assertions.assertEquals(actualUses, expectedUses)
+        // We use the String representation because after parsing from Json we have LinkedHashMap, not HashMap
+        Assertions.assertEquals(expectedUses.toString(), actualUses.toString())
     }
 }

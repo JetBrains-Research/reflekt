@@ -7,12 +7,12 @@ object FileUtil {
 
     fun extractAllFiles(zipFile: File): List<File> = getAllNestedFiles(unZipFile(zipFile))
 
-    fun getAllNestedFiles(rootPath: String, files: MutableList<File> = ArrayList()): List<File> {
+    fun getAllNestedFiles(rootPath: String, files: MutableList<File> = ArrayList(), ignoredDirectories: Set<String> = emptySet()): List<File> {
         val root = File(rootPath)
         root.listFiles()?.forEach {
             if (it.isFile) {
                 files.add(it)
-            } else if (it.isDirectory) {
+            } else if (it.isDirectory && it.name !in ignoredDirectories) {
                 getAllNestedFiles(it.absolutePath, files)
             }
         }
