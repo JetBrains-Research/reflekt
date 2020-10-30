@@ -18,3 +18,11 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build --console=plain
+
+      - name: Upload Test Report
+          uses: actions/upload-artifact@v2
+          if: ${{ always() }}
+          with:
+            name: test-report
+            path: |
+              build/gradle/reports/**/*
