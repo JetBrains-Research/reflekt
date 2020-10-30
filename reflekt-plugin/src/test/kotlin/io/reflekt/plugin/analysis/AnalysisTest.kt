@@ -5,8 +5,6 @@ import io.reflekt.plugin.util.Util.getResourcesRootPath
 import io.reflekt.plugin.util.Util.parseJson
 import io.reflekt.util.FileUtil.getAllNestedFiles
 import io.reflekt.util.FileUtil.getNestedDirectories
-import org.jetbrains.kotlin.psi.KtFunction
-import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
