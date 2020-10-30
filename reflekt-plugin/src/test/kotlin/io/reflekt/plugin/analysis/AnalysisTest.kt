@@ -45,12 +45,12 @@ class AnalysisTest {
 
         private fun parseInvokes(json: File): ReflektInvokes = parseJson(json)
 
-        private fun parseUses(json: File): ReflektUses = parseJson(json)
+        private fun parseUses(json: File): ReflektUses = parseJson<ReflektUses>(json)
     }
 
     @Tag("analysis")
     @MethodSource("data")
-    @ParameterizedTest(name = "test {index}")
+    @ParameterizedTest(name = "test {index}, sources: {0}")
     fun `project analyzer test`(sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektUses) {
         val reflektClassPath = AnalysisSetupTest.getReflektJars()
         val analyzer = getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
