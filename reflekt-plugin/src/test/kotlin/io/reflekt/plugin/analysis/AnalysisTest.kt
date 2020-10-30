@@ -45,7 +45,8 @@ class AnalysisTest {
 
         private fun parseInvokes(json: File): ReflektInvokes = parseJson(json)
 
-        private fun parseUses(json: File): ReflektUses = parseJson(json)
+        // TODO: can we do it better?
+        private fun parseUses(json: File): ReflektUses = parseJson<ReflektUsesTest>(json).toReflektUses()
     }
 
     @Tag("analysis")
@@ -57,7 +58,6 @@ class AnalysisTest {
         val actualInvokes = analyzer.invokes()
         Assertions.assertEquals(expectedInvokes, actualInvokes)
         val actualUses = analyzer.uses(actualInvokes)
-        // We use the String representation because after parsing from Json we have LinkedHashMap, not HashMap
-        Assertions.assertEquals(expectedUses.toString(), actualUses.toString())
+        Assertions.assertEquals(expectedUses, actualUses)
     }
 }

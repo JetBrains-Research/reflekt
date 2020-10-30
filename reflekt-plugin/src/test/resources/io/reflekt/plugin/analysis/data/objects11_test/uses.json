@@ -1,9 +1,15 @@
 {
-  "objects": {
-    "[io.reflekt.test.FirstAnnotationTest]": {
-      "[kotlin.Any]": ["io.reflekt.test.A3"]
+  "objects": [
+    {
+      "annotations": ["io.reflekt.test.FirstAnnotationTest"],
+      "subtypesToUses": [
+        {
+          "subtypes": ["kotlin.Any"],
+          "uses": ["io.reflekt.test.A3"]
+        }
+      ]
     }
-  },
-  "classes": {},
-  "functions": {}
+  ],
+  "classes": [],
+  "functions": []
 }
