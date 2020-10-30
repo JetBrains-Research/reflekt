@@ -1,0 +1,9 @@
+{
+  "objects": {
+    "[io.reflekt.test.FirstAnnotationTest]": {
+      "[kotlin.Any]": ["io.reflekt.test.A3"]
+    }
+  },
+  "classes": {},
+  "functions": {}
+}

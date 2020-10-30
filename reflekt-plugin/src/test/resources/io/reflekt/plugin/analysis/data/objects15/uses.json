@@ -1,0 +1,9 @@
+{
+  "objects": {
+    "[io.reflekt.test.FirstAnnotationTest]": {
+      "[io.reflekt.test.A3]": ["io.reflekt.test.A3"]
+    }
+  },
+  "classes": {},
+  "functions": {}
+}

@@ -1,0 +1,9 @@
+{
+  "objects": {
+    "[]": {
+      "[io.reflekt.test.BInterfaceTest, io.reflekt.test.AInterfaceTest]": ["io.reflekt.test.A1", "io.reflekt.test.A2", "io.reflekt.test.A3", "io.reflekt.test.A4"]
+    }
+  },
+  "classes": {},
+  "functions": {}
+}

@@ -1,0 +1,10 @@
+{
+  "objects": [
+    {
+      "subTypes": ["kotlin.Any"],
+      "annotations": ["io.reflekt.test.FirstAnnotationTest"]
+    }
+  ],
+  "classes": [],
+  "functions": []
+}

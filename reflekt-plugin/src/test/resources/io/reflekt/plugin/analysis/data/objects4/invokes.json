@@ -1,0 +1,10 @@
+{
+  "objects": [
+    {
+      "subTypes": ["io.reflekt.test.AInterfaceTest"],
+      "annotations": []
+    }
+  ],
+  "classes": [],
+  "functions": []
+}

@@ -1,0 +1,9 @@
+{
+  "objects": {
+    "[io.reflekt.test.SecondAnnotationTest]": {
+      "[io.reflekt.test.AInterfaceTest]": ["io.reflekt.test.A2"]
+    }
+  },
+  "classes": {},
+  "functions": {}
+}

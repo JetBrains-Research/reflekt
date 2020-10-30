@@ -1,0 +1,10 @@
+{
+  "objects": [
+    {
+      "subTypes": ["kotlin.Any"],
+      "annotations": []
+    }
+  ],
+  "classes": [],
+  "functions": []
+}
