@@ -2,6 +2,7 @@ package io.reflekt.plugin
 
 import io.reflekt.plugin.analysis.ReflektAnalyzer
 import io.reflekt.plugin.utils.Util.log
+import io.reflekt.plugin.utils.Util.saveUses
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
@@ -21,9 +22,8 @@ class ReflektAnalysisExtension(private val filesToIntrospect: Set<KtFile>,
         messageCollector?.log("INVOKES: $invokes;")
         val uses = analyzer.uses(invokes)
         messageCollector?.log("USES: $uses;")
-        // TODO: add uses into bindingContext???
+        bindingTrace.saveUses(uses)
 
         return super.analysisCompleted(project, module, bindingTrace, files)
     }
-
 }

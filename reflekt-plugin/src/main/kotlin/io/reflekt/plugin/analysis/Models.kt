@@ -8,6 +8,7 @@ import io.reflekt.plugin.analysis.processor.uses.BaseUsesProcessor
 import io.reflekt.plugin.analysis.processor.uses.ClassUsesProcessor
 import io.reflekt.plugin.analysis.processor.uses.FunctionUsesProcessor
 import io.reflekt.plugin.analysis.processor.uses.ObjectUsesProcessor
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
 enum class ElementType(val value: String) {
@@ -49,8 +50,9 @@ data class ReflektInvokes(
 // We store the following structure:
 // The map, where key is a set of annotationsFqNames, and value is
 // a map, where key is a set of subTypesFqNames, and value is a list of fqNames
-typealias ClassOrObjectUses = MutableMap<Set<String>, MutableMap<Set<String>, MutableList<String>>>
-typealias FunctionUses = MutableMap<Set<String>, MutableList<KtNamedFunction>>
+typealias TypeUses<K, V> = Map<K, MutableList<V>>
+typealias ClassOrObjectUses = TypeUses<SubTypesToAnnotations, KtClassOrObject>
+typealias FunctionUses = TypeUses<Set<String>, KtNamedFunction>
 
 /*
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]

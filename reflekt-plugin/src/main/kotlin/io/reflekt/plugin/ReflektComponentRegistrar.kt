@@ -1,8 +1,10 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
+import io.reflekt.plugin.generation.ReflektGeneratorExtension
 import io.reflekt.plugin.utils.Util.initMessageCollector
 import io.reflekt.plugin.utils.Util.messageCollector
+import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.psi.PsiFileFactory
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
@@ -30,7 +32,10 @@ class ReflektComponentRegistrar : ComponentRegistrar {
             project,
             ReflektAnalysisExtension(filesToIntrospect = filesToIntrospect, messageCollector = configuration.messageCollector)
         )
-        // TODO: update code
+        ExpressionCodegenExtension.registerExtension(
+            project,
+            ReflektGeneratorExtension(messageCollector = configuration.messageCollector)
+        )
     }
 
     /** Get KtFile representation for set of files */
