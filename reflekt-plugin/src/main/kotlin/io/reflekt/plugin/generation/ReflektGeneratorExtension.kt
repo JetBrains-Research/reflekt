@@ -13,7 +13,8 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
 import org.jetbrains.kotlin.codegen.asmType
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
-import org.jetbrains.kotlin.fileClasses.internalNameWithoutInnerClasses
+import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper
+import org.jetbrains.kotlin.psi.synthetics.findClassDescriptor
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.org.objectweb.asm.Type
 import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
@@ -25,7 +26,7 @@ class ReflektGeneratorExtension(private val messageCollector: MessageCollector? 
         val invokeNames = parseReflektInvoke(expression.getFqName(c.codegen.bindingContext) ?: return null) ?: return null
         val invokeArguments = findReflektInvokeArgumentsByExpressionPart(expression, binding)!!
         val uses = c.codegen.bindingContext.getUses() ?: return null
-        val resultValues = uses.get(invokeNames, invokeArguments) ?: return null
+        val resultValues = uses.get(invokeNames, invokeArguments, c.typeMapper)
 
         val returnType = resolvedCall.candidateDescriptor.returnType!!
         val returnTypeArgument = returnType.arguments.first().type.asmType(c.typeMapper)
@@ -70,12 +71,13 @@ class ReflektGeneratorExtension(private val messageCollector: MessageCollector? 
     }
 }
 
-private fun ReflektUses.get(invokeNames: ReflektInvokeNames, invokeArguments: SubTypesToAnnotations): List<Type>? {
+private fun ReflektUses.get(invokeNames: ReflektInvokeNames, invokeArguments: SubTypesToAnnotations, typeMapper: KotlinTypeMapper): List<Type> {
     return when (val type = invokeNames.name) {
         ReflektName.OBJECTS, ReflektName.CLASSES -> {
             val items = if (type == ReflektName.OBJECTS) objects else classes
             items.getValue(invokeArguments).map {
-                Type.getObjectType(it.fqName!!.internalNameWithoutInnerClasses)
+                // FIXME this should be done easier
+                Type.getObjectType(typeMapper.classInternalName(it.findClassDescriptor(typeMapper.bindingContext)))
             }
         }
         ReflektName.FUNCTIONS -> TODO()
