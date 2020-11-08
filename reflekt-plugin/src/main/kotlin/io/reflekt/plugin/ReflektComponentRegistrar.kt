@@ -1,7 +1,7 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
-import io.reflekt.plugin.generation.ReflektGeneratorExtension
+import io.reflekt.plugin.generation.bytecode.ReflektGeneratorExtension
 import io.reflekt.plugin.utils.Util.initMessageCollector
 import io.reflekt.plugin.utils.Util.messageCollector
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
