@@ -2,7 +2,9 @@
   "objects": [],
   "classes": [
     {
-      "subTypes": ["io.reflekt.test.B1"],
+      "subTypes": [
+        "io.reflekt.test.B1"
+      ],
       "annotations": []
     }
   ],

@@ -2,11 +2,16 @@
   "objects": [],
   "classes": [
     {
-      "subTypes": ["io.reflekt.test.AInterfaceTest", "io.reflekt.test.BInterfaceTest"],
+      "subTypes": [
+        "io.reflekt.test.BInterfaceTest",
+        "io.reflekt.test.AInterfaceTest"
+      ],
       "annotations": []
     },
     {
-      "subTypes": ["kotlin.Any"],
+      "subTypes": [
+        "kotlin.Any"
+      ],
       "annotations": []
     }
   ],

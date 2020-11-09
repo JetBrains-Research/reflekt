@@ -2,7 +2,9 @@
   "objects": [],
   "classes": [
     {
-      "subTypes": ["kotlin.Any"],
+      "subTypes": [
+        "io.reflekt.test.BInterfaceTest"
+      ],
       "annotations": []
     }
   ],
