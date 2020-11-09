@@ -1,0 +1,15 @@
+{
+  "objects": [],
+  "classes": [
+    {
+      "annotations": [],
+      "subtypesToUses": [
+        {
+          "subtypes": ["io.reflekt.test.B1"],
+          "uses": ["io.reflekt.test.B1"]
+        }
+      ]
+    }
+  ],
+  "functions": []
+}
