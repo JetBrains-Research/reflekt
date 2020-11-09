@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
 
-fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SubTypesToAnnotations {
+fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SubTypesToAnnotations? {
     /*
      * Any Reflekt invoke is something like this: ... [1]Reflekt.[2]|objects()/classes() or so on|....
      * We can find the [2] place by fqName (it is KtReferenceExpression)
@@ -30,6 +30,9 @@ fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: Bin
             }
             else -> error("Found an unexpected node text: ${node.text}")
         }
+    }
+    if (subtypes.isEmpty()) {
+        return null
     }
     return SubTypesToAnnotations(subtypes, annotations)
 }

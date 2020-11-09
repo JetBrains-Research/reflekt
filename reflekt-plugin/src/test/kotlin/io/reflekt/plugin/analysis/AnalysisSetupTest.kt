@@ -11,6 +11,8 @@ import java.io.File
 class AnalysisSetupTest {
 
     companion object {
+        private const val WINDOWS_USER_PROFILE = "USERPROFILE"
+
         // Todo: can we get the version from the project?
         fun getReflektJars(version: String = "0.1.0"): Set<File> {
             val baseReflektPath = "${getMavenLocalPath()}/io/reflekt"
@@ -21,18 +23,11 @@ class AnalysisSetupTest {
             }.toSet()
         }
 
-        // TODO: get it in Windows
-        private fun getMavenLocalPath(): String {
-            if (SystemUtils.IS_OS_WINDOWS) {
-                error("Not supported yet")
-            }
-            return "${getHomeFolder()}/.m2/repository"
-        }
+        private fun getMavenLocalPath(): String = "${getHomeFolder()}/.m2/repository"
 
-        // TODO: get it in Windows
         private fun getHomeFolder(): String {
             if (SystemUtils.IS_OS_WINDOWS) {
-                error("Not supported yet")
+                return System.getenv(WINDOWS_USER_PROFILE).removeSuffix("/")
             }
             return runProcessBuilder(Command(listOf("/bin/bash", "-c", "echo \$HOME"))).removeSuffix("/")
         }

@@ -3,10 +3,8 @@ package io.reflekt.plugin.analysis
 import io.reflekt.plugin.analysis.AnalysisUtil.getReflektAnalyzer
 import io.reflekt.plugin.util.Util.getResourcesRootPath
 import io.reflekt.plugin.util.Util.parseJson
-import io.reflekt.plugin.util.Util.toJson
 import io.reflekt.util.FileUtil.getAllNestedFiles
 import io.reflekt.util.FileUtil.getNestedDirectories
-import org.jetbrains.kotlin.psi.KtNamedDeclaration
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -47,42 +45,18 @@ class AnalysisTest {
 
         private fun parseInvokes(json: File): ReflektInvokes = parseJson(json)
 
-        private fun parseUses(json: File): ReflektTestUses = parseJson(json)
+        private fun parseUses(json: File): ReflektUsesTest = parseJson(json)
     }
 
     @Tag("analysis")
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
-    fun `project analyzer test`(sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektTestUses) {
+    fun `project analyzer test`(sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektUsesTest) {
         val reflektClassPath = AnalysisSetupTest.getReflektJars()
         val analyzer = getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
         val actualInvokes = analyzer.invokes()
         Assertions.assertEquals(expectedInvokes, actualInvokes)
         val actualUses = analyzer.uses(actualInvokes)
-        // We use the String representation because after parsing from Json we have LinkedHashMap, not HashMap
-        println(toJson(actualUses.toTestUses()))
         Assertions.assertEquals(expectedUses, actualUses.toTestUses())
     }
-}
-
-typealias TestClassOrObjectUses = TypeUses<SubTypesToAnnotations, String>
-typealias TestFunctionUses = TypeUses<Set<String>, String>
-
-data class ReflektTestUses(
-    val objects: TestClassOrObjectUses = HashMap(),
-    val classes: TestClassOrObjectUses = HashMap(),
-    val functions: TestFunctionUses = HashMap()
-)
-
-fun <K, V: KtNamedDeclaration> TypeUses<K, V>.toTestUses() =
-    mapValues { (_, list) ->
-        list.map { it.fqName!!.toString() }.toMutableList()
-    }
-
-fun ReflektUses.toTestUses(): ReflektTestUses {
-    return ReflektTestUses(
-        objects = objects.toTestUses(),
-        classes = classes.toTestUses(),
-        functions = functions.toTestUses()
-    )
 }
