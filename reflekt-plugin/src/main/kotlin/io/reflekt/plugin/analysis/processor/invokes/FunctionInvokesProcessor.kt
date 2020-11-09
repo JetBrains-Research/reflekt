@@ -10,7 +10,7 @@ class FunctionInvokesProcessor (override val binding: BindingContext): BaseInvok
     override val invokes: FunctionInvokes = HashSet()
 
     override fun process(element: KtElement): FunctionInvokes {
-        invokes.addAll(processClassOrObjectInvokes(element).map { it.annotations })
+        invokes.addAll(processClassOrObjectInvokes(element, false).map { it.annotations })
         return invokes
     }
 

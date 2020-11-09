@@ -1,5 +1,9 @@
 {
   "objects": [],
   "classes": [],
-  "functions": [["io.reflekt.test.FirstAnnotationTest"]]
+  "functions": [
+    [
+      "io.reflekt.test.FirstAnnotationTest"
+    ]
+  ]
 }
