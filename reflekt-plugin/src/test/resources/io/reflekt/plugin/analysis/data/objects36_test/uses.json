@@ -1,15 +1,19 @@
 {
   "objects": [
-    {
-      "annotations": ["io.reflekt.test.SecondAnnotationTest"],
-      "subtypesToUses": [
-        {
-          "subtypes": ["io.reflekt.test.AInterfaceTest"],
-          "uses": ["io.reflekt.test.A2"]
-        }
+    [
+      {
+        "subTypes": [
+          "io.reflekt.test.AInterfaceTest"
+        ],
+        "annotations": [
+          "io.reflekt.test.SecondAnnotationTest"
+        ]
+      },
+      [
+        "io.reflekt.test.A2"
       ]
-    }
+    ]
   ],
-  "classes": [],
-  "functions": []
+  "classes": {},
+  "functions": {}
 }

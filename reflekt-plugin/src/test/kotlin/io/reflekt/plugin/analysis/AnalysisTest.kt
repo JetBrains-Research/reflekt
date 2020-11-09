@@ -45,55 +45,18 @@ class AnalysisTest {
 
         private fun parseInvokes(json: File): ReflektInvokes = parseJson(json)
 
-        // TODO: can we do it better?
-        private fun parseUses(json: File): ReflektUses = parseJson<ReflektUsesTest>(json).toReflektUses()
-    }
-
-    /*
-     * We have lists in ClassOrObjectUses. It means if two lists have the same elements,
-     * but the elements have the different permutations,
-     * the lists will be different. But in our case it is not true
-     */
-    private fun ClassOrObjectUses.equalTo(expected: ClassOrObjectUses): Boolean {
-        if (this.keys != expected.keys) {
-            return false
-        }
-        this.forEach { (annotations, v) ->
-            val expectedAnnotations = expected[annotations] ?: return false
-            if (!equal(v, expectedAnnotations)) {
-                return false
-            }
-        }
-        return true
-    }
-
-    private fun <T> equal(first: MutableMap<Set<String>, MutableList<T>>,
-                      second: MutableMap<Set<String>, MutableList<T>>): Boolean {
-        if (first.keys != second.keys) {
-            return false
-        }
-        first.forEach { (set, lst) ->
-            val expectedLst = second[set] ?: return false
-            if (lst.size != expectedLst.size || !lst.containsAll(expectedLst)) {
-                return false
-            }
-        }
-        return true
-    }
-
-    private fun ReflektUses.equalTo(expected: ReflektUses): Boolean {
-        return listOf(this.objects.equalTo(expected.objects), this.classes.equalTo(expected.classes), equal(this.functions, expected.functions)).all { it }
+        private fun parseUses(json: File): ReflektUsesTest = parseJson(json)
     }
 
     @Tag("analysis")
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
-    fun `project analyzer test`(sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektUses) {
+    fun `project analyzer test`(sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektUsesTest) {
         val reflektClassPath = AnalysisSetupTest.getReflektJars()
         val analyzer = getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
         val actualInvokes = analyzer.invokes()
         Assertions.assertEquals(expectedInvokes, actualInvokes)
         val actualUses = analyzer.uses(actualInvokes)
-        Assertions.assertTrue(actualUses.equalTo(expectedUses))
+        Assertions.assertEquals(expectedUses, actualUses.toTestUses())
     }
 }

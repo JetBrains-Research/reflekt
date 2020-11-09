@@ -1,21 +1,25 @@
 package io.reflekt.plugin.util
 
-import com.beust.klaxon.Klaxon
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import kotlin.reflect.KFunction
 
 object Util {
+    val gson: Gson = GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create()
 
     fun getResourcesRootPath(
         cls: KFunction<Any>,
         resourcesRootName: String = "data"
     ): String = cls.javaClass.getResource(resourcesRootName).path
 
-    inline fun <reified T> parseJson(json: File): T {
-        return Klaxon().parse<T>(json) ?: error("Failed to parse the file: ${json.absolutePath}")
-    }
+    inline fun <reified T> parseJson(json: File): T =
+        gson.fromJson(json.readText(), T::class.java)
+
+    inline fun <reified T> toJson(value: T): String =
+        gson.toJson(value)
 
     /**
      * Represents a command passed to the [ProcessBuilder], where

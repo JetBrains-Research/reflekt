@@ -1,7 +1,9 @@
 {
   "objects": [
     {
-      "subTypes": ["io.reflekt.test.AInterfaceTest"],
+      "subTypes": [
+        "io.reflekt.test.AInterfaceTest"
+      ],
       "annotations": []
     }
   ],
