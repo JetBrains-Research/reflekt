@@ -1,7 +1,7 @@
 package io.reflekt.plugin.util
 
-import org.gradle.internal.impldep.com.google.gson.Gson
-import org.gradle.internal.impldep.com.google.gson.GsonBuilder
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
