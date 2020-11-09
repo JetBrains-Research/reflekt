@@ -5,6 +5,7 @@ import io.reflekt.plugin.util.Util.getResourcesRootPath
 import io.reflekt.plugin.util.Util.parseJson
 import io.reflekt.util.FileUtil.getAllNestedFiles
 import io.reflekt.util.FileUtil.getNestedDirectories
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -54,7 +55,7 @@ class AnalysisTest {
      * but the elements have the different permutations,
      * the lists will be different. But in our case it is not true
      */
-    private fun ClassOrObjectUses.equalTo(expected: ClassOrObjectUses): Boolean {
+    private fun ClassOrObjectUses.equalToClassOrObjectUses(expected: ClassOrObjectUses): Boolean {
         if (this.keys != expected.keys) {
             return false
         }
@@ -67,22 +68,33 @@ class AnalysisTest {
         return true
     }
 
+    private fun FunctionUses.equalToFunctionUses(expected: FunctionUses): Boolean {
+        return equal(this, expected) { f, s ->
+            val first = f.mapNotNull { (it as? KtNamedFunction)?.fqName.toString() }
+            first.size != s.size || !first.containsAll(s)
+        }
+    }
+
     private fun <T> equal(first: MutableMap<Set<String>, MutableList<T>>,
-                      second: MutableMap<Set<String>, MutableList<T>>): Boolean {
+                          second: MutableMap<Set<String>, MutableList<T>>,
+                          nestedCondition: (List<*>, List<*>) -> Boolean = { f, s -> f.size != s.size || !f.containsAll(s) }): Boolean {
         if (first.keys != second.keys) {
             return false
         }
         first.forEach { (set, lst) ->
             val expectedLst = second[set] ?: return false
-            if (lst.size != expectedLst.size || !lst.containsAll(expectedLst)) {
+            if (nestedCondition(lst, expectedLst)) {
                 return false
             }
         }
         return true
     }
 
-    private fun ReflektUses.equalTo(expected: ReflektUses): Boolean {
-        return listOf(this.objects.equalTo(expected.objects), this.classes.equalTo(expected.classes), equal(this.functions, expected.functions)).all { it }
+    private fun ReflektUses.equalToClassOrObjectUses(expected: ReflektUses): Boolean {
+        return listOf(this.objects.equalToClassOrObjectUses(expected.objects),
+            this.classes.equalToClassOrObjectUses(expected.classes),
+            this.functions.equalToFunctionUses(expected.functions))
+            .all { it }
     }
 
     @Tag("analysis")
@@ -94,6 +106,6 @@ class AnalysisTest {
         val actualInvokes = analyzer.invokes()
         Assertions.assertEquals(expectedInvokes, actualInvokes)
         val actualUses = analyzer.uses(actualInvokes)
-        Assertions.assertTrue(actualUses.equalTo(expectedUses))
+        Assertions.assertTrue(actualUses.equalToClassOrObjectUses(expectedUses))
     }
 }

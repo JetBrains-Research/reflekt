@@ -10,6 +10,7 @@ plugins {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("compiler-embeddable"))
 }
 
 publishJar {

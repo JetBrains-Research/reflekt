@@ -1,0 +1,12 @@
+{
+  "objects": [],
+  "classes": [],
+  "functions": [
+    {
+      "annotations": [
+        "io.reflekt.test.FirstAnnotationTest"
+      ],
+      "subtypesToUses": ["io.reflekt.test.foo", "io.reflekt.test.bar", "io.reflekt.test.TestFunctions.foo", "io.reflekt.test.TestFunctions.Companion.foo", "io.reflekt.test.nested.foo"]
+    }
+  ]
+}
