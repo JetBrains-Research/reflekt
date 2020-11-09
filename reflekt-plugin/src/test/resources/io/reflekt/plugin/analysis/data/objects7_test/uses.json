@@ -1,15 +1,5 @@
 {
-  "objects": [
-    {
-      "annotations": [],
-      "subtypesToUses": [
-        {
-          "subtypes": ["kotlin.Any"],
-          "uses": ["io.reflekt.test.A1", "io.reflekt.test.A2", "io.reflekt.test.A3", "io.reflekt.test.A4", "io.reflekt.test.TestFunctions.Companion"]
-        }
-      ]
-    }
-  ],
-  "classes": [],
-  "functions": []
+  "objects": {},
+  "classes": {},
+  "functions": {}
 }

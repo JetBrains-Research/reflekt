@@ -2,8 +2,13 @@
   "objects": [],
   "classes": [
     {
-      "subTypes": ["kotlin.Any"],
-      "annotations": ["io.reflekt.test.FirstAnnotationTest", "io.reflekt.test.SecondAnnotationTest"]
+      "subTypes": [
+        "io.reflekt.test.BInterfaceTest"
+      ],
+      "annotations": [
+        "io.reflekt.test.SecondAnnotationTest",
+        "io.reflekt.test.FirstAnnotationTest"
+      ]
     }
   ],
   "functions": []

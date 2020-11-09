@@ -1,20 +1,38 @@
 {
-  "objects": [],
+  "objects": {},
   "classes": [
-    {
-      "annotations": [],
-      "subtypesToUses": [
-        {
-          "subtypes": ["io.reflekt.test.AInterfaceTest", "io.reflekt.test.BInterfaceTest"],
-          "uses": ["io.reflekt.test.B1", "io.reflekt.test.B2", "io.reflekt.test.B3", "io.reflekt.test.B3.B4"]
-        },
-        {
-          "subtypes": ["kotlin.Any"],
-          "uses": ["io.reflekt.test.B1", "io.reflekt.test.B2", "io.reflekt.test.B3", "io.reflekt.test.B3.B4", "io.reflekt.test.FirstAnnotationTest", "io.reflekt.test.SecondAnnotationTest", "io.reflekt.test.TestFunctions"]
-        }
+    [
+      {
+        "subTypes": [
+          "io.reflekt.test.BInterfaceTest",
+          "io.reflekt.test.AInterfaceTest"
+        ],
+        "annotations": []
+      },
+      [
+        "io.reflekt.test.B1",
+        "io.reflekt.test.B2",
+        "io.reflekt.test.B3",
+        "io.reflekt.test.B3.B4"
       ]
-    }
+    ],
+    [
+      {
+        "subTypes": [
+          "kotlin.Any"
+        ],
+        "annotations": []
+      },
+      [
+        "io.reflekt.test.B1",
+        "io.reflekt.test.B2",
+        "io.reflekt.test.B3",
+        "io.reflekt.test.B3.B4",
+        "io.reflekt.test.TestFunctions",
+        "io.reflekt.test.FirstAnnotationTest",
+        "io.reflekt.test.SecondAnnotationTest"
+      ]
+    ]
   ],
-  "functions": []
+  "functions": {}
 }
-
