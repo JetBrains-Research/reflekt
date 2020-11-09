@@ -3,7 +3,6 @@ package io.reflekt.plugin.analysis
 import io.reflekt.plugin.analysis.AnalysisUtil.getReflektAnalyzer
 import io.reflekt.plugin.util.Util.getResourcesRootPath
 import io.reflekt.plugin.util.Util.parseJson
-import io.reflekt.plugin.util.Util.toJson
 import io.reflekt.util.FileUtil.getAllNestedFiles
 import io.reflekt.util.FileUtil.getNestedDirectories
 import org.junit.jupiter.api.Assertions
