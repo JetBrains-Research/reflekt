@@ -2,4 +2,4 @@
 
 This project contains `Reflekt` invokes. 
 First use `withAnnotations` with several arguments. The result of objects should not be empty,
-then use `withSubTypes` with the top-level class `A1`.
+then use `withSubTypes` with the top-level class `A3`.
