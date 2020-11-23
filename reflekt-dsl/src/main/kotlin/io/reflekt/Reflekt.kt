@@ -2,6 +2,7 @@ package io.reflekt
 
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import org.jetbrains.kotlin.psi.KtNamedFunction
 
 object Reflekt {
     class Objects {

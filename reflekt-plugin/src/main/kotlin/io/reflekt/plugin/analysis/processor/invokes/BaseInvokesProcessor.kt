@@ -24,7 +24,7 @@ abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingC
         WITH_ANNOTATIONS("withAnnotations")
     }
 
-    protected fun findClassOrObjectInvokes(nodes: Sequence<ASTNode>): SubTypesToAnnotations? {
+    protected fun findClassOrObjectInvokes(nodes: Sequence<ASTNode>, toCheckTypeInAnnotations: Boolean): SubTypesToAnnotations? {
         val subtypes = HashSet<String>()
         val annotations = HashSet<String>()
 
@@ -34,19 +34,21 @@ abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingC
                 ReflektFunctionsNames.WITH_SUBTYPE.functionName -> callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
                 ReflektFunctionsNames.WITH_SUBTYPES.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { subtypes.addAll(it) }
                 ReflektFunctionsNames.WITH_ANNOTATIONS.functionName -> {
-                    callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
+                    if (toCheckTypeInAnnotations){
+                        callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
+                    }
                     callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
                 }
                 else -> error("Found an unexpected node text: ${node.text}")
             }
         }
-        if (subtypes.isEmpty()) {
+        if (subtypes.isEmpty() && annotations.isEmpty()) {
             return null
         }
         return SubTypesToAnnotations(subtypes, annotations)
     }
 
-    protected fun processClassOrObjectInvokes(element: KtElement): ClassOrObjectInvokes {
+    protected fun processClassOrObjectInvokes(element: KtElement, toCheckTypeInAnnotations: Boolean = true): ClassOrObjectInvokes {
         val invokes: ClassOrObjectInvokes = HashSet()
         (element as? KtReferenceExpression)?.let {expression ->
             /*
@@ -61,7 +63,7 @@ abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingC
                  * Now we should find all current withSubTypes and withAnnotations invokes
                  */
                 val filtered = node.filterChildren { n: ASTNode -> n.text in ReflektFunctionsNames.values().map { it.functionName } }
-                findClassOrObjectInvokes(filtered)?.let {
+                findClassOrObjectInvokes(filtered, toCheckTypeInAnnotations)?.let {
                     invokes.add(it)
                 }
 
