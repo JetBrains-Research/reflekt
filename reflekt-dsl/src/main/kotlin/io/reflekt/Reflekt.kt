@@ -70,7 +70,8 @@ object Reflekt {
             fun toSet(): Set<KFunction<T>> = toList().toSet()
         }
 
-        fun withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<KtNamedFunction>(klasses.mapNotNull { it.qualifiedName }.toSet())
+        // T - returned class
+        inline fun <reified T: Any> withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet())
     }
 
     fun objects() = Objects()
