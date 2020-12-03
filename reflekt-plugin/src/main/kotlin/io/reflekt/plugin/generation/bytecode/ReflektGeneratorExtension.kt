@@ -32,7 +32,7 @@ class ReflektGeneratorExtension(private val messageCollector: MessageCollector? 
             val invokeNames = parseReflektInvoke(expression.getFqName(c.codegen.bindingContext) ?: return null) ?: return null
             val invokeArguments = findReflektInvokeArgumentsByExpressionPart(expression, binding)!!
 
-            val uses = c.codegen.bindingContext.getUses() ?: return null
+            val uses = c.codegen.bindingContext.getUses() ?: throw ReflektGenerationException("Found call to Reflekt, but no analysis data")
             val resultValues = invokeNames.getUses(uses, invokeArguments, c, functionInstanceGenerator)
 
             val returnType = resolvedCall.candidateDescriptor.returnType!!
