@@ -1,4 +1,4 @@
-package io.reflekt.plugin.generation.bytecode
+package io.reflekt.plugin.generation.bytecode.util
 
 import org.jetbrains.org.objectweb.asm.Label
 import org.jetbrains.org.objectweb.asm.Type
@@ -25,10 +25,10 @@ fun InstructionAdapter.checkCast(castType: Type, checkForNull: Boolean) {
 
         dup()
         ifnonnull(nonNullLabel)
-        anew(Type.getObjectType("kotlin/TypeCastException"))
+        anew(AsmType.TYPE_CAST_EXCEPTION.type)
         dup()
         visitLdcInsn("null cannot be cast to non-null type ${castType.className}")
-        invokespecial("kotlin/TypeCastException", "<init>", "(Ljava/lang/String;)V", false)
+        invokespecial(AsmType.TYPE_CAST_EXCEPTION.internalName, MethodName.INIT.text, "(Ljava/lang/String;)V", false)
         athrow()
         visitLabel(nonNullLabel)
     }
@@ -36,12 +36,18 @@ fun InstructionAdapter.checkCast(castType: Type, checkForNull: Boolean) {
 }
 
 fun InstructionAdapter.pushObject(type: Type) {
-    getstatic(type.internalName, "INSTANCE", type.descriptor)
+    getstatic(type.internalName, PropertyName.INSTANCE.text, type.descriptor)
 }
 
 fun InstructionAdapter.pushKClass(type: Type) {
     visitLdcInsn(type)
     invokestatic("kotlin/jvm/internal/Reflection", "getOrCreateKotlinClass", "(Ljava/lang/Class;)Lkotlin/reflect/KClass;", false)
+}
+
+fun InstructionAdapter.pushFunctionN(type: Type) {
+    anew(type)
+    dup()
+    invokespecial(type.internalName, MethodName.INIT.text, "()V", false)
 }
 
 fun InstructionAdapter.invokeListOf() {
@@ -50,4 +56,16 @@ fun InstructionAdapter.invokeListOf() {
 
 fun InstructionAdapter.invokeSetOf() {
     invokestatic("kotlin/collections/SetsKt", "setOf", "([Ljava/lang/Object;)Ljava/util/Set;", false)
+}
+
+fun InstructionAdapter.visitCode(action: () -> Unit) {
+    visitCode()
+    action()
+    visitEnd()
+}
+
+fun InstructionAdapter.newLabel(): Label {
+    val label = Label()
+    visitLabel(label)
+    return label
 }
