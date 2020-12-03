@@ -38,12 +38,12 @@ object ReflektImpl {
 
     class Functions {
         // T - returned class
-        class WithAnnotations<T: Any>(val annotationFqNames: Set<String>) {
-            fun toList(): List<KFunction<T>> = error("This method should be replaced during compilation")
-            fun toSet(): Set<KFunction<T>> = toList().toSet()
+        class WithAnnotations<T: Function<*>>(val annotationFqNames: Set<String>) {
+            fun toList(): List<T> = error("This method should be replaced during compilation")
+            fun toSet(): Set<T> = toList().toSet()
         }
 
-        fun <T: Any> withAnnotations(fqNames: Set<String>) = WithAnnotations<T>(fqNames)
+        fun <T: Function<*>> withAnnotations(fqNames: Set<String>) = WithAnnotations<T>(fqNames)
     }
 
     fun objects() = Objects()

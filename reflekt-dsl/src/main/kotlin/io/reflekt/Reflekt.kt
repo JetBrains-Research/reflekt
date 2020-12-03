@@ -64,13 +64,13 @@ object Reflekt {
 
     class Functions {
         // T - returned class
-        class WithAnnotations<T: Any>(private val annotationFqNames: Set<String>) {
-            fun toList(): List<KFunction<T>> = ReflektImpl.functions().withAnnotations<T>(annotationFqNames).toList()
-            fun toSet(): Set<KFunction<T>> = toList().toSet()
+        class WithAnnotations<T: Function<*>>(private val annotationFqNames: Set<String>) {
+            fun toList(): List<T> = ReflektImpl.functions().withAnnotations<T>(annotationFqNames).toList()
+            fun toSet(): Set<T> = toList().toSet()
         }
 
         // T - returned class
-        inline fun <reified T: Any> withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet())
+        inline fun <reified T: Function<*>> withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet())
     }
 
     fun objects() = Objects()
