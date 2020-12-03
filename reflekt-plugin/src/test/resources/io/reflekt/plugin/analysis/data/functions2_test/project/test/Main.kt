@@ -3,5 +3,5 @@ package io.reflekt.test
 import io.reflekt.Reflekt
 
 fun main() {
-    val functions = Reflekt.functions().withAnnotations<Any>(FirstAnnotationTest::class)
+    val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotationTest::class)
 }
