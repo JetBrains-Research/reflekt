@@ -13,10 +13,12 @@ import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper
 import org.jetbrains.kotlin.com.intellij.psi.PsiFile
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.load.kotlin.TypeMappingMode
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.resolve.descriptorUtil.isCompanionObject
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin
 import org.jetbrains.kotlin.resolve.jvm.jvmSignature.JvmMethodParameterKind
 import org.jetbrains.kotlin.resolve.scopes.receivers.TransientReceiver
@@ -61,7 +63,9 @@ class FunctionInstanceGenerator(
             }
         }
 
-        val isObjectReceiver = (receiverType?.constructor?.declarationDescriptor as? ClassDescriptor)?.kind == ClassKind.OBJECT
+        val receiverDescriptor: DeclarationDescriptor? = receiverType?.constructor?.declarationDescriptor
+        val isObjectReceiver: Boolean = (receiverDescriptor as? ClassDescriptor)?.kind == ClassKind.OBJECT
+        val isCompanionObjectReceiver: Boolean = receiverDescriptor?.isCompanionObject() ?: false
 
         val argumentTypes: List<KotlinType> = let {
             listOfNotNull(if (!isObjectReceiver) receiverType else null).plus(
@@ -223,8 +227,13 @@ class FunctionInstanceGenerator(
 
         fun InstructionAdapter.invokeReferencedFunction() {
             val method = typeMapper.mapToCallableMethod(functionDescriptor, superCall = false)
-            if (isObjectReceiver && receiverAsmType != null) {
-                pushObject(receiverAsmType)
+            if (isObjectReceiver) {
+                if (isCompanionObjectReceiver) {
+                    val owner = typeMapper.classInternalName(receiverDescriptor?.containingDeclaration as ClassDescriptor)
+                    getstatic(owner, PropertyName.COMPANION.text, receiverAsmType!!.descriptor)
+                } else {
+                    pushObject(receiverAsmType!!)
+                }
             }
             argumentAsmTypes.forEachIndexed { index, asmType ->
                 load(index + 1, asmType)

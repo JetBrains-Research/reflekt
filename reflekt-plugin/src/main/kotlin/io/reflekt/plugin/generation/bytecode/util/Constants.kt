@@ -16,7 +16,8 @@ enum class MethodName(val text: String) {
 }
 
 enum class PropertyName(val text: String) {
-    INSTANCE("INSTANCE")
+    INSTANCE("INSTANCE"),
+    COMPANION("Companion")
 }
 
 enum class Keyword(val text: String) {
