@@ -10,6 +10,7 @@ import io.reflekt.plugin.analysis.common.findReflektInvokeArgumentsByExpressionP
 import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.generation.bytecode.util.*
 import io.reflekt.plugin.utils.Util.getUses
+import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
 import org.jetbrains.kotlin.codegen.asmType
@@ -24,21 +25,30 @@ class ReflektGeneratorExtension(private val messageCollector: MessageCollector? 
     private val functionInstanceGenerator = FunctionInstanceGenerator("io/reflekt/generated/Functions", messageCollector)
 
     override fun applyFunction(receiver: StackValue, resolvedCall: ResolvedCall<*>, c: ExpressionCodegenExtension.Context): StackValue? {
-        val binding = c.codegen.bindingContext
-        val expression = resolvedCall.call.calleeExpression ?: return null
+        try {
+            val binding = c.codegen.bindingContext
+            val expression = resolvedCall.call.calleeExpression ?: return null
 
-        val invokeNames = parseReflektInvoke(expression.getFqName(c.codegen.bindingContext) ?: return null) ?: return null
-        val invokeArguments = findReflektInvokeArgumentsByExpressionPart(expression, binding)!!
+            val invokeNames = parseReflektInvoke(expression.getFqName(c.codegen.bindingContext) ?: return null) ?: return null
+            val invokeArguments = findReflektInvokeArgumentsByExpressionPart(expression, binding)!!
 
-        val uses = c.codegen.bindingContext.getUses() ?: return null
-        val resultValues = invokeNames.getUses(uses, invokeArguments, c, functionInstanceGenerator)
+            val uses = c.codegen.bindingContext.getUses() ?: return null
+            val resultValues = invokeNames.getUses(uses, invokeArguments, c, functionInstanceGenerator)
 
-        val returnType = resolvedCall.candidateDescriptor.returnType!!
-        val returnTypeArgument = returnType.arguments.first().type.asmType(c.typeMapper)
+            val returnType = resolvedCall.candidateDescriptor.returnType!!
+            val returnTypeArgument = returnType.arguments.first().type.asmType(c.typeMapper)
 
-        return StackValue.functionCall(returnType.asmType(c.typeMapper), null) {
-            it.pushArray(returnTypeArgument, resultValues, invokeNames.pushItemFunction)
-            invokeNames.invokeTerminalFunction(it)
+            return StackValue.functionCall(returnType.asmType(c.typeMapper), null) {
+                it.pushArray(returnTypeArgument, resultValues, invokeNames.pushItemFunction)
+                invokeNames.invokeTerminalFunction(it)
+            }
+        } catch (e: Exception) {
+            val reflektGenerationException = ReflektGenerationException(
+                message = "Failed to generate Reflekt bytecode implementation: ${e.message}",
+                cause = e
+            )
+            messageCollector?.log("ERROR: $reflektGenerationException;")
+            throw reflektGenerationException
         }
     }
 }
@@ -70,17 +80,17 @@ private data class ReflektInvokeNames(
         return when (val type = name) {
             ReflektName.OBJECTS, ReflektName.CLASSES -> {
                 val items = if (type == ReflektName.OBJECTS) uses.objects else uses.classes
-                items.getValue(invokeArguments).mapNotNull {
-                    binding.get(ASM_TYPE, it.findClassDescriptor(binding))
+                items[invokeArguments]?.map {
+                    binding.get(ASM_TYPE, it.findClassDescriptor(binding)) ?: throw ReflektGenerationException("Failed to resolve class [$it]")
                 }
             }
             ReflektName.FUNCTIONS -> {
                 val items = uses.functions
-                items.getValue(invokeArguments.annotations).map {
+                items[invokeArguments.annotations]?.map {
                     functionInstanceGenerator.generate(it, c)
                 }
             }
-        }
+        } ?: throw ReflektGenerationException("No data for call [$this]")
     }
 }
 
