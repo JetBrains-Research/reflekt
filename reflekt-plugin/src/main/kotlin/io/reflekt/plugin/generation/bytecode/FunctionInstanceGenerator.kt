@@ -1,6 +1,7 @@
 package io.reflekt.plugin.generation.bytecode
 
 import io.reflekt.plugin.generation.bytecode.util.*
+import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.ClassBuilder
 import org.jetbrains.kotlin.codegen.StackValue
@@ -78,6 +79,8 @@ class FunctionInstanceGenerator(
 
         fun generate(): Type {
             val functionInterface = "kotlin/jvm/functions/Function${argumentTypes.size}"
+            val classSignature = generateClassSignature(Type.getObjectType(functionInterface))
+
             val classBuilder = state.factory.newVisitor(JvmDeclarationOrigin.NO_ORIGIN, classAsmType, listOf<PsiFile>())
             classBuilder.defineClass(
                 null,
@@ -88,6 +91,9 @@ class FunctionInstanceGenerator(
                 AsmType.OBJECT.internalName,
                 arrayOf(functionInterface)
             )
+
+            messageCollector?.log("GENERATED CLASS SIGNATURE: ${classSignature}")
+
             generateInit(classBuilder)
             generateInvoke(classBuilder)
             classBuilder.done()
@@ -152,13 +158,14 @@ class FunctionInstanceGenerator(
 
         fun generateInvoke(classBuilder: ClassBuilder) {
             val method = Method(MethodName.INVOKE.text, returnAsmType, argumentAsmTypes.toTypedArray())
+            val signature = generateInvokeSignature()
 
             val methodVisitor = InstructionAdapter(classBuilder.newMethod(
                 JvmDeclarationOrigin.NO_ORIGIN,
                 Opcodes.ACC_PUBLIC,
                 method.name,
                 method.descriptor,
-                generateInvokeSignature(),
+                signature,
                 null
             ))
 
@@ -175,6 +182,8 @@ class FunctionInstanceGenerator(
             }
 
             generateInvokeBridge(classBuilder, method.descriptor)
+
+            messageCollector?.log("GENERATED INVOKE SIGNATURE: $signature")
         }
 
         private fun generateInvokeBridge(classBuilder: ClassBuilder, invokeDescriptor: String) {
