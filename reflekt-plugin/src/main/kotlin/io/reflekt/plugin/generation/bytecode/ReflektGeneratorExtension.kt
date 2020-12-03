@@ -29,18 +29,28 @@ class ReflektGeneratorExtension(private val messageCollector: MessageCollector? 
             val binding = c.codegen.bindingContext
             val expression = resolvedCall.call.calleeExpression ?: return null
 
-            val invokeNames = parseReflektInvoke(expression.getFqName(c.codegen.bindingContext) ?: return null) ?: return null
+            val expressionFqName = expression.getFqName(c.codegen.bindingContext) ?: return null
+
+            // Split expression into known parts of Reflekt invoke
+            val invokeParts = parseReflektInvoke(expressionFqName) ?: return null
+            messageCollector?.log("REFLEKT CALL: $expressionFqName;")
+
+            // Parse Reflekt call to find arguments again
             val invokeArguments = findReflektInvokeArgumentsByExpressionPart(expression, binding)!!
 
+            // Get ReflektUses stored in binding context after analysis part
             val uses = c.codegen.bindingContext.getUses() ?: throw ReflektGenerationException("Found call to Reflekt, but no analysis data")
-            val resultValues = invokeNames.getUses(uses, invokeArguments, c, functionInstanceGenerator)
+            // Extract answer from uses
+            val resultValues = invokeParts.getUses(uses, invokeArguments, c, functionInstanceGenerator)
 
+            // Return type (e.g. List or Set)
             val returnType = resolvedCall.candidateDescriptor.returnType!!
+            // Type of each answer (e.g KClass or Function2)
             val returnTypeArgument = returnType.arguments.first().type.asmType(c.typeMapper)
 
             return StackValue.functionCall(returnType.asmType(c.typeMapper), null) {
-                it.pushArray(returnTypeArgument, resultValues, invokeNames.pushItemFunction)
-                invokeNames.invokeTerminalFunction(it)
+                it.pushArray(returnTypeArgument, resultValues, invokeParts.pushItemFunction)
+                invokeParts.invokeTerminalFunction(it)
             }
         } catch (e: Exception) {
             val reflektGenerationException = ReflektGenerationException(
@@ -53,23 +63,32 @@ class ReflektGeneratorExtension(private val messageCollector: MessageCollector? 
     }
 }
 
-private data class ReflektInvokeNames(
+/*
+ * Any Reflekt invoke as an expression looks like this:
+ * [1]...Reflekt.[2]|Classes/Objects/Functions|.[3]|WithSubtypes/WithAnnotations|.[4]|toList/toSet/etc|
+ * If it does not end with terminal function (like toList), we skip it.
+ */
+private data class ReflektInvokeParts(
     val name: ReflektName,
     val nestedName: ReflektNestedName,
     val terminalFunctionName: ReflektTerminalFunctionName
 ) {
+    // Push a value of specified type on stack depending on which kind it is.
     val pushItemFunction: InstructionAdapter.(Type) -> Unit
         get() = when (name) {
             ReflektName.OBJECTS -> InstructionAdapter::pushObject
             ReflektName.CLASSES -> InstructionAdapter::pushKClass
             ReflektName.FUNCTIONS -> InstructionAdapter::pushFunctionN
         }
+
+    // Invoke terminal function after preparing arguments.
     val invokeTerminalFunction: InstructionAdapter.() -> Unit
         get() = when (terminalFunctionName) {
             ReflektTerminalFunctionName.TO_LIST -> InstructionAdapter::invokeListOf
             ReflektTerminalFunctionName.TO_SET -> InstructionAdapter::invokeSetOf
         }
 
+    // Extract result classes, objects or functions and convert them into ASM types.
     fun getUses(
         uses: ReflektUses,
         invokeArguments: SubTypesToAnnotations,
@@ -100,7 +119,7 @@ private fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, transform: T.() -
 private fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T? =
     values.first { it.transform() == this }
 
-private fun parseReflektInvoke(fqName: String): ReflektInvokeNames? {
+private fun parseReflektInvoke(fqName: String): ReflektInvokeParts? {
     val names = enumToRegexOptions(ReflektName.values(), ReflektName::className)
     val nestedNames = enumToRegexOptions(ReflektNestedName.values(), ReflektNestedName::className)
     val terminalNames = enumToRegexOptions(ReflektTerminalFunctionName.values(), ReflektTerminalFunctionName::functionName)
@@ -108,7 +127,7 @@ private fun parseReflektInvoke(fqName: String): ReflektInvokeNames? {
 
     val matchResult = regex.matchEntire(fqName) ?: return null
     val (_, klass, nestedClass, terminalFunction) = matchResult.groupValues
-    return ReflektInvokeNames(
+    return ReflektInvokeParts(
         klass.toEnum(ReflektName.values(), ReflektName::className)!!,
         nestedClass.toEnum(ReflektNestedName.values(), ReflektNestedName::className)!!,
         terminalFunction.toEnum(ReflektTerminalFunctionName.values(), ReflektTerminalFunctionName::functionName)!!
