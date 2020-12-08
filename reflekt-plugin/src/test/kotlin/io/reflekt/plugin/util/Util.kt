@@ -5,15 +5,16 @@ import com.google.gson.GsonBuilder
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 object Util {
     val gson: Gson = GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create()
 
     fun getResourcesRootPath(
-        cls: KFunction<Any>,
+        cls: KClass<*>,
         resourcesRootName: String = "data"
-    ): String = cls.javaClass.getResource(resourcesRootName).path
+    ): String = cls.java.getResource(resourcesRootName).path
 
     inline fun <reified T> parseJson(json: File): T =
         gson.fromJson(json.readText(), T::class.java)

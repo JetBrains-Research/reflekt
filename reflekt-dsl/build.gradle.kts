@@ -3,14 +3,9 @@ import tanvd.kosogor.proxy.publishJar
 group = rootProject.group
 version = rootProject.version
 
-plugins {
-    kotlin("jvm")
-}
-
-
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("compiler-embeddable"))
+    api(kotlin("stdlib"))
+    api(kotlin("reflect"))
 }
 
 publishJar {

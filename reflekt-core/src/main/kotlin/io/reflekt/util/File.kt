@@ -4,7 +4,6 @@ import net.lingala.zip4j.ZipFile
 import java.io.File
 
 object FileUtil {
-
     fun extractAllFiles(zipFile: File): List<File> = getAllNestedFiles(unZipFile(zipFile))
 
     fun getAllNestedFiles(rootPath: String, files: MutableList<File> = ArrayList(), ignoredDirectories: Set<String> = emptySet()): List<File> {

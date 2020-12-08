@@ -3,13 +3,9 @@ import tanvd.kosogor.proxy.publishJar
 group = rootProject.group
 version = rootProject.version
 
-plugins {
-    kotlin("jvm")
-}
-
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    api(kotlin("stdlib"))
     implementation("net.lingala.zip4j", "zip4j", "2.6.1")
 }
 

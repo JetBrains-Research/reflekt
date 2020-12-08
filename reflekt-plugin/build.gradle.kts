@@ -4,20 +4,11 @@ group = rootProject.group
 version = rootProject.version
 
 plugins {
-    kotlin("jvm")
     kotlin("kapt")
 }
 
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("compiler-embeddable"))
-    implementation(gradleKotlinDsl())
-    implementation(kotlin("gradle-plugin-api"))
+    compileOnly(kotlin("compiler-embeddable"))
 
     implementation("com.google.auto.service", "auto-service-annotations", "1.0-rc7")
     kapt("com.google.auto.service", "auto-service", "1.0-rc7")
@@ -26,6 +17,8 @@ dependencies {
     implementation(project(":reflekt-dsl"))
 
     testImplementation(gradleTestKit())
+    testImplementation(kotlin("compiler-embeddable"))
+
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.0")
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
