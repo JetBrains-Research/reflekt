@@ -1,17 +1,20 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
-import io.reflekt.util.FileUtil
 import io.reflekt.util.FileUtil.extractAllFiles
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.compile.AbstractCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin
-import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
-import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
-import org.gradle.api.artifacts.Configuration
+import org.jetbrains.kotlin.gradle.plugin.*
 import java.io.File
+import io.reflekt.cli.Util.ARTIFACT_ID
+import io.reflekt.cli.Util.ENABLED_OPTION_INFO
+import io.reflekt.cli.Util.GROUP_ID
+import io.reflekt.cli.Util.INTROSPECT_FILE_OPTION_INFO
+import io.reflekt.cli.Util.OUTPUT_DIR_OPTION_INFO
+import io.reflekt.cli.Util.PLUGIN_ID
+import io.reflekt.cli.Util.VERSION
 
 @AutoService(KotlinGradleSubplugin::class)
 class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
@@ -35,23 +38,19 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
         project.configurations.filter { it.isCanBeResolved }.forEach {
             filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(it, extension)))
         }
-        val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = "fileToIntrospect", value = it.absolutePath) }
-        return librariesToIntrospect + SubpluginOption(key = "enabled", value = extension.enabled.toString())
+        val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = INTROSPECT_FILE_OPTION_INFO.name, value = it.absolutePath) }
+        return librariesToIntrospect + SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) + SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath)
     }
 
     /**
      * Just needs to be consistent with the key for ReflektCommandLineProcessor#pluginId
      */
-    override fun getCompilerPluginId(): String = "io.reflekt"
+    override fun getCompilerPluginId(): String = PLUGIN_ID
 
     override fun getPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
-        groupId = "io.reflekt",
-        /**
-         * Just needs to be consistent with the artifactId in reflekt-plugin build.gradle.kts#publishJar
-         */
-        artifactId = "reflekt-compiler-plugin",
-        // Todo: get version from a variable
-        version = "0.1.0"
+        groupId = GROUP_ID,
+        artifactId = ARTIFACT_ID,
+        version = VERSION
     )
 
     private fun getFilesToIntrospect(jarFiles: Set<File>): List<File> {
