@@ -11,11 +11,11 @@ object Util {
     /** Global constant with plugin identifier */
     const val PLUGIN_ID = "io.reflekt"
 
-    const val GROUP_ID = "io.reflekt"
+    const val GRADLE_GROUP_ID = "io.reflekt.gradle"
     /**
      * Just needs to be consistent with the artifactId in reflekt-plugin build.gradle.kts#publishJar
      */
-    const val ARTIFACT_ID = "reflekt-compiler-plugin"
+    const val GRADLE_ARTIFACT_ID = "reflekt-compiler-plugin"
     const val VERSION = "0.1.0"
 
     val ENABLED_OPTION_INFO = MyCliOption(

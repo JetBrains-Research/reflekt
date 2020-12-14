@@ -9,12 +9,10 @@ plugins {
 }
 
 dependencies {
-    implementation(kotlin("gradle-plugin-api"))
+    implementation(kotlin("gradle-plugin-api", "1.4.20"))
     implementation(project(":reflekt-core"))
     api(project(":reflekt-dsl"))
-
-    implementation("com.google.auto.service", "auto-service-annotations", "1.0-rc7")
-    kapt("com.google.auto.service", "auto-service", "1.0-rc7")
+    implementation(kotlin("compiler-embeddable"))
 }
 
 publishPlugin {
@@ -26,6 +24,6 @@ publishPlugin {
 
 publishJar {
     publication {
-        artifactId = "io.reflekt.gradle"
+        artifactId = "io.reflekt.gradle.plugin"
     }
 }

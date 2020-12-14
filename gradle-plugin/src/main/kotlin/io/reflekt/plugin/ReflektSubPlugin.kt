@@ -1,36 +1,29 @@
 package io.reflekt.plugin
 
-import com.google.auto.service.AutoService
 import io.reflekt.util.FileUtil.extractAllFiles
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.tasks.compile.AbstractCompile
-import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
 import org.jetbrains.kotlin.gradle.plugin.*
 import java.io.File
-import io.reflekt.cli.Util.ARTIFACT_ID
+import io.reflekt.cli.Util.GRADLE_ARTIFACT_ID
 import io.reflekt.cli.Util.ENABLED_OPTION_INFO
-import io.reflekt.cli.Util.GROUP_ID
+import io.reflekt.cli.Util.GRADLE_GROUP_ID
 import io.reflekt.cli.Util.INTROSPECT_FILE_OPTION_INFO
 import io.reflekt.cli.Util.OUTPUT_DIR_OPTION_INFO
 import io.reflekt.cli.Util.PLUGIN_ID
 import io.reflekt.cli.Util.VERSION
+import org.gradle.api.provider.Provider
 
-@AutoService(KotlinGradleSubplugin::class)
-class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
+@Suppress("unused")
+class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
 
-    override fun isApplicable(project: Project, task: AbstractCompile) =
-        project.plugins.hasPlugin(ReflektPlugin::class.java)
+    override fun apply(target: Project) {
+        target.pluginManager.apply("idea")
+    }
 
-    override fun apply(
-        project: Project,
-        kotlinCompile: AbstractCompile,
-        javaCompile: AbstractCompile?,
-        variantData: Any?,
-        androidProjectHandler: Any?,
-        kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
-    ): List<SubpluginOption> {
+    override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         println("ReflektSubPlugin loaded")
+        val project = kotlinCompilation.target.project
         val extension = project.extensions.findByType(ReflektGradleExtension::class.java)
             ?: ReflektGradleExtension()
 
@@ -39,8 +32,12 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
             filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(it, extension)))
         }
         val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = INTROSPECT_FILE_OPTION_INFO.name, value = it.absolutePath) }
-        return librariesToIntrospect + SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) + SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath)
+        return project.provider {
+            librariesToIntrospect + SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) + SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath)
+        }
     }
+
+    override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean = kotlinCompilation.platformType == KotlinPlatformType.jvm
 
     /**
      * Just needs to be consistent with the key for ReflektCommandLineProcessor#pluginId
@@ -48,8 +45,8 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
     override fun getCompilerPluginId(): String = PLUGIN_ID
 
     override fun getPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
-        groupId = GROUP_ID,
-        artifactId = ARTIFACT_ID,
+        groupId = GRADLE_GROUP_ID,
+        artifactId = GRADLE_ARTIFACT_ID,
         version = VERSION
     )
 
