@@ -65,9 +65,7 @@ class ReflektSubPlugin : KotlinGradleSubplugin<AbstractCompile> {
         val jarsToIntrospect: MutableSet<File> = HashSet()
         val filtered = configuration.dependencies.filter { "${it.group}:${it.name}:${it.version}" in extension.librariesToIntrospect }
         // TODO: resolve files
-//        if (toResolve) {
-//            jarsToIntrospect.addAll(configuration.files(*filtered.toTypedArray()))
-//        }
+//        jarsToIntrospect.addAll(configuration.files(*filtered.toTypedArray()))
         return jarsToIntrospect
     }
 }
