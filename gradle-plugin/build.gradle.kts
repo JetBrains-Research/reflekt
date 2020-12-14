@@ -16,7 +16,7 @@ dependencies {
 }
 
 publishPlugin {
-    id = "io.reflekt.gradle"
+    id = "io.reflekt"
     displayName = "Reflekt"
     implementationClass = "io.reflekt.plugin.ReflektPlugin"
     version = project.version.toString()

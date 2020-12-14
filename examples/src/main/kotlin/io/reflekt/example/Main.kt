@@ -28,5 +28,4 @@ fun main() {
     val classes2 = Reflekt.classes().withSubType<BInterface>()
     val classes3 = Reflekt.classes().withAnnotations<B2>(FirstAnnotation::class, SecondAnnotation::class)
 
-    val functions = Reflekt.functions().withAnnotations<Any>(FirstAnnotation::class)
 }
