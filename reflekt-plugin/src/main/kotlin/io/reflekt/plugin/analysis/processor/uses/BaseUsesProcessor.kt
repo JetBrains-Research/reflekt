@@ -15,22 +15,15 @@ abstract class BaseUsesProcessor<Output : Any>(override val binding: BindingCont
 
     protected fun processClassOrObjectUses(element: KtElement, invokes: ClassOrObjectInvokes, uses: ClassOrObjectUses): ClassOrObjectUses {
         (element as? KtClassOrObject)?.let {
-            invokes.forEach {
-                if (it.covers(element)) {
-                    uses.getValue(it.annotations).getValue(it.subTypes).add(element.fqName!!.asString())
-                }
+            invokes.filter { it.covers(element) }.forEach {
+                uses.getValue(it).add(element)
             }
         }
         return uses
     }
 
-    protected fun initClassOrObjectUses(invokes: ClassOrObjectInvokes): ClassOrObjectUses {
-        val uses = invokes.map { it.annotations to HashMap<Set<String>, MutableList<String>>() }.toMap()
-        for (invoke in invokes) {
-            uses.getValue(invoke.annotations)[invoke.subTypes] = ArrayList()
-        }
-        return uses
-    }
+    protected fun initClassOrObjectUses(invokes: ClassOrObjectInvokes): ClassOrObjectUses =
+        invokes.map { it to ArrayList<KtClassOrObject>() }.toMap()
 
     private fun SubTypesToAnnotations.covers(element: KtClassOrObject): Boolean =
         // annotations set is empty when withSubTypes() method is called, so we don't need to check annotations in this case

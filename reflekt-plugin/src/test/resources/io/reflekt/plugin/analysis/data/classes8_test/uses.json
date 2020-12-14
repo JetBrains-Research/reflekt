@@ -1,0 +1,21 @@
+{
+  "objects": {},
+  "classes": [
+    [
+      {
+        "subTypes": [
+          "io.reflekt.test.BInterfaceTest",
+          "io.reflekt.test.AInterfaceTest"
+        ],
+        "annotations": []
+      },
+      [
+        "io.reflekt.test.B1",
+        "io.reflekt.test.B2",
+        "io.reflekt.test.B3",
+        "io.reflekt.test.B3.B4"
+      ]
+    ]
+  ],
+  "functions": {}
+}

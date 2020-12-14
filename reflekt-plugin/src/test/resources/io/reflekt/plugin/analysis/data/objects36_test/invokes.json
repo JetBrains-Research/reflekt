@@ -1,0 +1,14 @@
+{
+  "objects": [
+    {
+      "subTypes": [
+        "io.reflekt.test.AInterfaceTest"
+      ],
+      "annotations": [
+        "io.reflekt.test.SecondAnnotationTest"
+      ]
+    }
+  ],
+  "classes": [],
+  "functions": []
+}

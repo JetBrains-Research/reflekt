@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.load.kotlin.PackagePartProvider
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingTrace
-import org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil
 
 object ResolveUtil {
     fun analyze(files: Collection<KtFile>, environment: KotlinCoreEnvironment): AnalysisResult {
@@ -28,6 +27,3 @@ object ResolveUtil {
         )
     }
 }
-
-/** Forcefully resolves all contents inside KtElement or Descriptor */
-fun <T> T.forced(): T = ForceResolveUtil.forceResolveAllContents(this)
