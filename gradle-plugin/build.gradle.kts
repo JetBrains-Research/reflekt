@@ -12,7 +12,7 @@ dependencies {
     implementation(kotlin("gradle-plugin-api", "1.4.20"))
     implementation(project(":reflekt-core"))
     api(project(":reflekt-dsl"))
-    implementation(kotlin("compiler-embeddable:1.4.20"))
+    implementation(kotlin("compiler-embeddable", "1.4.20"))
 }
 
 publishPlugin {
