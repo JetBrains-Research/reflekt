@@ -5,7 +5,6 @@ version = rootProject.version
 
 
 dependencies {
-    api(kotlin("stdlib"))
     implementation("net.lingala.zip4j", "zip4j", "2.6.1")
 }
 

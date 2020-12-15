@@ -3,7 +3,6 @@ package io.reflekt.plugin
 import com.google.auto.service.AutoService
 import io.reflekt.plugin.analysis.ReflektModuleAnalysisExtension
 import io.reflekt.plugin.generation.bytecode.ReflektGeneratorExtension
-import io.reflekt.plugin.generation.code.ReflektCodeGeneratorExtension
 import io.reflekt.plugin.utils.Keys
 import io.reflekt.plugin.utils.Util.initMessageCollector
 import io.reflekt.plugin.utils.Util.messageCollector
@@ -30,17 +29,16 @@ class ReflektComponentRegistrar : ComponentRegistrar {
             return
         }
         configuration.initMessageCollector(logFilePath)
-        AnalysisHandlerExtension.registerExtension(
-            project,
-            ReflektModuleAnalysisExtension(messageCollector = configuration.messageCollector)
-        )
         val filesToIntrospect = getKtFiles(configuration[Keys.INTROSPECT_FILES] ?: emptyList(), project)
         val outputDir = configuration[Keys.OUTPUT_DIR] ?: error("Output path not specified")
         // Todo: will this be called multiple times (for each ptoject module)? can we avoid this?
         AnalysisHandlerExtension.registerExtension(
             project,
-            ReflektCodeGeneratorExtension(messageCollector = configuration.messageCollector,
-                filesToIntrospect = filesToIntrospect, generationPath = outputDir)
+            ReflektModuleAnalysisExtension(
+                filesToIntrospect = filesToIntrospect,
+                generationPath = outputDir,
+                messageCollector = configuration.messageCollector
+            )
         )
         ExpressionCodegenExtension.registerExtension(
             project,

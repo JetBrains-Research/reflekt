@@ -5,7 +5,7 @@ version = "0.1.0"
 
 plugins {
     id("tanvd.kosogor") version "1.0.10" apply true
-    kotlin("jvm") version "1.3.72" apply true
+    kotlin("jvm") version "1.4.20" apply true
     id("com.github.gmazzo.buildconfig") version "2.0.2" apply false
 }
 
@@ -16,9 +16,9 @@ allprojects {
 
     tasks.withType<KotlinJvmCompile> {
         kotlinOptions {
-            jvmTarget = "1.8"
-            languageVersion = "1.3"
-            apiVersion = "1.3"
+            jvmTarget = "11"
+            languageVersion = "1.4"
+            apiVersion = "1.4"
         }
     }
 
