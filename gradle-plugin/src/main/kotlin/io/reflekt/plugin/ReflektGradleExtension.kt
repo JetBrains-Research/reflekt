@@ -1,6 +1,9 @@
 package io.reflekt.plugin
 
+import org.gradle.api.Project
+
 open class ReflektGradleExtension {
+
     /** If [false], this plugin won't actually be applied */
     var enabled: Boolean = true
 
@@ -16,3 +19,8 @@ open class ReflektGradleExtension {
     var generationPath: String = "src/main/kotlin-gen"
 
 }
+
+internal val Project.reflekt: ReflektGradleExtension
+    get() = project.extensions.findByType(ReflektGradleExtension::class.java) ?: kotlin.run {
+        extensions.create("reflekt", ReflektGradleExtension::class.java)
+    }

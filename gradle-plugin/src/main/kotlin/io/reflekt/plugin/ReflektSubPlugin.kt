@@ -1,7 +1,6 @@
 package io.reflekt.plugin
 
 import io.reflekt.util.FileUtil.extractAllFiles
-import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.jetbrains.kotlin.gradle.plugin.*
 import java.io.File
@@ -16,15 +15,10 @@ import org.gradle.api.provider.Provider
 
 class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
 
-    override fun apply(target: Project) {
-        target.pluginManager.apply("idea")
-    }
-
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         println("ReflektSubPlugin loaded")
         val project = kotlinCompilation.target.project
-        val extension = project.extensions.findByType(ReflektGradleExtension::class.java)
-            ?: ReflektGradleExtension()
+        val extension = project.reflekt
 
         val filesToIntrospect: MutableSet<File> = HashSet()
         project.configurations.filter { it.isCanBeResolved }.forEach {
