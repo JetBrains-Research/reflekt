@@ -17,11 +17,13 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("io.reflekt", "gradle-plugin", "0.1.0")
+
+    testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
 }
 
 reflekt {
     enabled = true
-    librariesToIntrospect = listOf("lalal")
+    librariesToIntrospect = listOf("org.junit.jupiter:junit-jupiter-api:5.7.0")
 }
 
 tasks {
@@ -31,12 +33,4 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
-}
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
 }

@@ -14,7 +14,6 @@ import io.reflekt.cli.Util.PLUGIN_ID
 import io.reflekt.cli.Util.VERSION
 import org.gradle.api.provider.Provider
 
-@Suppress("unused")
 class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
 
     override fun apply(target: Project) {
@@ -63,6 +62,7 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
         val filtered = configuration.dependencies.filter { "${it.group}:${it.name}:${it.version}" in extension.librariesToIntrospect }
         // TODO: resolve files
 //        jarsToIntrospect.addAll(configuration.files(*filtered.toTypedArray()))
+//        println("jarsToIntrospect: $jarsToIntrospect")
         return jarsToIntrospect
     }
 }
