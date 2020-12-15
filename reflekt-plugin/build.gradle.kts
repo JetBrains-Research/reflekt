@@ -8,7 +8,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly(kotlin("compiler-embeddable"))
+    implementation(kotlin("compiler-embeddable"))
 
     implementation("com.google.auto.service", "auto-service-annotations", "1.0-rc7")
     kapt("com.google.auto.service", "auto-service", "1.0-rc7")
@@ -17,7 +17,6 @@ dependencies {
     implementation(project(":reflekt-dsl"))
 
     testImplementation(gradleTestKit())
-    testImplementation(kotlin("compiler-embeddable"))
 
     implementation("com.squareup", "kotlinpoet", "1.6.0")
 
