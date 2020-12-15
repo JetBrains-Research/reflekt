@@ -8,7 +8,7 @@ plugins {
 }
 
 dependencies {
-    implementation(kotlin("compiler-embeddable", "1.4.20"))
+    implementation(kotlin("compiler-embeddable"))
 
     implementation("com.google.auto.service", "auto-service-annotations", "1.0-rc7")
     kapt("com.google.auto.service", "auto-service", "1.0-rc7")
