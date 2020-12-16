@@ -29,8 +29,11 @@ class ReflektComponentRegistrar : ComponentRegistrar {
             return
         }
         configuration.initMessageCollector(logFilePath)
+        if (configuration[Keys.INTROSPECT_FILES] != null && configuration[Keys.OUTPUT_DIR] == null) {
+            error("Output path not specified")
+        }
         val filesToIntrospect = getKtFiles(configuration[Keys.INTROSPECT_FILES] ?: emptyList(), project)
-        val outputDir = configuration[Keys.OUTPUT_DIR] ?: error("Output path not specified")
+        val outputDir = configuration[Keys.OUTPUT_DIR] ?: File("")
         // Todo: will this be called multiple times (for each ptoject module)? can we avoid this?
         AnalysisHandlerExtension.registerExtension(
             project,
@@ -48,7 +51,7 @@ class ReflektComponentRegistrar : ComponentRegistrar {
 
     /** Get KtFile representation for set of files */
     private fun getKtFiles(files: Collection<File>, project: MockProject): Set<KtFile> {
-        return files.mapNotNull { file ->
+        return files.filter {  it.extension == "kt" }.mapNotNull { file ->
             PsiFileFactory.getInstance(project).createFileFromText(KotlinLanguage.INSTANCE, file.readText()) as? KtFile
         }.toSet()
     }

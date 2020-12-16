@@ -22,7 +22,7 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
         val extension = project.reflekt
 
         val filesToIntrospect: MutableSet<File> = HashSet()
-        project.configurations.filter { it.isCanBeResolved }.forEach {
+        project.configurations.forEach {
             filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(it, extension)))
         }
         val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = INTROSPECT_FILE_OPTION_INFO.name, value = it.absolutePath) }
@@ -46,18 +46,32 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
 
     private fun getFilesToIntrospect(jarFiles: Set<File>): List<File> {
         val files: MutableList<File> = ArrayList()
-        jarFiles.forEach {
-            files.addAll(extractAllFiles(it))
+        jarFiles.forEach { jar ->
+            getSourceJar(jar)?.let {
+                files.addAll(extractAllFiles(it))
+            }
         }
         return files
+    }
+
+    private fun getSourceJar(jarFile: File) : File? {
+        val sourceName = "${jarFile.name.substringBeforeLast('.', "")}-sources.jar"
+        jarFile.parentFile.parentFile.listFiles()?.filter{ it.isDirectory }?.forEach { folder ->
+            val sources = folder.listFiles()?.find { it.name == sourceName }
+            if (sources != null) {
+                return sources
+            }
+        }
+        return null
     }
 
     private fun getJarFilesToIntrospect(configuration: Configuration, extension: ReflektGradleExtension): Set<File> {
         val jarsToIntrospect: MutableSet<File> = HashSet()
         val filtered = configuration.dependencies.filter { "${it.group}:${it.name}:${it.version}" in extension.librariesToIntrospect }
-        // TODO: resolve files
-//        jarsToIntrospect.addAll(configuration.files(*filtered.toTypedArray()))
-//        println("jarsToIntrospect: $jarsToIntrospect")
+        if (filtered.isNotEmpty()) {
+            require(configuration.isCanBeResolved) { "The parameter canBeResolve must be true!" }
+            jarsToIntrospect.addAll(configuration.files(*filtered.toTypedArray()).toSet())
+        }
         return jarsToIntrospect
     }
 }
