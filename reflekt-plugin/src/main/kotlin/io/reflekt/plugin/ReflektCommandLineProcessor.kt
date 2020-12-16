@@ -1,11 +1,15 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
+import io.reflekt.cli.Util.ENABLED_OPTION_INFO
+import io.reflekt.cli.Util.INTROSPECT_FILE_OPTION_INFO
+import io.reflekt.cli.Util.OUTPUT_DIR_OPTION_INFO
+import io.reflekt.cli.Util.PLUGIN_ID
+import io.reflekt.plugin.utils.Keys
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import java.io.File
 
 @AutoService(CommandLineProcessor::class)
@@ -13,36 +17,55 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
     /**
      * Just needs to be consistent with the key for ReflektSubPlugin#getCompilerPluginId
      */
-    override val pluginId: String = "io.reflekt"
+    override val pluginId: String = PLUGIN_ID
 
     /**
      * Should match up with the options we return from our ReflektSubPlugin.
      * Should also have matching when branches for each name in the [processOption] function below
      */
-    override val pluginOptions: Collection<CliOption> = listOf(
-        CliOption(
-            optionName = "enabled", valueDescription = "<true|false>",
-            description = "whether to enable the Reflekt plugin or not"
-        ),
-        CliOption(
-            optionName = "librariesToIntrospect", valueDescription = "<library>",
-            description = "Paths to files from the libraries to introspect",
-            allowMultipleOccurrences = true, required = false
-        )
-    )
+    override val pluginOptions: Collection<CliOption> = listOf(ENABLED_OPTION, INTROSPECT_FILE_OPTION, OUTPUT_DIR_OPTION)
 
     override fun processOption(
         option: AbstractCliOption,
         value: String,
         configuration: CompilerConfiguration
     ) {
-        return when (option.optionName) {
-            "enabled" -> configuration.put(KEY_ENABLED, value.toBoolean())
-            "librariesToIntrospect" -> configuration.appendList(KEY_INTROSPECT_FILES, value)
+        return when (option) {
+            ENABLED_OPTION -> configuration.put(Keys.ENABLED, value.toBoolean())
+            INTROSPECT_FILE_OPTION -> {
+                // Todo: can we do it better?
+                val files = configuration.get(Keys.INTROSPECT_FILES) ?: emptyList()
+                configuration.put(Keys.INTROSPECT_FILES, files + File(value))
+            }
+            OUTPUT_DIR_OPTION -> configuration.put(Keys.OUTPUT_DIR, File(value))
             else -> error("Unexpected config option ${option.optionName}")
         }
     }
-}
 
-val KEY_ENABLED = CompilerConfigurationKey<Boolean>("whether the plugin is enabled")
-val KEY_INTROSPECT_FILES = CompilerConfigurationKey<List<String>>("files to introspect from libraries")
+    companion object {
+        val ENABLED_OPTION =
+            CliOption(
+                optionName = ENABLED_OPTION_INFO.name,
+                valueDescription = ENABLED_OPTION_INFO.valueDescription,
+                description = ENABLED_OPTION_INFO.description
+            )
+
+        val INTROSPECT_FILE_OPTION =
+            CliOption(
+                optionName = INTROSPECT_FILE_OPTION_INFO.name,
+                valueDescription = INTROSPECT_FILE_OPTION_INFO.valueDescription,
+                description = INTROSPECT_FILE_OPTION_INFO.description,
+                allowMultipleOccurrences = true,
+                required = false
+            )
+
+        val OUTPUT_DIR_OPTION =
+            CliOption(
+                optionName = OUTPUT_DIR_OPTION_INFO.name,
+                valueDescription = OUTPUT_DIR_OPTION_INFO.valueDescription,
+                description = OUTPUT_DIR_OPTION_INFO.description,
+                required = false,
+                allowMultipleOccurrences = false
+            )
+    }
+}

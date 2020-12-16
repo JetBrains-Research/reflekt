@@ -47,12 +47,13 @@ data class ReflektInvokes(
     }
 }
 
-// We store the following structure:
-// The map, where key is a set of annotationsFqNames, and value is
-// a map, where key is a set of subTypesFqNames, and value is a list of fqNames
 typealias TypeUses<K, V> = Map<K, MutableList<V>>
 typealias ClassOrObjectUses = TypeUses<SubTypesToAnnotations, KtClassOrObject>
 typealias FunctionUses = TypeUses<Set<String>, KtNamedFunction>
+
+fun ClassOrObjectUses.toSubTypesToFqNamesMap(): Map<Set<String>, MutableList<KtClassOrObject>> {
+    return this.map { it.key.subTypes to it.value }.toMap()
+}
 
 /*
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]

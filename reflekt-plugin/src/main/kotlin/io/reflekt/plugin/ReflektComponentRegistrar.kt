@@ -1,7 +1,9 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
+import io.reflekt.plugin.analysis.ReflektModuleAnalysisExtension
 import io.reflekt.plugin.generation.bytecode.ReflektGeneratorExtension
+import io.reflekt.plugin.utils.Keys
 import io.reflekt.plugin.utils.Util.initMessageCollector
 import io.reflekt.plugin.utils.Util.messageCollector
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
@@ -23,14 +25,20 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         project: MockProject,
         configuration: CompilerConfiguration
     ) {
-        if (configuration[KEY_ENABLED] == false) {
+        if (configuration[Keys.ENABLED] == false) {
             return
         }
         configuration.initMessageCollector(logFilePath)
-        val filesToIntrospect = getKtFiles(getFilesToIntrospect(configuration[KEY_INTROSPECT_FILES]), project)
+        val filesToIntrospect = getKtFiles(configuration[Keys.INTROSPECT_FILES] ?: emptyList(), project)
+        val outputDir = configuration[Keys.OUTPUT_DIR] ?: error("Output path not specified")
+        // Todo: will this be called multiple times (for each ptoject module)? can we avoid this?
         AnalysisHandlerExtension.registerExtension(
             project,
-            ReflektAnalysisExtension(filesToIntrospect = filesToIntrospect, messageCollector = configuration.messageCollector)
+            ReflektModuleAnalysisExtension(
+                filesToIntrospect = filesToIntrospect,
+                generationPath = outputDir,
+                messageCollector = configuration.messageCollector
+            )
         )
         ExpressionCodegenExtension.registerExtension(
             project,
@@ -43,10 +51,6 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         return files.mapNotNull { file ->
             PsiFileFactory.getInstance(project).createFileFromText(KotlinLanguage.INSTANCE, file.readText()) as? KtFile
         }.toSet()
-    }
-
-    private fun getFilesToIntrospect(files: List<String>?): Set<File> {
-        return files?.map { File(it) }?.filter { it.isFile }?.toSet() ?: emptySet()
     }
 }
 

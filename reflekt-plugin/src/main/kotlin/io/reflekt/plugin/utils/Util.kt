@@ -1,9 +1,11 @@
 package io.reflekt.plugin.utils
 
+import io.reflekt.plugin.analysis.ReflektAnalyzer
 import io.reflekt.plugin.analysis.ReflektUses
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.util.slicedMap.Slices
@@ -41,4 +43,14 @@ object Util {
     }
 
     fun BindingContext.getUses() = get(GET_USES, USES_STORE_NAME)
+
+    fun getUses(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true): ReflektUses {
+        val analyzer = ReflektAnalyzer(files, bindingTrace.bindingContext)
+        val invokes = analyzer.invokes()
+        val uses = analyzer.uses(invokes)
+        if (toSave) {
+            bindingTrace.saveUses(uses)
+        }
+        return uses
+    }
 }
