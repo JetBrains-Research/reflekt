@@ -22,6 +22,9 @@ object FileUtil {
         return File(rootPath).listFiles()?.filter { it.isDirectory } ?: emptyList()
     }
 
+    val File.extension: String
+        get() = this.name.substringAfterLast('.', "")
+
     private fun unZipFile(file: File, destinationPath: String? = null): String {
         val zipFile = ZipFile(file.path)
         val outputPath = destinationPath ?: file.parent

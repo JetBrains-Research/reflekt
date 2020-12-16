@@ -1,5 +1,4 @@
 import io.reflekt.plugin.reflekt
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = rootProject.group
@@ -14,7 +13,7 @@ plugins {
 dependencies {
     implementation("io.reflekt", "gradle-plugin", "0.1.0")
 
-    testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
+    compileOnly("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
     implementation(kotlin("stdlib-jdk8"))
 }
 
