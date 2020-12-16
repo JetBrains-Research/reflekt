@@ -18,7 +18,7 @@ dependencies {
 publishPlugin {
     id = "io.reflekt"
     displayName = "Reflekt"
-    implementationClass = "io.reflekt.plugin.ReflektPlugin"
+    implementationClass = "io.reflekt.plugin.ReflektSubPlugin"
     version = project.version.toString()
 
     info {
