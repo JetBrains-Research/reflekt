@@ -13,6 +13,7 @@ import io.reflekt.cli.Util.PLUGIN_ID
 import io.reflekt.cli.Util.VERSION
 import org.gradle.api.provider.Provider
 
+@Suppress("unused")
 class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
 
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {

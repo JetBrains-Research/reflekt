@@ -9,13 +9,7 @@ plugins {
     id("io.reflekt") version "0.1.0" apply true
 }
 
-repositories {
-    mavenLocal()
-    jcenter()
-}
-
 dependencies {
-    implementation(kotlin("stdlib"))
     implementation("io.reflekt", "gradle-plugin", "0.1.0")
 
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
