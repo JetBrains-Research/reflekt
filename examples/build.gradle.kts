@@ -1,3 +1,4 @@
+import io.reflekt.plugin.reflekt
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 group = rootProject.group
