@@ -30,13 +30,13 @@ repositories {
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
     languageVersion = "1.4"
     apiVersion = "1.4"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
     languageVersion = "1.4"
     apiVersion = "1.4"
 }
