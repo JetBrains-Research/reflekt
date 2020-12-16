@@ -20,7 +20,21 @@ open class ReflektGradleExtension {
 
 }
 
+/**
+ * Users can configure this extension in their build.gradle like this:
+ * reflekt {
+ *   enabled = false
+ *   // ... set other members on the ReflektGradleExtension class
+ * }
+ */
 internal val Project.reflekt: ReflektGradleExtension
     get() = project.extensions.findByType(ReflektGradleExtension::class.java) ?: kotlin.run {
         extensions.create("reflekt", ReflektGradleExtension::class.java)
     }
+
+/**
+ * Reflekt Generator configuration extension.
+ */
+fun Project.reflekt(configure: ReflektGradleExtension.() -> Unit) {
+    reflekt.apply(configure)
+}

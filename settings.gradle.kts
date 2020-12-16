@@ -8,5 +8,6 @@ include(":gradle-plugin")
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        jcenter()
     }
 }

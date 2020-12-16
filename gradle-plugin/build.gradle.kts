@@ -18,8 +18,15 @@ dependencies {
 publishPlugin {
     id = "io.reflekt"
     displayName = "Reflekt"
-    implementationClass = "io.reflekt.plugin.ReflektPlugin"
+    implementationClass = "io.reflekt.plugin.ReflektSubPlugin"
     version = project.version.toString()
+
+    info {
+        description = "Compile-time reflection library"
+        website = "https://github.com/JetBrains-Research/reflekt"
+        vcsUrl = "https://github.com/JetBrains-Research/reflekt"
+        tags.addAll(listOf("kotlin", "reflection", "reflekt"))
+    }
 }
 
 publishJar {

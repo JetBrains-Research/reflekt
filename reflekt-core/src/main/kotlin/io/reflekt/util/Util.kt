@@ -11,7 +11,7 @@ object Util {
     /** Global constant with plugin identifier */
     const val PLUGIN_ID = "io.reflekt"
 
-    const val GRADLE_GROUP_ID = "io.reflekt.gradle"
+    const val GRADLE_GROUP_ID = "io.reflekt"
     /**
      * Just needs to be consistent with the artifactId in reflekt-plugin build.gradle.kts#publishJar
      */
