@@ -1,5 +1,7 @@
-package io.reflekt.plugin.analysis
+package io.reflekt.plugin.analysis.analyzer
 
+import io.reflekt.plugin.analysis.ReflektInvokes
+import io.reflekt.plugin.analysis.ReflektUses
 import io.reflekt.plugin.analysis.processor.invokes.ClassInvokesProcessor
 import io.reflekt.plugin.analysis.processor.invokes.FunctionInvokesProcessor
 import io.reflekt.plugin.analysis.processor.invokes.ObjectInvokesProcessor
@@ -11,7 +13,6 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class ReflektAnalyzer(private val ktFiles: Set<KtFile>, private val binding: BindingContext) {
-    // TODO: rename
     fun uses(invokes: ReflektInvokes): ReflektUses {
         val processors = setOf(ClassUsesProcessor(binding, invokes), ObjectUsesProcessor(binding, invokes), FunctionUsesProcessor(binding, invokes))
         ktFiles.forEach { file ->

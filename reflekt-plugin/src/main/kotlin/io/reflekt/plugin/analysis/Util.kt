@@ -1,5 +1,6 @@
 package io.reflekt.plugin.analysis
 
+import io.reflekt.plugin.analysis.analyzer.ReflektAnalyzer
 import io.reflekt.plugin.utils.compiler.EnvironmentManager
 import io.reflekt.plugin.utils.compiler.ParseUtil
 import io.reflekt.plugin.utils.compiler.ResolveUtil

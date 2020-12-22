@@ -1,5 +1,6 @@
 package io.reflekt.plugin.analysis
 
+import io.reflekt.plugin.analysis.processor.instances.*
 import io.reflekt.plugin.analysis.processor.invokes.BaseInvokesProcessor
 import io.reflekt.plugin.analysis.processor.invokes.ClassInvokesProcessor
 import io.reflekt.plugin.analysis.processor.invokes.FunctionInvokesProcessor
@@ -38,7 +39,6 @@ data class ReflektInvokes(
     val functions: FunctionInvokes = HashSet()
 ) {
     companion object{
-        // TODO: should I handle errors?
         fun createByProcessors(processors: Set<BaseInvokesProcessor<*>>) = ReflektInvokes(
             objects = processors.mapNotNull { it as? ObjectInvokesProcessor }.first().invokes,
             classes = processors.mapNotNull { it as? ClassInvokesProcessor }.first().invokes,
@@ -58,18 +58,34 @@ fun ClassOrObjectUses.toSubTypesToFqNamesMap(): Map<Set<String>, MutableList<KtC
 /*
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]
  */
-// Todo: rename
 data class ReflektUses(
     val objects: ClassOrObjectUses = HashMap(),
     val classes: ClassOrObjectUses = HashMap(),
     val functions: FunctionUses = HashMap()
 ) {
     companion object{
-        // TODO: should I handle errors?
         fun createByProcessors(processors: Set<BaseUsesProcessor<*>>) = ReflektUses(
             objects = processors.mapNotNull { it as? ObjectUsesProcessor }.first().uses,
             classes = processors.mapNotNull { it as? ClassUsesProcessor }.first().uses,
             functions = processors.mapNotNull { it as? FunctionUsesProcessor }.first().uses
+        )
+    }
+}
+
+
+/*
+ * Store a set of qualified names that exist in the project and additional libraries
+ */
+data class ReflektInstances(
+    val objects: List<KtClassOrObject> = ArrayList(),
+    val classes: List<KtClassOrObject> = ArrayList(),
+    val functions: List<KtNamedFunction> = ArrayList()
+) {
+    companion object{
+        fun createByProcessors(processors: Set<BaseInstancesProcessor<*>>) = ReflektInstances(
+            objects = processors.mapNotNull { it as? ObjectInstancesProcessor }.first().instances,
+            classes = processors.mapNotNull { it as? ClassInstancesProcessor }.first().instances,
+            functions = processors.mapNotNull { it as? FunctionInstancesProcessor }.first().instances
         )
     }
 }
