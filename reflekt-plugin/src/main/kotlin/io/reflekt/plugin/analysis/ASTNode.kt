@@ -40,10 +40,10 @@ fun ASTNode.getLambdaBody(): String {
     // CALL_EXPRESSION -> LAMBDA_ARGUMENT -> LAMBDA_EXPRESSION -> FUNCTION_LITERAL -> BLOCK
     // We need to get the text from the last level (BLOCK)
     return this.children().firstOrNull { it.elementType.toString() == ElementType.LambdaArgument.value }
-        .firstOrNull { it.elementType.toString() == ElementType.LambdaExpression.value }
-        .firstOrNull { it.elementType.toString() == ElementType.FunctionLiteral.value }
-        .firstOrNull { it.elementType.toString() == ElementType.Block.value }
-        .text ?: error("Incorrect lambda structure in the CALL_EXPRESSION node")
+        ?.children()?.firstOrNull { it.elementType.toString() == ElementType.LambdaExpression.value }
+        ?.children()?.firstOrNull { it.elementType.toString() == ElementType.FunctionLiteral.value }
+        ?.children()?.firstOrNull { it.elementType.toString() == ElementType.Block.value }
+        ?.text ?: error("Incorrect lambda structure in the CALL_EXPRESSION node")
 }
 
 /*

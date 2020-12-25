@@ -2,6 +2,7 @@ package io.reflekt
 
 import kotlin.reflect.KClass
 
+@Suppress("unused")
 object ReflektImpl {
     class Objects {
         fun <T> withSubTypes(fqNames: Set<String>) = WithSubTypes<T>(fqNames)
