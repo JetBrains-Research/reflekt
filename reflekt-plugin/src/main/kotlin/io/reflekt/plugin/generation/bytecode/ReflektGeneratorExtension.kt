@@ -1,8 +1,8 @@
 package io.reflekt.plugin.generation.bytecode
 
 import io.reflekt.Reflekt
-import io.reflekt.plugin.analysis.ReflektUses
-import io.reflekt.plugin.analysis.SubTypesToAnnotations
+import io.reflekt.plugin.analysis.models.ReflektUses
+import io.reflekt.plugin.analysis.models.SubTypesToAnnotations
 import io.reflekt.plugin.analysis.common.*
 import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.generation.bytecode.util.pushArray

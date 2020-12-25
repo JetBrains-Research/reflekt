@@ -1,9 +1,8 @@
 package io.reflekt.plugin.analysis.processor.uses
 
-import io.reflekt.plugin.analysis.ClassOrObjectUses
-import io.reflekt.plugin.analysis.ReflektInvokes
+import io.reflekt.plugin.analysis.models.ClassOrObjectUses
+import io.reflekt.plugin.analysis.models.ReflektInvokes
 import io.reflekt.plugin.analysis.processor.isPublicNotAbstractClass
-import io.reflekt.plugin.analysis.processor.uses.BaseUsesProcessor
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.resolve.BindingContext
 

@@ -2,7 +2,7 @@ package io.reflekt.plugin.generation.code.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import io.reflekt.plugin.analysis.FunctionUses
+import io.reflekt.plugin.analysis.models.FunctionUses
 import io.reflekt.plugin.generation.code.generator.statement
 import io.reflekt.plugin.generation.code.generator.toParameterSpecs
 import org.jetbrains.kotlin.psi.KtNamedFunction

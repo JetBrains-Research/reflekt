@@ -1,7 +1,7 @@
 package io.reflekt.plugin.analysis.processor.uses
 
-import io.reflekt.plugin.analysis.FunctionUses
-import io.reflekt.plugin.analysis.ReflektInvokes
+import io.reflekt.plugin.analysis.models.FunctionUses
+import io.reflekt.plugin.analysis.models.ReflektInvokes
 import io.reflekt.plugin.analysis.processor.isPublicFunction
 import io.reflekt.plugin.analysis.psi.annotation.getAnnotations
 import org.jetbrains.kotlin.psi.KtElement

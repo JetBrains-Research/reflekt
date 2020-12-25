@@ -1,6 +1,7 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.AnalysisUtil.getReflektAnalyzer
+import io.reflekt.plugin.analysis.models.ReflektInvokes
 import io.reflekt.plugin.util.Util.getResourcesRootPath
 import io.reflekt.plugin.util.Util.parseJson
 import io.reflekt.util.FileUtil.getAllNestedFiles

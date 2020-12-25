@@ -23,6 +23,7 @@ reflekt {
 repositories {
     mavenCentral()
     mavenLocal()
+    google()
 }
 
 val compileKotlin: KotlinCompile by tasks

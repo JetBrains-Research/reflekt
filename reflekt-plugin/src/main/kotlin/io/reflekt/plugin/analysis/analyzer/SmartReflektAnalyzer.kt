@@ -1,6 +1,7 @@
 package io.reflekt.plugin.analysis.analyzer
 
 import io.reflekt.plugin.analysis.*
+import io.reflekt.plugin.analysis.models.ReflektInstances
 import io.reflekt.plugin.analysis.processor.instances.*
 import io.reflekt.plugin.analysis.psi.*
 import org.jetbrains.kotlin.psi.*

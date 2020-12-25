@@ -1,7 +1,7 @@
 package io.reflekt.plugin.analysis.analyzer
 
-import io.reflekt.plugin.analysis.ReflektInvokes
-import io.reflekt.plugin.analysis.ReflektUses
+import io.reflekt.plugin.analysis.models.ReflektInvokes
+import io.reflekt.plugin.analysis.models.ReflektUses
 import io.reflekt.plugin.analysis.processor.invokes.ClassInvokesProcessor
 import io.reflekt.plugin.analysis.processor.invokes.FunctionInvokesProcessor
 import io.reflekt.plugin.analysis.processor.invokes.ObjectInvokesProcessor

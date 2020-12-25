@@ -1,5 +1,6 @@
 package io.reflekt.plugin.analysis
 
+import io.reflekt.plugin.analysis.models.ElementType
 import io.reflekt.plugin.analysis.psi.getFqName
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.psiUtil.children
@@ -7,7 +8,13 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
 import java.util.*
 
-// TODO: rename
+/*
+ * Get a list of all parents of nodes and find the last occurrence of a vertex whose type is A ([elementType]).
+ * Moreover, all previous vertices also had type A.
+ *
+ * For example, if we have a list of vertices with types [A, A, A, A, B], and [elementType == A]
+ * then we must return index 3, because the last occurrence index is 4 (B != A).
+ */
 fun ASTNode.findLastParentByType(elementType: ElementType): ASTNode? {
     val parents = this.parents().toList()
     val index = parents.indexOfFirst { it.elementType.toString() != elementType.value }

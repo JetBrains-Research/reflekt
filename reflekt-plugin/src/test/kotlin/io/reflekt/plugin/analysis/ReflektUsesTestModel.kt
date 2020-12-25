@@ -1,5 +1,8 @@
 package io.reflekt.plugin.analysis
 
+import io.reflekt.plugin.analysis.models.ReflektUses
+import io.reflekt.plugin.analysis.models.SubTypesToAnnotations
+import io.reflekt.plugin.analysis.models.TypeUses
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
 
 typealias TypeUsesTest<K> = Map<K, Set<String>>

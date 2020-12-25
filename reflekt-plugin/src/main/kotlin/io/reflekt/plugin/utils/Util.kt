@@ -1,7 +1,7 @@
 package io.reflekt.plugin.utils
 
-import io.reflekt.plugin.analysis.ReflektInstances
-import io.reflekt.plugin.analysis.ReflektUses
+import io.reflekt.plugin.analysis.models.ReflektInstances
+import io.reflekt.plugin.analysis.models.ReflektUses
 import io.reflekt.plugin.analysis.analyzer.ReflektAnalyzer
 import io.reflekt.plugin.analysis.analyzer.SmartReflektAnalyzer
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys

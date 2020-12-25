@@ -2,7 +2,8 @@ package io.reflekt.plugin.generation.code.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import io.reflekt.plugin.analysis.*
+import io.reflekt.plugin.analysis.models.ClassOrObjectUses
+import io.reflekt.plugin.analysis.models.SubTypesToAnnotations
 import io.reflekt.plugin.generation.code.generator.*
 import org.jetbrains.kotlin.psi.KtClassOrObject
 

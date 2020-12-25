@@ -19,6 +19,10 @@ enum class ReflektFunctionName(val functionName: String) {
     WITH_ANNOTATIONS("withAnnotations")
 }
 
+enum class SmartReflektFunctionName(val functionName: String) {
+    FILTER("filter")
+}
+
 enum class ReflektNestedName(val className: String) {
     WITH_SUBTYPES(ReflektFunctionName.WITH_SUBTYPES.functionName.capitalize()),
     WITH_ANNOTATIONS(ReflektFunctionName.WITH_ANNOTATIONS.functionName.capitalize()),

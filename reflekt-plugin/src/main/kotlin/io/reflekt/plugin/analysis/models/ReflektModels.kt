@@ -1,25 +1,9 @@
-package io.reflekt.plugin.analysis
+package io.reflekt.plugin.analysis.models
 
-import io.reflekt.plugin.analysis.processor.instances.*
-import io.reflekt.plugin.analysis.processor.invokes.BaseInvokesProcessor
-import io.reflekt.plugin.analysis.processor.invokes.ClassInvokesProcessor
-import io.reflekt.plugin.analysis.processor.invokes.FunctionInvokesProcessor
-import io.reflekt.plugin.analysis.processor.invokes.ObjectInvokesProcessor
-import io.reflekt.plugin.analysis.processor.uses.BaseUsesProcessor
-import io.reflekt.plugin.analysis.processor.uses.ClassUsesProcessor
-import io.reflekt.plugin.analysis.processor.uses.FunctionUsesProcessor
-import io.reflekt.plugin.analysis.processor.uses.ObjectUsesProcessor
+import io.reflekt.plugin.analysis.processor.invokes.*
+import io.reflekt.plugin.analysis.processor.uses.*
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNamedFunction
-
-enum class ElementType(val value: String) {
-    TypeArgumentList("TYPE_ARGUMENT_LIST"),
-    ReferenceExpression("REFERENCE_EXPRESSION"),
-    CallExpression("CALL_EXPRESSION"),
-    DotQualifiedExpression("DOT_QUALIFIED_EXPRESSION"),
-    ValueArgumentList("VALUE_ARGUMENT_LIST")
-}
-
 
 /*
  * If the function [withAnnotations] is called without subtypes then [subTypes] is [setOf(Any::class::qualifiedName)]
@@ -68,24 +52,6 @@ data class ReflektUses(
             objects = processors.mapNotNull { it as? ObjectUsesProcessor }.first().uses,
             classes = processors.mapNotNull { it as? ClassUsesProcessor }.first().uses,
             functions = processors.mapNotNull { it as? FunctionUsesProcessor }.first().uses
-        )
-    }
-}
-
-
-/*
- * Store a set of qualified names that exist in the project and additional libraries
- */
-data class ReflektInstances(
-    val objects: List<KtClassOrObject> = ArrayList(),
-    val classes: List<KtClassOrObject> = ArrayList(),
-    val functions: List<KtNamedFunction> = ArrayList()
-) {
-    companion object{
-        fun createByProcessors(processors: Set<BaseInstancesProcessor<*>>) = ReflektInstances(
-            objects = processors.mapNotNull { it as? ObjectInstancesProcessor }.first().instances,
-            classes = processors.mapNotNull { it as? ClassInstancesProcessor }.first().instances,
-            functions = processors.mapNotNull { it as? FunctionInstancesProcessor }.first().instances
         )
     }
 }

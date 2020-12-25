@@ -1,8 +1,8 @@
 package io.reflekt.plugin.analysis.processor.uses
 
-import io.reflekt.plugin.analysis.ClassOrObjectInvokes
-import io.reflekt.plugin.analysis.ClassOrObjectUses
-import io.reflekt.plugin.analysis.SubTypesToAnnotations
+import io.reflekt.plugin.analysis.models.ClassOrObjectInvokes
+import io.reflekt.plugin.analysis.models.ClassOrObjectUses
+import io.reflekt.plugin.analysis.models.SubTypesToAnnotations
 import io.reflekt.plugin.analysis.processor.Processor
 import io.reflekt.plugin.analysis.psi.annotation.getAnnotations
 import io.reflekt.plugin.analysis.psi.isSubtypeOf
