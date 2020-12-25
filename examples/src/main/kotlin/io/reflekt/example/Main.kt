@@ -1,14 +1,16 @@
 package io.reflekt.example
 
 import io.reflekt.Reflekt
+import io.reflekt.SmartReflekt
+import com.google.devtools.ksp.symbol.ClassKind
 
 class Test(var a: List<Any>, b: List<Any>)
 
 fun main() {
     val tmp = Test(emptyList(), emptyList())
-    tmp.a = listOf(Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface1>(FirstAnnotation::class))
+    tmp.a = listOf(Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class))
 
-    val objects = Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface1>(FirstAnnotation::class, SecondAnnotation::class).toList()
+    val objects = Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
     println(objects)
     val objects1 = Reflekt.objects().withSubType<AInterface>()
         .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
@@ -40,5 +42,9 @@ fun main() {
     val classes3 = Reflekt.classes().withAnnotations<B2>(FirstAnnotation::class, SecondAnnotation::class).toList()
     println(classes3)
 
+//    val smartClasses = SmartReflekt.classes<AInterface>().filter { it.classKind == ClassKind.INTERFACE }.resolve()
+//    println(smartClasses)
+
 //    val functions = Reflekt.functions().withAnnotations<() -> Unit>()
+//    println(functions)
 }

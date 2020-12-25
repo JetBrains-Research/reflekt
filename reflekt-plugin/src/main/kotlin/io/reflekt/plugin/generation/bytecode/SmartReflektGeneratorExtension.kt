@@ -3,6 +3,8 @@ package io.reflekt.plugin.generation.bytecode
 import io.reflekt.SmartReflekt
 import io.reflekt.plugin.analysis.common.*
 import io.reflekt.plugin.analysis.psi.getFqName
+import io.reflekt.plugin.utils.Util.getInstances
+import io.reflekt.plugin.utils.Util.getUses
 import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
@@ -21,7 +23,13 @@ class SmartReflektGeneratorExtension(private val messageCollector: MessageCollec
         val invokeParts = parseReflektInvoke(expressionFqName, SmartReflekt::class.qualifiedName!!) ?: return null
         messageCollector?.log("SMART REFLEKT CALL: $expressionFqName;")
 
-        TODO("Get instances, Replace bytecode if it is necessary")
+        // Parse SmartReflekt call to find arguments again
+        val invokeArguments = findSmartReflektInvokeArgumentsByExpressionPart(expression, binding)!!
+
+        // Get instances stored in binding context after analysis part
+        val instances = c.codegen.bindingContext.getInstances() ?: throw ReflektGenerationException("Found call to Reflekt instances, but no analysis data")
+
+        TODO("Filter instances according to invokeArguments and generate bytecode")
     }
 }
 

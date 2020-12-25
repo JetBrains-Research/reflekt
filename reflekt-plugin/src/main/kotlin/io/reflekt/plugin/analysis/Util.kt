@@ -1,6 +1,7 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.analyzer.ReflektAnalyzer
+import io.reflekt.plugin.analysis.analyzer.SmartReflektAnalyzer
 import io.reflekt.plugin.utils.compiler.EnvironmentManager
 import io.reflekt.plugin.utils.compiler.ParseUtil
 import io.reflekt.plugin.utils.compiler.ResolveUtil
@@ -13,6 +14,13 @@ object AnalysisUtil {
         val ktFiles = ParseUtil.analyze(sources, environment)
         val resolved = ResolveUtil.analyze(ktFiles, environment)
         return  ReflektAnalyzer(ktFiles, resolved.bindingContext)
+    }
+
+    fun getSmartReflektAnalyzer(classPath: Set<File>, sources: Set<File>): SmartReflektAnalyzer {
+        val environment = EnvironmentManager.create(classPath)
+        val ktFiles = ParseUtil.analyze(sources, environment)
+        val resolved = ResolveUtil.analyze(ktFiles, environment)
+        return  SmartReflektAnalyzer(ktFiles, resolved.bindingContext)
     }
 
 }

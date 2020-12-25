@@ -35,6 +35,17 @@ fun ASTNode.getFqNamesOfTypeArgument(binding: BindingContext) = getFqNamesOf(Ele
 
 fun ASTNode.getFqNamesOfValueArguments(binding: BindingContext) = getFqNamesOf(ElementType.CallExpression, ElementType.ValueArgumentList, binding)
 
+fun ASTNode.getLambdaBody(): String {
+    require(this.elementType.toString() == ElementType.CallExpression.value) { "Try to get lambda body from the node with type: ${this.elementType}" }
+    // CALL_EXPRESSION -> LAMBDA_ARGUMENT -> LAMBDA_EXPRESSION -> FUNCTION_LITERAL -> BLOCK
+    // We need to get the text from the last level (BLOCK)
+    return this.children().firstOrNull { it.elementType.toString() == ElementType.LambdaArgument.value }
+        .firstOrNull { it.elementType.toString() == ElementType.LambdaExpression.value }
+        .firstOrNull { it.elementType.toString() == ElementType.FunctionLiteral.value }
+        .firstOrNull { it.elementType.toString() == ElementType.Block.value }
+        .text ?: error("Incorrect lambda structure in the CALL_EXPRESSION node")
+}
+
 /*
  * Traverse all children of the node (use BFS order) and return all children nodes which satisfy the filter condition
  */
@@ -42,7 +53,7 @@ fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode
     val filtered = ArrayList<ASTNode>()
     val nodes: Queue<ASTNode> = LinkedList<ASTNode>(listOf(this))
     nodes.addAll(this.children())
-    while(nodes.isNotEmpty()) {
+    while (nodes.isNotEmpty()) {
         val currentNode = nodes.poll()
         if (filter(currentNode)) {
             filtered.add(currentNode)

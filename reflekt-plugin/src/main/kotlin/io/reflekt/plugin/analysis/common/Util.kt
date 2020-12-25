@@ -33,22 +33,10 @@ fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: Bin
     return SubTypesToAnnotations(subtypes, annotations)
 }
 
-// [1]SmartReflekt.[2]|objects()/classes() or so on|
-// [dotQualifiedExpressionNode] is [1]
-// [callExpressionRoot] is [2]
-fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, callExpressionRoot: ASTNode, binding: BindingContext): SubTypesToFilters? {
-    // Get subType from [2]
-    val subType = callExpressionRoot.getFqNamesOfTypeArgument(binding)
-
-    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in SmartReflektFunctionName.values().map { it.functionName } }
-    TODO()
-}
-
 fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SubTypesToAnnotations? {
     // We use this function only for REFERENCE_EXPRESSION nodes. Any vertex of this type has the following structure:
     // CALL_EXPRESSION -> REFERENCE_EXPRESSION
     // We want to get the root of this expression (CALL_EXPRESSION)
-
     // For example, in our case we have the following expression: Reflekt.objects()
     // The root of objects() part is CALL_EXPRESSION
     val callExpressionRoot = expression.node.parents().first()
@@ -59,5 +47,37 @@ fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding
     // by finding the root of the nested DOT_QUALIFIED_EXPRESSION nodes
     return callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
         findReflektInvokeArguments(node, binding)
+    }
+}
+
+// [1]SmartReflekt.[2]|objects()/classes() or so on|
+// [dotQualifiedExpressionNode] is [1]
+fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode): Set<String>? {
+//    // Get subType from [2]
+//    // TODO: should we change it for functions?
+//    val subType = callExpressionRoot.getFqNamesOfTypeArgument(binding)
+    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in SmartReflektFunctionName.values().map { it.functionName } }
+    val filters = HashSet<String>()
+    for (node in filteredChildren) {
+        val childCallExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CallExpression.value } ?: continue
+        when(node.text) {
+            SmartReflektFunctionName.FILTER.functionName -> filters.add(childCallExpressionRoot.getLambdaBody())
+            else -> error("Found an unexpected node text: ${node.text}")
+        }
+    }
+    if (filters.isEmpty()) {
+        return null
+    }
+    return filters
+}
+
+fun findSmartReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SubTypesToFilters? {
+    val callExpressionRoot = expression.node.parents().first()
+    // TODO: should we change it for functions? Or string is ok?
+    val subType = callExpressionRoot.getFqNamesOfTypeArgument(binding).firstOrNull()
+    return callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
+        findSmartReflektInvokeArguments(node)?.let { filters ->
+            subType?.let { SubTypesToFilters(it, filters) }
+        }
     }
 }
