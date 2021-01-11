@@ -3,7 +3,7 @@ package io.reflekt.plugin.analysis.common
 import io.reflekt.Reflekt
 import io.reflekt.SmartReflekt
 
-enum class ReflektName(reflektName: String) {
+enum class ReflektName(val reflektName: String) {
     OBJECTS("objects"),
     CLASSES("classes"),
     FUNCTIONS("functions");

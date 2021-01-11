@@ -4,8 +4,8 @@ import io.reflekt.SmartReflekt
 import io.reflekt.plugin.analysis.common.*
 import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.utils.Util.getInstances
-import io.reflekt.plugin.utils.Util.getUses
 import io.reflekt.plugin.utils.Util.log
+import io.reflekt.plugin.utils.toEnum
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension

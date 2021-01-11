@@ -23,5 +23,10 @@ data class ReflektInstances(
 
 data class SubTypesToFilters(
     val subType: String? = null,
-    val filters: Set<String> = emptySet()
+    val filters: Set<Lambda> = emptySet()
+)
+
+data class Lambda(
+    val body: String,
+    val parameters: List<String> = listOf("it")
 )

@@ -1,11 +1,11 @@
 package io.reflekt.plugin.generation.bytecode
 
-import io.reflekt.Reflekt
 import io.reflekt.plugin.analysis.common.ReflektName
 import io.reflekt.plugin.analysis.common.ReflektNestedName
 import io.reflekt.plugin.analysis.common.ReflektTerminalFunctionName
 import io.reflekt.plugin.generation.bytecode.util.*
 import io.reflekt.plugin.utils.Util.log
+import io.reflekt.plugin.utils.enumToRegexOptions
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
@@ -59,12 +59,6 @@ internal abstract class BaseReflektInvokeParts(
             ReflektTerminalFunctionName.TO_SET -> InstructionAdapter::invokeSetOf
         }
 }
-
-private fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, transform: T.() -> String): String =
-    "(${values.joinToString(separator = "|") { it.transform() }})"
-
-internal fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T? =
-    values.first { it.transform() == this }
 
 internal fun getReflektFullNameRegex(reflektFqName: String): Regex {
     val names = enumToRegexOptions(ReflektName.values(), ReflektName::className)
