@@ -74,3 +74,9 @@ object Util {
         return instances
     }
 }
+
+fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, transform: T.() -> String): String =
+    "(${values.joinToString(separator = "|") { it.transform() }})"
+
+fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T? =
+    values.first { it.transform() == this }

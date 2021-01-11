@@ -17,7 +17,7 @@ fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: Bin
 
     for (node in filteredChildren) {
         val callExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CallExpression.value } ?: continue
-        when(node.text) {
+        when (node.text) {
             ReflektFunctionName.WITH_SUBTYPE.functionName -> callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
             ReflektFunctionName.WITH_SUBTYPES.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { subtypes.addAll(it) }
             ReflektFunctionName.WITH_ANNOTATIONS.functionName -> {
@@ -52,16 +52,17 @@ fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding
 
 // [1]SmartReflekt.[2]|objects()/classes() or so on|
 // [dotQualifiedExpressionNode] is [1]
-fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode): Set<String>? {
-//    // Get subType from [2]
-//    // TODO: should we change it for functions?
-//    val subType = callExpressionRoot.getFqNamesOfTypeArgument(binding)
+fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode): Set<Lambda>? {
     val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in SmartReflektFunctionName.values().map { it.functionName } }
-    val filters = HashSet<String>()
+    val filters = HashSet<Lambda>()
     for (node in filteredChildren) {
         val childCallExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CallExpression.value } ?: continue
-        when(node.text) {
-            SmartReflektFunctionName.FILTER.functionName -> filters.add(childCallExpressionRoot.getLambdaBody())
+        when (node.text) {
+            SmartReflektFunctionName.FILTER.functionName -> {
+                val body = childCallExpressionRoot.getLambdaBody()
+                val parameters = childCallExpressionRoot.getLambdaParameters()
+                filters.add(Lambda(body, parameters))
+            }
             else -> error("Found an unexpected node text: ${node.text}")
         }
     }
@@ -73,7 +74,7 @@ fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode): Set<St
 
 fun findSmartReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SubTypesToFilters? {
     val callExpressionRoot = expression.node.parents().first()
-    // TODO: should we change it for functions? Or string is ok?
+    // TODO: should we change it for functions? Or string (fqName) is ok?
     val subType = callExpressionRoot.getFqNamesOfTypeArgument(binding).firstOrNull()
     return callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
         findSmartReflektInvokeArguments(node)?.let { filters ->
