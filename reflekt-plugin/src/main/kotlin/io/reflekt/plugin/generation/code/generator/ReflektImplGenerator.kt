@@ -1,7 +1,7 @@
 package io.reflekt.plugin.generation.code.generator
 
 import com.squareup.kotlinpoet.ClassName
-import io.reflekt.plugin.analysis.ReflektUses
+import io.reflekt.plugin.analysis.models.ReflektUses
 import io.reflekt.plugin.generation.code.generator.models.ClassesGenerator
 import io.reflekt.plugin.generation.code.generator.models.ObjectsGenerator
 import io.reflekt.plugin.generation.code.generator.models.*

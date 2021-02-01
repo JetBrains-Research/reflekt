@@ -24,6 +24,7 @@ allprojects {
 
     repositories {
         jcenter()
+        google()
     }
 
     // We should publish the project in the local maven repository before the tests running

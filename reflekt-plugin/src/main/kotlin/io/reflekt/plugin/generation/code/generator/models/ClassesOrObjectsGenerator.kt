@@ -4,7 +4,8 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asClassName
-import io.reflekt.plugin.analysis.*
+import io.reflekt.plugin.analysis.models.ClassOrObjectUses
+import io.reflekt.plugin.analysis.models.toSubTypesToFqNamesMap
 import io.reflekt.plugin.generation.code.generator.emptyListCode
 import kotlin.reflect.KClass
 

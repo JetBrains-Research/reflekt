@@ -12,9 +12,7 @@ plugins {
 
 dependencies {
     implementation("io.reflekt", "gradle-plugin", "0.1.0")
-
     compileOnly("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 reflekt {
@@ -25,6 +23,7 @@ reflekt {
 repositories {
     mavenCentral()
     mavenLocal()
+    google()
 }
 
 val compileKotlin: KotlinCompile by tasks

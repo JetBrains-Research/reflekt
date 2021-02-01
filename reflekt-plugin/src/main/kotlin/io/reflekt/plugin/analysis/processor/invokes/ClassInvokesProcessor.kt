@@ -1,6 +1,6 @@
 package io.reflekt.plugin.analysis.processor.invokes
 
-import io.reflekt.plugin.analysis.ClassOrObjectInvokes
+import io.reflekt.plugin.analysis.models.ClassOrObjectInvokes
 import io.reflekt.plugin.analysis.common.ReflektName
 import io.reflekt.plugin.analysis.psi.getFqName
 import org.jetbrains.kotlin.psi.KtElement

@@ -1,6 +1,7 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.generation.code.generator.ReflektImplGenerator
+import io.reflekt.plugin.utils.Util.getInstances
 import io.reflekt.plugin.utils.Util.getUses
 import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.analyzer.AnalysisResult
@@ -20,8 +21,10 @@ class ReflektModuleAnalysisExtension(private val filesToIntrospect: Set<KtFile>,
         messageCollector?.log("ReflektAnalysisExtension is starting...")
         messageCollector?.log("FILES: ${files.joinToString(separator = ", ") { it.name }};")
         messageCollector?.log("Start analysis ${module.name} module's files;")
-        val uses = getUses(files.toSet().union(filesToIntrospect), bindingTrace)
-        messageCollector?.log("Finish analysis ${module.name} module's files;\n Uses: $uses")
+        val allFiles = files.toSet().union(filesToIntrospect)
+        val uses = getUses(allFiles, bindingTrace)
+        val instances = getInstances(allFiles, bindingTrace)
+        messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses\nInstances: $instances")
 
         with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
             delete()
