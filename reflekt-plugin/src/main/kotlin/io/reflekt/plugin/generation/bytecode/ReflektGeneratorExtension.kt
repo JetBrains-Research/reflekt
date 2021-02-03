@@ -54,9 +54,9 @@ private fun parseReflektInvoke(fqName: String, reflektFqName: String): ReflektIn
     val matchResult = getReflektFullNameRegex(reflektFqName).matchEntire(fqName) ?: return null
     val (_, klass, nestedClass, terminalFunction) = matchResult.groupValues
     return ReflektInvokeParts(
-        klass.toEnum(ReflektName.values(), ReflektName::className)!!,
-        nestedClass.toEnum(ReflektNestedName.values(), ReflektNestedName::className)!!,
-        terminalFunction.toEnum(ReflektTerminalFunctionName.values(), ReflektTerminalFunctionName::functionName)!!
+        klass.toEnum(ReflektName.values(), ReflektName::className),
+        nestedClass.toEnum(ReflektNestedName.values(), ReflektNestedName::className),
+        terminalFunction.toEnum(ReflektTerminalFunctionName.values(), ReflektTerminalFunctionName::functionName)
     )
 }
 
