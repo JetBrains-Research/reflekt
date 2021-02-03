@@ -1,7 +1,7 @@
 name: Qodana - Code Inspection
 
 # The name of the GitHub event that triggers the workflow.
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   code_inspection:
