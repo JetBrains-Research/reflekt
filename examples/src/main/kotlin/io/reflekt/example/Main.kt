@@ -1,5 +1,6 @@
 package io.reflekt.example
 
+import com.github.gumtreediff.actions.model.Action
 import io.reflekt.Reflekt
 import io.reflekt.SmartReflekt
 import com.google.devtools.ksp.symbol.ClassKind
@@ -42,9 +43,13 @@ fun main() {
     val classes3 = Reflekt.classes().withAnnotations<B2>(FirstAnnotation::class, SecondAnnotation::class).toList()
     println(classes3)
 
+    val classes4 = Reflekt.classes().withSubType<Action>().toList()
+    println(classes4)
+
 //    val smartClasses = SmartReflekt.classes<AInterface>().filter { it.classKind == ClassKind.INTERFACE }.resolve()
 //    println(smartClasses)
 
-//    val functions = Reflekt.functions().withAnnotations<() -> Unit>()
+    // TODO: add more examples with functions
+//    val functions = Reflekt.functions().withAnnotations<() -> Unit>().toList()
 //    println(functions)
 }
