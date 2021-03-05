@@ -12,12 +12,13 @@ plugins {
 
 dependencies {
     implementation("io.reflekt", "gradle-plugin", "0.1.0")
-    compileOnly("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
+    implementation("com.github.gumtreediff", "core", "2.1.2")
 }
 
 reflekt {
     enabled = true
-    librariesToIntrospect = listOf("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    // Use DependencyHandlers which have canBeResolve = True
+    librariesToIntrospect = listOf()
 }
 
 repositories {
