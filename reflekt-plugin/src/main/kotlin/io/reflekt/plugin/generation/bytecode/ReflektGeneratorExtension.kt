@@ -1,9 +1,10 @@
 package io.reflekt.plugin.generation.bytecode
 
 import io.reflekt.Reflekt
-import io.reflekt.plugin.analysis.models.ReflektUses
-import io.reflekt.plugin.analysis.models.SubTypesToAnnotations
 import io.reflekt.plugin.analysis.common.*
+import io.reflekt.plugin.analysis.models.ReflektUses
+import io.reflekt.plugin.analysis.models.SignatureToAnnotations
+import io.reflekt.plugin.analysis.models.SubTypesToAnnotations
 import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.generation.bytecode.util.pushArray
 import io.reflekt.plugin.utils.Util.getUses
@@ -30,13 +31,20 @@ class ReflektGeneratorExtension(private val messageCollector: MessageCollector? 
         val invokeParts = parseReflektInvoke(expressionFqName, Reflekt::class.qualifiedName!!) ?: return null
         messageCollector?.log("REFLEKT CALL: $expressionFqName;")
 
-        // Parse Reflekt call to find arguments again
-        val invokeArguments = findReflektInvokeArgumentsByExpressionPart(expression, binding)!!
-
         // Get ReflektUses stored in binding context after analysis part
         val uses = c.codegen.bindingContext.getUses() ?: throw ReflektGenerationException("Found call to Reflekt, but no analysis data")
+
         // Extract answer from uses
-        val resultValues = invokeParts.getUses(uses, invokeArguments, c, functionInstanceGenerator)
+        val resultValues = when (invokeParts.name) {
+            ReflektName.CLASSES, ReflektName.OBJECTS -> {
+                val invokeArguments = findReflektInvokeArgumentsByExpressionPart(expression, binding)!!
+                invokeParts.getUses(uses, invokeArguments, c)
+            }
+            ReflektName.FUNCTIONS -> {
+                val invokeArguments = findReflektFunctionInvokeArgumentsByExpressionPart(expression, binding)!!
+                invokeParts.getUses(uses, invokeArguments, c, functionInstanceGenerator)
+            }
+        }
 
         // Return type (e.g. List or Set)
         val returnType = resolvedCall.candidateDescriptor.returnType!!
@@ -70,27 +78,29 @@ internal data class ReflektInvokeParts(
     override val nestedName: ReflektNestedName,
     override val terminalFunctionName: ReflektTerminalFunctionName
 ) : BaseReflektInvokeParts(name, nestedName, terminalFunctionName) {
-    // Extract result classes, objects or functions and convert them into ASM types.
+    // Extract result classes or objects and convert them into ASM types.
     fun getUses(
         uses: ReflektUses,
         invokeArguments: SubTypesToAnnotations,
+        c: ExpressionCodegenExtension.Context
+    ): List<Type> {
+        val binding = c.codegen.bindingContext
+        val items = if (name == ReflektName.OBJECTS) uses.objects else uses.classes
+        return items[invokeArguments]?.map {
+            binding.get(ASM_TYPE, it.findClassDescriptor(binding)) ?: throw ReflektGenerationException("Failed to resolve class [$it]")
+        } ?: throw ReflektGenerationException("No data for call [$this]")
+    }
+
+    // Extract result functions and convert them into ASM types.
+    fun getUses(
+        uses: ReflektUses,
+        invokeArguments: SignatureToAnnotations,
         c: ExpressionCodegenExtension.Context,
         functionInstanceGenerator: FunctionInstanceGenerator
     ): List<Type> {
-        val binding = c.codegen.bindingContext
-        return when (val type = name) {
-            ReflektName.OBJECTS, ReflektName.CLASSES -> {
-                val items = if (type == ReflektName.OBJECTS) uses.objects else uses.classes
-                items[invokeArguments]?.map {
-                    binding.get(ASM_TYPE, it.findClassDescriptor(binding)) ?: throw ReflektGenerationException("Failed to resolve class [$it]")
-                }
-            }
-            ReflektName.FUNCTIONS -> {
-                val items = uses.functions
-                items[invokeArguments.annotations]?.map {
-                    functionInstanceGenerator.generate(it, c)
-                }
-            }
+        val items = uses.functions
+        return items[invokeArguments]?.map {
+            functionInstanceGenerator.generate(it, c)
         } ?: throw ReflektGenerationException("No data for call [$this]")
     }
 }

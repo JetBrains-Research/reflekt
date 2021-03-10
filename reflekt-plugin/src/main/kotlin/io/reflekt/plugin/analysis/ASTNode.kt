@@ -1,6 +1,7 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.models.ElementType
+import io.reflekt.plugin.analysis.models.ParameterizedType
 import io.reflekt.plugin.analysis.psi.getFqName
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -18,17 +19,19 @@ import java.util.*
  */
 fun ASTNode.findLastParentByType(elementType: ElementType): ASTNode? {
     val parents = this.parents().toList()
-    val index = parents.indexOfFirst { it.elementType.toString() != elementType.value }
+    val index = parents.indexOfFirst { !it.hasType(elementType) }
     if (index <= 0) {
         return null
     }
     return parents[index - 1]
 }
 
+fun ASTNode.hasType(type: ElementType) = elementType.toString() == type.value
+
 fun ASTNode.getFqNamesOf(rootType: ElementType, type: ElementType, binding: BindingContext): List<String> {
-    require(this.elementType.toString() == rootType.value) { "Invalid element type ${this.elementType} of the parent node ${this.text}" }
-    val typeArgumentNode = this.children().find { it.elementType.toString() == type.value }!!
-    val filtered = typeArgumentNode.filterChildren { n: ASTNode -> n.elementType.toString() == ElementType.ReferenceExpression.value }.toList()
+    require(hasType(rootType)) { "Invalid element type ${this.elementType} of the parent node ${this.text}" }
+    val typeArgumentNode = this.children().find { it.hasType(type) }!!
+    val filtered = typeArgumentNode.filterChildren { it.hasType(ElementType.ReferenceExpression) }.toList()
     return filtered.mapNotNull { it.psi?.getFqName(binding) }
 }
 
@@ -37,22 +40,22 @@ fun ASTNode.getFqNamesOfTypeArgument(binding: BindingContext) = getFqNamesOf(Ele
 fun ASTNode.getFqNamesOfValueArguments(binding: BindingContext) = getFqNamesOf(ElementType.CallExpression, ElementType.ValueArgumentList, binding)
 
 fun ASTNode.getLambdaNode(): ASTNode {
-    require(this.elementType.toString() == ElementType.CallExpression.value) { "Try to get lambda body from the node with type: ${this.elementType}" }
+    require(hasType(ElementType.CallExpression)) { "Try to get lambda body from the node with type: ${this.elementType}" }
     // CALL_EXPRESSION -> LAMBDA_ARGUMENT -> LAMBDA_EXPRESSION -> FUNCTION_LITERAL -> BLOCK
     // We need to get the last level (BLOCK)
-    return this.children().firstOrNull { it.elementType.toString() == ElementType.LambdaArgument.value }
-        ?.children()?.firstOrNull { it.elementType.toString() == ElementType.LambdaExpression.value }
-        ?.children()?.firstOrNull { it.elementType.toString() == ElementType.FunctionLiteral.value }
+    return this.children().firstOrNull { it.hasType(ElementType.LambdaArgument) }
+        ?.children()?.firstOrNull { it.hasType(ElementType.LambdaExpression) }
+        ?.children()?.firstOrNull { it.hasType(ElementType.FunctionLiteral) }
         ?: error("Incorrect lambda structure in the CALL_EXPRESSION node")
 }
 
 fun ASTNode.getLambdaBody(): String {
-    return this.getLambdaNode().children().firstOrNull { it.elementType.toString() == ElementType.Block.value }
+    return this.getLambdaNode().children().firstOrNull { it.hasType(ElementType.Block) }
         ?.text ?: error("The lambda node does not have the text attribute")
 }
 
 fun ASTNode.getLambdaParameters(): List<String> {
-    val parameterList = this.getLambdaNode().children().firstOrNull { it.elementType.toString() == ElementType.ValueParameterList.value } ?: return listOf("it")
+    val parameterList = this.getLambdaNode().children().firstOrNull { it.hasType(ElementType.ValueParameterList) } ?: return listOf("it")
     return parameterList.children().toList().mapNotNull { parameter ->
         parameter.children().firstOrNull { it as? LeafPsiElement != null }?.text
     }
@@ -64,7 +67,6 @@ fun ASTNode.getLambdaParameters(): List<String> {
 fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode> {
     val filtered = ArrayList<ASTNode>()
     val nodes: Queue<ASTNode> = LinkedList<ASTNode>(listOf(this))
-    nodes.addAll(this.children())
     while (nodes.isNotEmpty()) {
         val currentNode = nodes.poll()
         if (filter(currentNode)) {
@@ -73,4 +75,35 @@ fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode
         nodes.addAll(currentNode.children())
     }
     return filtered.asSequence()
+}
+
+// root -> TYPE_ARGUMENT_LIST -> [TYPE_PROJECTION] -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE
+fun ASTNode.getTypeArguments(): List<ASTNode> =
+    (children().firstOrNull { it.hasType(ElementType.TypeArgumentList) }?.children()?.toList() ?: emptyList())
+        .filter { it.hasType(ElementType.TypeProjection) }
+        .map { it.children().first { it.hasType(ElementType.TypeReference) }.firstChildNode }
+        .toList()
+
+// root -> VALUE_PARAMETER_LIST -> [VALUE_PARAMETER] -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE
+fun ASTNode.getValueParameters(): List<ASTNode> =
+    (children().firstOrNull { it.hasType(ElementType.ValueParameterList) }?.children()?.toList() ?: emptyList())
+        .filter { it.hasType(ElementType.ValueParameter) }
+        .map { it.children().first { it.hasType(ElementType.TypeReference) }.firstChildNode }
+        .toList()
+
+fun ASTNode.getParameterizedType(binding: BindingContext): ParameterizedType {
+    return when (val type = elementType.toString()) {
+        ElementType.UserType.value -> {
+            val parameters = getTypeArguments().map { it.getParameterizedType(binding) }
+            val fqName = children().first { it.hasType(ElementType.ReferenceExpression) }.psi.getFqName(binding)!!
+            ParameterizedType(fqName, parameters)
+        }
+        ElementType.FunctionType.value -> {
+            val argumentTypes = getValueParameters().map { it.getParameterizedType(binding) }
+            val returnType = children().first { it.hasType(ElementType.TypeReference) }.firstChildNode.getParameterizedType(binding)
+            val fqName = "kotlin.Function${argumentTypes.size}"
+            ParameterizedType(fqName, argumentTypes.plus(returnType))
+        }
+        else -> error("Unrecognized element type: $type")
+    }
 }

@@ -1,5 +1,6 @@
 package io.reflekt.plugin.generation.bytecode
 
+import io.reflekt.plugin.analysis.psi.function.*
 import io.reflekt.plugin.generation.bytecode.util.*
 import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -12,16 +13,13 @@ import org.jetbrains.kotlin.codegen.state.GenerationState
 import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper
 import org.jetbrains.kotlin.com.intellij.psi.PsiFile
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.load.kotlin.TypeMappingMode
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.descriptorUtil.isCompanionObject
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin
 import org.jetbrains.kotlin.resolve.jvm.jvmSignature.JvmMethodParameterKind
-import org.jetbrains.kotlin.resolve.scopes.receivers.TransientReceiver
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.org.objectweb.asm.Opcodes
@@ -50,29 +48,14 @@ class FunctionInstanceGenerator(
 
         val functionDescriptor: FunctionDescriptor = binding.get(BindingContext.FUNCTION, function)!!
 
-        val receiverType: KotlinType? = let {
-            val extensionReceiver = functionDescriptor.extensionReceiverParameter
-            val dispatchReceiver = functionDescriptor.dispatchReceiverParameter
-
-            if (dispatchReceiver != null && dispatchReceiver !is TransientReceiver) {
-                dispatchReceiver.type
-            } else if (extensionReceiver != null && extensionReceiver !is TransientReceiver) {
-                extensionReceiver.type
-            } else {
-                null
-            }
-        }
+        val receiverType: KotlinType? = function.receiverType(binding)
 
         val receiverDescriptor: DeclarationDescriptor? = receiverType?.constructor?.declarationDescriptor
-        val isObjectReceiver: Boolean = (receiverDescriptor as? ClassDescriptor)?.kind == ClassKind.OBJECT
-        val isCompanionObjectReceiver: Boolean = receiverDescriptor?.isCompanionObject() ?: false
+        val isObjectReceiver: Boolean = receiverType?.isObject() ?: false
+        val isCompanionObjectReceiver: Boolean = receiverType?.isCompanionObject() ?: false
 
-        val argumentTypes: List<KotlinType> = let {
-            listOfNotNull(if (!isObjectReceiver) receiverType else null).plus(
-                functionDescriptor.valueParameters.map { it.type }
-            )
-        }
-        val returnType: KotlinType = functionDescriptor.returnType!!
+        val argumentTypes: List<KotlinType> = function.argumentTypesWithReceiver(binding)
+        val returnType: KotlinType = function.returnType(binding)!!
 
         val classAsmType: Type = Type.getObjectType("$classNamePrefix$${nextIndex++}")
 
