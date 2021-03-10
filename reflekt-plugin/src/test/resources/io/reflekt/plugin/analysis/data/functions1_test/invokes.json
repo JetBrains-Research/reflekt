@@ -2,6 +2,17 @@
   "objects": [],
   "classes": [],
   "functions": [
-    []
+    {
+      "signature": {
+        "fqName": "kotlin.Function0",
+        "parameters": [
+          {
+            "fqName": "kotlin.Unit",
+            "parameters": []
+          }
+        ]
+      },
+      "annotations": []
+    }
   ]
 }
