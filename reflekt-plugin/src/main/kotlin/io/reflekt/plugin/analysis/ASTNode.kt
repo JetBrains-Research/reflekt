@@ -77,19 +77,20 @@ fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode
     return filtered.asSequence()
 }
 
-// root -> TYPE_ARGUMENT_LIST -> [TYPE_PROJECTION] -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE
-fun ASTNode.getTypeArguments(): List<ASTNode> =
-    (children().firstOrNull { it.hasType(ElementType.TypeArgumentList) }?.children()?.toList() ?: emptyList())
-        .filter { it.hasType(ElementType.TypeProjection) }
+/*
+ * Extract list of types from ASTNode.
+ * For example, CALL_EXPRESSION and USER_TYPE both may have TYPE_ARGUMENT_LIST as the child node.
+ * It has the following structure: root -> <list type> -> [<entry type>] -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE
+ */
+fun ASTNode.getTypeList(listType: ElementType, entryType: ElementType): List<ASTNode> =
+    (children().firstOrNull { it.hasType(listType) }?.children()?.toList() ?: emptyList())
+        .filter { it.hasType(entryType) }
         .map { it.children().first { it.hasType(ElementType.TypeReference) }.firstChildNode }
         .toList()
 
-// root -> VALUE_PARAMETER_LIST -> [VALUE_PARAMETER] -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE
-fun ASTNode.getValueParameters(): List<ASTNode> =
-    (children().firstOrNull { it.hasType(ElementType.ValueParameterList) }?.children()?.toList() ?: emptyList())
-        .filter { it.hasType(ElementType.ValueParameter) }
-        .map { it.children().first { it.hasType(ElementType.TypeReference) }.firstChildNode }
-        .toList()
+fun ASTNode.getTypeArguments(): List<ASTNode> = getTypeList(ElementType.TypeArgumentList, ElementType.TypeProjection)
+
+fun ASTNode.getValueParameters(): List<ASTNode> = getTypeList(ElementType.ValueParameterList, ElementType.ValueParameter)
 
 fun ASTNode.getParameterizedType(binding: BindingContext): ParameterizedType {
     return when (val type = elementType.toString()) {

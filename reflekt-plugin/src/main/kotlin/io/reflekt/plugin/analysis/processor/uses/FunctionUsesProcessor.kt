@@ -33,7 +33,7 @@ class FunctionUsesProcessor(override val binding: BindingContext, private val re
 
     private fun SignatureToAnnotations.checkSignature(function: KtNamedFunction): Boolean {
         val argumentTypes = function.argumentTypesWithReceiver(binding)
-        val returnType = function.returnType(binding) ?: error("No return type???")
+        val returnType = function.returnType(binding) ?: return false
         val functionNParameters = argumentTypes.plus(returnType)
         if (functionNParameters.size != signature.parameters.size) {
             return false
