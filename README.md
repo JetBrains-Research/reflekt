@@ -15,6 +15,16 @@ The main reason for its creation was the necessity of GraalVM support in modern 
 especially on Serverless workloads. With the help of the Reflekt project, Kotless will be able to provide access to GraalVM to 
 users of historically reflection-based frameworks such as Spring or own Kotless DSL.
 
+___
+
+## Table of contents
+
+- [Getting started](#getting-started)
+- [Local start](#local-start)
+- [Supported features](#supported-features)
+- [Examples](#examples)
+- [Want to know more?](#want-to-know-more?)
+
 ## Getting started
 
 Reflekt uses Gradle. If you have a Gradle project, you only need to do three things.
