@@ -131,8 +131,7 @@ you should use this version in the plugins and dependencies section.
     - [x] project's files;
     - [x] external libraries;
 - [ ] Incremental compilation process;
-- [ ] Compile-time reflection by custom users' filters;
-  for `one-module` projects (for objects, classes, and functions);
+- [ ] Compile-time reflection by custom users' filters for `one-module` projects (for objects, classes, and functions);
 - [ ] Code generation.
 
 ## Examples
