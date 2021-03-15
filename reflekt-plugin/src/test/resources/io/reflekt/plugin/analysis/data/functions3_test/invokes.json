@@ -2,9 +2,20 @@
   "objects": [],
   "classes": [],
   "functions": [
-    [
-      "io.reflekt.test.FirstAnnotationTest",
-      "io.reflekt.test.SecondAnnotationTest"
-    ]
+    {
+      "signature": {
+        "fqName": "kotlin.Function0",
+        "parameters": [
+          {
+            "fqName": "kotlin.Unit",
+            "parameters": []
+          }
+        ]
+      },
+      "annotations": [
+        "io.reflekt.test.SecondAnnotationTest",
+        "io.reflekt.test.FirstAnnotationTest"
+      ]
+    }
   ]
 }

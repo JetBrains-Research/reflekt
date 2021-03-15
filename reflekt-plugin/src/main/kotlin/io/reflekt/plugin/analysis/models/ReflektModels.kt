@@ -14,8 +14,34 @@ data class SubTypesToAnnotations(
     val annotations: Set<String> = emptySet()
 )
 
+/* Recursive structure representing type that may have parameters.
+ * For example, Map<Pair<Int, String>, Int> is represented in the following way:
+ * ParameterizedType(
+ *     "kotlin.collections.Map",
+ *     listOf(
+ *         ParameterizedType(
+ *             "kotlin.Pair",
+ *             listOf(
+ *                 ParameterizedType("kotlin.Int", emptyList()),
+ *                 ParameterizedType("kotlin.String", emptyList())
+ *             )
+ *         ),
+ *         ParameterizedType("kotlin.Int", emptyList())
+ *     )
+ * )
+ */
+data class ParameterizedType(
+    val fqName: String,
+    val parameters: List<ParameterizedType> = emptyList()
+)
+
+data class SignatureToAnnotations(
+    val signature: ParameterizedType, // kotlin.FunctionN< ... >
+    val annotations: Set<String> = emptySet()
+)
+
 typealias ClassOrObjectInvokes = MutableSet<SubTypesToAnnotations>
-typealias FunctionInvokes = MutableSet<Set<String>>
+typealias FunctionInvokes = MutableSet<SignatureToAnnotations>
 
 data class ReflektInvokes(
     val objects: ClassOrObjectInvokes = HashSet(),
@@ -33,7 +59,7 @@ data class ReflektInvokes(
 
 typealias TypeUses<K, V> = Map<K, MutableList<V>>
 typealias ClassOrObjectUses = TypeUses<SubTypesToAnnotations, KtClassOrObject>
-typealias FunctionUses = TypeUses<Set<String>, KtNamedFunction>
+typealias FunctionUses = TypeUses<SignatureToAnnotations, KtNamedFunction>
 
 fun ClassOrObjectUses.toSubTypesToFqNamesMap(): Map<Set<String>, MutableList<KtClassOrObject>> {
     return this.map { it.key.subTypes to it.value }.toMap()

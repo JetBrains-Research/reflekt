@@ -16,7 +16,7 @@ fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: Bin
     val annotations = HashSet<String>()
 
     for (node in filteredChildren) {
-        val callExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CallExpression.value } ?: continue
+        val callExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CallExpression) } ?: continue
         when (node.text) {
             ReflektFunctionName.WITH_SUBTYPE.functionName -> callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
             ReflektFunctionName.WITH_SUBTYPES.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { subtypes.addAll(it) }
@@ -50,13 +50,42 @@ fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding
     }
 }
 
+fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SignatureToAnnotations? {
+    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in ReflektFunctionName.values().map { it.functionName } }
+
+    var signature: ParameterizedType? = null
+    val annotations = HashSet<String>()
+
+    for (node in filteredChildren) {
+        val callExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CallExpression) } ?: continue
+        when (node.text) {
+            ReflektFunctionName.WITH_ANNOTATIONS.functionName -> {
+                callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
+                signature = callExpressionRoot.getTypeArguments().first().getParameterizedType(binding)
+            }
+            else -> error("Found an unexpected node text: ${node.text}")
+        }
+    }
+    if (signature == null) {
+        error("Failed to find function signature.")
+    }
+    return SignatureToAnnotations(signature, annotations)
+}
+
+fun findReflektFunctionInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SignatureToAnnotations? {
+    val callExpressionRoot = expression.node.parents().first()
+    return callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
+        findReflektFunctionInvokeArguments(node, binding)
+    }
+}
+
 // [1]SmartReflekt.[2]|objects()/classes() or so on|
 // [dotQualifiedExpressionNode] is [1]
 fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode): Set<Lambda>? {
     val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in SmartReflektFunctionName.values().map { it.functionName } }
     val filters = HashSet<Lambda>()
     for (node in filteredChildren) {
-        val childCallExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CallExpression.value } ?: continue
+        val childCallExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CallExpression) } ?: continue
         when (node.text) {
             SmartReflektFunctionName.FILTER.functionName -> {
                 val body = childCallExpressionRoot.getLambdaBody()

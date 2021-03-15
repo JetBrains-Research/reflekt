@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.psi.KtNamedDeclaration
 
 typealias TypeUsesTest<K> = Map<K, Set<String>>
 typealias ClassOrObjectUsesTest = TypeUsesTest<SubTypesToAnnotations>
-typealias FunctionUsesTest = TypeUsesTest<Set<String>>
+typealias FunctionUsesTest = TypeUsesTest<SignatureToAnnotations>
 
 data class ReflektUsesTest(
     val objects: ClassOrObjectUsesTest = HashMap(),

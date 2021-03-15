@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil
 
+// FIXME problems with external libraries
 fun KtAnnotationEntry.getDescriptor(context: BindingContext) = context[BindingContext.ANNOTATION, this]!!.forced()
 
 /** Forcefully resolves all contents inside KtElement or Descriptor */
