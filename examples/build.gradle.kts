@@ -13,12 +13,14 @@ plugins {
 dependencies {
     implementation("io.reflekt", "gradle-plugin", "0.1.0")
     implementation("com.github.gumtreediff", "core", "2.1.2")
+
+    compileOnly("junit", "junit", "4.13.2")
 }
 
 reflekt {
     enabled = true
     // Use DependencyHandlers which have canBeResolve = True
-    librariesToIntrospect = listOf()
+    librariesToIntrospect = listOf("junit:junit:4.13.2")
 }
 
 repositories {
