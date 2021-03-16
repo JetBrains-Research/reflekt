@@ -3,18 +3,18 @@
 
 # Reflekt
 
-Reflekt is a compile-time reflection library that leverages flows of standard reflection approach.
+Reflekt is a compile-time reflection library that leverages the flows of the standard reflection approach.
 
-Instead of relying on JVM reflection, Reflekt would perform compile-time resolution of reflection
-queries using Kotlin compiler analysis. While in general, this approach is not always applicable for
-most of the cases, Reflekt is capable of providing a convenient reflection API without actually
+Instead of relying on JVM reflection, Reflekt performs compile-time resolution of reflection
+queries using Kotlin compiler analysis, providing a convenient reflection API without actually
 using reflection.
 
 Reflekt is a joint project of [JetBrains Research](https://research.jetbrains.org/) and the [Kotless](https://github.com/JetBrains/kotless) team. 
 The main reason for its creation was the necessity of GraalVM support in modern Java applications, 
 especially on Serverless workloads. With the help of the Reflekt project, Kotless will be able to provide access to GraalVM to 
-users of historically reflection-based frameworks such as Spring or own Kotless DSL.
+users of historically reflection-based frameworks such as Spring or their own Kotless DSL.
 
+Restrictions. Reflekt analyses only `.kt` files. Use with Java SE 11.
 ___
 
 ## Table of contents
@@ -29,7 +29,7 @@ ___
 
 Reflekt uses Gradle. If you have a Gradle project, you only need to do three things.
 
-Firstly, set up the Reflekt plugin. You need to apply the plugin:
+Firstly, set up the Reflekt plugin. You need to apply the plugin. In the `build.gradle.kts` file, add the following lines in the `plugins` section:
 
 ```kotlin
 plugins {
@@ -40,7 +40,7 @@ plugins {
 }
 ```
 
-Secondly, add Reflekt DSL as a library to your application:
+Secondly, add the Reflekt DSL as a library to your application. In the `build.gradle.kts` file, add the following lines in the `dependencies` section:
 
 ```kotlin
 dependencies {
@@ -52,7 +52,7 @@ dependencies {
 }
 ```
 
-Thirdly, customize Reflekt plugin:
+Thirdly, customize the Reflekt plugin. In the `build.gradle.kts` file, add the `reflekt` object:
 
 ```kotlin
 reflekt {
@@ -64,11 +64,11 @@ reflekt {
 }
 ```
 
-_Please note that the `librariesToIntrospect` argument should contain only dependencies 
-that you use in the `dependencies` section. These dependencies have to 
-implement in Kotlin language._ 
+_Please note that the `librariesToIntrospect` argument should contain only the dependencies 
+that you use in the `dependencies` section. These dependencies have to be
+---implemented in Kotlin language._ 
 
-To avoid some bugs, please use the following compilation settings for Java and Kotlin:
+To avoid some bugs, please add the following compilation settings for Java and Kotlin in the `build.gradle.kts` file:
 
 ```kotlin
 val compileKotlin: KotlinCompile by tasks
@@ -88,14 +88,14 @@ compileTestKotlin.kotlinOptions {
 This gives you access to [Reflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/Reflekt.kt) interfaces.
 
 Please note that the current version of Reflekt does not support 
-incremental compilation process. Please, disable incremental compilation in your 
+incremental compilation process. Please disable incremental compilation in your 
 project by changing the `gradle.properties` file:
 
 ```kotlin
 kotlin.incremental=false
 ```
 
-Now you can use Reflekt plugin to find objects, classes and functions in your project:
+Now you can use the Reflekt plugin to find objects, classes, and functions in your project:
 
 ```kotlin
 val objects = Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
@@ -109,10 +109,10 @@ val functions = Reflekt.functions().withAnnotations<() -> Unit>().toList()
 
 You can use `any` unpublished Reflekt version. You should do the following steps:
 
-- Clone the Reflekt project (the official repo, any fork, branch, etc);
-- Build the project `./gradlew build`;
-- Publish the project to maven local `./gradlew publishToMavenLocal`.
-- Add `mavenLocal()` in repositories section in the `build.gradle.kts` file:
+- Clone the Reflekt project (the official repo, any fork, branch, etc.).
+- Build the project `./gradlew build`
+- Publish the project to maven local `./gradlew publishToMavenLocal`
+- Add `mavenLocal()` in the repositories section in the `build.gradle.kts` file:
 
 ```kotlin
 repositories {
@@ -120,28 +120,28 @@ repositories {
 }
 ```
 
-Please note that if you build a Reflekt version with customized 
+Please note that if you build a Reflekt version with a customized 
 [version](https://github.com/JetBrains-Research/reflekt/blob/master/build.gradle.kts#L4) number,
-you should use this version in the plugins and dependencies section.
+write this version in the plugins and dependencies sections.
 
 ## Supported features
 
 - [x] Compile-time reflection by Reflekt DSL 
   for `multi-module` projects:
-    - [x] project's files;
-    - [x] external libraries;
-- [ ] Incremental compilation process;
-- [ ] Compile-time reflection by custom users' filters for `one-module` projects (for objects, classes, and functions);
+    - [x] project's files
+    - [x] external libraries
+- [ ] Incremental compilation process
+- [ ] Compile-time reflection by custom users' filters for `one-module` projects (for objects, classes, and functions)
 - [ ] Code generation.
 
 ## Examples
 
 Any explanation becomes much better with a proper example.
 
-In the repository's [examples folder](./examples), you can find example project 
-that use Reflekt plugin by DSL.
+In the repository's [examples folder](./examples), you can find an example project 
+that uses the Reflekt plugin --by DSL.
 
-You can also find many examples of objects, functions, and classes search in 
+You can also find many examples of objects, functions, and classes ---search in 
 the [test](./reflekt-plugin/src/test) folder.
 
 ## Want to know more?
