@@ -37,6 +37,16 @@ fun KtNamedFunction.receiverType(binding: BindingContext): KotlinType? {
     }
 }
 
+fun KtNamedFunction.checkSignature(signature: ParameterizedType, binding: BindingContext): Boolean {
+    val argumentTypes = argumentTypesWithReceiver(binding)
+    val returnType = returnType(binding) ?: return false
+    val functionNParameters = argumentTypes.plus(returnType)
+    if (functionNParameters.size != signature.parameters.size) {
+        return false
+    }
+    return (functionNParameters zip signature.parameters).all { (k, p) -> k.equalTo(p, binding) }
+}
+
 fun KotlinType.fqName() = getJetTypeFqName(false)
 
 fun KotlinType.equalTo(parameterizedType: ParameterizedType, binding: BindingContext): Boolean {

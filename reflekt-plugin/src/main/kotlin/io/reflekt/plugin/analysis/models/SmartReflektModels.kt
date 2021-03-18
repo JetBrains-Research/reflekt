@@ -1,15 +1,16 @@
 package io.reflekt.plugin.analysis.models
 
 import io.reflekt.plugin.analysis.processor.instances.*
-import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtObjectDeclaration
 
 /*
  * Store a set of qualified names that exist in the project and additional libraries
  */
 data class ReflektInstances(
-    val objects: List<KtClassOrObject> = ArrayList(),
-    val classes: List<KtClassOrObject> = ArrayList(),
+    val objects: List<KtObjectDeclaration> = ArrayList(),
+    val classes: List<KtClass> = ArrayList(),
     val functions: List<KtNamedFunction> = ArrayList()
 ) {
     companion object{
@@ -22,11 +23,17 @@ data class ReflektInstances(
 }
 
 data class SubTypesToFilters(
-    val subType: String? = null,
-    val filters: Set<Lambda> = emptySet()
+    val subType: ParameterizedType? = null,
+    val filters: List<Lambda> = emptyList(),
+    val imports: List<Import> = emptyList()
 )
 
 data class Lambda(
     val body: String,
     val parameters: List<String> = listOf("it")
+)
+
+data class Import(
+    val fqName: String,
+    val text: String
 )

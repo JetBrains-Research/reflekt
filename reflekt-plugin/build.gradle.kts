@@ -8,7 +8,11 @@ plugins {
 }
 
 dependencies {
+    implementation(kotlin("script-util"))
+    implementation(kotlin("script-runtime"))
     implementation(kotlin("compiler-embeddable"))
+    implementation(kotlin("scripting-compiler-embeddable"))
+    implementation("net.java.dev.jna", "jna", "5.7.0")
 
     implementation("com.google.auto.service", "auto-service-annotations", "1.0-rc7")
     kapt("com.google.auto.service", "auto-service", "1.0-rc7")
@@ -19,6 +23,8 @@ dependencies {
     testImplementation(gradleTestKit())
 
     implementation("com.squareup", "kotlinpoet", "1.6.0")
+
+    implementation("org.reflections", "reflections", "0.9.12")
 
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.0")

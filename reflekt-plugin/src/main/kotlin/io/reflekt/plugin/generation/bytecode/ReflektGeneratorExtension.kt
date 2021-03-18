@@ -5,19 +5,24 @@ import io.reflekt.plugin.analysis.common.*
 import io.reflekt.plugin.analysis.models.ReflektUses
 import io.reflekt.plugin.analysis.models.SignatureToAnnotations
 import io.reflekt.plugin.analysis.models.SubTypesToAnnotations
+import io.reflekt.plugin.analysis.models.TypeUses
 import io.reflekt.plugin.analysis.psi.getFqName
+import io.reflekt.plugin.generation.bytecode.util.genAsmType
+import io.reflekt.plugin.generation.bytecode.util.invokeListOf
+import io.reflekt.plugin.generation.bytecode.util.invokeSetOf
 import io.reflekt.plugin.generation.bytecode.util.pushArray
 import io.reflekt.plugin.utils.Util.getUses
 import io.reflekt.plugin.utils.Util.log
+import io.reflekt.plugin.utils.enumToRegexOptions
 import io.reflekt.plugin.utils.toEnum
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
 import org.jetbrains.kotlin.codegen.asmType
-import org.jetbrains.kotlin.codegen.binding.CodegenBinding.ASM_TYPE
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
-import org.jetbrains.kotlin.psi.synthetics.findClassDescriptor
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.org.objectweb.asm.Type
+import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 
 class ReflektGeneratorExtension(private val messageCollector: MessageCollector? = null) : BaseReflektGeneratorExtension() {
 
@@ -28,21 +33,21 @@ class ReflektGeneratorExtension(private val messageCollector: MessageCollector? 
         val expressionFqName = expression.getFqName(c.codegen.bindingContext) ?: return null
 
         // Split expression into known parts of Reflekt invoke
-        val invokeParts = parseReflektInvoke(expressionFqName, Reflekt::class.qualifiedName!!) ?: return null
+        val invokeParts = parseReflektInvoke(expressionFqName) ?: return null
         messageCollector?.log("REFLEKT CALL: $expressionFqName;")
 
         // Get ReflektUses stored in binding context after analysis part
         val uses = c.codegen.bindingContext.getUses() ?: throw ReflektGenerationException("Found call to Reflekt, but no analysis data")
 
         // Extract answer from uses
-        val resultValues = when (invokeParts.name) {
-            ReflektName.CLASSES, ReflektName.OBJECTS -> {
+        val resultValues = when (invokeParts.entityType) {
+            ReflektEntity.CLASSES, ReflektEntity.OBJECTS -> {
                 val invokeArguments = findReflektInvokeArgumentsByExpressionPart(expression, binding)!!
-                invokeParts.getUses(uses, invokeArguments, c)
+                invokeParts.getClassOrObjectUses(uses, invokeArguments, c)
             }
-            ReflektName.FUNCTIONS -> {
+            ReflektEntity.FUNCTIONS -> {
                 val invokeArguments = findReflektFunctionInvokeArgumentsByExpressionPart(expression, binding)!!
-                invokeParts.getUses(uses, invokeArguments, c, functionInstanceGenerator)
+                invokeParts.getFunctionUses(uses, invokeArguments, c, functionInstanceGenerator)
             }
         }
 
@@ -58,13 +63,21 @@ class ReflektGeneratorExtension(private val messageCollector: MessageCollector? 
     }
 }
 
-private fun parseReflektInvoke(fqName: String, reflektFqName: String): ReflektInvokeParts? {
-    val matchResult = getReflektFullNameRegex(reflektFqName).matchEntire(fqName) ?: return null
+private fun getReflektFullNameRegex(): Regex {
+    val reflektFqName = Reflekt::class.qualifiedName!!
+    val entityTypes = enumToRegexOptions(ReflektEntity.values(), ReflektEntity::className)
+    val nestedClasses = enumToRegexOptions(ReflektNestedClass.values(), ReflektNestedClass::className)
+    val terminalFunctions = enumToRegexOptions(ReflektTerminalFunction.values(), ReflektTerminalFunction::functionName)
+    return Regex("$reflektFqName\\.$entityTypes\\.$nestedClasses\\.$terminalFunctions")
+}
+
+private fun parseReflektInvoke(fqName: String): ReflektInvokeParts? {
+    val matchResult = getReflektFullNameRegex().matchEntire(fqName) ?: return null
     val (_, klass, nestedClass, terminalFunction) = matchResult.groupValues
     return ReflektInvokeParts(
-        klass.toEnum(ReflektName.values(), ReflektName::className),
-        nestedClass.toEnum(ReflektNestedName.values(), ReflektNestedName::className),
-        terminalFunction.toEnum(ReflektTerminalFunctionName.values(), ReflektTerminalFunctionName::functionName)
+        klass.toEnum(ReflektEntity.values(), ReflektEntity::className),
+        nestedClass.toEnum(ReflektNestedClass.values(), ReflektNestedClass::className),
+        terminalFunction.toEnum(ReflektTerminalFunction.values(), ReflektTerminalFunction::functionName)
     )
 }
 
@@ -74,33 +87,32 @@ private fun parseReflektInvoke(fqName: String, reflektFqName: String): ReflektIn
  * If it does not end with terminal function (like toList), we skip it.
  */
 internal data class ReflektInvokeParts(
-    override val name: ReflektName,
-    override val nestedName: ReflektNestedName,
-    override val terminalFunctionName: ReflektTerminalFunctionName
-) : BaseReflektInvokeParts(name, nestedName, terminalFunctionName) {
-    // Extract result classes or objects and convert them into ASM types.
-    fun getUses(
+    override val entityType: ReflektEntity,
+    val nestedClass: ReflektNestedClass,
+    val terminalFunction: ReflektTerminalFunction
+) : BaseReflektInvokeParts(entityType) {
+    // Invoke terminal function after preparing arguments.
+    val invokeTerminalFunction: InstructionAdapter.() -> Unit
+        get() = when (terminalFunction) {
+            ReflektTerminalFunction.TO_LIST -> InstructionAdapter::invokeListOf
+            ReflektTerminalFunction.TO_SET -> InstructionAdapter::invokeSetOf
+        }
+
+    fun <K, V> getUses(items: TypeUses<K, V>, transform: (V) -> Type, invokeArguments: K): List<Type> =
+        items[invokeArguments]?.map { transform(it) } ?: throw ReflektGenerationException("No data for call [$this]")
+
+    fun getClassOrObjectUses(
         uses: ReflektUses,
         invokeArguments: SubTypesToAnnotations,
-        c: ExpressionCodegenExtension.Context
-    ): List<Type> {
-        val binding = c.codegen.bindingContext
-        val items = if (name == ReflektName.OBJECTS) uses.objects else uses.classes
-        return items[invokeArguments]?.map {
-            binding.get(ASM_TYPE, it.findClassDescriptor(binding)) ?: throw ReflektGenerationException("Failed to resolve class [$it]")
-        } ?: throw ReflektGenerationException("No data for call [$this]")
-    }
+        context: ExpressionCodegenExtension.Context
+    ): List<Type> =
+        getUses(if (entityType == ReflektEntity.OBJECTS) uses.objects else uses.classes, { it.genAsmType(context) }, invokeArguments)
 
-    // Extract result functions and convert them into ASM types.
-    fun getUses(
+    fun getFunctionUses(
         uses: ReflektUses,
         invokeArguments: SignatureToAnnotations,
-        c: ExpressionCodegenExtension.Context,
+        context: ExpressionCodegenExtension.Context,
         functionInstanceGenerator: FunctionInstanceGenerator
-    ): List<Type> {
-        val items = uses.functions
-        return items[invokeArguments]?.map {
-            functionInstanceGenerator.generate(it, c)
-        } ?: throw ReflektGenerationException("No data for call [$this]")
-    }
+    ): List<Type> =
+        getUses(uses.functions, { item: KtNamedFunction -> item.genAsmType(context, functionInstanceGenerator) }, invokeArguments)
 }

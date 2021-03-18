@@ -1,7 +1,7 @@
 package io.reflekt.plugin.analysis.util
 
 import io.reflekt.SmartReflekt
-import io.reflekt.plugin.analysis.common.ReflektName
+import io.reflekt.plugin.analysis.common.ReflektEntity
 import io.reflekt.plugin.analysis.processor.Processor
 import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.utils.enumToRegexOptions
@@ -19,7 +19,7 @@ class SmartReflektExpressionProcessor(override val binding: BindingContext): Pro
     }
 
     private fun isValidExpression(expression: KtNameReferenceExpression): Boolean {
-        val names = enumToRegexOptions(ReflektName.values(), ReflektName::reflektName)
+        val names = enumToRegexOptions(ReflektEntity.values(), ReflektEntity::entityType)
         val fqName = expression.getFqName(binding) ?: return false
         Regex("${SmartReflekt::class.qualifiedName}\\.$names").matchEntire(fqName) ?: return false
         return true

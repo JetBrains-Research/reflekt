@@ -5,6 +5,7 @@ enum class ElementType(val value: String) {
     Block("BLOCK"),
     CallExpression("CALL_EXPRESSION"),
     DotQualifiedExpression("DOT_QUALIFIED_EXPRESSION"),
+    File("kotlin.FILE"),
     FunctionLiteral("FUNCTION_LITERAL"),
     FunctionType("FUNCTION_TYPE"),
     LambdaArgument("LAMBDA_ARGUMENT"),

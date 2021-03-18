@@ -1,7 +1,7 @@
 package io.reflekt.plugin.analysis.processor.invokes
 
 import io.reflekt.plugin.analysis.models.ClassOrObjectInvokes
-import io.reflekt.plugin.analysis.common.ReflektName
+import io.reflekt.plugin.analysis.common.ReflektEntity
 import io.reflekt.plugin.analysis.psi.getFqName
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtReferenceExpression
@@ -15,5 +15,5 @@ class ClassInvokesProcessor (override val binding: BindingContext): BaseInvokesP
         return invokes
     }
 
-    override fun isValidExpression(expression: KtReferenceExpression) = expression.getFqName(binding) == ReflektName.CLASSES.fqName
+    override fun isValidExpression(expression: KtReferenceExpression) = expression.getFqName(binding) == ReflektEntity.CLASSES.fqName
 }

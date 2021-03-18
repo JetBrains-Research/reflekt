@@ -24,6 +24,13 @@ object Util {
         description = "whether to enable the Reflekt plugin or not"
     )
 
+    val DEPENDENCY_JAR_OPTION_INFO =
+        MyCliOption(
+            name = "dependencyJar",
+            valueDescription = "<dependency jar>",
+            description = "Project dependency jar file"
+        )
+
     val INTROSPECT_FILE_OPTION_INFO =
         MyCliOption(
             name = "fileToIntrospect",

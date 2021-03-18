@@ -1,7 +1,6 @@
 package io.reflekt.plugin.analysis.util
 
 import io.reflekt.plugin.analysis.*
-import io.reflekt.plugin.analysis.models.SubTypesToFilters
 import io.reflekt.plugin.util.Util
 import io.reflekt.util.FileUtil
 import org.junit.jupiter.api.Assertions
