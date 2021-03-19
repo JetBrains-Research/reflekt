@@ -2,14 +2,13 @@ package io.reflekt.example
 
 import com.github.gumtreediff.actions.model.Action
 import io.reflekt.Reflekt
-import io.reflekt.SmartReflekt
-import com.google.devtools.ksp.symbol.ClassKind
 
 class Test(var a: List<Any>, b: List<Any>)
 
 fun main() {
     val tmp = Test(emptyList(), emptyList())
     tmp.a = listOf(Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class))
+    println(tmp)
 
     val objects = Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
     println(objects)
@@ -38,7 +37,7 @@ fun main() {
 
     val classes1 = Reflekt.classes().withSubType<AInterface>().toList()
     println(classes1)
-    val classes2 = Reflekt.classes().withSubType<BInterface>().toList()
+    val classes2 = Reflekt.classes().withSubType<BInterface>().toSet()
     println(classes2)
     val classes3 = Reflekt.classes().withAnnotations<B2>(FirstAnnotation::class, SecondAnnotation::class).toList()
     println(classes3)
@@ -46,10 +45,6 @@ fun main() {
     val classes4 = Reflekt.classes().withSubType<Action>().toList()
     println(classes4)
 
-//    val smartClasses = SmartReflekt.classes<AInterface>().filter { it.classKind == ClassKind.INTERFACE }.resolve()
-//    println(smartClasses)
-
-    // TODO: add more examples with functions
-//    val functions = Reflekt.functions().withAnnotations<() -> Unit>().toList()
-//    println(functions)
+    val functions = Reflekt.functions().withAnnotations<(Int, String) -> List<Int>>().toList()
+    println(functions)
 }

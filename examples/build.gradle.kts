@@ -11,7 +11,7 @@ plugins {
 }
 
 dependencies {
-    implementation("io.reflekt", "gradle-plugin", "0.1.0")
+    implementation("io.reflekt", "io.reflekt.dsl", "0.1.0")
     implementation("com.github.gumtreediff", "core", "2.1.2")
 }
 
@@ -28,14 +28,14 @@ repositories {
 }
 
 val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "11"
-    languageVersion = "1.4"
-    apiVersion = "1.4"
+    compileKotlin.kotlinOptions {
+        jvmTarget = "11"
+        languageVersion = "1.4"
+        apiVersion = "1.4"
 }
 val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "11"
-    languageVersion = "1.4"
-    apiVersion = "1.4"
+    compileTestKotlin.kotlinOptions {
+        jvmTarget = "11"
+        languageVersion = "1.4"
+        apiVersion = "1.4"
 }
