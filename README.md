@@ -45,10 +45,10 @@ Secondly, add the Reflekt DSL as a library to your application. In the `build.gr
 ```kotlin
 dependencies {
     // The version here and the version in the plugins sections should be equal
-    implementation("io.reflekt", "gradle-plugin", "0.1.0")
+    implementation("io.reflekt", "io.reflekt.dsl", "0.1.0")
     
     // Necessary for this example
-    compileOnly("junit", "junit", "4.13.2")
+    compileOnly("io.kotless", "kotless-dsl", "0.1.6")
 }
 ```
 
@@ -60,7 +60,8 @@ reflekt {
     enabled = true
     // List of external libraries for dependencies search
     // Use only DependencyHandlers which have canBeResolve = True
-    librariesToIntrospect = listOf("junit:junit:4.13.2")
+    // Note: Reflekt works only with kt files from libraries
+    librariesToIntrospect = listOf("io.kotless:kotless-dsl:0.1.6")
 }
 ```
 
@@ -72,16 +73,16 @@ To avoid some bugs, please add the following compilation settings for Java and K
 
 ```kotlin
 val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "11"
-    languageVersion = "1.4"
-    apiVersion = "1.4"
+    compileKotlin.kotlinOptions {
+        jvmTarget = "11"
+        languageVersion = "1.4"
+        apiVersion = "1.4"
 }
 val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "11"
-    languageVersion = "1.4"
-    apiVersion = "1.4"
+    compileTestKotlin.kotlinOptions {
+        jvmTarget = "11"
+        languageVersion = "1.4"
+        apiVersion = "1.4"
 }
 ```
 
