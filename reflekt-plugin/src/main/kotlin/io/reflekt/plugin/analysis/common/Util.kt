@@ -84,7 +84,8 @@ fun findReflektFunctionInvokeArgumentsByExpressionPart(expression: KtExpression,
 // [dotQualifiedExpressionNode] is [1]
 fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SubTypesToFilters? {
     val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode ->
-        n.text in SmartReflektFunction.values().map { it.functionName } || n.text in ReflektEntity.values().map { it.entityType }
+        (n.text in SmartReflektFunction.values().map { it.functionName } || n.text in ReflektEntity.values().map { it.entityType }) &&
+            n.hasType(ElementType.ReferenceExpression)
     }
     var subtype: ParameterizedType? = null
     val filters = ArrayList<Lambda>()

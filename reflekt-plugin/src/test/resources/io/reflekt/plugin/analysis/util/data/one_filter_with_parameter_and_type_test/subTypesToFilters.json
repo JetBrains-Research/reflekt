@@ -1,13 +1,26 @@
 {
   "subTypesToFilters": [
     {
-      "subType": "io.reflekt.test.AInterface1Test",
+      "subType": {
+        "fqName": "io.reflekt.test.AInterface1Test",
+        "parameters": []
+      },
       "filters": [
         {
-          "body": "klass.classKind == ClassKind.INTERFACE",
+          "body": "klass.isInterface()",
           "parameters": [
             "klass"
           ]
+        }
+      ],
+      "imports": [
+        {
+          "fqName": "io.reflekt.SmartReflekt",
+          "text": "import io.reflekt.SmartReflekt"
+        },
+        {
+          "fqName": "org.jetbrains.kotlin.psi.KtClass",
+          "text": "import org.jetbrains.kotlin.psi.KtClass"
         }
       ]
     }

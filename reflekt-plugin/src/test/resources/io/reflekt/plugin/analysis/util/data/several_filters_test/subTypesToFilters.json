@@ -1,12 +1,21 @@
 {
   "subTypesToFilters": [
     {
-      "subType": "io.reflekt.test.AInterface1Test",
+      "subType": {
+        "fqName": "io.reflekt.test.AInterface1Test",
+        "parameters": []
+      },
       "filters": [
         {
-          "body": "it.classKind == ClassKind.INTERFACE",
+          "body": "klass.isInterface()",
           "parameters": [
-            "it"
+            "klass"
+          ]
+        },
+        {
+          "body": "klass.isInterface()",
+          "parameters": [
+            "klass"
           ]
         },
         {
@@ -16,10 +25,20 @@
           ]
         },
         {
-          "body": "klass.classKind == ClassKind.INTERFACE",
+          "body": "it.isInterface()",
           "parameters": [
-            "klass"
+            "it"
           ]
+        }
+      ],
+      "imports": [
+        {
+          "fqName": "io.reflekt.SmartReflekt",
+          "text": "import io.reflekt.SmartReflekt"
+        },
+        {
+          "fqName": "org.jetbrains.kotlin.psi.KtClass",
+          "text": "import org.jetbrains.kotlin.psi.KtClass"
         }
       ]
     }

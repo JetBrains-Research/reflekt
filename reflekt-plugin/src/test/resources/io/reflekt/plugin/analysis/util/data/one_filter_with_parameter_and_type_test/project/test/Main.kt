@@ -1,9 +1,8 @@
 package io.reflekt.test
 
-import com.google.devtools.ksp.symbol.ClassKind
-import com.google.devtools.ksp.symbol.KSClassDeclaration
 import io.reflekt.SmartReflekt
+import org.jetbrains.kotlin.psi.KtClass
 
 fun main() {
-    val smartClasses = SmartReflekt.classes<AInterface1Test>().filter { klass: KSClassDeclaration -> klass.classKind == ClassKind.INTERFACE }.resolve()
+    val smartClasses = SmartReflekt.classes<AInterface1Test>().filter { klass: KtClass -> klass.isInterface() }.resolve()
 }
