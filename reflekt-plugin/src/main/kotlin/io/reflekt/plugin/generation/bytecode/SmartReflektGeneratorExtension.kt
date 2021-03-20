@@ -10,7 +10,6 @@ import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.analysis.psi.isSubtypeOf
 import io.reflekt.plugin.generation.bytecode.util.genAsmType
 import io.reflekt.plugin.generation.bytecode.util.invokeListOf
-import io.reflekt.plugin.generation.bytecode.util.pushArray
 import io.reflekt.plugin.scripting.ImportChecker
 import io.reflekt.plugin.scripting.KotlinScriptRunner
 import io.reflekt.plugin.utils.Util.getInstances
@@ -20,8 +19,8 @@ import io.reflekt.plugin.utils.toEnum
 import org.jetbrains.kotlin.backend.common.push
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
-import org.jetbrains.kotlin.codegen.asmType
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 import java.io.File
@@ -52,13 +51,11 @@ class SmartReflektGeneratorExtension(
         val resultValues = when (invokeParts.entityType) {
             ReflektEntity.CLASSES -> {
                 val classInstances = instances.classes
-                filterInstances(classInstances.filter { it.isSubtypeOf(setOfNotNull(invokeArguments.subType?.fqName), binding) }, invokeArguments)
-                    .map { it.genAsmType(c) }
+                filterClassOrObjectInstances(classInstances, invokeArguments, c).map { it.genAsmType(c) }
             }
             ReflektEntity.OBJECTS -> {
                 val objectInstances = instances.objects
-                filterInstances(objectInstances.filter { it.isSubtypeOf(setOfNotNull(invokeArguments.subType?.fqName), binding) }, invokeArguments)
-                    .map { it.genAsmType(c) }
+                filterClassOrObjectInstances(objectInstances, invokeArguments, c).map { it.genAsmType(c) }
             }
             ReflektEntity.FUNCTIONS -> {
                 val functionInstances = instances.functions
@@ -67,15 +64,7 @@ class SmartReflektGeneratorExtension(
             }
         }
 
-        // Return type (e.g. List or Set)
-        val returnType = resolvedCall.candidateDescriptor.returnType!!
-        // Type of each answer (e.g KClass or Function2)
-        val returnTypeArgument = returnType.arguments.first().type.asmType(c.typeMapper)
-
-        return StackValue.functionCall(returnType.asmType(c.typeMapper), null) {
-            it.pushArray(returnTypeArgument, resultValues, invokeParts.pushItemFunction)
-            invokeParts.invokeTerminalFunction(it)
-        }
+        return pushResult(resolvedCall, c, invokeParts, resultValues)
     }
 
     // Filters list of instances (KtObjectDeclaration/KtClass/KtNamedFunction) so that its type matches specified type
@@ -104,6 +93,11 @@ class SmartReflektGeneratorExtension(
         }
         return resultInstances
     }
+
+    private inline fun <reified T: KtClassOrObject> filterClassOrObjectInstances(
+        instances: List<T>, invokeArguments: SubTypesToFilters, c: ExpressionCodegenExtension.Context
+    ): List<T> =
+        filterInstances(instances.filter { it.isSubtypeOf(setOfNotNull(invokeArguments.subType?.fqName), c.codegen.bindingContext) }, invokeArguments)
 }
 
 private fun getSmartReflektFullNameRegex(): Regex {
@@ -131,8 +125,7 @@ internal data class SmartReflektInvokeParts(
     override val entityType: ReflektEntity,
     val terminalFunction: SmartReflektTerminalFunction
 ) : BaseReflektInvokeParts(entityType) {
-    // Invoke terminal function after preparing arguments.
-    val invokeTerminalFunction: InstructionAdapter.() -> Unit
+    override val invokeTerminalFunction: InstructionAdapter.() -> Unit
         get() = when (terminalFunction) {
             SmartReflektTerminalFunction.RESOLVE -> InstructionAdapter::invokeListOf
         }

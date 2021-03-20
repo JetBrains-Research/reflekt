@@ -10,14 +10,12 @@ import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.generation.bytecode.util.genAsmType
 import io.reflekt.plugin.generation.bytecode.util.invokeListOf
 import io.reflekt.plugin.generation.bytecode.util.invokeSetOf
-import io.reflekt.plugin.generation.bytecode.util.pushArray
 import io.reflekt.plugin.utils.Util.getUses
 import io.reflekt.plugin.utils.Util.log
 import io.reflekt.plugin.utils.enumToRegexOptions
 import io.reflekt.plugin.utils.toEnum
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
-import org.jetbrains.kotlin.codegen.asmType
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
@@ -51,15 +49,7 @@ class ReflektGeneratorExtension(private val messageCollector: MessageCollector? 
             }
         }
 
-        // Return type (e.g. List or Set)
-        val returnType = resolvedCall.candidateDescriptor.returnType!!
-        // Type of each answer (e.g KClass or Function2)
-        val returnTypeArgument = returnType.arguments.first().type.asmType(c.typeMapper)
-
-        return StackValue.functionCall(returnType.asmType(c.typeMapper), null) {
-            it.pushArray(returnTypeArgument, resultValues, invokeParts.pushItemFunction)
-            invokeParts.invokeTerminalFunction(it)
-        }
+        return pushResult(resolvedCall, c, invokeParts, resultValues)
     }
 }
 
@@ -91,8 +81,7 @@ internal data class ReflektInvokeParts(
     val nestedClass: ReflektNestedClass,
     val terminalFunction: ReflektTerminalFunction
 ) : BaseReflektInvokeParts(entityType) {
-    // Invoke terminal function after preparing arguments.
-    val invokeTerminalFunction: InstructionAdapter.() -> Unit
+    override val invokeTerminalFunction: InstructionAdapter.() -> Unit
         get() = when (terminalFunction) {
             ReflektTerminalFunction.TO_LIST -> InstructionAdapter::invokeListOf
             ReflektTerminalFunction.TO_SET -> InstructionAdapter::invokeSetOf

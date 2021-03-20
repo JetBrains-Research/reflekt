@@ -1,10 +1,14 @@
 package io.reflekt.plugin.generation.bytecode
 
 import io.reflekt.plugin.analysis.common.ReflektEntity
-import io.reflekt.plugin.generation.bytecode.util.*
+import io.reflekt.plugin.generation.bytecode.util.pushArray
+import io.reflekt.plugin.generation.bytecode.util.pushFunctionN
+import io.reflekt.plugin.generation.bytecode.util.pushKClass
+import io.reflekt.plugin.generation.bytecode.util.pushObject
 import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
+import org.jetbrains.kotlin.codegen.asmType
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.org.objectweb.asm.Type
@@ -29,6 +33,21 @@ open class BaseReflektGeneratorExtension(private val messageCollector: MessageCo
             throw reflektGenerationException
         }
     }
+
+    internal fun pushResult(
+        resolvedCall: ResolvedCall<*>, c: ExpressionCodegenExtension.Context,
+        invokeParts: BaseReflektInvokeParts, resultValues: List<Type>
+    ): StackValue? {
+        // Return type (e.g. List or Set)
+        val returnType = resolvedCall.candidateDescriptor.returnType ?: error("No return type info")
+        // Type of each answer (e.g KClass or Function2)
+        val returnTypeArgument = returnType.arguments.first().type.asmType(c.typeMapper)
+
+        return StackValue.functionCall(returnType.asmType(c.typeMapper), null) {
+            it.pushArray(returnTypeArgument, resultValues, invokeParts.pushItemFunction)
+            invokeParts.invokeTerminalFunction(it)
+        }
+    }
 }
 
 /*
@@ -46,5 +65,7 @@ internal abstract class BaseReflektInvokeParts(
             ReflektEntity.CLASSES -> InstructionAdapter::pushKClass
             ReflektEntity.FUNCTIONS -> InstructionAdapter::pushFunctionN
         }
+    // Invoke terminal function after preparing arguments.
+    abstract val invokeTerminalFunction: InstructionAdapter.() -> Unit
 }
 
