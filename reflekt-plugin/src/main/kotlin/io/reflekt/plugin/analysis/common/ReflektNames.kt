@@ -3,13 +3,19 @@ package io.reflekt.plugin.analysis.common
 import io.reflekt.Reflekt
 import io.reflekt.SmartReflekt
 
-enum class ReflektEntity(val entityType: String, val smartClassName: String) {
+// Reflekt/SmartReflekt content types
+enum class ReflektEntity(
+    val entityType: String,     // objects/classes/functions
+    val smartClassName: String  // SmartReflekt nested class - [Object/Class/Function]CompileTimeExpression
+) {
     OBJECTS("objects", "ObjectCompileTimeExpression"),
     CLASSES("classes", "ClassCompileTimeExpression"),
     FUNCTIONS("functions", "FunctionCompileTimeExpression");
 
-    val fqName: String = "${Reflekt::class.qualifiedName}.$entityType"
+    // Reflekt nested class - Classes/Objects/Functions
     val className = entityType.capitalize()
+
+    val fqName: String = "${Reflekt::class.qualifiedName}.$entityType"
     val classFqName = "${Reflekt::class.qualifiedName}.$className"
 
     val smartFqName: String = "${SmartReflekt::class.qualifiedName}.$entityType"

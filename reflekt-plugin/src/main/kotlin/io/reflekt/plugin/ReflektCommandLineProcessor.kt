@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import java.io.File
 
 @AutoService(CommandLineProcessor::class)
@@ -33,16 +34,8 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
     ) {
         return when (option) {
             ENABLED_OPTION -> configuration.put(Keys.ENABLED, value.toBoolean())
-            DEPENDENCY_JAR_OPTION -> {
-                // Todo: can we do it better?
-                val jars = configuration.get(Keys.DEPENDENCY_JARS) ?: emptyList()
-                configuration.put(Keys.DEPENDENCY_JARS, jars + File(value))
-            }
-            INTROSPECT_FILE_OPTION -> {
-                // Todo: can we do it better?
-                val files = configuration.get(Keys.INTROSPECT_FILES) ?: emptyList()
-                configuration.put(Keys.INTROSPECT_FILES, files + File(value))
-            }
+            DEPENDENCY_JAR_OPTION -> configuration.addToList(Keys.DEPENDENCY_JARS, File(value))
+            INTROSPECT_FILE_OPTION -> configuration.addToList(Keys.INTROSPECT_FILES, File(value))
             OUTPUT_DIR_OPTION -> configuration.put(Keys.OUTPUT_DIR, File(value))
             else -> error("Unexpected config option ${option.optionName}")
         }
@@ -82,5 +75,10 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
                 required = false,
                 allowMultipleOccurrences = false
             )
+    }
+
+    private fun <T> CompilerConfiguration.addToList(configurationKey: CompilerConfigurationKey<List<T>>, value: T) {
+        val values = get(configurationKey) ?: emptyList()
+        put(configurationKey, values + value)
     }
 }

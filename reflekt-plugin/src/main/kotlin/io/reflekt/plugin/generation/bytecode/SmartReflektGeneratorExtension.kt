@@ -51,12 +51,12 @@ class SmartReflektGeneratorExtension(
 
         val resultValues = when (invokeParts.entityType) {
             ReflektEntity.CLASSES -> {
-                val classInstances= instances.classes
+                val classInstances = instances.classes
                 filterInstances(classInstances.filter { it.isSubtypeOf(setOfNotNull(invokeArguments.subType?.fqName), binding) }, invokeArguments)
                     .map { it.genAsmType(c) }
             }
             ReflektEntity.OBJECTS -> {
-                val objectInstances= instances.objects
+                val objectInstances = instances.objects
                 filterInstances(objectInstances.filter { it.isSubtypeOf(setOfNotNull(invokeArguments.subType?.fqName), binding) }, invokeArguments)
                     .map { it.genAsmType(c) }
             }
@@ -78,6 +78,8 @@ class SmartReflektGeneratorExtension(
         }
     }
 
+    // Filters list of instances (KtObjectDeclaration/KtClass/KtNamedFunction) so that its type matches specified type
+    // and each of predicates returns true.
     private inline fun <reified T> filterInstances(instances: List<T>, invokeArguments: SubTypesToFilters): List<T> {
         val resultInstances = ArrayList<T>()
         for (instance in instances) {
@@ -88,7 +90,7 @@ class SmartReflektGeneratorExtension(
                     filter.parameters.forEach {
                         addValue(it, instance)
                     }
-                    if (eval(filter.body) == false) {
+                    if (!eval<Boolean>(filter.body)) {
                         matches = false
                     }
                 }
@@ -122,7 +124,7 @@ private fun parseSmartReflektInvoke(fqName: String): SmartReflektInvokeParts? {
 
 /*
  * Any SmartReflekt invoke as an expression looks like this:
- * [1]...Reflekt.[2]|Classes/Objects/Functions|.[3]|ClassCompileTimeExpression/ObjectCompileTimeExpression/FunctionCompileTimeExpression|.[4]|resolve/etc|
+ * [1]...Reflekt.[2]|ClassCompileTimeExpression/ObjectCompileTimeExpression/FunctionCompileTimeExpression|.[3]|filter|.[4]|resolve|
  * If it does not end with terminal function (like resolve), we skip it.
  */
 internal data class SmartReflektInvokeParts(

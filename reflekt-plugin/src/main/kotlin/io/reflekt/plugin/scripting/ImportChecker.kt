@@ -21,6 +21,7 @@ class ImportChecker(classpath: List<File>) {
     init {
         val urls = classpath.map { it.toURI().toURL() }
         val classLoader = URLClassLoader(urls.toTypedArray())
+        // Scan each class in classpath
         val reflections = Reflections(
             ConfigurationBuilder()
                 .addClassLoader(classLoader)
@@ -28,34 +29,44 @@ class ImportChecker(classpath: List<File>) {
                 .setScanners(SubTypesScanner(false))
         )
 
+        // Get all classes (each class is subtype of java.lang.Object)
         reflections.getSubTypesOf(Object::class.java)
+            // Only public classes can be imported
             .filter { Modifier.isPublic(it.modifiers) }
             .filter {
                 try {
+                    // Skip if no canonical name
                     it.canonicalName != null
                 } catch (e: Throwable) {
+                    // Skip if canonical name cannot be resolved
                     false
                 }
             }
             .forEach { clazz ->
+                // All public methods of class
                 val methods = try {
                     ReflectionUtils.getAllMethods(clazz, ReflectionUtils.withModifier(Modifier.PUBLIC))
                 } catch (e: Throwable) {
                     emptySet<Method>()
                 }
+                // All public fields of class
                 val fields = try {
                     ReflectionUtils.getAllFields(clazz, ReflectionUtils.withModifier(Modifier.PUBLIC))
                 } catch (e: Throwable) {
                     emptySet<Field>()
                 }
 
+                // Save method and field names with specified prefix
                 val addMembers: (prefix: String) -> Unit = { prefix ->
                     allNames.addAll(methods.map { method -> "$prefix.${method.name}" })
                     allNames.addAll(fields.map { field -> "$prefix.${field.name}" })
                 }
 
+                // Full package may be imported
                 allNames.add(clazz.packageName)
+                // Class may be imported
                 allNames.add(clazz.canonicalName)
+                // Class methods/fields may be imported
                 addMembers(clazz.canonicalName)
 
                 // Top-level functions and properties
@@ -70,7 +81,9 @@ class ImportChecker(classpath: List<File>) {
             }
     }
 
+    // Checks if specified import may be found in the classpath.
     fun checkImport(import: Import) = import.fqName in allNames
 
+    // Returns imports that may be found in the classpath.
     fun filterImports(imports: List<Import>) = imports.filter { checkImport(it) }
 }

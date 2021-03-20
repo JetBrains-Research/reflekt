@@ -27,10 +27,8 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
             filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(it, extension)))
         }
         val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = INTROSPECT_FILE_OPTION_INFO.name, value = it.absolutePath) }
-
-        val dependencyJars = project.configurations.first { it.name == "compileOnly" }.let {
-            it.files(*it.dependencies.toTypedArray())
-        }.map { SubpluginOption(key = DEPENDENCY_JAR_OPTION_INFO.name, value = it.absolutePath) }
+        val dependencyJars = project.configurations.first { it.name == "compileClasspath" }
+            .map { SubpluginOption(key = DEPENDENCY_JAR_OPTION_INFO.name, value = it.absolutePath) }
 
         return project.provider {
             librariesToIntrospect + dependencyJars +
