@@ -5,8 +5,7 @@ class B1: BInterface {
 
 @FirstAnnotation
 @SecondAnnotation("Test")
-class B2: BInterface {
-}
+data class B2(val x: Int): BInterface
 
 @FirstAnnotation
 @SecondAnnotation("Test")

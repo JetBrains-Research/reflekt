@@ -2,6 +2,7 @@ package io.reflekt.example
 
 import com.github.gumtreediff.actions.model.Action
 import io.reflekt.Reflekt
+import io.reflekt.SmartReflekt
 
 class Test(var a: List<Any>, b: List<Any>)
 
@@ -45,6 +46,12 @@ fun main() {
     val classes4 = Reflekt.classes().withSubType<Action>().toList()
     println(classes4)
 
-    val functions = Reflekt.functions().withAnnotations<(Int, String) -> List<Int>>().toList()
+    val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList()
     println(functions)
+
+    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
+    println(smartClasses)
+
+    val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
+    println(smartFunctions)
 }

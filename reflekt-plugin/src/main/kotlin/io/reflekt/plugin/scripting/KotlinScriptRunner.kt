@@ -10,6 +10,7 @@ import java.io.File
 import javax.script.Bindings
 import javax.script.ScriptContext
 import kotlin.script.experimental.jvm.util.classpathFromClass
+import kotlin.script.templates.standard.ScriptTemplateWithBindings
 
 /*
  * Executes kotlin scripts.
@@ -20,7 +21,7 @@ class KotlinScriptRunner(
 ) {
     val scriptEngine = KotlinJsr223JvmLocalScriptEngine(
         KotlinJsr223JvmLocalScriptEngineFactory(),
-        classpath.plus(classpathFromClass<KotlinStandardJsr223ScriptTemplate>()!!),
+        classpath.plus(classpathFromClass<KotlinStandardJsr223ScriptTemplate>()!!).plus(classpathFromClass<ScriptTemplateWithBindings>()!!),
         KotlinStandardJsr223ScriptTemplate::class.qualifiedName!!,
         { ctx, types -> ScriptArgsWithTypes(arrayOf(ctx.getBindings(ScriptContext.ENGINE_SCOPE)), types ?: emptyArray()) },
         arrayOf(Bindings::class)
