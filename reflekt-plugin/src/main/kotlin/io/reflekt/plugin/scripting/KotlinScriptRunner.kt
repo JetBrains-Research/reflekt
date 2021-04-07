@@ -55,4 +55,8 @@ class KotlinScriptRunner(
 
     // Evaluates any code in the context of previous evaluations.
     inline fun <reified T: Any> eval(code: String): T = scriptEngine.eval(code) as T
+
+    fun run(code: String) {
+        scriptEngine.eval(code)
+    }
 }
