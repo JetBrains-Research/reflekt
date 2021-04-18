@@ -1,11 +1,9 @@
 package io.reflekt.plugin.scripting
 
 import io.reflekt.plugin.analysis.models.Import
-import org.jetbrains.kotlin.descriptors.runtime.components.tryLoadClass
 import org.reflections.ReflectionUtils
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
-import org.reflections.util.ClasspathHelper
 import org.reflections.util.ConfigurationBuilder
 import java.io.File
 import java.lang.reflect.Field
@@ -14,11 +12,14 @@ import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 
 /* Checks if specified imports can be found in classpath. */
-class ImportChecker(classpath: List<File>) {
+@Suppress("ConvertSecondaryConstructorToPrimary")
+class ImportChecker {
     /* Fully qualified names of public packages, classes, functions and properties in classpath */
     private val allNames = HashSet<String>()
 
-    init {
+    constructor(classpath: List<File>) {
+        if (classpath.isEmpty()) return
+
         val urls = classpath.map { it.toURI().toURL() }
         val classLoader = URLClassLoader(urls.toTypedArray())
         // Scan each class in classpath

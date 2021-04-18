@@ -27,7 +27,7 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         project: MockProject,
         configuration: CompilerConfiguration
     ) {
-        if (configuration[Keys.ENABLED] == false) {
+        if (configuration[Keys.ENABLED] != true) {
             return
         }
         configuration.initMessageCollector(logFilePath)

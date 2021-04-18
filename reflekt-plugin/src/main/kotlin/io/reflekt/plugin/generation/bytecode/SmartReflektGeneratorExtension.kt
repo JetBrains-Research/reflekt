@@ -11,7 +11,7 @@ import io.reflekt.plugin.analysis.psi.isSubtypeOf
 import io.reflekt.plugin.generation.bytecode.util.genAsmType
 import io.reflekt.plugin.generation.bytecode.util.invokeListOf
 import io.reflekt.plugin.scripting.ImportChecker
-import io.reflekt.plugin.scripting.KotlinScriptRunner
+import io.reflekt.plugin.scripting.KotlinScript
 import io.reflekt.plugin.utils.Util.getInstances
 import io.reflekt.plugin.utils.Util.log
 import io.reflekt.plugin.utils.enumToRegexOptions
@@ -70,18 +70,20 @@ class SmartReflektGeneratorExtension(
     // Filters list of instances (KtObjectDeclaration/KtClass/KtNamedFunction) so that its type matches specified type
     // and each of predicates returns true.
     private inline fun <reified T> filterInstances(instances: List<T>, invokeArguments: SubTypesToFilters): List<T> {
+        val imports = importChecker.filterImports(invokeArguments.imports)
+
         val resultInstances = ArrayList<T>()
         for (instance in instances) {
             var matches = true
             for (filter in invokeArguments.filters) {
-                with(KotlinScriptRunner(classpath)) {
-                    addImports(importChecker.filterImports(invokeArguments.imports))
-                    filter.parameters.forEach {
-                        addValue(it, instance)
-                    }
-                    if (!eval<Boolean>(filter.body)) {
-                        matches = false
-                    }
+                val result = KotlinScript(
+                    classpath = classpath,
+                    imports = imports,
+                    properties = filter.parameters.zip(listOf(T::class)),
+                    code = filter.body
+                ).eval(listOf(instance)) as Boolean
+                if (!result) {
+                    matches = false
                 }
                 if (!matches) {
                     break

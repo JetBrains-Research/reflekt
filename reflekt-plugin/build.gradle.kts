@@ -8,11 +8,10 @@ plugins {
 }
 
 dependencies {
-    implementation(kotlin("script-util"))
-    implementation(kotlin("script-runtime"))
     implementation(kotlin("compiler-embeddable"))
-    implementation(kotlin("scripting-compiler-embeddable"))
-    implementation("net.java.dev.jna", "jna", "5.7.0")
+    implementation(kotlin("scripting-common"))
+    implementation(kotlin("scripting-jvm"))
+    implementation(kotlin("scripting-jvm-host"))
 
     implementation("com.google.auto.service", "auto-service-annotations", "1.0-rc7")
     kapt("com.google.auto.service", "auto-service", "1.0-rc7")
