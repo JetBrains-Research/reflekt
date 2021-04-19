@@ -67,20 +67,13 @@ reflekt {
     // Use only DependencyHandlers which have canBeResolve = True
     // Note: Reflekt works only with kt files from libraries
     librariesToIntrospect = listOf("io.kotless:kotless-dsl:0.1.6")
-    // List of libraries, functions from which will be used 
-    // in the <filter> condition in SmartReflekt
-    // Use only DependencyHandlers which are <compileClasspath>
-    dependencyJar = emptyList()
 }
 ```
 
-_Please note that the `librariesToIntrospect` and `dependencyJar` arguments 
+_Please note that the `librariesToIntrospect` argument
 should contain only the dependencies  that you use in the `dependencies` section. 
 These dependencies may be implemented in Java or Kotlin language, 
-but the analysis will be made only on Kotlin files._ 
-
-_If you use some imports from external libraries but does not add them into `dependencyJar` 
-argument you will get a compilation error._
+but the analysis will be made only on Kotlin files._
 
 To avoid some bugs, please add the following compilation settings for Java and Kotlin in the `build.gradle.kts` file:
 
