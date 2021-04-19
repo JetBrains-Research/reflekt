@@ -83,7 +83,7 @@ class ImportChecker {
     }
 
     // Checks if specified import may be found in the classpath.
-    fun checkImport(import: Import) = import.fqName in allNames
+    private fun checkImport(import: Import) = import.fqName in allNames
 
     // Returns imports that may be found in the classpath.
     fun filterImports(imports: List<Import>) = imports.filter { checkImport(it) }
