@@ -14,7 +14,7 @@ jobs:
       # Runs Qodana
       - name: Qodana - Code Inspection
         timeout-minutes: 600
-        run: docker run -v ${GITHUB_WORKSPACE}:/data/project -v ${GITHUB_WORKSPACE}/qodana:/data/results jetbrains/qodana:2020.3-eap --save-report
+        run: docker run -v ${GITHUB_WORKSPACE}:/data/project -v ${GITHUB_WORKSPACE}/qodana:/data/results jetbrains/qodana:2021.1-eap --save-report
 
       # Archives Qodana results to workflow artifacts
       - name: Archive results
