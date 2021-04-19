@@ -3,8 +3,10 @@ package io.reflekt.plugin
 import com.google.auto.service.AutoService
 import io.reflekt.plugin.analysis.ReflektModuleAnalysisExtension
 import io.reflekt.plugin.generation.bytecode.ReflektGeneratorExtension
+import io.reflekt.plugin.generation.bytecode.SmartReflektGeneratorExtension
 import io.reflekt.plugin.utils.Keys
 import io.reflekt.plugin.utils.Util.initMessageCollector
+import io.reflekt.plugin.utils.Util.log
 import io.reflekt.plugin.utils.Util.messageCollector
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
@@ -25,16 +27,19 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         project: MockProject,
         configuration: CompilerConfiguration
     ) {
-        if (configuration[Keys.ENABLED] == false) {
+        if (configuration[Keys.ENABLED] != true) {
             return
         }
         configuration.initMessageCollector(logFilePath)
         if (configuration[Keys.INTROSPECT_FILES] != null && configuration[Keys.OUTPUT_DIR] == null) {
             error("Output path not specified")
         }
+        val dependencyJars = configuration[Keys.DEPENDENCY_JARS] ?: emptyList()
+        configuration.messageCollector.log("DEPENDENCY JARS: ${dependencyJars.map { it.absolutePath }};")
+
         val filesToIntrospect = getKtFiles(configuration[Keys.INTROSPECT_FILES] ?: emptyList(), project)
         val outputDir = configuration[Keys.OUTPUT_DIR] ?: File("")
-        // Todo: will this be called multiple times (for each ptoject module)? can we avoid this?
+        // Todo: will this be called multiple times (for each project module)? can we avoid this?
         AnalysisHandlerExtension.registerExtension(
             project,
             ReflektModuleAnalysisExtension(
@@ -46,6 +51,13 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         ExpressionCodegenExtension.registerExtension(
             project,
             ReflektGeneratorExtension(messageCollector = configuration.messageCollector)
+        )
+        ExpressionCodegenExtension.registerExtension(
+            project,
+            SmartReflektGeneratorExtension(
+                classpath = dependencyJars,
+                messageCollector = configuration.messageCollector
+            )
         )
     }
 

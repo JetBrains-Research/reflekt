@@ -9,6 +9,9 @@ plugins {
 
 dependencies {
     implementation(kotlin("compiler-embeddable"))
+    implementation(kotlin("scripting-common"))
+    implementation(kotlin("scripting-jvm"))
+    implementation(kotlin("scripting-jvm-host"))
 
     implementation("com.google.auto.service", "auto-service-annotations", "1.0-rc7")
     kapt("com.google.auto.service", "auto-service", "1.0-rc7")
@@ -20,6 +23,8 @@ dependencies {
 
     implementation("com.squareup", "kotlinpoet", "1.6.0")
 
+    implementation("org.reflections", "reflections", "0.9.12")
+
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.0")
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
@@ -28,7 +33,7 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform {
-        includeTags = setOf("analysis")
+        includeTags = setOf("analysis", "scripting")
     }
 
     testLogging {

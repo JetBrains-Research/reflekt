@@ -33,7 +33,10 @@ data class SubTypesToAnnotations(
 data class ParameterizedType(
     val fqName: String,
     val parameters: List<ParameterizedType> = emptyList()
-)
+) {
+    fun render(): String =
+        "$fqName${if (parameters.isEmpty()) "" else parameters.joinToString(prefix = "<", postfix = ">") { it.render() }}"
+}
 
 data class SignatureToAnnotations(
     val signature: ParameterizedType, // kotlin.FunctionN< ... >

@@ -3,36 +3,45 @@ package io.reflekt.plugin.analysis.common
 import io.reflekt.Reflekt
 import io.reflekt.SmartReflekt
 
-enum class ReflektName(val reflektName: String) {
-    OBJECTS("objects"),
-    CLASSES("classes"),
-    FUNCTIONS("functions");
+// Reflekt/SmartReflekt content types
+enum class ReflektEntity(
+    val entityType: String,     // objects/classes/functions
+    val smartClassName: String  // SmartReflekt nested class - [Object/Class/Function]CompileTimeExpression
+) {
+    OBJECTS("objects", "ObjectCompileTimeExpression"),
+    CLASSES("classes", "ClassCompileTimeExpression"),
+    FUNCTIONS("functions", "FunctionCompileTimeExpression");
 
-    val className = reflektName.capitalize()
-    val fqName: String = "${Reflekt::class.qualifiedName}.$reflektName"
-    val smartReflektFqName: String = "${SmartReflekt::class.qualifiedName}.$reflektName"
+    // Reflekt nested class - Classes/Objects/Functions
+    val className = entityType.capitalize()
+
+    val fqName: String = "${Reflekt::class.qualifiedName}.$entityType"
+    val classFqName = "${Reflekt::class.qualifiedName}.$className"
+
+    val smartFqName: String = "${SmartReflekt::class.qualifiedName}.$entityType"
+    val smartClassFqName = "${SmartReflekt::class.qualifiedName}.$smartClassName"
 }
 
-enum class ReflektFunctionName(val functionName: String) {
+enum class ReflektFunction(val functionName: String) {
     WITH_SUBTYPE("withSubType"),
     WITH_SUBTYPES("${WITH_SUBTYPE.functionName}s"),
-    WITH_ANNOTATIONS("withAnnotations")
+    WITH_ANNOTATIONS("withAnnotations"),
 }
 
-enum class SmartReflektFunctionName(val functionName: String) {
+enum class SmartReflektFunction(val functionName: String) {
     FILTER("filter")
 }
 
-enum class ReflektNestedName(val className: String) {
-    WITH_SUBTYPES(ReflektFunctionName.WITH_SUBTYPES.functionName.capitalize()),
-    WITH_ANNOTATIONS(ReflektFunctionName.WITH_ANNOTATIONS.functionName.capitalize()),
-    CLASS_COMPILE_TIME_EXPRESSION("CompileTimeExpression"),
-    OBJECT_COMPILE_TIME_EXPRESSION("ObjectCompileTimeExpression"),
-    FUNCTION_COMPILE_TIME_EXPRESSION("FunctionCompileTimeExpression")
+enum class ReflektNestedClass(val className: String) {
+    WITH_SUBTYPES(ReflektFunction.WITH_SUBTYPES.functionName.capitalize()),
+    WITH_ANNOTATIONS(ReflektFunction.WITH_ANNOTATIONS.functionName.capitalize()),
 }
 
-enum class ReflektTerminalFunctionName(val functionName: String) {
+enum class ReflektTerminalFunction(val functionName: String) {
     TO_LIST("toList"),
     TO_SET("toSet"),
+}
+
+enum class SmartReflektTerminalFunction(val functionName: String) {
     RESOLVE("resolve")
 }

@@ -4,7 +4,6 @@ import io.reflekt.plugin.analysis.analyzer.BaseAnalyzer
 import io.reflekt.plugin.analysis.common.findSmartReflektInvokeArgumentsByExpressionPart
 import io.reflekt.plugin.analysis.models.SubTypesToFilters
 import io.reflekt.plugin.analysis.psi.visit
-import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 
 class SmartReflektTestAnalyzer(baseAnalyzer: BaseAnalyzer) : BaseAnalyzer(baseAnalyzer.ktFiles, baseAnalyzer.binding) {

@@ -4,13 +4,14 @@ import io.reflekt.plugin.analysis.*
 import io.reflekt.plugin.analysis.models.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
 
 // [1]Reflekt.[2]|objects()/classes() or so on|
 // [dotQualifiedExpressionNode] is [1]
 fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SubTypesToAnnotations? {
-    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in ReflektFunctionName.values().map { it.functionName } }
+    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in ReflektFunction.values().map { it.functionName } }
 
     val subtypes = HashSet<String>()
     val annotations = HashSet<String>()
@@ -18,9 +19,9 @@ fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: Bin
     for (node in filteredChildren) {
         val callExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CallExpression) } ?: continue
         when (node.text) {
-            ReflektFunctionName.WITH_SUBTYPE.functionName -> callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
-            ReflektFunctionName.WITH_SUBTYPES.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { subtypes.addAll(it) }
-            ReflektFunctionName.WITH_ANNOTATIONS.functionName -> {
+            ReflektFunction.WITH_SUBTYPE.functionName -> callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
+            ReflektFunction.WITH_SUBTYPES.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { subtypes.addAll(it) }
+            ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 callExpressionRoot.getFqNamesOfTypeArgument(binding).let { subtypes.addAll(it) }
                 callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
             }
@@ -51,7 +52,7 @@ fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding
 }
 
 fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SignatureToAnnotations? {
-    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in ReflektFunctionName.values().map { it.functionName } }
+    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in ReflektFunction.values().map { it.functionName } }
 
     var signature: ParameterizedType? = null
     val annotations = HashSet<String>()
@@ -59,7 +60,7 @@ fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, bind
     for (node in filteredChildren) {
         val callExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CallExpression) } ?: continue
         when (node.text) {
-            ReflektFunctionName.WITH_ANNOTATIONS.functionName -> {
+            ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
                 signature = callExpressionRoot.getTypeArguments().first().getParameterizedType(binding)
             }
@@ -81,16 +82,23 @@ fun findReflektFunctionInvokeArgumentsByExpressionPart(expression: KtExpression,
 
 // [1]SmartReflekt.[2]|objects()/classes() or so on|
 // [dotQualifiedExpressionNode] is [1]
-fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode): Set<Lambda>? {
-    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in SmartReflektFunctionName.values().map { it.functionName } }
-    val filters = HashSet<Lambda>()
+fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SubTypesToFilters? {
+    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode ->
+        (n.text in SmartReflektFunction.values().map { it.functionName } || n.text in ReflektEntity.values().map { it.entityType }) &&
+            n.hasType(ElementType.ReferenceExpression)
+    }
+    var subtype: ParameterizedType? = null
+    val filters = ArrayList<Lambda>()
     for (node in filteredChildren) {
-        val childCallExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CallExpression) } ?: continue
+        val childCallExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CallExpression.value } ?: continue
         when (node.text) {
-            SmartReflektFunctionName.FILTER.functionName -> {
+            SmartReflektFunction.FILTER.functionName -> {
                 val body = childCallExpressionRoot.getLambdaBody()
                 val parameters = childCallExpressionRoot.getLambdaParameters()
                 filters.add(Lambda(body, parameters))
+            }
+            in ReflektEntity.values().map { it.entityType } -> {
+                subtype = childCallExpressionRoot.getTypeArguments().first().getParameterizedType(binding)
             }
             else -> error("Found an unexpected node text: ${node.text}")
         }
@@ -98,16 +106,17 @@ fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode): Set<La
     if (filters.isEmpty()) {
         return null
     }
-    return filters
+    val imports = (dotQualifiedExpressionNode.parents().first { it.hasType(ElementType.File) }.psi as KtFile).importDirectives.map {
+        Import(it.importedFqName.toString(), it.text)
+    }
+
+    return SubTypesToFilters(subtype, filters, imports)
 }
 
 fun findSmartReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SubTypesToFilters? {
     val callExpressionRoot = expression.node.parents().first()
     // TODO: should we change it for functions? Or string (fqName) is ok?
-    val subType = callExpressionRoot.getFqNamesOfTypeArgument(binding).firstOrNull()
     return callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
-        findSmartReflektInvokeArguments(node)?.let { filters ->
-            subType?.let { SubTypesToFilters(it, filters) }
-        }
+        findSmartReflektInvokeArguments(node, binding)
     }
 }

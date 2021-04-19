@@ -1,20 +1,21 @@
 package io.reflekt.plugin.generation.bytecode
 
-import io.reflekt.plugin.analysis.common.ReflektName
-import io.reflekt.plugin.analysis.common.ReflektNestedName
-import io.reflekt.plugin.analysis.common.ReflektTerminalFunctionName
-import io.reflekt.plugin.generation.bytecode.util.*
+import io.reflekt.plugin.analysis.common.ReflektEntity
+import io.reflekt.plugin.generation.bytecode.util.pushArray
+import io.reflekt.plugin.generation.bytecode.util.pushFunctionN
+import io.reflekt.plugin.generation.bytecode.util.pushKClass
+import io.reflekt.plugin.generation.bytecode.util.pushObject
 import io.reflekt.plugin.utils.Util.log
-import io.reflekt.plugin.utils.enumToRegexOptions
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
+import org.jetbrains.kotlin.codegen.asmType
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.org.objectweb.asm.Type
 import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 
 open class BaseReflektGeneratorExtension(private val messageCollector: MessageCollector? = null) : ExpressionCodegenExtension {
-    protected val functionInstanceGenerator = FunctionInstanceGenerator("io/reflekt/generated/Functions", messageCollector)
+    protected open val functionInstanceGenerator = FunctionInstanceGenerator("io/reflekt/generated/Functions", messageCollector)
 
     open fun myApplyFunction(receiver: StackValue, resolvedCall: ResolvedCall<*>, c: ExpressionCodegenExtension.Context): StackValue? {
         TODO("Not impemented yet")
@@ -32,6 +33,21 @@ open class BaseReflektGeneratorExtension(private val messageCollector: MessageCo
             throw reflektGenerationException
         }
     }
+
+    internal fun pushResult(
+        resolvedCall: ResolvedCall<*>, c: ExpressionCodegenExtension.Context,
+        invokeParts: BaseReflektInvokeParts, resultValues: List<Type>
+    ): StackValue? {
+        // Return type (e.g. List or Set)
+        val returnType = resolvedCall.candidateDescriptor.returnType ?: error("No return type info")
+        // Type of each answer (e.g KClass or Function2)
+        val returnTypeArgument = returnType.arguments.first().type.asmType(c.typeMapper)
+
+        return StackValue.functionCall(returnType.asmType(c.typeMapper), null) {
+            it.pushArray(returnTypeArgument, resultValues, invokeParts.pushItemFunction)
+            invokeParts.invokeTerminalFunction(it)
+        }
+    }
 }
 
 /*
@@ -40,29 +56,16 @@ open class BaseReflektGeneratorExtension(private val messageCollector: MessageCo
  * If it does not end with terminal function (like toList), we skip it.
  */
 internal abstract class BaseReflektInvokeParts(
-    open val name: ReflektName,
-    open val nestedName: ReflektNestedName,
-    open val terminalFunctionName: ReflektTerminalFunctionName
+    open val entityType: ReflektEntity
 ) {
     // Push a value of specified type on stack depending on which kind it is.
     val pushItemFunction: InstructionAdapter.(Type) -> Unit
-        get() = when (name) {
-            ReflektName.OBJECTS -> InstructionAdapter::pushObject
-            ReflektName.CLASSES -> InstructionAdapter::pushKClass
-            ReflektName.FUNCTIONS -> InstructionAdapter::pushFunctionN
+        get() = when (entityType) {
+            ReflektEntity.OBJECTS -> InstructionAdapter::pushObject
+            ReflektEntity.CLASSES -> InstructionAdapter::pushKClass
+            ReflektEntity.FUNCTIONS -> InstructionAdapter::pushFunctionN
         }
-
     // Invoke terminal function after preparing arguments.
-    val invokeTerminalFunction: InstructionAdapter.() -> Unit
-        get() = when (terminalFunctionName) {
-            ReflektTerminalFunctionName.TO_LIST, ReflektTerminalFunctionName.RESOLVE -> InstructionAdapter::invokeListOf
-            ReflektTerminalFunctionName.TO_SET -> InstructionAdapter::invokeSetOf
-        }
+    abstract val invokeTerminalFunction: InstructionAdapter.() -> Unit
 }
 
-internal fun getReflektFullNameRegex(reflektFqName: String): Regex {
-    val names = enumToRegexOptions(ReflektName.values(), ReflektName::className)
-    val nestedNames = enumToRegexOptions(ReflektNestedName.values(), ReflektNestedName::className)
-    val terminalNames = enumToRegexOptions(ReflektTerminalFunctionName.values(), ReflektTerminalFunctionName::functionName)
-    return Regex("$reflektFqName\\.$names\\.$nestedNames\\.$terminalNames")
-}

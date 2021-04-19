@@ -1,5 +1,6 @@
 package io.reflekt.plugin
 
+import io.reflekt.cli.Util.DEPENDENCY_JAR_OPTION_INFO
 import io.reflekt.util.FileUtil.extractAllFiles
 import org.gradle.api.artifacts.Configuration
 import org.jetbrains.kotlin.gradle.plugin.*
@@ -26,8 +27,13 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
             filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(it, extension)))
         }
         val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = INTROSPECT_FILE_OPTION_INFO.name, value = it.absolutePath) }
+        val dependencyJars = project.configurations.first { it.name == "compileClasspath" }
+            .map { SubpluginOption(key = DEPENDENCY_JAR_OPTION_INFO.name, value = it.absolutePath) }
+
         return project.provider {
-            librariesToIntrospect + SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) + SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath)
+            librariesToIntrospect + dependencyJars +
+                SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) +
+                SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath)
         }
     }
 
