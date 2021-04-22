@@ -149,12 +149,19 @@ write this version in the plugins and dependencies sections.
   for `multi-module` projects:
     - [x] project's files
     - [x] external libraries
-- [x] Compile-time reflection by custom users' filters for `one-module` projects 
+- [x] Compile-time reflection by custom users' filters for `multi-module` projects 
   by [SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt)
     - [x] project's files
     - [x] external libraries
 - [ ] Incremental compilation process
+- [ ] Search in all modules of the project
+- [ ] Bytecode generation -> IR generation
 - [ ] Code generation.
+
+_Note: We analyze modules independently of each other. 
+If an object\class\function is in module A, and you run Reflekt in module B, 
+then the object\class\function will not be found. You can find 
+this example in the [examples folder](./examples)._
 
 ## Examples
 
