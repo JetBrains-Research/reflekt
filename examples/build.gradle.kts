@@ -1,5 +1,5 @@
 import io.reflekt.plugin.reflekt
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 group = rootProject.group
 version = rootProject.version
@@ -10,32 +10,36 @@ plugins {
     kotlin("jvm") version "1.4.20" apply true
 }
 
-dependencies {
-    implementation("io.reflekt", "io.reflekt.dsl", "0.1.0")
-    implementation("com.github.gumtreediff", "core", "2.1.2")
-}
+allprojects {
+    apply {
+        plugin("kotlin")
+        plugin("tanvd.kosogor")
+        plugin("io.reflekt")
+    }
 
-reflekt {
-    enabled = true
-    // Use DependencyHandlers which have canBeResolve = True
-    librariesToIntrospect = listOf()
-}
+    tasks.withType<KotlinJvmCompile> {
+        kotlinOptions {
+            jvmTarget = "11"
+            languageVersion = "1.4"
+            apiVersion = "1.4"
+        }
+    }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-    google()
-}
+    dependencies {
+        implementation("io.reflekt", "io.reflekt.dsl", "0.1.0")
+        implementation("com.github.gumtreediff", "core", "2.1.2")
+    }
 
-val compileKotlin: KotlinCompile by tasks
-    compileKotlin.kotlinOptions {
-        jvmTarget = "11"
-        languageVersion = "1.4"
-        apiVersion = "1.4"
-}
-val compileTestKotlin: KotlinCompile by tasks
-    compileTestKotlin.kotlinOptions {
-        jvmTarget = "11"
-        languageVersion = "1.4"
-        apiVersion = "1.4"
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        google()
+    }
+
+    reflekt {
+        enabled = true
+        // Use DependencyHandlers which have canBeResolve = True
+        librariesToIntrospect = listOf()
+    }
+
 }
