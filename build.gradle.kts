@@ -46,8 +46,8 @@ subprojects {
                 url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt")
 
                 credentials {
-                    username = properties.getOrDefault("JB_SPACE_CLIENT_ID", "").toString()
-                    password = properties.getOrDefault("JB_SPACE_CLIENT_SECRET", "").toString()
+                    username = System.getenv("JB_SPACE_CLIENT_ID")?.takeIf { it.isNotBlank() } ?: ""
+                    password = System.getenv("JB_SPACE_CLIENT_SECRET")?.takeIf { it.isNotBlank() } ?: ""
                 }
             }
         }

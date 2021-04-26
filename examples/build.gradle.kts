@@ -26,7 +26,7 @@ allprojects {
     }
 
     dependencies {
-        implementation("io.reflekt", "io.reflekt.dsl", "0.1.0")
+        implementation("io.reflekt", "reflekt-dsl", "0.1.0")
         implementation("com.github.gumtreediff", "core", "2.1.2")
     }
 

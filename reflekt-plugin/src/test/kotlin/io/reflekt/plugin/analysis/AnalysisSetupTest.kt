@@ -16,7 +16,7 @@ class AnalysisSetupTest {
         // Todo: can we get the version from the project?
         fun getReflektProjectJars(version: String = "0.1.0"): Set<File> {
             val baseReflektPath = "${getMavenLocalPath()}/io/reflekt"
-            val reflektNames = listOf("gradle-plugin", "io.reflekt.core", "io.reflekt.dsl")
+            val reflektNames = listOf("gradle-plugin", "reflekt-core", "reflekt-dsl")
             return reflektNames.map {
                 val jar = File("$baseReflektPath/$it/$version/$it-$version.jar")
                 jar
