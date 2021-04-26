@@ -7,6 +7,7 @@ plugins {
     id("tanvd.kosogor") version "1.0.10" apply true
     kotlin("jvm") version "1.4.20" apply true
     id("com.github.gmazzo.buildconfig") version "2.0.2" apply false
+    `maven-publish`
 }
 
 allprojects {
@@ -30,5 +31,25 @@ allprojects {
     // We should publish the project in the local maven repository before the tests running
     tasks.withType<Test> {
         dependsOn(tasks.withType<PublishToMavenLocal>{})
+    }
+}
+
+subprojects {
+    apply {
+        plugin("maven-publish")
+    }
+
+    publishing {
+        repositories {
+            maven {
+                name = "SpacePackages"
+                url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt")
+
+                credentials {
+                    username = properties.getOrDefault("username", "").toString()
+                    password = properties.getOrDefault("password", "").toString()
+                }
+            }
+        }
     }
 }
