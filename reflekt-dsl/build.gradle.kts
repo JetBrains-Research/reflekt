@@ -7,8 +7,5 @@ dependencies {
     api(kotlin("compiler-embeddable"))
 }
 
-publishJar {
-    publication {
-        artifactId = "io.reflekt.dsl"
-    }
-}
+
+publishJar {}

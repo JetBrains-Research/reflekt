@@ -29,8 +29,6 @@ publishPlugin {
     }
 }
 
-publishJar {
-    publication {
-        artifactId = "io.reflekt.gradle-plugin"
-    }
-}
+
+
+publishJar {}

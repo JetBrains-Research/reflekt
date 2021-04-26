@@ -51,8 +51,4 @@ tasks.create("analysis", Test::class.java) {
     }
 }
 
-publishJar {
-    publication {
-        artifactId = "reflekt-compiler-plugin"
-    }
-}
+publishJar {}
