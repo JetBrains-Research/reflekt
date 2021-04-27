@@ -75,7 +75,7 @@ the following lines in the `dependencies` section:
 ```kotlin
 dependencies {
     // The version here and the version in the plugins sections should be equal
-    implementation("io.reflekt", "io.reflekt.dsl", "0.1.0")
+    implementation("io.reflekt", "reflekt-dsl", "0.1.0")
 
     // Necessary for this example
     compileOnly("io.kotless", "kotless-dsl", "0.1.6")
