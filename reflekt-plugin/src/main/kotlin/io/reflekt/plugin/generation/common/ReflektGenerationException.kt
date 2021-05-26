@@ -1,4 +1,4 @@
-package io.reflekt.plugin.generation.bytecode
+package io.reflekt.plugin.generation.common
 
 class ReflektGenerationException(
     override val message: String? = null,

@@ -64,6 +64,16 @@ typealias TypeUses<K, V> = Map<K, MutableList<V>>
 typealias ClassOrObjectUses = TypeUses<SubTypesToAnnotations, KtClassOrObject>
 typealias FunctionUses = TypeUses<SignatureToAnnotations, KtNamedFunction>
 
+data class IrFunctionInfo(
+    val fqName: String,
+    val dispatchReceiverFqName: String?,
+    val extensionReceiverFqName: String?,
+    val isObjectReceiver: Boolean
+)
+
+typealias IrClassOrObjectUses = TypeUses<SubTypesToAnnotations, String>
+typealias IrFunctionUses = TypeUses<SignatureToAnnotations, IrFunctionInfo>
+
 fun ClassOrObjectUses.toSubTypesToFqNamesMap(): Map<Set<String>, MutableList<KtClassOrObject>> {
     return this.map { it.key.subTypes to it.value }.toMap()
 }
@@ -84,3 +94,9 @@ data class ReflektUses(
         )
     }
 }
+
+data class IrReflektUses(
+    val objects: IrClassOrObjectUses = HashMap(),
+    val classes: IrClassOrObjectUses = HashMap(),
+    val functions: IrFunctionUses = HashMap()
+)

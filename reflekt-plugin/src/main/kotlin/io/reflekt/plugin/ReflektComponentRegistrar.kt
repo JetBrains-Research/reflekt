@@ -1,21 +1,18 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
-import io.reflekt.plugin.analysis.ReflektModuleAnalysisExtension
-import io.reflekt.plugin.generation.bytecode.ReflektGeneratorExtension
-import io.reflekt.plugin.generation.bytecode.SmartReflektGeneratorExtension
+import io.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
 import io.reflekt.plugin.utils.Keys
 import io.reflekt.plugin.utils.Util.initMessageCollector
 import io.reflekt.plugin.utils.Util.log
 import io.reflekt.plugin.utils.Util.messageCollector
-import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
+import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.psi.PsiFileFactory
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
 
 @AutoService(ComponentRegistrar::class)
@@ -37,25 +34,12 @@ class ReflektComponentRegistrar : ComponentRegistrar {
         val dependencyJars = configuration[Keys.DEPENDENCY_JARS] ?: emptyList()
         configuration.messageCollector.log("DEPENDENCY JARS: ${dependencyJars.map { it.absolutePath }};")
 
-        val filesToIntrospect = getKtFiles(configuration[Keys.INTROSPECT_FILES] ?: emptyList(), project)
-        val outputDir = configuration[Keys.OUTPUT_DIR] ?: File("")
+        //val filesToIntrospect = getKtFiles(configuration[Keys.INTROSPECT_FILES] ?: emptyList(), project)
+        //val outputDir = configuration[Keys.OUTPUT_DIR] ?: File("")
         // Todo: will this be called multiple times (for each project module)? can we avoid this?
-        AnalysisHandlerExtension.registerExtension(
+        IrGenerationExtension.registerExtension(
             project,
-            ReflektModuleAnalysisExtension(
-                filesToIntrospect = filesToIntrospect,
-                generationPath = outputDir,
-                messageCollector = configuration.messageCollector
-            )
-        )
-        ExpressionCodegenExtension.registerExtension(
-            project,
-            ReflektGeneratorExtension(messageCollector = configuration.messageCollector)
-        )
-        ExpressionCodegenExtension.registerExtension(
-            project,
-            SmartReflektGeneratorExtension(
-                classpath = dependencyJars,
+            ReflektIrGenerationExtension(
                 messageCollector = configuration.messageCollector
             )
         )
