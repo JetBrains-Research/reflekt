@@ -7,7 +7,6 @@ import io.reflekt.SmartReflekt
 class Test(var a: List<Any>, b: List<Any>)
 
 fun main() {
-    val kek = listOf<() -> Unit>(::foo, ::bar, TestFunctions::foo)
     val tmp = Test(emptyList(), emptyList())
     tmp.a = listOf(Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class))
     println(tmp)
@@ -50,10 +49,10 @@ fun main() {
     val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList()
     println(functions)
 
-    //val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
-    //println(smartClasses)
+    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
+    println(smartClasses)
 
-    //val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
-    //println(smartFunctions)
-    //smartFunctions.forEach { it() }
+    val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
+    println(smartFunctions)
+    smartFunctions.forEach { it() }
 }
