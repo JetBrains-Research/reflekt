@@ -2,11 +2,8 @@ package io.reflekt.plugin.scripting
 
 import io.reflekt.plugin.analysis.AnalysisSetupTest
 import io.reflekt.plugin.analysis.models.Import
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
 
 @Tag("scripting")
 class KotlinScriptTest {
@@ -54,5 +51,15 @@ class KotlinScriptTest {
                 properties = listOf("t" to String::class)
             ).eval(listOf("hello"))
         )
+    }
+
+    companion object {
+        // Equals private val with same name from org.jetbrains.kotlin.scripting.compiler.plugin.impl
+        private const val SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY = "script.compilation.disable.plugins"
+
+        @BeforeAll @JvmStatic
+        fun disableCompilerTestingPlugin() {
+            System.setProperty(SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY, "com.tschuchort.compiletesting.MainComponentRegistrar")
+        }
     }
 }

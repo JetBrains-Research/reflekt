@@ -3,7 +3,14 @@
     {
       "subType": {
         "fqName": "io.reflekt.test.AInterface1Test",
-        "parameters": []
+        "superTypeFqNames": [
+          "io.reflekt.test.AInterface1Test",
+          "io.reflekt.test.AInterfaceTest",
+          "kotlin.Any"
+        ],
+        "parameters": [],
+        "variance": "INVARIANT",
+        "nullable": false
       },
       "filters": [
         {

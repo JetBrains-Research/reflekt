@@ -6,12 +6,25 @@
       {
         "signature": {
           "fqName": "kotlin.Function0",
+          "superTypeFqNames": [
+            "kotlin.Function0",
+            "kotlin.Function",
+            "kotlin.Any"
+          ],
           "parameters": [
             {
               "fqName": "kotlin.Unit",
-              "parameters": []
+              "superTypeFqNames": [
+                "kotlin.Unit",
+                "kotlin.Any"
+              ],
+              "parameters": [],
+              "variance": "OUT",
+              "nullable": false
             }
-          ]
+          ],
+          "variance": "INVARIANT",
+          "nullable": false
         },
         "annotations": []
       },
@@ -20,6 +33,8 @@
         "io.reflekt.test.bar",
         "io.reflekt.test.TestFunctions.Companion.foo",
         "io.reflekt.test.nested.foo",
+        "io.reflekt.test.fun1",
+        "io.reflekt.test.fun2",
         "io.reflekt.test.main"
       ]
     ]

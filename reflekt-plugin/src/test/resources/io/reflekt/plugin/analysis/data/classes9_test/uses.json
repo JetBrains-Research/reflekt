@@ -30,7 +30,11 @@
         "io.reflekt.test.B3.B4",
         "io.reflekt.test.TestFunctions",
         "io.reflekt.test.FirstAnnotationTest",
-        "io.reflekt.test.SecondAnnotationTest"
+        "io.reflekt.test.SecondAnnotationTest",
+        "io.reflekt.test.FunctionsTestAnnotation",
+        "io.reflekt.test.FunTest1",
+        "io.reflekt.test.FunTest2",
+        "io.reflekt.test.FunTest3"
       ]
     ]
   ],
