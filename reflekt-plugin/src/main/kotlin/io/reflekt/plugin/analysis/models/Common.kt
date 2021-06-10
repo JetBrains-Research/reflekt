@@ -10,6 +10,7 @@ enum class ElementType(val value: String) {
     FunctionType("FUNCTION_TYPE"),
     LambdaArgument("LAMBDA_ARGUMENT"),
     LambdaExpression("LAMBDA_EXPRESSION"),
+    NullableType("NULLABLE_TYPE"),
     ReferenceExpression("REFERENCE_EXPRESSION"),
     TypeArgumentList("TYPE_ARGUMENT_LIST"),
     TypeProjection("TYPE_PROJECTION"),
@@ -19,3 +20,8 @@ enum class ElementType(val value: String) {
     ValueParameter("VALUE_PARAMETER"),
     ValueParameterList("VALUE_PARAMETER_LIST"),
 }
+
+data class ReflektContext(
+    var uses: IrReflektUses? = null,
+    var instances: IrReflektInstances? = null
+)

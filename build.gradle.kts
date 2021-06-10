@@ -5,10 +5,10 @@ version = "0.1.0"
 
 plugins {
     id("tanvd.kosogor") version "1.0.10" apply true
-    kotlin("jvm") version "1.5.0" apply true
+    kotlin("jvm") version "1.5.10" apply true
     id("com.github.gmazzo.buildconfig") version "2.0.2" apply false
     `maven-publish`
-    kotlin("kapt") version "1.5.0" apply true
+    kotlin("kapt") version "1.5.10" apply true
 }
 
 allprojects {

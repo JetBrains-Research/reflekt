@@ -1,5 +1,6 @@
 package io.reflekt.plugin.analysis
 
+import io.reflekt.plugin.analysis.models.*
 import io.reflekt.plugin.generation.code.generator.ReflektImplGenerator
 import io.reflekt.plugin.utils.Util.getInstances
 import io.reflekt.plugin.utils.Util.getUses
@@ -14,7 +15,8 @@ import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
 
 class ReflektModuleAnalysisExtension(private val filesToIntrospect: Set<KtFile>,
-                                     private val generationPath: File,
+                                     private val generationPath: File?,
+                                     private val reflektContext: ReflektContext? = null,
                                      private val messageCollector: MessageCollector? = null) : AnalysisHandlerExtension {
 
     override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
@@ -24,14 +26,22 @@ class ReflektModuleAnalysisExtension(private val filesToIntrospect: Set<KtFile>,
         val allFiles = files.toSet().union(filesToIntrospect)
         val uses = getUses(allFiles, bindingTrace)
         val instances = getInstances(allFiles, bindingTrace)
-        messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses\nInstances: $instances")
+        if (reflektContext != null) {
+            reflektContext.uses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
+            reflektContext.instances = IrReflektInstances.fromReflektInstances(instances, bindingTrace.bindingContext)
+            messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: ${reflektContext.uses}\nInstances: ${reflektContext.instances}")
+        } else {
+            messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses\nInstances: $instances")
+        }
 
-        with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
-            delete()
-            parentFile.mkdirs()
-            writeText(
-                ReflektImplGenerator(uses).generate()
-            )
+        if (generationPath != null) {
+            with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
+                delete()
+                parentFile.mkdirs()
+                writeText(
+                    ReflektImplGenerator(uses).generate()
+                )
+            }
         }
 
         return super.analysisCompleted(project, module, bindingTrace, files)

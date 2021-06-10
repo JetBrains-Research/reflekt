@@ -62,7 +62,7 @@ fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, bind
         when (node.text) {
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
-                signature = callExpressionRoot.getTypeArguments().first().getParameterizedType(binding)
+                signature = callExpressionRoot.getTypeArguments().first().toParameterizedType(binding)
             }
             else -> error("Found an unexpected node text: ${node.text}")
         }
@@ -98,7 +98,7 @@ fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding
                 filters.add(Lambda(body, parameters))
             }
             in ReflektEntity.values().map { it.entityType } -> {
-                subtype = childCallExpressionRoot.getTypeArguments().first().getParameterizedType(binding)
+                subtype = childCallExpressionRoot.getTypeArguments().first().toParameterizedType(binding)
             }
             else -> error("Found an unexpected node text: ${node.text}")
         }
