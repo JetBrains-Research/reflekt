@@ -1,7 +1,7 @@
 package io.reflekt.plugin.generation.bytecode.util
 
 import io.reflekt.plugin.generation.bytecode.FunctionInstanceGenerator
-import io.reflekt.plugin.generation.bytecode.ReflektGenerationException
+import io.reflekt.plugin.generation.common.ReflektGenerationException
 import org.jetbrains.kotlin.codegen.binding.CodegenBinding.ASM_TYPE
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
 import org.jetbrains.kotlin.psi.KtClassOrObject

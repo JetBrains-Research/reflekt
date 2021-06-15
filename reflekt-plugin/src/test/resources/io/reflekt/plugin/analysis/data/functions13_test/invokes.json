@@ -1,0 +1,46 @@
+{
+  "objects": [],
+  "classes": [],
+  "functions": [
+    {
+      "signature": {
+        "fqName": "kotlin.Function0",
+        "superTypeFqNames": [
+          "kotlin.Function0",
+          "kotlin.Function",
+          "kotlin.Any"
+        ],
+        "parameters": [
+          {
+            "fqName": "kotlin.Array",
+            "superTypeFqNames": [
+              "kotlin.Array",
+              "kotlin.Any",
+              "kotlin.Cloneable",
+              "java.io.Serializable"
+            ],
+            "parameters": [
+              {
+                "fqName": "io.reflekt.test.FunTest1",
+                "superTypeFqNames": [
+                  "io.reflekt.test.FunTest1",
+                  "kotlin.Any"
+                ],
+                "parameters": [],
+                "variance": "OUT",
+                "nullable": false
+              }
+            ],
+            "variance": "OUT",
+            "nullable": false
+          }
+        ],
+        "variance": "INVARIANT",
+        "nullable": false
+      },
+      "annotations": [
+        "io.reflekt.test.FunctionsTestAnnotation"
+      ]
+    }
+  ]
+}

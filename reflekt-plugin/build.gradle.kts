@@ -13,8 +13,8 @@ dependencies {
     implementation(kotlin("scripting-jvm"))
     implementation(kotlin("scripting-jvm-host"))
 
-    implementation("com.google.auto.service", "auto-service-annotations", "1.0-rc7")
-    kapt("com.google.auto.service", "auto-service", "1.0-rc7")
+    implementation("com.google.auto.service", "auto-service-annotations", "1.0")
+    kapt("com.google.auto.service", "auto-service", "1.0")
 
     implementation(project(":reflekt-core"))
     implementation(project(":reflekt-dsl"))
@@ -29,11 +29,12 @@ dependencies {
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.0")
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
     testImplementation("com.google.code.gson", "gson", "2.8.6")
+    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.1")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform {
-        includeTags = setOf("analysis", "scripting")
+        includeTags = setOf("analysis", "scripting", "ir")
     }
 
     testLogging {
