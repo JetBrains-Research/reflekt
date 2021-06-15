@@ -53,7 +53,7 @@ fun main() {
     println(smartClasses)
 
     val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
-    println(smartClasses)
+    println(smartObjects)
 
     val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
     println(smartFunctions)
