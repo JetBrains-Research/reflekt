@@ -60,26 +60,27 @@ class SmartReflektIrTransformer(
 
         val resultInstances = ArrayList<IrTypeInstance<T, I>>()
         for (instance in instances) {
-            var matches = true
-            for (filter in invokeArguments.filters) {
-                val result = KotlinScript(
-                    classpath = classpath,
-                    imports = imports,
-                    properties = filter.parameters.zip(listOf(T::class)),
-                    code = filter.body
-                ).eval(listOf(instance.instance)) as Boolean
-                if (!result) {
-                    matches = false
-                }
-                if (!matches) {
-                    break
-                }
-            }
-            if (matches) {
+            if (evalFilterBody(imports, invokeArguments.filters, instance)) {
                 resultInstances.push(instance)
             }
         }
         return resultInstances
+    }
+
+    private inline fun <reified T, reified I> evalFilterBody(imports: List<Import>, filters: List<Lambda>,
+                                                             instance: IrTypeInstance<T, I>): Boolean {
+        for (filter in filters) {
+            val result = KotlinScript(
+                classpath = classpath,
+                imports = imports,
+                properties = filter.parameters.zip(listOf(T::class)),
+                code = filter.body
+            ).eval(listOf(instance.instance)) as Boolean
+            if (!result) {
+                return false
+            }
+        }
+        return true
     }
 
     private fun getSourceFile(irFile: IrFile): SourceFile {

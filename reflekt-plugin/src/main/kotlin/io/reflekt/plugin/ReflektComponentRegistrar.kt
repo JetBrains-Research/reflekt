@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
 
 @AutoService(ComponentRegistrar::class)
-class ReflektComponentRegistrar(private val noConfiguration: Boolean = false) : ComponentRegistrar {
+class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : ComponentRegistrar {
     // The path will be: pathToKotlin/daemon/reflekt-log.log
     private val logFilePath = "reflekt-log.log"
 
@@ -28,12 +28,10 @@ class ReflektComponentRegistrar(private val noConfiguration: Boolean = false) : 
         project: MockProject,
         configuration: CompilerConfiguration
     ) {
-        if (configuration[Keys.ENABLED] != true && !noConfiguration) {
+        if (hasConfiguration && configuration[Keys.ENABLED] != true) {
             return
         }
-        if (!noConfiguration) {
-            configuration.initMessageCollector(logFilePath)
-        }
+        configuration.initMessageCollector(logFilePath)
         if (configuration[Keys.INTROSPECT_FILES] != null && configuration[Keys.OUTPUT_DIR] == null) {
             error("Output path not specified")
         }

@@ -52,7 +52,7 @@ fun getResult() = $reflektCall.toList().also { functions ->
 
     private fun compile(
         sourceFiles: List<SourceFile>,
-        plugin: ComponentRegistrar = ReflektComponentRegistrar(noConfiguration = true),
+        plugin: ComponentRegistrar = ReflektComponentRegistrar(hasConfiguration = false),
     ): KotlinCompilation.Result {
         return KotlinCompilation().apply {
             sources = sourceFiles
@@ -65,7 +65,7 @@ fun getResult() = $reflektCall.toList().also { functions ->
 
     private fun compile(
         sourceFile: SourceFile,
-        plugin: ComponentRegistrar = ReflektComponentRegistrar(noConfiguration = true),
+        plugin: ComponentRegistrar = ReflektComponentRegistrar(hasConfiguration = false),
     ): KotlinCompilation.Result {
         return compile(listOf(sourceFile), plugin)
     }

@@ -20,7 +20,29 @@ enum class ParameterizedTypeVariance {
     IN, OUT, STAR, INVARIANT
 }
 
-/* Recursive structure representing type that may have parameters */
+/*
+* Recursive structure representing type that may have parameters
+* For example, Map<Pair<Int, String>, Int> is represented in the following way:
+* ParameterizedType(
+*     "kotlin.collections.Map",
+*     emptySet(),
+*     listOf(
+*         ParameterizedType(
+*             "kotlin.Pair",
+*             emptySet(),
+*             listOf(
+*                 ParameterizedType("kotlin.Int", emptySet(), emptyList(), ParameterizedTypeVariance.INVARIANT, false),
+*                 ParameterizedType("kotlin.String", emptySet(), emptyList(), ParameterizedTypeVariance.INVARIANT, false)
+*             ),
+*             ParameterizedTypeVariance.INVARIANT,
+*             false
+*         ),
+*         ParameterizedType("kotlin.Int", emptySet(), emptyList(), ParameterizedTypeVariance.INVARIANT, false)
+*     ),
+*     ParameterizedTypeVariance.INVARIANT,
+*     false
+* )
+* */
 data class ParameterizedType(
     val fqName: String,
     val superTypeFqNames: Set<String> = emptySet(),
