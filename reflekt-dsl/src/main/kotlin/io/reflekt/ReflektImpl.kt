@@ -1,8 +1,9 @@
 package io.reflekt
 
+import io.reflekt.models.compileTime
 import kotlin.reflect.KClass
 
-@Suppress("unused")
+@Suppress("UNUSED_PARAMETER")
 object ReflektImpl {
     class Objects {
         fun <T> withSubTypes(fqNames: Set<String>) = WithSubTypes<T>(fqNames)
@@ -10,12 +11,12 @@ object ReflektImpl {
             WithAnnotations<T>(annotationFqNames, subtypeFqNames)
 
         class WithSubTypes<T>(val fqNames: Set<String>) {
-            fun toList(): List<T> = error("This method should be replaced during compilation")
+            fun toList(): List<T> = compileTime()
             fun toSet(): Set<T> = toList().toSet()
         }
 
         class WithAnnotations<T>(val annotationFqNames: Set<String>, subtypeFqNames: Set<String>) {
-            fun toList(): List<T> = error("This method should be replaced during compilation")
+            fun toList(): List<T> = compileTime()
             fun toSet(): Set<T> = toList().toSet()
         }
     }
@@ -26,12 +27,12 @@ object ReflektImpl {
             WithAnnotations<T>(annotationFqNames, subtypeFqNames)
 
         class WithSubTypes<T: Any>(val fqNames: Set<String>) {
-            fun toList(): List<KClass<T>> = error("This method should be replaced during compilation")
+            fun toList(): List<KClass<T>> = compileTime()
             fun toSet(): Set<KClass<T>> = toList().toSet()
         }
 
         class WithAnnotations<T: Any>(val annotationFqNames: Set<String>, subtypeFqNames: Set<String>) {
-            fun toList(): List<KClass<T>> = error("This method should be replaced during compilation")
+            fun toList(): List<KClass<T>> = compileTime()
             fun toSet(): Set<KClass<T>> = toList().toSet()
         }
     }
@@ -39,7 +40,7 @@ object ReflektImpl {
     class Functions {
         // T - returned class
         class WithAnnotations<T: Function<*>>(val annotationFqNames: Set<String>) {
-            fun toList(): List<T> = error("This method should be replaced during compilation")
+            fun toList(): List<T> = compileTime()
             fun toSet(): Set<T> = toList().toSet()
         }
 
