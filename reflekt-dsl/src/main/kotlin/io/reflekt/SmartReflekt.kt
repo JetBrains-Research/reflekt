@@ -27,7 +27,7 @@ object SmartReflekt {
     }
 
     /*
-    * The main function for searching classes. The chain of calls have to end with resolve() function.
+    * The main function for searching classes. The chain of calls has to end with resolve() function.
     *
     * For example:
     *  SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
@@ -46,7 +46,7 @@ object SmartReflekt {
     }
 
     /*
-    * The main function for searching objects. The chain of calls have to end with resolve() function.
+    * The main function for searching objects. The chain of calls has to end with resolve() function.
     *
     * For example:
     *  SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
@@ -65,7 +65,7 @@ object SmartReflekt {
     }
 
     /*
-    * The main function for searching functions. The chain of calls have to end with resolve() function.
+    * The main function for searching functions. The chain of calls has to end with resolve() function.
     *
     * For example:
     *  SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
