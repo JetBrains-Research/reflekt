@@ -81,11 +81,14 @@ fun KotlinType.toParameterizedType(): ParameterizedType {
     return ParameterizedType(
         fqName(),
         superTypeFqNames = supertypes().plus(this).map { it.fqName() }.toSet(),
+//        иногда тут нет конструктора вообще
         parameters = arguments.zip(constructor.parameters.map { it.variance }).map { (argument, variance) ->
             argument.type.toParameterizedType()
                 .withVariance(argument.projectionKind.toParameterizedTypeVariance())
+//                не уверена что можно вообще поставить какую-то другую variance если в типе она стоит такой
                 .withVariance(variance.toParameterizedTypeVariance())
         },
         nullable = nullability() == TypeNullability.NULLABLE
+//    тут должно быть что-то про variance?
     )
 }

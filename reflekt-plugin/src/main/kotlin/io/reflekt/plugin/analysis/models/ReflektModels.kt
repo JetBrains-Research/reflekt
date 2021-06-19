@@ -22,6 +22,7 @@ enum class ParameterizedTypeVariance {
 
 /*
 * Recursive structure representing type that may have parameters
+* FIXME: incorrect example, Map requires two type :(
 * For example, Map<Pair<Int, String>, Int> is represented in the following way:
 * ParameterizedType(
 *     "kotlin.collections.Map",

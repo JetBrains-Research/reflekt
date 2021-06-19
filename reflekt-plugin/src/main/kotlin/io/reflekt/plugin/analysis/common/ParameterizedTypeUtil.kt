@@ -19,6 +19,7 @@ fun unitParameterizedType() = ParameterizedType(
 
 fun ParameterizedType.matchInto(destination: ParameterizedType, strict: Boolean = false): Boolean {
     return when (destination.variance) {
+//        тут не надо проверять имена вообще??
         ParameterizedTypeVariance.STAR -> true
         ParameterizedTypeVariance.IN -> {
             if (variance == ParameterizedTypeVariance.STAR

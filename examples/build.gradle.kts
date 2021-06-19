@@ -33,6 +33,7 @@ allprojects {
     repositories {
         mavenCentral()
         google()
+//        mavenLocal()
         maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
     }
 

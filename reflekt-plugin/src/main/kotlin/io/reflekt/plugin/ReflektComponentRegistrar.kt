@@ -22,7 +22,7 @@ import java.io.File
 @AutoService(ComponentRegistrar::class)
 class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : ComponentRegistrar {
     // The path will be: pathToKotlin/daemon/reflekt-log.log
-    private val logFilePath = "reflekt-log.log"
+    private val logFilePath = "/Users/Elena.Lyulina/IdeaProjects/reflekt/reflekt-log.log"
 
     override fun registerProjectComponents(
         project: MockProject,
