@@ -46,7 +46,8 @@ enum class ParameterizedTypeVariance {
 * */
 data class ParameterizedType(
     val fqName: String,
-    val superTypeFqNames: Set<String> = emptySet(),
+//  todo: make immutable
+    val superTypes: Set<ParameterizedType> = setOf(),
     val parameters: List<ParameterizedType> = emptyList(),
     val variance: ParameterizedTypeVariance = ParameterizedTypeVariance.INVARIANT,
     val nullable: Boolean = false

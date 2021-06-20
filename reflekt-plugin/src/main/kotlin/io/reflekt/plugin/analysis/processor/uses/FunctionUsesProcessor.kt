@@ -4,7 +4,7 @@ import io.reflekt.plugin.analysis.common.matchInto
 import io.reflekt.plugin.analysis.models.*
 import io.reflekt.plugin.analysis.processor.isPublicFunction
 import io.reflekt.plugin.analysis.psi.annotation.getAnnotations
-import io.reflekt.plugin.analysis.psi.function.toSignature
+import io.reflekt.plugin.analysis.psi.function.*
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -14,6 +14,7 @@ class FunctionUsesProcessor(override val binding: BindingContext, private val re
 
     override fun process(element: KtElement): FunctionUses {
         (element as? KtNamedFunction)?.let {
+            it.argumentTypes(binding).map { it.toParameterizedType() }.forEach { println(it) }
             reflektInvokes.functions.forEach {
                 if (it.covers(element)) {
                     uses.getValue(it).add(element)

@@ -4,6 +4,7 @@ import io.reflekt.plugin.analysis.common.functionNParameterizedType
 import io.reflekt.plugin.analysis.common.unitParameterizedType
 import io.reflekt.plugin.analysis.ir.toParameterizedTypeVariance
 import io.reflekt.plugin.analysis.models.*
+import io.reflekt.plugin.analysis.psi.function.toParameterizedType
 import io.reflekt.plugin.analysis.psi.getFqName
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -117,8 +118,9 @@ fun ASTNode.toParameterizedType(binding: BindingContext): ParameterizedType {
     val superTypes = binding[BindingContext.TYPE, typeReference]?.let {
         val descriptor = it.constructor.declarationDescriptor ?: return@let null
         val superClassifiers = descriptor.getAllSuperClassifiers().toList()
-        superClassifiers.mapNotNull { superClassifier -> superClassifier.fqNameOrNull() }.map { fqName -> fqName.asString() }.toSet()
-    } ?: emptySet()
+        superClassifiers.mapNotNull { superClassifier -> superClassifier.defaultType.toParameterizedType() }.toSet()
+//        superClassifiers.mapNotNull { superClassifier -> superClassifier.fqNameOrNull() }.map { fqName -> fqName.asString() }.toSet()
+    } ?: mutableSetOf()
     return when (val type = elementType.toString()) {
         ElementType.UserType.value -> {
             val variances = binding[BindingContext.TYPE, typeReference]?.let {
@@ -137,7 +139,7 @@ fun ASTNode.toParameterizedType(binding: BindingContext): ParameterizedType {
                 }
             }
             val fqName = children().first { it.hasType(ElementType.ReferenceExpression) }.psi.getFqName(binding)!!
-            ParameterizedType(fqName = fqName, superTypeFqNames = superTypes, parameters = parameters)
+            ParameterizedType(fqName = fqName, superTypes = superTypes, parameters = parameters)
         }
         ElementType.FunctionType.value -> toSignature(binding)
         ElementType.NullableType.value -> children().first().toParameterizedType(binding).nullable()

@@ -80,7 +80,8 @@ fun KotlinType.isCompanionObject() = constructor.declarationDescriptor?.isCompan
 fun KotlinType.toParameterizedType(): ParameterizedType {
     return ParameterizedType(
         fqName(),
-        superTypeFqNames = supertypes().plus(this).map { it.fqName() }.toSet(),
+//        Todo: fix supertypes
+        superTypes = supertypes().filter { it.nullability() != TypeNullability.NULLABLE }.map { it.toParameterizedType() }.toSet(),
 //        иногда тут нет конструктора вообще
         parameters = arguments.zip(constructor.parameters.map { it.variance }).map { (argument, variance) ->
             argument.type.toParameterizedType()
@@ -91,4 +92,7 @@ fun KotlinType.toParameterizedType(): ParameterizedType {
         nullable = nullability() == TypeNullability.NULLABLE
 //    тут должно быть что-то про variance?
     )
+
+    // fqName = int
+    // superTypes = Number, !!!! Comparable<Int>, Serializable, Any
 }

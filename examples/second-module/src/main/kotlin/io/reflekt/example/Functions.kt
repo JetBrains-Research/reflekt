@@ -1,6 +1,6 @@
 package io.reflekt.example
 
-fun foo() {
+fun foo(s: Pair<Int, String>) {
     println("public second example foo")
 }
 

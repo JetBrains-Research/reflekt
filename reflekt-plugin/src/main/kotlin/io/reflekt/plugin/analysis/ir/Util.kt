@@ -39,6 +39,18 @@ fun IrType.superTypeFqNames(): Set<String> {
     return result
 }
 
+private fun IrType.collectSuperTypes(set: MutableSet<ParameterizedType>) {
+    classFqName?.let {
+        set.add(this.toParameterizedType())
+    }
+    superTypes().forEach { it.collectSuperTypes(set) }
+}
+
+fun IrType.superParameterizedTypes(): Set<ParameterizedType> {
+    return superTypes().map { it.toParameterizedType() }.toSet()
+//    return mutableSetOf<ParameterizedType>().also { collectSuperTypes(it) }
+}
+
 fun Variance.toParameterizedTypeVariance() = when (this) {
     Variance.INVARIANT -> ParameterizedTypeVariance.INVARIANT
     Variance.IN_VARIANCE -> ParameterizedTypeVariance.IN
@@ -50,7 +62,7 @@ fun IrType.toParameterizedType(): ParameterizedType {
     val variances = (getClass()?.typeParameters ?: emptyList()).map { it.variance }
     return ParameterizedType(
         fqName = classFqName.toString(),
-        superTypeFqNames = superTypeFqNames(),
+        superTypes = superParameterizedTypes(),
         parameters = arguments.zip(variances).map { (argument, variance) -> argument.toParameterizedType().withVariance(variance.toParameterizedTypeVariance()) },
         nullable = isNullable()
     )
