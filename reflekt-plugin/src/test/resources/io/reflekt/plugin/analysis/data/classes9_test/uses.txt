@@ -2,8 +2,8 @@ objects: {},
 classes: {
 	subTypesToAnnotations: [
 		subTypes: [
-			io.reflekt.test.BInterfaceTest,
-			io.reflekt.test.AInterfaceTest
+			io.reflekt.test.AInterfaceTest,
+			io.reflekt.test.BInterfaceTest
 		],
 		annotations: []
 	],
@@ -25,12 +25,12 @@ classes: {
 		io.reflekt.test.B3,
 		io.reflekt.test.B3.B4,
 		io.reflekt.test.FirstAnnotationTest,
-		io.reflekt.test.SecondAnnotationTest,
-		io.reflekt.test.TestFunctions,
-		io.reflekt.test.FunctionsTestAnnotation,
 		io.reflekt.test.FunTest1,
 		io.reflekt.test.FunTest2,
-		io.reflekt.test.FunTest3
+		io.reflekt.test.FunTest3,
+		io.reflekt.test.FunctionsTestAnnotation,
+		io.reflekt.test.SecondAnnotationTest,
+		io.reflekt.test.TestFunctions
 	]
 },
 functions: {}

@@ -12,7 +12,9 @@ fun <T : Any?> Collection<T>.joinToStringIndented(
     return if (this.isEmpty()) {
         brackets.left + brackets.right
     } else {
-        this.joinToString(separator = ",\n", prefix = "${brackets.left}\n", postfix = "\n${brackets.right}") { transform(it).indentN(1) }
+        this.map { transform(it) }
+            .sortedBy { it.toString() }
+            .joinToString(separator = ",\n", prefix = "${brackets.left}\n", postfix = "\n${brackets.right}") { it.indentN(1) }
     }
 }
 

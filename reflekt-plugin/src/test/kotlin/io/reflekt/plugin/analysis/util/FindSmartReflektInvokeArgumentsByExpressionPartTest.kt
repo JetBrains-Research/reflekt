@@ -21,7 +21,7 @@ class FindSmartReflektInvokeArgumentsByExpressionPartTest {
             return getTestsDirectories(FindSmartReflektInvokeArgumentsByExpressionPartTest::class).map { directory ->
                 val project = getProjectFilesInDirectory(directory)
                 val subTypesToFilters = directory.findInDirectory("subTypesToFilters.txt").readText().trim()
-                Arguments.of(commonTestFiles.union(project), subTypesToFilters)
+                Arguments.of(commonTestFiles.union(project), subTypesToFilters, directory.name)
             }
         }
     }
@@ -29,9 +29,9 @@ class FindSmartReflektInvokeArgumentsByExpressionPartTest {
     @Tag("analysis")
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
-    fun `findSmartReflektInvokeArgumentsByExpressionPart function test`(sources: Set<File>, expectedResult: String) {
+    fun `findSmartReflektInvokeArgumentsByExpressionPart function test`(sources: Set<File>, expectedResult: String, directory: String) {
         val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
         val analyzer = SmartReflektTestAnalyzer(AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sources))
-        Assertions.assertEquals(expectedResult, analyzer.analyze().toPrettyString())
+        Assertions.assertEquals(expectedResult, analyzer.analyze().toPrettyString(), "Incorrect invoke arguments for directory $directory")
     }
 }

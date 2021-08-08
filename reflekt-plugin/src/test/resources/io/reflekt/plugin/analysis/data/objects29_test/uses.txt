@@ -4,8 +4,8 @@ objects: {
 			io.reflekt.test.AInterfaceTest
 		],
 		annotations: [
-			io.reflekt.test.SecondAnnotationTest,
-			io.reflekt.test.FirstAnnotationTest
+			io.reflekt.test.FirstAnnotationTest,
+			io.reflekt.test.SecondAnnotationTest
 		]
 	],
 	objectsOrClasses: [

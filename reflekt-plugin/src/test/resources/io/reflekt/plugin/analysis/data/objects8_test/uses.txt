@@ -1,8 +1,8 @@
 objects: {
 	subTypesToAnnotations: [
 		subTypes: [
-			io.reflekt.test.BInterfaceTest,
-			io.reflekt.test.AInterfaceTest
+			io.reflekt.test.AInterfaceTest,
+			io.reflekt.test.BInterfaceTest
 		],
 		annotations: []
 	],
