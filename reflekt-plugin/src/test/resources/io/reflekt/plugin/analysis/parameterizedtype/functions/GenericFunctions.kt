@@ -62,6 +62,12 @@ fun <T> foo1_T_Unit(t: T) {}
 fun <T, N : Number, A : Any?, C : CharSequence?, S> T.foo5_T_N_A_C_S_Unit(n: N, a: A, c: C, s: S) {}
 
 /**
+ * @kotlinType Function5<Any, Number, Any, CharSequence, Any, Unit> (kotlin.Function5)
+ * @subtypes: no subtypes
+ */
+fun foo5_Any_Number_Any_CharSequence_Any_Unit(a1: Any, n: Number, a2: Any, c: CharSequence, s: Any) {}
+
+/**
  * @kotlinType Function0<T> (kotlin.Function0)
  * @subtypes: no subtypes
  */
