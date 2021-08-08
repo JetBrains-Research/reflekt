@@ -1,17 +1,13 @@
 package io.reflekt.plugin.analysis.psi
 
-import io.reflekt.plugin.analysis.psi.annotation.getAnnotations
-import io.reflekt.plugin.analysis.psi.annotation.getDescriptor
-import io.reflekt.plugin.analysis.psi.annotation.qualifiedName
+import io.reflekt.plugin.analysis.psi.annotation.*
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.synthetics.findClassDescriptor
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.bindingContextUtil.getReferenceTargets
-import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
-import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
-import org.jetbrains.kotlin.resolve.descriptorUtil.getAllSuperClassifiers
+import org.jetbrains.kotlin.resolve.descriptorUtil.*
 
 
 fun PsiElement.getFqName(binding: BindingContext): String? {

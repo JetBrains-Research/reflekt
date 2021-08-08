@@ -1,0 +1,19 @@
+objects: {},
+classes: {},
+functions: {
+	signatureToAnnotations: [
+		signature: Function0<Any> (kotlin.Function0),
+		annotations: [
+			io.reflekt.test.FunctionsTestAnnotation
+		]
+	],
+	namedFunctions: [
+		io.reflekt.test.fun1,
+		io.reflekt.test.fun2,
+		io.reflekt.test.fun3,
+		io.reflekt.test.fun4,
+		io.reflekt.test.fun5,
+		io.reflekt.test.fun6,
+		io.reflekt.test.fun7
+	]
+}

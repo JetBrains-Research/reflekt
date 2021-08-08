@@ -1,0 +1,8 @@
+objects: [],
+classes: [
+	subTypes: [
+		io.reflekt.test.B1
+	],
+	annotations: []
+],
+functions: []

@@ -10,6 +10,7 @@ import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.push
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.builders.IrBuilderWithScope
 import org.jetbrains.kotlin.ir.declarations.IrFile
@@ -29,6 +30,7 @@ class SmartReflektIrTransformer(
     private val importChecker = ImportChecker(classpath)
     private val sources = HashMap<String, SourceFile>()
 
+    @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall): IrExpression {
         val function = expression.symbol.owner
         val expressionFqName = function.fqNameForIrSerialization.toString()

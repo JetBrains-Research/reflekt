@@ -4,6 +4,7 @@ import io.reflekt.plugin.analysis.processor.instances.*
 import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.types.KotlinType
 
 /*
  * Store a set of qualified names that exist in the project and additional libraries
@@ -46,7 +47,7 @@ data class IrReflektInstances(
 }
 
 data class SubTypesToFilters(
-    val subType: ParameterizedType? = null,
+    val subType: KotlinType? = null,
     val filters: List<Lambda> = emptyList(),
     val imports: List<Import> = emptyList()
 )

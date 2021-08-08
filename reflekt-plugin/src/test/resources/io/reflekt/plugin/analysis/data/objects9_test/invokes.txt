@@ -1,0 +1,13 @@
+objects: [
+	subTypes: [
+		io.reflekt.test.BInterfaceTest,
+		io.reflekt.test.AInterfaceTest
+	],
+	annotations: [],
+	subTypes: [
+		kotlin.Any
+	],
+	annotations: []
+],
+classes: [],
+functions: []

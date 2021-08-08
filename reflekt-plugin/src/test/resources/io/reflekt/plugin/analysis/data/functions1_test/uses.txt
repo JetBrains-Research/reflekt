@@ -1,0 +1,17 @@
+objects: {},
+classes: {},
+functions: {
+	signatureToAnnotations: [
+		signature: Function0<Unit> (kotlin.Function0),
+		annotations: []
+	],
+	namedFunctions: [
+		io.reflekt.test.foo,
+		io.reflekt.test.bar,
+		io.reflekt.test.TestFunctions.Companion.foo,
+		io.reflekt.test.nested.foo,
+		io.reflekt.test.fun1,
+		io.reflekt.test.fun2,
+		io.reflekt.test.main
+	]
+}

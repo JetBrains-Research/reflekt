@@ -2,6 +2,7 @@ package io.reflekt.plugin.analysis.util
 
 import io.reflekt.plugin.analysis.*
 import io.reflekt.plugin.util.Util
+import io.reflekt.plugin.util.Util.toJson
 import io.reflekt.util.FileUtil
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
@@ -19,20 +20,18 @@ class FindSmartReflektInvokeArgumentsByExpressionPartTest {
             val commonTestFiles = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(AnalysisTest::class, "commonTestFiles")).toSet()
             return getTestsDirectories(FindSmartReflektInvokeArgumentsByExpressionPartTest::class).map { directory ->
                 val project = getProjectFilesInDirectory(directory)
-                val subTypesToFilters = parseSubTypesToFilters(directory.findInDirectory("subTypesToFilters.json"))
+                val subTypesToFilters = directory.findInDirectory("subTypesToFilters.txt").readText().trim()
                 Arguments.of(commonTestFiles.union(project), subTypesToFilters)
             }
         }
-
-        private fun parseSubTypesToFilters(json: File): SubTypesToFiltersTest = Util.parseJson(json)
     }
 
     @Tag("analysis")
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
-    fun `findSmartReflektInvokeArgumentsByExpressionPart function test`(sources: Set<File>, expectedResult: SubTypesToFiltersTest) {
+    fun `findSmartReflektInvokeArgumentsByExpressionPart function test`(sources: Set<File>, expectedResult: String) {
         val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
         val analyzer = SmartReflektTestAnalyzer(AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sources))
-        Assertions.assertEquals(expectedResult, analyzer.analyze().toSubTypesToFiltersTest())
+        Assertions.assertEquals(expectedResult, analyzer.analyze().toPrettyString())
     }
 }

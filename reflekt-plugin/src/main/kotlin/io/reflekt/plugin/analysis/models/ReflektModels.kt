@@ -6,6 +6,7 @@ import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.types.KotlinType
 
 /*
  * If the function [withAnnotations] is called without subtypes then [subTypes] is [setOf(Any::class::qualifiedName)]
@@ -20,50 +21,8 @@ enum class ParameterizedTypeVariance {
     IN, OUT, STAR, INVARIANT
 }
 
-/*
-* Recursive structure representing type that may have parameters
-* FIXME: incorrect example, Map requires two type :(
-* For example, Map<Pair<Int, String>, Int> is represented in the following way:
-* ParameterizedType(
-*     "kotlin.collections.Map",
-*     emptySet(),
-*     listOf(
-*         ParameterizedType(
-*             "kotlin.Pair",
-*             emptySet(),
-*             listOf(
-*                 ParameterizedType("kotlin.Int", emptySet(), emptyList(), ParameterizedTypeVariance.INVARIANT, false),
-*                 ParameterizedType("kotlin.String", emptySet(), emptyList(), ParameterizedTypeVariance.INVARIANT, false)
-*             ),
-*             ParameterizedTypeVariance.INVARIANT,
-*             false
-*         ),
-*         ParameterizedType("kotlin.Int", emptySet(), emptyList(), ParameterizedTypeVariance.INVARIANT, false)
-*     ),
-*     ParameterizedTypeVariance.INVARIANT,
-*     false
-* )
-* */
-data class ParameterizedType(
-    val fqName: String,
-//  todo: make immutable
-    val superTypes: Set<ParameterizedType> = setOf(),
-    val parameters: List<ParameterizedType> = emptyList(),
-    val variance: ParameterizedTypeVariance = ParameterizedTypeVariance.INVARIANT,
-    val nullable: Boolean = false
-) {
-    fun withVariance(newVariance: ParameterizedTypeVariance): ParameterizedType =
-        if (newVariance != ParameterizedTypeVariance.INVARIANT) copy(variance = newVariance) else this
-
-    fun nullable(): ParameterizedType = copy(nullable = true)
-
-    companion object {
-        val STAR = ParameterizedType("", variance = ParameterizedTypeVariance.STAR)
-    }
-}
-
 data class SignatureToAnnotations(
-    val signature: ParameterizedType, // kotlin.FunctionN< ... >
+    val signature: KotlinType, // kotlin.FunctionN< ... >
     val annotations: Set<String> = emptySet()
 )
 
