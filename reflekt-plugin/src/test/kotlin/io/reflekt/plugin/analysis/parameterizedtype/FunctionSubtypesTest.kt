@@ -24,7 +24,7 @@ class FunctionSubtypesTest {
             val visitor = KtNamedFunctionVisitor()
             val binding = visitKtElements(functionFiles, listOf(visitor))
             val functions = visitor.functions
-            return functions.mapIndexed { i, it ->  Arguments.of(binding, it, functions.removeFromList(it), it.parseKDocLinks("subtypes")) }
+            return functions.map { Arguments.of(binding, it, functions.removeFromList(it), it.parseKDocLinks("subtypes")) }
         }
 
         private fun <T> List<T>.removeFromList(toRemove: T): List<T> {
@@ -34,7 +34,7 @@ class FunctionSubtypesTest {
         }
     }
 
-    private fun KtNamedFunction.getNameWithClass(binding: BindingContext): String {
+    private fun KtNamedFunction.getNameWithClass(): String {
         var classOrObject = getParentOfType<KtClassOrObject>(true)
         if (classOrObject is KtObjectDeclaration && classOrObject.isCompanion()) {
             classOrObject = classOrObject.getParentOfType<KtClass>(true)
@@ -51,7 +51,7 @@ class FunctionSubtypesTest {
         val actualSubtypes = otherFunctions.filter { it.toParameterizedType(binding)?.isSubtypeOf(functionType) == true }
         Assertions.assertEquals(
             expectedSubtypes.sorted(),
-            actualSubtypes.map { it.getNameWithClass(binding) }.sorted(),
+            actualSubtypes.map { it.getNameWithClass() }.sorted(),
             "Incorrect subtypes for function ${function.name} $functionType"
         )
     }
