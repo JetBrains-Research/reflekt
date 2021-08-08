@@ -1,7 +1,6 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.models.*
-import io.reflekt.plugin.analysis.psi.function.toParameterizedType
 import io.reflekt.plugin.generation.code.generator.ReflektImplGenerator
 import io.reflekt.plugin.utils.Util.getInstances
 import io.reflekt.plugin.utils.Util.getUses
@@ -30,9 +29,6 @@ class ReflektModuleAnalysisExtension(private val filesToIntrospect: Set<KtFile>,
         if (reflektContext != null) {
             reflektContext.uses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
             reflektContext.instances = IrReflektInstances.fromReflektInstances(instances, bindingTrace.bindingContext)
-            reflektContext.instances!!.functions.map { it.instance }.forEach {
-                messageCollector?.log(it.toParameterizedType(bindingTrace.bindingContext).toString() + "\n\n")
-            }
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: ${reflektContext.uses}\nInstances: ${reflektContext.instances}")
         } else {
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses\nInstances: $instances")
