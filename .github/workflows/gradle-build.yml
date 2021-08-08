@@ -17,6 +17,8 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Build with Gradle
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
         run: ./gradlew build --console=plain
 
       - name: Upload Test Report
