@@ -1,0 +1,9 @@
+objects: [],
+classes: [],
+functions: [
+	signature: Function0<Unit> (kotlin.Function0),
+	annotations: [
+		io.reflekt.test.FirstAnnotationTest,
+		io.reflekt.test.SecondAnnotationTest
+	]
+]

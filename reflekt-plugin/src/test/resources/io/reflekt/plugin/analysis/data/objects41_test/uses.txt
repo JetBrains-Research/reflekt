@@ -1,0 +1,15 @@
+objects: {
+	subTypesToAnnotations: [
+		subTypes: [
+			io.reflekt.test.A3
+		],
+		annotations: [
+			io.reflekt.test.FirstAnnotationTest
+		]
+	],
+	objectsOrClasses: [
+		io.reflekt.test.A3
+	]
+},
+classes: {},
+functions: {}

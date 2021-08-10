@@ -1,7 +1,7 @@
 package io.reflekt.plugin.generation.ir
 
 import io.reflekt.plugin.analysis.common.ReflektEntity
-import io.reflekt.plugin.analysis.ir.*
+import io.reflekt.plugin.analysis.ir.SmartReflektInvokeArgumentsCollector
 import io.reflekt.plugin.analysis.models.*
 import io.reflekt.plugin.generation.common.SmartReflektInvokeParts
 import io.reflekt.plugin.scripting.ImportChecker
@@ -10,12 +10,12 @@ import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.push
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
-import org.jetbrains.kotlin.ir.builders.IrBuilderWithScope
+import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.util.*
+import org.jetbrains.kotlin.ir.util.dump
+import org.jetbrains.kotlin.ir.util.fqNameForIrSerialization
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import java.io.File
 
@@ -29,6 +29,7 @@ class SmartReflektIrTransformer(
     private val importChecker = ImportChecker(classpath)
     private val sources = HashMap<String, SourceFile>()
 
+    @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall): IrExpression {
         val function = expression.symbol.owner
         val expressionFqName = function.fqNameForIrSerialization.toString()

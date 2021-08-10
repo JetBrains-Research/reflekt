@@ -21,26 +21,24 @@ class AnalysisTest {
             val commonTestFiles = getAllNestedFiles(getResourcesRootPath(AnalysisTest::class, "commonTestFiles")).toSet()
             return getTestsDirectories(AnalysisTest::class).map { directory ->
                 val project = getProjectFilesInDirectory(directory)
-                val invokes = parseInvokes(directory.findInDirectory("invokes.json"))
-                val uses = parseUses(directory.findInDirectory("uses.json"))
-                Arguments.of(commonTestFiles.union(project), invokes, uses)
+                val invokes = directory.findInDirectory("invokes.txt").readText().trim()
+                val uses = directory.findInDirectory("uses.txt").readText().trim()
+                Arguments.of(commonTestFiles.union(project), invokes, uses, directory.name)
             }
         }
-
-        private fun parseInvokes(json: File): ReflektInvokes = parseJson(json)
-
-        private fun parseUses(json: File): ReflektUsesTest = parseJson(json)
     }
 
     @Tag("analysis")
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
-    fun `project analyzer test`(sources: Set<File>, expectedInvokes: ReflektInvokes, expectedUses: ReflektUsesTest) {
+    fun `project analyzer test`(sources: Set<File>, expectedInvokes: String, expectedUses: String, directory: String) {
         val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
         val analyzer = getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
         val actualInvokes = analyzer.invokes()
-        Assertions.assertEquals(expectedInvokes, actualInvokes)
+        Assertions.assertEquals(expectedInvokes, actualInvokes.toPrettyString(), "Incorrect invokes for directory $directory")
         val actualUses = analyzer.uses(actualInvokes)
-        Assertions.assertEquals(expectedUses, actualUses.toTestUses())
+        Assertions.assertEquals(expectedUses, actualUses.toPrettyString(), "Incorrect uses for directory $directory")
     }
 }
+
+

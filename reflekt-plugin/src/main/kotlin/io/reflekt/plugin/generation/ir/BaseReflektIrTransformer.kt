@@ -9,12 +9,14 @@ import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
 /* Base class for Reflekt IR transformers */
 open class BaseReflektIrTransformer(private val messageCollector: MessageCollector?) : IrElementTransformerVoidWithContext() {
@@ -30,6 +32,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         context: IrPluginContext
     ): IrExpression {
         require(resultType is IrSimpleType)
+
         val itemType = resultType.arguments[0].typeOrNull
             ?: throw ReflektGenerationException("Return type must have at one type argument (e. g. List<T>, Set<T>)")
 
@@ -51,8 +54,9 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
     /*
      * Constructs replacement for result of Reflekt terminal function (toList/toSet/etc) for functions
      * @param invokeParts info about invoke call terminal function [toList/toSet/etc]]
-     * @param resultValues list of function qualified names with additional info to generate right call
+     * @param resultValues list of function qualified names with additional info to generate the right call
      */
+    @ObsoleteDescriptorBasedAPI
     protected fun IrBuilderWithScope.functionResultIrCall(
         invokeParts: BaseReflektInvokeParts,
         resultValues: List<IrFunctionInfo>,
@@ -67,7 +71,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         messageCollector?.log("RES ARGS: ${itemType.arguments.map { (it as IrSimpleType).classFqName }}")
         val items = resultValues.map {
             val functionSymbol = context.referenceFunctions(FqName(it.fqName)).firstOrNull { symbol ->
-                symbol.owner.getSignature().matchInto(itemType.toParameterizedType())
+                symbol.owner.toParameterizedType(context.bindingContext)?.isSubtypeOf(itemType.toParameterizedType()) ?: false
             } ?: throw ReflektGenerationException("Failed to find function ${it.fqName} with signature ${itemType.toParameterizedType()}")
             irKFunction(itemType, functionSymbol).also { call ->
                 if (it.receiverFqName != null && it.isObjectReceiver) {

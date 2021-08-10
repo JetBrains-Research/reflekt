@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.types.KotlinType
 
 // [1]Reflekt.[2]|objects()/classes() or so on|
 // [dotQualifiedExpressionNode] is [1]
@@ -51,10 +52,10 @@ fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding
     }
 }
 
-fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SignatureToAnnotations? {
+fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SignatureToAnnotations {
     val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in ReflektFunction.values().map { it.functionName } }
 
-    var signature: ParameterizedType? = null
+    var signature: KotlinType? = null
     val annotations = HashSet<String>()
 
     for (node in filteredChildren) {
@@ -87,7 +88,7 @@ fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding
         (n.text in SmartReflektFunction.values().map { it.functionName } || n.text in ReflektEntity.values().map { it.entityType }) &&
             n.hasType(ElementType.ReferenceExpression)
     }
-    var subtype: ParameterizedType? = null
+    var subtype: KotlinType? = null
     val filters = ArrayList<Lambda>()
     for (node in filteredChildren) {
         val childCallExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CallExpression.value } ?: continue
@@ -115,7 +116,6 @@ fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding
 
 fun findSmartReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SubTypesToFilters? {
     val callExpressionRoot = expression.node.parents().first()
-    // TODO: should we change it for functions? Or string (fqName) is ok?
     return callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
         findSmartReflektInvokeArguments(node, binding)
     }

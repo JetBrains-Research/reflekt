@@ -1,0 +1,13 @@
+[
+	subtype: AInterface1Test (io.reflekt.test.AInterface1Test),
+	filters: [
+		Lambda(body=it.isInterface(), parameters=[it]),
+		Lambda(body=klass.isInterface(), parameters=[klass]),
+		Lambda(body=klass.isInterface(), parameters=[klass]),
+		Lambda(body=true, parameters=[it])
+	],
+	imports: [
+		Import(fqName=io.reflekt.SmartReflekt, text=import io.reflekt.SmartReflekt),
+		Import(fqName=org.jetbrains.kotlin.psi.KtClass, text=import org.jetbrains.kotlin.psi.KtClass)
+	]
+]

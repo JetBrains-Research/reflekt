@@ -4,9 +4,11 @@ import io.reflekt.plugin.analysis.common.ReflektEntity
 import io.reflekt.plugin.analysis.common.ReflektFunction
 import io.reflekt.plugin.analysis.models.*
 import org.jetbrains.kotlin.ir.IrElement
+import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrFunctionExpression
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
+import org.jetbrains.kotlin.types.KotlinType
 
 open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
     override fun visitElement(element: IrElement, data: Nothing?) {
@@ -54,9 +56,10 @@ class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
  * Traverses subtree of expression and collects arguments of withSubtype, withSubtypes and withAnnotations calls to construct SignatureToAnnotations.
  */
 class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
-    private var signature: ParameterizedType? = null
+    private var signature: KotlinType? = null
     private val annotations = HashSet<String>()
 
+    @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall, data: Nothing?) {
         super.visitCall(expression, data)
         val function = expression.symbol.owner
@@ -81,9 +84,10 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
  * Traverses subtree of expression and collects arguments of filter calls to construct SubTypesToFilters.
  */
 class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) : IrRecursiveVisitor() {
-    private var subtype: ParameterizedType? = null
+    private var subtype: KotlinType? = null
     private val filters = ArrayList<Lambda>()
 
+    @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall, data: Nothing?) {
         super.visitCall(expression, data)
         val function = expression.symbol.owner

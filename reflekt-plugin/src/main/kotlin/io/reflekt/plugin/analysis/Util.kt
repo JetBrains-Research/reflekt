@@ -10,7 +10,7 @@ object AnalysisUtil {
 
     fun getReflektAnalyzer(classPath: Set<File>, sources: Set<File>): ReflektAnalyzer {
         val baseAnalyzer = getBaseAnalyzer(classPath, sources)
-        return  ReflektAnalyzer(baseAnalyzer.ktFiles, baseAnalyzer.binding)
+        return ReflektAnalyzer(baseAnalyzer.ktFiles, baseAnalyzer.binding)
     }
 
     fun getSmartReflektAnalyzer(classPath: Set<File>, sources: Set<File>): SmartReflektAnalyzer {

@@ -4,6 +4,7 @@ import io.reflekt.plugin.analysis.common.ReflektEntity
 import io.reflekt.plugin.analysis.common.findSmartReflektInvokeArgumentsByExpressionPart
 import io.reflekt.plugin.analysis.models.SubTypesToFilters
 import io.reflekt.plugin.analysis.psi.function.checkSignature
+import io.reflekt.plugin.analysis.psi.function.fqName
 import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.analysis.psi.isSubtypeOf
 import io.reflekt.plugin.generation.bytecode.util.genAsmType
@@ -95,5 +96,5 @@ class SmartReflektGeneratorExtension(
     private inline fun <reified T: KtClassOrObject> filterClassOrObjectInstances(
         instances: List<T>, invokeArguments: SubTypesToFilters, c: ExpressionCodegenExtension.Context
     ): List<T> =
-        filterInstances(instances.filter { it.isSubtypeOf(setOfNotNull(invokeArguments.subType?.fqName), c.codegen.bindingContext) }, invokeArguments)
+        filterInstances(instances.filter { it.isSubtypeOf(setOfNotNull(invokeArguments.subType?.fqName()), c.codegen.bindingContext) }, invokeArguments)
 }
