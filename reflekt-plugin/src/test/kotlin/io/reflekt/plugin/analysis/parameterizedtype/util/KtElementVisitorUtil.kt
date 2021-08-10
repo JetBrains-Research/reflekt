@@ -2,6 +2,8 @@ package io.reflekt.plugin.analysis.parameterizedtype.util
 
 import io.reflekt.plugin.analysis.*
 import io.reflekt.plugin.analysis.common.findReflektFunctionInvokeArguments
+import io.reflekt.plugin.util.Util
+import io.reflekt.util.FileUtil
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocLink
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
@@ -9,12 +11,22 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.resolve.BindingContext
 import java.io.File
+import kotlin.reflect.KClass
 
 fun visitKtElements(sourceFiles: List<File>, visitors: List<KtVisitor<Void, BindingContext>>): BindingContext {
     val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
     val analyzer =  AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sourceFiles.toSet())
     visitors.forEach { v -> analyzer.ktFiles.forEach { it.acceptChildren(v, analyzer.binding) } }
     return analyzer.binding
+}
+
+data class FunctionsToTest(val functions: List<KtNamedFunction>, val binding: BindingContext)
+
+fun getFunctionsToTestFromResources(cls: KClass<*>, testDirName: String): FunctionsToTest {
+    val functionFiles = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(cls, testDirName))
+    val visitor = KtNamedFunctionVisitor()
+    val binding = visitKtElements(functionFiles, listOf(visitor))
+    return FunctionsToTest(visitor.functions, binding)
 }
 
 

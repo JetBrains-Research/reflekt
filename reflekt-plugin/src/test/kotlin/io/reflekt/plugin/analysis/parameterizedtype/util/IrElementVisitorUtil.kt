@@ -55,9 +55,6 @@ class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, Binding
     }
 }
 
-typealias ResultWithExitCode<R> = Pair<R, KotlinCompilation.ExitCode>
-typealias FunctionsWithExitCode = ResultWithExitCode<List<IrFunctionTypeVisitor.Function>>
-
 /**
  * Checks IrFunctions transforming to ParameterizedType, stores the result and expected Kotlin Type which is written in docs.
  * [filterByName] is used to avoid visiting special methods like equals() or toString()

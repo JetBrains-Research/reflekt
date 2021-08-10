@@ -25,48 +25,43 @@ class FunctionToParameterizedTypeTest {
          * TODO: maybe detailed testing is needed
          */
         private val failedIrFiles = listOf("AbstractAndOverrideFunctions.kt")
-        private val testDirName = "functions"
+        private const val TEST_DIR_NAME = "functions"
+        private const val FUNCTION_PREFIX = "foo"
 
         @JvmStatic
         fun getKtNamedFunctionsWithTypes(): List<Arguments> {
-            val functionFiles = getAllNestedFiles(Util.getResourcesRootPath(FunctionToParameterizedTypeTest::class, testDirName))
-            val visitor = KtNamedFunctionVisitor()
-            val binding = visitKtElements(functionFiles, listOf(visitor))
-            val functions = visitor.functions
+            val (functions, binding) = getFunctionsToTestFromResources(FunctionToParameterizedTypeTest::class, TEST_DIR_NAME)
             return functions.map { Arguments.of(binding, it, it.getTagContent("kotlinType")) }
         }
 
         @JvmStatic
         fun getIrFunctionsWithTypes(): List<Arguments> {
-            val functionFiles = getAllNestedFiles(Util.getResourcesRootPath(FunctionToParameterizedTypeTest::class, testDirName)).filter { it.name !in failedIrFiles }
-            val (functions, exitCode) = visitIrFunctionsWithTypes(functionFiles)
-            return functions.map { f -> Arguments.of(f.name, f.actualType, f.expectedType, exitCode) }
+            return visitIrFunctionsWithTypes { it.name !in failedIrFiles }
         }
 
         @JvmStatic
         fun getIrFunctionsWithTypesFailed(): List<Arguments> {
-            val functionFiles = getAllNestedFiles(Util.getResourcesRootPath(FunctionToParameterizedTypeTest::class, testDirName)).filter { it.name in failedIrFiles }
-            val (functions, exitCode) = visitIrFunctionsWithTypes(functionFiles)
-            return functions.map { f -> Arguments.of(f.name, f.actualType, f.expectedType, exitCode) }
+            return visitIrFunctionsWithTypes { it.name in failedIrFiles }
         }
 
-        private fun visitIrFunctionsWithTypes(files: List<File>): FunctionsWithExitCode {
-            // We need to filter out all default functions like "equals", "toString", etc, so every function in tests has "foo" in its name
-            val visitor = IrFunctionTypeVisitor { "foo" in it }
-            val exitCode = visitIrElements(files, listOf(visitor)).exitCode
-            return visitor.functions to exitCode
+        private fun visitIrFunctionsWithTypes(filterFiles: (File) -> Boolean): List<Arguments> {
+            val functionFiles = getAllNestedFiles(Util.getResourcesRootPath(FunctionToParameterizedTypeTest::class, TEST_DIR_NAME)).filter { filterFiles(it) }
+            // We need to filter out all default functions like "equals", "toString", etc, so every function in tests has a special prefix in its name
+            val visitor = IrFunctionTypeVisitor { FUNCTION_PREFIX in it }
+            val exitCode = visitIrElements(functionFiles, listOf(visitor)).exitCode
+            return visitor.functions.map { f -> Arguments.of(f.name, f.actualType, f.expectedType, exitCode) }
         }
     }
 
 
-    @Tag("analysis")
+    @Tag("parametrizedType")
     @MethodSource("getKtNamedFunctionsWithTypes")
     @ParameterizedTest(name = "test {index}")
     fun testKtNamedFunctions(binding: BindingContext, function: KtNamedFunction, expectedKotlinType: String) {
         Assertions.assertEquals(expectedKotlinType, function.toParameterizedType(binding).toPrettyString(), "Incorrect type for function ${function.name}")
     }
 
-    @Tag("analysis")
+    @Tag("parametrizedType")
     @MethodSource("getIrFunctionsWithTypes")
     @ParameterizedTest(name = "test {index}")
     fun testIrFunctions(name: String, actualType: KotlinType, expectedKotlinType: String?, exitCode: KotlinCompilation.ExitCode) {
@@ -74,7 +69,7 @@ class FunctionToParameterizedTypeTest {
         Assertions.assertEquals(expectedKotlinType, actualType.toPrettyString(), "Incorrect type for function $name")
     }
 
-    @Tag("analysis")
+    @Tag("parametrizedType")
     @Disabled("Kotlin type of overridden IrFunction is null, see detailed explanation in comments above")
     @MethodSource("getIrFunctionsWithTypesFailed")
     @ParameterizedTest(name = "test {index}")

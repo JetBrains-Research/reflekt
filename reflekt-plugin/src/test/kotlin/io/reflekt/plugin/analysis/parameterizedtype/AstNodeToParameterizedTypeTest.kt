@@ -16,18 +16,18 @@ import org.junit.jupiter.params.provider.MethodSource
 
 class AstNodeToParameterizedTypeTest {
     companion object {
-        private val testDirName = "types"
+        private const val TEST_DIR_NAME = "types"
 
         @JvmStatic
         fun getAstNodeKotlinTypes(): List<Arguments> {
-            val files = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(AstNodeToParameterizedTypeTest::class, testDirName))
+            val files = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(AstNodeToParameterizedTypeTest::class, TEST_DIR_NAME))
             val visitor = KtCallExpressionVisitor()
             val binding = visitKtElements(files, listOf(visitor))
             return visitor.typeArguments.map { Arguments.of(binding, it.argument, it.expectedType) }
         }
     }
 
-    @Tag("analysis")
+    @Tag("parametrizedType")
     @MethodSource("getAstNodeKotlinTypes")
     @ParameterizedTest(name = "test {index}")
     fun testAstNodeToParameterizedType(binding: BindingContext, astNode: ASTNode, expectedType: String) {

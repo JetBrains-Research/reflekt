@@ -16,14 +16,11 @@ import org.junit.jupiter.params.provider.MethodSource
 
 class FunctionSubtypesTest {
     companion object {
-        private val testDirName = "functions"
+        private const val TEST_DIR_NAME = "functions"
 
         @JvmStatic
         fun getKtNamedFunctionsWithSubtypes(): List<Arguments> {
-            val functionFiles = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(FunctionSubtypesTest::class, testDirName))
-            val visitor = KtNamedFunctionVisitor()
-            val binding = visitKtElements(functionFiles, listOf(visitor))
-            val functions = visitor.functions
+            val (functions, binding) = getFunctionsToTestFromResources(FunctionSubtypesTest::class, TEST_DIR_NAME)
             return functions.map { Arguments.of(binding, it, functions.removeFromList(it), it.parseKDocLinks("subtypes")) }
         }
 
@@ -43,7 +40,7 @@ class FunctionSubtypesTest {
         return this.name?.let { "$className$it" } ?: error("Name of function $this is null")
     }
 
-    @Tag("analysis")
+    @Tag("parametrizedType")
     @MethodSource("getKtNamedFunctionsWithSubtypes")
     @ParameterizedTest(name = "test {index}")
     fun testFunctionSubtypes(binding: BindingContext, function: KtNamedFunction, otherFunctions: List<KtNamedFunction>, expectedSubtypes: List<String>) {

@@ -13,18 +13,18 @@ import org.junit.jupiter.params.provider.MethodSource
 
 class IrTypeToParameterizedTypeTest {
     companion object {
-        private val testDirName = "types"
+        private const val TEST_DIR_NAME = "types"
 
         @JvmStatic
         fun getIrTypeKotlinTypes(): List<Arguments> {
-            val files = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(IrTypeToParameterizedTypeTest::class, testDirName))
+            val files = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(IrTypeToParameterizedTypeTest::class, TEST_DIR_NAME))
             val visitor = IrCallArgumentTypeVisitor()
             val exitCode = visitIrElements(files, listOf(visitor)).exitCode
             return visitor.typeArguments.map { Arguments.of(it.name, it.actualType, it.expectedType, exitCode) }
         }
     }
 
-    @Tag("analysis")
+    @Tag("parametrizedType")
     @MethodSource("getIrTypeKotlinTypes")
     @ParameterizedTest(name = "test {index}")
     fun testIrTypeToParameterizedType(name: String, actualType: KotlinType, expectedKotlinType: String?, exitCode: KotlinCompilation.ExitCode) {

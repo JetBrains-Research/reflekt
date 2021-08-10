@@ -72,19 +72,3 @@ fun ReflektUses.toPrettyString(): String {
         "classes: ${classes.toPrettyString()},\n" +
         "functions: ${functions.toPrettyString()}"
 }
-
-
-fun main() {
-    val sources = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(AnalysisTest::class, "commonTestFiles")).toSet()
-    val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
-
-    val dirs = FileUtil.getNestedDirectories("/Users/Elena.Lyulina/IdeaProjects/reflekt/reflekt-plugin/src/test/resources/io/reflekt/plugin/analysis/data").sorted().filter { "test" in it.name }
-    dirs.forEach { directory ->
-        val project = getProjectFilesInDirectory(directory)
-        val newSources = sources.union(project)
-        val invokes = directory.findInDirectory("invokes.txt")
-        val analyzer = AnalysisUtil.getReflektAnalyzer(classPath = reflektClassPath, sources = newSources)
-        val actualInvokes = analyzer.invokes()
-        require(invokes.readText().trim() == actualInvokes.toPrettyString())
-    }
-}

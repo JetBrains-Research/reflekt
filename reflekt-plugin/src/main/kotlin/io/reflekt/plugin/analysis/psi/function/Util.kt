@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.isCompanionObject
 import org.jetbrains.kotlin.resolve.scopes.receivers.TransientReceiver
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeUtils.equalTypes
+import org.jetbrains.kotlin.types.expressions.createFunctionType
 
 fun KtNamedFunction.getDescriptor(binding: BindingContext): FunctionDescriptor =
     binding.get(BindingContext.FUNCTION, this)!!
@@ -55,7 +56,7 @@ fun KtNamedFunction.toParameterizedType(binding: BindingContext): KotlinType? {
 }
 
 /**
- * We need to create FunctionType from its descriptor, but unlike SimpleFunctionDescriptor.createFunctionType we want to take into account
+ * We need to create FunctionType from function descriptor, but unlike [SimpleFunctionDescriptor.createFunctionType] we want to take into account
  * its dispatch receiver, since the existing implementation only cares about extension receiver.
  *
  *  extension receiver
