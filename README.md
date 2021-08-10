@@ -21,6 +21,9 @@ user analysis. The first one will be called Reflekt, and the second SmartReflekt
 
 **Restrictions**. Reflekt analyses only `.kt` files (in the psoject and in the libraries); uses
 Kotlin `1.4.20`. Reflekt does not currently support incremental compilation.
+
+**Note**, we use Intermediate Representation of code in this plugin.
+It means, that Reflekt can be used for all available platforms: JVM, Native and JavaScript.
 ___
 
 ## Table of contents
@@ -192,9 +195,9 @@ write this version in the plugins and dependencies sections.
   by [SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt)
     - [x] project's files
     - [x] external libraries
+- [x] Bytecode generation -> IR generation
 - [ ] Incremental compilation process
 - [ ] Search in all modules of the project
-- [ ] Bytecode generation -> IR generation
 - [ ] Code generation.
 
 _Note: We analyze modules independently of each other. If an object\class\function is in module A,
