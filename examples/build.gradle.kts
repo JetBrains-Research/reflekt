@@ -26,14 +26,15 @@ allprojects {
     }
 
     dependencies {
-        implementation("io.reflekt", "reflekt-dsl", "0.1.0")
+        implementation("io.reflekt", "reflekt-dsl", "0.2.0")
         implementation("com.github.gumtreediff", "core", "2.1.2")
     }
 
     repositories {
         mavenCentral()
         google()
-        maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
+        mavenLocal()
+//        maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
     }
 
     reflekt {
