@@ -8,8 +8,8 @@ class Test(var a: List<Any>, b: List<Any>)
 
 fun main() {
     val tmp = Test(emptyList(), emptyList())
-    tmp.a = listOf(Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class))
-    println(tmp)
+    tmp.a = Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class).toList()
+    println(tmp.a)
 
     val objects = Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
     println(objects)

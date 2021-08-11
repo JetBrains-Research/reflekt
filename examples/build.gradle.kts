@@ -1,5 +1,5 @@
 import io.reflekt.plugin.reflekt
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = rootProject.group
 version = rootProject.version
@@ -7,7 +7,7 @@ version = rootProject.version
 plugins {
     id("tanvd.kosogor") version "1.0.10" apply true
     id("io.reflekt") version "0.1.0" apply true
-    kotlin("jvm") version "1.4.20" apply true
+    kotlin("jvm") version "1.5.10" apply true
 }
 
 allprojects {
@@ -17,11 +17,12 @@ allprojects {
         plugin("io.reflekt")
     }
 
-    tasks.withType<KotlinJvmCompile> {
+    tasks.withType<KotlinCompile> {
         kotlinOptions {
+            useIR = true
+            languageVersion = "1.5"
+            apiVersion = "1.5"
             jvmTarget = "11"
-            languageVersion = "1.4"
-            apiVersion = "1.4"
         }
     }
 
