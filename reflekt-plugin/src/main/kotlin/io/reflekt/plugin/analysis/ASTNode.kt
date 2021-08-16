@@ -12,9 +12,9 @@ import org.jetbrains.kotlin.types.KotlinType
 import java.util.*
 
 
-/*
+/**
  * Get a list of all parents of nodes and find the last occurrence of a vertex whose type is A ([elementType]).
- * Moreover, all previous vertices also had type A.
+ * Moreover, all previous vertices also have type A.
  *
  * For example, if we have a list of vertices with types [A, A, A, A, B], and [elementType == A]
  * then we must return index 3, because the last occurrence index is 4 (B != A).
@@ -63,8 +63,8 @@ fun ASTNode.getLambdaParameters(): List<String> {
     }
 }
 
-/*
- * Traverse all children of the node (use BFS order) and return all children nodes which satisfy the filter condition
+/**
+ * Traverse all children of the node (use BFS order) and return all child nodes which satisfy the filter condition
  */
 fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode> {
     val filtered = ArrayList<ASTNode>()
@@ -79,25 +79,25 @@ fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode
     return filtered.asSequence()
 }
 
-/*
- * Extract list of parameters from ASTNode.
+/**
+ * Extract list of parameters from [ASTNode].
  * For example, CALL_EXPRESSION and USER_TYPE both may have TYPE_ARGUMENT_LIST as the child node.
- * It has the following structure: root -> <list type> -> [<entry type>]
+ * It has the following structure: root -> <list type> -> <[entryType]>
  */
 private fun ASTNode.getParameterList(listType: ElementType, entryType: ElementType): List<ASTNode> =
     (children().firstOrNull { it.hasType(listType) }?.children()?.toList() ?: emptyList())
         .filter { it.hasType(entryType) }
 
-/*
- * Get type of parameter.
+/**
+ * Get type of [ASTNode] parameter.
  * It has the following structure: root -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE|NULLABLE_TYPE
  */
 fun ASTNode.getParameterType(): ASTNode = children().first { it.hasType(ElementType.TypeReference) }.firstChildNode
 
-/*
- * Extract list of types from ASTNode.
+/**
+ * Extract list of types from [ASTNode].
  * For example, CALL_EXPRESSION and USER_TYPE both may have TYPE_ARGUMENT_LIST as the child node.
- * It has the following structure: root -> <list type> -> [<entry type>] -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE
+ * It has the following structure: root -> <list type> -> <[entryType]> -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE
  */
 private fun ASTNode.getTypeList(listType: ElementType, entryType: ElementType): List<ASTNode> =
     getParameterList(listType, entryType).map { it.getParameterType() }
@@ -105,7 +105,7 @@ private fun ASTNode.getTypeList(listType: ElementType, entryType: ElementType): 
 
 fun ASTNode.getTypeArguments(): List<ASTNode> = getTypeList(ElementType.TypeArgumentList, ElementType.TypeProjection)
 
-/* Constructs ParameterizedType representing ASTNode of type USER_TYPE/FUNCTION_TYPE/NULLABLE_TYPE */
+/** Constructs ParameterizedType representing [ASTNode] of type USER_TYPE/FUNCTION_TYPE/NULLABLE_TYPE */
 fun ASTNode.toParameterizedType(binding: BindingContext): KotlinType {
     return binding.get(BindingContext.TYPE, this.psi.context as KtTypeReference) ?: error("Unrecognized element type: $elementType")
 }

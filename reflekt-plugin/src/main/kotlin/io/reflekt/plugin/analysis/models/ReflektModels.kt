@@ -8,8 +8,8 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
 
-/*
- * If the function [withAnnotations] is called without supertypes then [supertypes] is [setOf(Any::class::qualifiedName)]
+/**
+ * If the function [withAnnotations] is called without supertypes then [supertypes] is setOf(Any::class::qualifiedName)
  * If the function [withSupertypes] is called without annotations then [annotations] is empty
  */
 data class SupertypesToAnnotations(
@@ -57,7 +57,7 @@ fun ClassOrObjectUses.toSupertypesToFqNamesMap(): Map<Set<String>, MutableList<K
     return this.map { it.key.supertypes to it.value }.toMap()
 }
 
-/*
+/**
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]
  */
 data class ReflektUses(

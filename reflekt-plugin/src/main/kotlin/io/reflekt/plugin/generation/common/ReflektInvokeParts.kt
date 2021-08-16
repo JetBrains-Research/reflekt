@@ -10,10 +10,10 @@ sealed class BaseReflektInvokeParts(
     open val entityType: ReflektEntity
 )
 
-/*
+/**
  * Reflekt invoke expression has the following structure:
  * [1]Reflekt.[2]Classes/Objects/Functions.[3]WithSupertypes/WithAnnotations.[4]toList/toSet/etc
- * entityType stores part [2], nestedClass - part [3], terminalFunction - part [4]
+ * [entityType] stores part [2], [nestedClass] - part [3], [terminalFunction] - part [4]
  */
 data class ReflektInvokeParts(
     override val entityType: ReflektEntity,
@@ -41,10 +41,10 @@ data class ReflektInvokeParts(
     }
 }
 
-/*
+/**
  * SmartReflekt invoke expression has the following structure:
  * [1]SmartReflekt.[2]ClassCompileTimeExpression/ObjectCompileTimeExpression/FunctionCompileTimeExpression.[3]toList/toSet/etc
- * entityType stores part [2], terminalFunction - part [3]
+ * [entityType] stores part [2], [terminalFunction] - part [3]
  */
 data class SmartReflektInvokeParts(
     override val entityType: ReflektEntity,

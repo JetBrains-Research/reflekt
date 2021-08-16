@@ -36,17 +36,21 @@ fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: Bin
 }
 
 fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SupertypesToAnnotations? {
-    // We use this function only for REFERENCE_EXPRESSION nodes. Any vertex of this type has the following structure:
-    // CALL_EXPRESSION -> REFERENCE_EXPRESSION
-    // We want to get the root of this expression (CALL_EXPRESSION)
-    // For example, in our case we have the following expression: Reflekt.objects()
-    // The root of objects() part is CALL_EXPRESSION
+    /**
+     * We use this function only for REFERENCE_EXPRESSION nodes. Any vertex of this type has the following structure:
+     * CALL_EXPRESSION -> REFERENCE_EXPRESSION
+     * We want to get the root of this expression (CALL_EXPRESSION)
+     * For example, in our case we have the following expression: Reflekt.objects()
+     * The root of objects() part is CALL_EXPRESSION
+     */
     val callExpressionRoot = expression.node.parents().first()
 
-    // Any Reflekt invoke is something like this: ... [1]Reflekt.[2]|objects()/classes() or so on|....
-    // We can find the [2] - callExpressionRoot
-    // To find the [1] place we should go to the 1 level above from [2]
-    // by finding the root of the nested DOT_QUALIFIED_EXPRESSION nodes
+    /**
+     * Any Reflekt invoke is something like this: ... [1]Reflekt.[2]|objects()/classes() or so on|....
+     * We can find the [2] - callExpressionRoot
+     * To find the [1] place we should go to the 1 level above from [2]
+     * by finding the root of the nested DOT_QUALIFIED_EXPRESSION nodes
+     */
     return callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
         findReflektInvokeArguments(node, binding)
     }

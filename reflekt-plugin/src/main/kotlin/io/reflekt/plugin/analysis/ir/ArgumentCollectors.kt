@@ -1,8 +1,7 @@
 package io.reflekt.plugin.analysis.ir
 
-import io.reflekt.plugin.analysis.common.ReflektEntity
-import io.reflekt.plugin.analysis.common.ReflektFunction
 import io.reflekt.plugin.analysis.models.*
+import io.reflekt.plugin.analysis.common.*
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.expressions.IrCall
@@ -16,8 +15,9 @@ open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
     }
 }
 
-/* IR version of findReflektInvokeArguments function.
- * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct SupertypesToAnnotations.
+/**
+ * IR version of [findReflektInvokeArguments] function.
+ * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct [SupertypesToAnnotations].
  */
 class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
     private val supertypes = HashSet<String>()
@@ -52,8 +52,9 @@ class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
     }
 }
 
-/* IR version of findReflektFunctionInvokeArguments function.
- * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct SignatureToAnnotations.
+/**
+ * IR version of [findReflektFunctionInvokeArguments] function.
+ * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct [SignatureToAnnotations].
  */
 class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
     private var signature: KotlinType? = null
@@ -80,8 +81,9 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
     }
 }
 
-/* IR version of findSmartReflektInvokeArguments function.
- * Traverses subtree of expression and collects arguments of filter calls to construct SupertypesToFilters.
+/**
+ * IR version of [findSmartReflektInvokeArguments] function.
+ * Traverses subtree of expression and collects arguments of filter calls to construct [SupertypesToFilters].
  */
 class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) : IrRecursiveVisitor() {
     private var supertype: KotlinType? = null
