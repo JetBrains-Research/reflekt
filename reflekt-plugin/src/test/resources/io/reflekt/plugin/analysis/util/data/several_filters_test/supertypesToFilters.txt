@@ -1,5 +1,5 @@
 [
-	subtype: AInterface1Test (io.reflekt.test.AInterface1Test),
+	supertype: AInterface1Test (io.reflekt.test.AInterface1Test),
 	filters: [
 		Lambda(body=it.isInterface(), parameters=[it]),
 		Lambda(body=klass.isInterface(), parameters=[klass]),

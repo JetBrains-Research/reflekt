@@ -20,8 +20,8 @@ class FindSmartReflektInvokeArgumentsByExpressionPartTest {
             val commonTestFiles = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(AnalysisTest::class, "commonTestFiles")).toSet()
             return getTestsDirectories(FindSmartReflektInvokeArgumentsByExpressionPartTest::class).map { directory ->
                 val project = getProjectFilesInDirectory(directory)
-                val subTypesToFilters = directory.findInDirectory("subTypesToFilters.txt").readText().trim()
-                Arguments.of(commonTestFiles.union(project), subTypesToFilters, directory.name)
+                val supertypesToFilters = directory.findInDirectory("supertypesToFilters.txt").readText().trim()
+                Arguments.of(commonTestFiles.union(project), supertypesToFilters, directory.name)
             }
         }
     }

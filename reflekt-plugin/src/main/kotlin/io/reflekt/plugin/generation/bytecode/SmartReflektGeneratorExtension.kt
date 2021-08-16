@@ -2,7 +2,7 @@ package io.reflekt.plugin.generation.bytecode
 
 import io.reflekt.plugin.analysis.common.ReflektEntity
 import io.reflekt.plugin.analysis.common.findSmartReflektInvokeArgumentsByExpressionPart
-import io.reflekt.plugin.analysis.models.SubTypesToFilters
+import io.reflekt.plugin.analysis.models.SupertypesToFilters
 import io.reflekt.plugin.analysis.psi.function.checkSignature
 import io.reflekt.plugin.analysis.psi.function.fqName
 import io.reflekt.plugin.analysis.psi.getFqName
@@ -56,7 +56,7 @@ class SmartReflektGeneratorExtension(
             }
             ReflektEntity.FUNCTIONS -> {
                 val functionInstances = instances.functions
-                filterInstances(functionInstances.filter { it.checkSignature(invokeArguments.subType!!, binding) }, invokeArguments)
+                filterInstances(functionInstances.filter { it.checkSignature(invokeArguments.supertype!!, binding) }, invokeArguments)
                     .map { it.genAsmType(c, functionInstanceGenerator) }
             }
         }
@@ -66,7 +66,7 @@ class SmartReflektGeneratorExtension(
 
     // Filters list of instances (KtObjectDeclaration/KtClass/KtNamedFunction) so that its type matches specified type
     // and each of predicates returns true.
-    private inline fun <reified T> filterInstances(instances: List<T>, invokeArguments: SubTypesToFilters): List<T> {
+    private inline fun <reified T> filterInstances(instances: List<T>, invokeArguments: SupertypesToFilters): List<T> {
         val imports = importChecker.filterImports(invokeArguments.imports)
 
         val resultInstances = ArrayList<T>()
@@ -94,7 +94,7 @@ class SmartReflektGeneratorExtension(
     }
 
     private inline fun <reified T: KtClassOrObject> filterClassOrObjectInstances(
-        instances: List<T>, invokeArguments: SubTypesToFilters, c: ExpressionCodegenExtension.Context
+        instances: List<T>, invokeArguments: SupertypesToFilters, c: ExpressionCodegenExtension.Context
     ): List<T> =
-        filterInstances(instances.filter { it.isSubtypeOf(setOfNotNull(invokeArguments.subType?.fqName()), c.codegen.bindingContext) }, invokeArguments)
+        filterInstances(instances.filter { it.isSubtypeOf(setOfNotNull(invokeArguments.supertype?.fqName()), c.codegen.bindingContext) }, invokeArguments)
 }

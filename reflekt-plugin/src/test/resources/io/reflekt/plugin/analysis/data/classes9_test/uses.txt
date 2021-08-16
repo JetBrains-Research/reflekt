@@ -1,7 +1,7 @@
 objects: {},
 classes: {
-	subTypesToAnnotations: [
-		subTypes: [
+	supertypesToAnnotations: [
+		supertypes: [
 			io.reflekt.test.AInterfaceTest,
 			io.reflekt.test.BInterfaceTest
 		],
@@ -13,8 +13,8 @@ classes: {
 		io.reflekt.test.B3,
 		io.reflekt.test.B3.B4
 	],
-	subTypesToAnnotations: [
-		subTypes: [
+	supertypesToAnnotations: [
+		supertypes: [
 			kotlin.Any
 		],
 		annotations: []

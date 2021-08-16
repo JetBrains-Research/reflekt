@@ -12,43 +12,43 @@ object Reflekt {
     * */
     class Objects {
         /*
-         * Filter objects by one subtype. All objects will be cast to [T] type.
+         * Filter objects by one supertype. All objects will be cast to [T] type.
          */
-        inline fun <reified T: Any> withSubType() = WithSubTypes<T>(setOf(T::class.qualifiedName!!))
+        inline fun <reified T: Any> withSupertype() = WithSupertypes<T>(setOf(T::class.qualifiedName!!))
         /*
-         * Filter objects by several subtypes. All objects will be cast to [Any] type.
+         * Filter objects by several supertypes. All objects will be cast to [Any] type.
          * If [klasses] was not passed the list\set with result will be empty.
          */
-        fun withSubTypes(vararg klasses: KClass<out Any>) = WithSubTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
+        fun withSupertypes(vararg klasses: KClass<out Any>) = WithSupertypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
 
 
         /*
-         * Filter objects by several annotations and subtype [T]. All objects will be cast to [T] type.
-         * If [klasses] was not passed the list\set with result will contain only objects with subtype [T].
+         * Filter objects by several annotations and supertype [T]. All objects will be cast to [T] type.
+         * If [klasses] was not passed the list\set with result will contain only objects with supertype [T].
          */
         inline fun <reified T: Any> withAnnotations(vararg klasses: KClass<out Annotation>) =
             WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet(), setOf(T::class.qualifiedName!!))
 
         /*
-        * The class represents DSL for searching objects with several subtypes.
+        * The class represents DSL for searching objects with several supertypes.
         * Each item in the list\set with result will be casted to [T] type.
         * */
-        class WithSubTypes<T: Any>(val fqNames: Set<String>) {
+        class WithSupertypes<T: Any>(val fqNames: Set<String>) {
             /*
-            * Get list of objects with [fqNames] subtypes.
+            * Get list of objects with [fqNames] supertypes.
             * Each item in the list\set with result will be casted to [T] type.
             * */
-            fun toList(): List<T> = ReflektImpl.objects().withSubTypes<T>(fqNames).toList()
+            fun toList(): List<T> = ReflektImpl.objects().withSupertypes<T>(fqNames).toList()
             /*
-            * Get set of objects with [fqNames] subtypes.
+            * Get set of objects with [fqNames] supertypes.
             * Each item in the list\set with result will be casted to [T] type.
             * */
             fun toSet(): Set<T> = toList().toSet()
 
 
             /*
-             * Filter objects with [fqNames] subtypes by several annotations.
-             * If [klasses] was not passed the list\set with result will contain only objects with [fqNames] subtypes.
+             * Filter objects with [fqNames] supertypes by several annotations.
+             * If [klasses] was not passed the list\set with result will contain only objects with [fqNames] supertypes.
              */
             inline fun <reified Q: T> withAnnotations(vararg klasses: KClass<out Annotation>) =
                 WithAnnotations<Q>(klasses.mapNotNull { it.qualifiedName }.toSet(), fqNames)
@@ -58,27 +58,27 @@ object Reflekt {
         * The class represents DSL for searching objects with several annotations.
         * Each item in the list\set with result will be casted to [T] type.
         * */
-        class WithAnnotations<T: Any>(private val annotationFqNames: Set<String>, private val subtypeFqNames: Set<String>) {
+        class WithAnnotations<T: Any>(private val annotationFqNames: Set<String>, private val supertypeFqNames: Set<String>) {
             /*
-            * Get list of objects with [subtypeFqNames] subtypes and [annotationFqNames] annotations.
+            * Get list of objects with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
             * Each item in the list\set with result will be casted to [T] type.
             * */
-            fun toList(): List<T> = ReflektImpl.objects().withAnnotations<T>(annotationFqNames, subtypeFqNames).toList()
+            fun toList(): List<T> = ReflektImpl.objects().withAnnotations<T>(annotationFqNames, supertypeFqNames).toList()
             /*
-            * Get set of objects with [subtypeFqNames] subtypes and [annotationFqNames] annotations.
+            * Get set of objects with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
             * Each item in the list\set with result will be casted to [T] type.
             * */
             fun toSet(): Set<T> = toList().toSet()
 
 
             /*
-             * Filter objects with [annotationFqNames] annotations by one subtype. All objects will be cast to [T] type.
+             * Filter objects with [annotationFqNames] annotations by one supertype. All objects will be cast to [T] type.
              */
-            inline fun <reified T: Any> withSubType() = WithSubTypes<T>(setOf(T::class.qualifiedName!!))
+            inline fun <reified T: Any> withSupertype() = WithSupertypes<T>(setOf(T::class.qualifiedName!!))
             /*
-             * Filter objects with [annotationFqNames] annotations by several subtypes. All objects will be cast to [Any] type.
+             * Filter objects with [annotationFqNames] annotations by several supertypes. All objects will be cast to [Any] type.
              */
-            fun withSubTypes(vararg klasses: KClass<out Any>) = WithSubTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
+            fun withSupertypes(vararg klasses: KClass<out Any>) = WithSupertypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
         }
     }
 
@@ -88,43 +88,43 @@ object Reflekt {
     * */
     class Classes {
         /*
-         * Filter classes by one subtype. All classes will be cast to [T] type.
+         * Filter classes by one supertype. All classes will be cast to [T] type.
          */
-        inline fun <reified T: Any> withSubType() = WithSubTypes<T>(setOf(T::class.qualifiedName!!))
+        inline fun <reified T: Any> withSupertype() = WithSupertypes<T>(setOf(T::class.qualifiedName!!))
         /*
-         * Filter classes by several subtypes. All classes will be cast to [Any] type.
+         * Filter classes by several supertypes. All classes will be cast to [Any] type.
          * If [klasses] was not passed the list\set with result will be empty.
          */
-        fun withSubTypes(vararg klasses: KClass<out Any>) = WithSubTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
+        fun withSupertypes(vararg klasses: KClass<out Any>) = WithSupertypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
 
 
         /*
-         * Filter classes by several annotations and subtype [T]. All classes will be cast to [T] type.
-         * If [klasses] was not passed the list\set with result will contain only classes with subtype [T].
+         * Filter classes by several annotations and supertype [T]. All classes will be cast to [T] type.
+         * If [klasses] was not passed the list\set with result will contain only classes with supertype [T].
          */
         inline fun <reified T: Any> withAnnotations(vararg klasses: KClass<out Annotation>) =
             WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet(), setOf(T::class.qualifiedName!!))
 
         /*
-        * The class represents DSL for searching classes with several subtypes.
+        * The class represents DSL for searching classes with several supertypes.
         * Each item in the list\set with result will be casted to [T] type.
         * */
-        class WithSubTypes<T: Any>(val fqNames: Set<String>) {
+        class WithSupertypes<T: Any>(val fqNames: Set<String>) {
             /*
-            * Get list of classes with [fqNames] subtypes.
+            * Get list of classes with [fqNames] supertypes.
             * Each item in the list\set with result will be casted to [T] type.
             * */
-            fun toList(): List<KClass<T>> = ReflektImpl.classes().withSubTypes<T>(fqNames).toList()
+            fun toList(): List<KClass<T>> = ReflektImpl.classes().withSupertypes<T>(fqNames).toList()
             /*
-            * Get set of classes with [fqNames] subtypes.
+            * Get set of classes with [fqNames] supertypes.
             * Each item in the list\set with result will be casted to [T] type.
             * */
             fun toSet(): Set<KClass<T>> = toList().toSet()
 
 
             /*
-             * Filter classes with [fqNames] subtypes by several annotations.
-             * If [klasses] was not passed the list\set with result will contain only classes with [fqNames] subtypes.
+             * Filter classes with [fqNames] supertypes by several annotations.
+             * If [klasses] was not passed the list\set with result will contain only classes with [fqNames] supertypes.
              */
             inline fun <reified Q: T> withAnnotations(vararg klasses: KClass<out Annotation>) =
                 WithAnnotations<Q>(klasses.mapNotNull { it.qualifiedName }.toSet(), fqNames)
@@ -134,27 +134,27 @@ object Reflekt {
         * The class represents DSL for searching classes with several annotations.
         * Each item in the list\set with result will be casted to [T] type.
         * */
-        class WithAnnotations<T: Any>(private val annotationFqNames: Set<String>, val subtypeFqNames: Set<String>) {
+        class WithAnnotations<T: Any>(private val annotationFqNames: Set<String>, val supertypeFqNames: Set<String>) {
             /*
-            * Get list of classes with [subtypeFqNames] subtypes and [annotationFqNames] annotations.
+            * Get list of classes with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
             * Each item in the list\set with result will be casted to [T] type.
             * */
-            fun toList(): List<KClass<T>> = ReflektImpl.classes().withAnnotations<T>(annotationFqNames, subtypeFqNames).toList()
+            fun toList(): List<KClass<T>> = ReflektImpl.classes().withAnnotations<T>(annotationFqNames, supertypeFqNames).toList()
             /*
-            * Get set of classes with [subtypeFqNames] subtypes and [annotationFqNames] annotations.
+            * Get set of classes with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
             * Each item in the list\set with result will be casted to [T] type.
             * */
             fun toSet(): Set<KClass<T>> = toList().toSet()
 
 
             /*
-             * Filter classes with [annotationFqNames] annotations by one subtype. All classes will be cast to [T] type.
+             * Filter classes with [annotationFqNames] annotations by one supertype. All classes will be cast to [T] type.
              */
-            inline fun <reified T: Any> withSubType() = WithSubTypes<T>(subtypeFqNames)
+            inline fun <reified T: Any> withSupertype() = WithSupertypes<T>(supertypeFqNames)
             /*
-             * Filter classes with [annotationFqNames] annotations by several subtypes. All classes will be cast to [Any] type.
+             * Filter classes with [annotationFqNames] annotations by several supertypes. All classes will be cast to [Any] type.
              */
-            fun withSubTypes(vararg klasses: KClass<out Any>) = WithSubTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
+            fun withSupertypes(vararg klasses: KClass<out Any>) = WithSupertypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
         }
     }
 
@@ -197,7 +197,7 @@ object Reflekt {
     * The main function for searching classes. The chain of calls have to end with toList() or toSet() function.
     *
     * For example:
-    *  Reflekt.classes().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+    *  Reflekt.classes().withSupertype<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
     *  Reflekt.classes().withAnnotations<AInterface>(FirstAnnotation::class).toSet()
     * */
     fun classes() = Classes()

@@ -10,7 +10,7 @@ class IrTransformClassesAndObjectsTest {
     fun testClasses() {
         assertEquals(
             setOf("io.reflekt.test.ir.C1", "io.reflekt.test.ir.C2", "io.reflekt.test.ir.C3", "io.reflekt.test.ir.C3.C5"),
-            IrTransformTestHelper.classFqNames("Reflekt.classes().withSubType<CInterface>()")
+            IrTransformTestHelper.classFqNames("Reflekt.classes().withSupertype<CInterface>()")
         )
     }
 
@@ -18,7 +18,7 @@ class IrTransformClassesAndObjectsTest {
     fun testObjects() {
         assertEquals(
             setOf("io.reflekt.test.ir.O1", "io.reflekt.test.ir.O1.O2"),
-            IrTransformTestHelper.objectFqNames("Reflekt.objects().withSubType<OInterface>()")
+            IrTransformTestHelper.objectFqNames("Reflekt.objects().withSupertype<OInterface>()")
         )
     }
 }

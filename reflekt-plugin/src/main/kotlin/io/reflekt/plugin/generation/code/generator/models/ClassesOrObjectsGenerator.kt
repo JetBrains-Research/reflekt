@@ -5,21 +5,21 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asClassName
 import io.reflekt.plugin.analysis.models.ClassOrObjectUses
-import io.reflekt.plugin.analysis.models.toSubTypesToFqNamesMap
+import io.reflekt.plugin.analysis.models.toSupertypesToFqNamesMap
 import io.reflekt.plugin.generation.code.generator.emptyListCode
 import kotlin.reflect.KClass
 
 abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) : HelperClassGenerator() {
     override fun generateImpl() {
-        generateWithSubTypesFunction()
+        generateWithSupertypesFunction()
         generateWithAnnotationsFunction()
 
-        addNestedTypes(object : WithSubTypesGenerator() {
+        addNestedTypes(object : WithSupertypesGenerator() {
             override val toListFunctionBody = run {
                 // Get item without annotations
-                val subTypesToFqNames = uses.filter { it.key.annotations.isEmpty() }.toSubTypesToFqNamesMap()
-                if (subTypesToFqNames.isNotEmpty()) {
-                    generateWhenBody(subTypesToFqNames, FQ_NAMES)
+                val supertypesToFqNames = uses.filter { it.key.annotations.isEmpty() }.toSupertypesToFqNamesMap()
+                if (supertypesToFqNames.isNotEmpty()) {
+                    generateWhenBody(supertypesToFqNames, FQ_NAMES)
                 } else {
                     emptyListCode()
                 }
@@ -29,7 +29,7 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) 
         addNestedTypes(object : WithAnnotationsGenerator() {
             override val toListFunctionBody = run {
                 // Delete items which don't have annotations
-                generateNestedWhenBody(uses.filter { it.key.annotations.isNotEmpty() }, ANNOTATION_FQ_NAMES, SUBTYPE_FQ_NAMES)
+                generateNestedWhenBody(uses.filter { it.key.annotations.isNotEmpty() }, ANNOTATION_FQ_NAMES, SUPERTYPE_FQ_NAMES)
             }
         }.generate())
     }

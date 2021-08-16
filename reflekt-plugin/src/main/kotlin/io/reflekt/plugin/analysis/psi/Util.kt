@@ -18,6 +18,9 @@ fun KtExpression.getFqName(binding: BindingContext): String? {
     return getReferenceTargets(binding).singleOrNull()?.fqNameSafe?.asString()
 }
 
+/**
+ * Checks if a given class or object is subtype of any given [klasses], so its superclasses contain at least one of [klasses].
+ */
 fun KtClassOrObject.isSubtypeOf(klasses: Set<String>, context: BindingContext): Boolean {
     return findClassDescriptor(context).getAllSuperClassifiers().filter { it is ClassDescriptor }.any {
         it.fqNameOrNull()?.asString() in klasses

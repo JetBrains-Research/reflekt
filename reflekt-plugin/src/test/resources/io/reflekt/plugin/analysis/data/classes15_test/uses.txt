@@ -1,7 +1,7 @@
 objects: {},
 classes: {
-	subTypesToAnnotations: [
-		subTypes: [
+	supertypesToAnnotations: [
+		supertypes: [
 			io.reflekt.test.B2
 		],
 		annotations: [

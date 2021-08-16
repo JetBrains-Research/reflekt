@@ -1,5 +1,5 @@
 objects: [
-	subTypes: [
+	supertypes: [
 		io.reflekt.test.AInterfaceTest,
 		io.reflekt.test.BInterfaceTest
 	],

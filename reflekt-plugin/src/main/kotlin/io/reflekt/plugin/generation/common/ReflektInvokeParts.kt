@@ -12,7 +12,7 @@ sealed class BaseReflektInvokeParts(
 
 /*
  * Reflekt invoke expression has the following structure:
- * [1]Reflekt.[2]Classes/Objects/Functions.[3]WithSubTypes/WithAnnotations.[4]toList/toSet/etc
+ * [1]Reflekt.[2]Classes/Objects/Functions.[3]WithSupertypes/WithAnnotations.[4]toList/toSet/etc
  * entityType stores part [2], nestedClass - part [3], terminalFunction - part [4]
  */
 data class ReflektInvokeParts(

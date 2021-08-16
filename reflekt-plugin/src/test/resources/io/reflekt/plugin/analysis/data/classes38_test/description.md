@@ -1,5 +1,5 @@
-### Classes: subtypes and annotations invokes
+### Classes: supertypes and annotations invokes
 
 This project contains `Reflekt` invokes. 
 First use `withAnnotations` without arguments,
-then use `withSubTypes` without arguments.
+then use `withSupertypes` without arguments.
