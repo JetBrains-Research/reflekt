@@ -3,5 +3,5 @@ package io.reflekt.test
 import io.reflekt.Reflekt
 
 fun main() {
-    val objects = Reflekt.objects().withSubType<A1>()
+    val objects = Reflekt.objects().withSupertype<A1>()
 }

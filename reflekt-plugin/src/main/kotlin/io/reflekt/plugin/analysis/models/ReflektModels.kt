@@ -8,25 +8,21 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
 
-/*
- * If the function [withAnnotations] is called without subtypes then [subTypes] is [setOf(Any::class::qualifiedName)]
- * If the function [withSubTypes] is called without annotations then [annotations] is empty
+/**
+ * If the function [withAnnotations] is called without supertypes then [supertypes] is setOf(Any::class::qualifiedName)
+ * If the function [withSupertypes] is called without annotations then [annotations] is empty
  */
-data class SubTypesToAnnotations(
-    val subTypes: Set<String> = emptySet(),
+data class SupertypesToAnnotations(
+    val supertypes: Set<String> = emptySet(),
     val annotations: Set<String> = emptySet()
 )
-
-enum class ParameterizedTypeVariance {
-    IN, OUT, STAR, INVARIANT
-}
 
 data class SignatureToAnnotations(
     val signature: KotlinType, // kotlin.FunctionN< ... >
     val annotations: Set<String> = emptySet()
 )
 
-typealias ClassOrObjectInvokes = MutableSet<SubTypesToAnnotations>
+typealias ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
 typealias FunctionInvokes = MutableSet<SignatureToAnnotations>
 
 data class ReflektInvokes(
@@ -44,7 +40,7 @@ data class ReflektInvokes(
 }
 
 typealias TypeUses<K, V> = Map<K, MutableList<V>>
-typealias ClassOrObjectUses = TypeUses<SubTypesToAnnotations, KtClassOrObject>
+typealias ClassOrObjectUses = TypeUses<SupertypesToAnnotations, KtClassOrObject>
 typealias FunctionUses = TypeUses<SignatureToAnnotations, KtNamedFunction>
 
 /* Stores enough information to generate function reference IR */
@@ -54,14 +50,14 @@ data class IrFunctionInfo(
     val isObjectReceiver: Boolean
 )
 
-typealias IrClassOrObjectUses = TypeUses<SubTypesToAnnotations, String>
+typealias IrClassOrObjectUses = TypeUses<SupertypesToAnnotations, String>
 typealias IrFunctionUses = TypeUses<SignatureToAnnotations, IrFunctionInfo>
 
-fun ClassOrObjectUses.toSubTypesToFqNamesMap(): Map<Set<String>, MutableList<KtClassOrObject>> {
-    return this.map { it.key.subTypes to it.value }.toMap()
+fun ClassOrObjectUses.toSupertypesToFqNamesMap(): Map<Set<String>, MutableList<KtClassOrObject>> {
+    return this.map { it.key.supertypes to it.value }.toMap()
 }
 
-/*
+/**
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]
  */
 data class ReflektUses(

@@ -3,6 +3,6 @@ package io.reflekt.test
 import io.reflekt.Reflekt
 
 fun main() {
-    val objects = Reflekt.objects().withSubTypes(A1::class)
-    val objects1 = Reflekt.objects().withSubType<A1>()
+    val objects = Reflekt.objects().withSupertypes(A1::class)
+    val objects1 = Reflekt.objects().withSupertype<A1>()
 }

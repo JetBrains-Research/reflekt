@@ -1,6 +1,6 @@
 objects: [],
 classes: [
-	subTypes: [
+	supertypes: [
 		io.reflekt.test.B1
 	],
 	annotations: []

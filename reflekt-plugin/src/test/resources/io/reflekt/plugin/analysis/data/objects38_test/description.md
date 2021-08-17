@@ -1,5 +1,5 @@
-### Objects: subtypes and annotations invokes
+### Objects: supertypes and annotations invokes
 
 This project contains `Reflekt` invokes. 
 First use `withAnnotations` without arguments,
-then use `withSubTypes` without arguments.
+then use `withSupertypes` without arguments.

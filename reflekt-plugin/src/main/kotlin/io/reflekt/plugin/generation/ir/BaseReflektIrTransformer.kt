@@ -20,9 +20,9 @@ import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
 /* Base class for Reflekt IR transformers */
 open class BaseReflektIrTransformer(private val messageCollector: MessageCollector?) : IrElementTransformerVoidWithContext() {
-    /*
+    /**
      * Constructs replacement for result of Reflekt terminal function (toList/toSet/etc) for classes or objects
-     * @param invokeParts info about invoke call to retrieve entity type [objects/classes] and terminal function [toList/toSet/etc]]
+     * @param invokeParts info about invoke call to retrieve entity type (objects/classes) and terminal function (toList/toSet/etc)
      * @param resultValues list of qualified names of objects or classes to return
      */
     protected fun IrBuilderWithScope.resultIrCall(
@@ -51,9 +51,9 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         }
     }
 
-    /*
+    /**
      * Constructs replacement for result of Reflekt terminal function (toList/toSet/etc) for functions
-     * @param invokeParts info about invoke call terminal function [toList/toSet/etc]]
+     * @param invokeParts info about invoke call terminal function (toList/toSet/etc)
      * @param resultValues list of function qualified names with additional info to generate the right call
      */
     @ObsoleteDescriptorBasedAPI

@@ -1,8 +1,7 @@
 package io.reflekt.plugin.analysis.ir
 
-import io.reflekt.plugin.analysis.common.ReflektEntity
-import io.reflekt.plugin.analysis.common.ReflektFunction
 import io.reflekt.plugin.analysis.models.*
+import io.reflekt.plugin.analysis.common.*
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.expressions.IrCall
@@ -16,44 +15,46 @@ open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
     }
 }
 
-/* IR version of findReflektInvokeArguments function.
- * Traverses subtree of expression and collects arguments of withSubtype, withSubtypes and withAnnotations calls to construct SubTypesToAnnotations.
+/**
+ * IR version of [findReflektInvokeArguments] function.
+ * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct [SupertypesToAnnotations].
  */
 class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
-    private val subtypes = HashSet<String>()
+    private val supertypes = HashSet<String>()
     private val annotations = HashSet<String>()
 
     override fun visitCall(expression: IrCall, data: Nothing?) {
         super.visitCall(expression, data)
         val function = expression.symbol.owner
         when (function.name.asString()) {
-            ReflektFunction.WITH_SUBTYPE.functionName -> {
-                subtypes.addAll(expression.getFqNamesOfTypeArguments())
+            ReflektFunction.WITH_SUPERTYPE.functionName -> {
+                supertypes.addAll(expression.getFqNamesOfTypeArguments())
             }
-            ReflektFunction.WITH_SUBTYPES.functionName -> {
-                subtypes.addAll(expression.getFqNamesOfClassReferenceValueArguments())
+            ReflektFunction.WITH_SUPERTYPES.functionName -> {
+                supertypes.addAll(expression.getFqNamesOfClassReferenceValueArguments())
             }
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 annotations.addAll(expression.getFqNamesOfClassReferenceValueArguments())
-                subtypes.addAll(expression.getFqNamesOfTypeArguments())
+                supertypes.addAll(expression.getFqNamesOfTypeArguments())
             }
         }
     }
 
     companion object {
-        fun collectInvokeArguments(expression: IrCall): SubTypesToAnnotations? {
+        fun collectInvokeArguments(expression: IrCall): SupertypesToAnnotations? {
             val visitor = ReflektInvokeArgumentsCollector()
             expression.accept(visitor, null)
-            if (visitor.subtypes.isEmpty()) {
+            if (visitor.supertypes.isEmpty()) {
                 return null
             }
-            return SubTypesToAnnotations(visitor.subtypes, visitor.annotations)
+            return SupertypesToAnnotations(visitor.supertypes, visitor.annotations)
         }
     }
 }
 
-/* IR version of findReflektFunctionInvokeArguments function.
- * Traverses subtree of expression and collects arguments of withSubtype, withSubtypes and withAnnotations calls to construct SignatureToAnnotations.
+/**
+ * IR version of [findReflektFunctionInvokeArguments] function.
+ * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct [SignatureToAnnotations].
  */
 class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
     private var signature: KotlinType? = null
@@ -80,11 +81,12 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
     }
 }
 
-/* IR version of findSmartReflektInvokeArguments function.
- * Traverses subtree of expression and collects arguments of filter calls to construct SubTypesToFilters.
+/**
+ * IR version of [findSmartReflektInvokeArguments] function.
+ * Traverses subtree of expression and collects arguments of filter calls to construct [SupertypesToFilters].
  */
 class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) : IrRecursiveVisitor() {
-    private var subtype: KotlinType? = null
+    private var supertype: KotlinType? = null
     private val filters = ArrayList<Lambda>()
 
     @ObsoleteDescriptorBasedAPI
@@ -92,7 +94,7 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
         super.visitCall(expression, data)
         val function = expression.symbol.owner
         if (function.name.asString() in ReflektEntity.values().map { it.entityType }) {
-            subtype = expression.getTypeArgument(0)?.toParameterizedType()
+            supertype = expression.getTypeArgument(0)?.toParameterizedType()
         }
     }
 
@@ -109,11 +111,11 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
     }
 
     companion object {
-        fun collectInvokeArguments(expression: IrCall, sourceFile: SourceFile): SubTypesToFilters {
+        fun collectInvokeArguments(expression: IrCall, sourceFile: SourceFile): SupertypesToFilters {
             val visitor = SmartReflektInvokeArgumentsCollector(sourceFile)
             expression.accept(visitor, null)
-            return SubTypesToFilters(
-                subType = visitor.subtype,
+            return SupertypesToFilters(
+                supertype = visitor.supertype,
                 filters = visitor.filters,
                 imports = sourceFile.imports
             )

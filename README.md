@@ -145,10 +145,10 @@ kotlin.incremental = false
 Now you can use the Reflekt plugin to find objects, classes, and functions in your project:
 
 ```kotlin
-val objects = Reflekt.objects().withSubType<AInterface>()
+val objects = Reflekt.objects().withSupertype<AInterface>()
     .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
 
-val classes = Reflekt.classes().withSubType<BInterface>().toSet()
+val classes = Reflekt.classes().withSupertype<BInterface>().toSet()
 
 val functions = Reflekt.functions().withAnnotations<() -> Unit>().toList()
 ```

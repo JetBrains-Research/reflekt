@@ -1,5 +1,5 @@
-### Objects: subtypes and annotations invokes
+### Objects: supertypes and annotations invokes
 
 This project contains `Reflekt` invokes. 
-First use `withSubTypes` with the not top-level `AInterfaceTest`, 
+First use `withSupertypes` with the not top-level `AInterfaceTest`, 
 then use `withAnnotations` with several arguments.

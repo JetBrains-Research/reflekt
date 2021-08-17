@@ -51,7 +51,7 @@ private fun <K, V> ReflektInvokeParts.getUses(items: TypeUses<K, V>, transform: 
 
 private fun ReflektInvokeParts.getClassOrObjectUses(
     uses: ReflektUses,
-    invokeArguments: SubTypesToAnnotations,
+    invokeArguments: SupertypesToAnnotations,
     context: ExpressionCodegenExtension.Context
 ): List<Type> =
     getUses(if (entityType == ReflektEntity.OBJECTS) uses.objects else uses.classes, { it.genAsmType(context) }, invokeArguments)

@@ -1,6 +1,6 @@
 objects: {
-	subTypesToAnnotations: [
-		subTypes: [
+	supertypesToAnnotations: [
+		supertypes: [
 			io.reflekt.test.AInterfaceTest
 		],
 		annotations: [

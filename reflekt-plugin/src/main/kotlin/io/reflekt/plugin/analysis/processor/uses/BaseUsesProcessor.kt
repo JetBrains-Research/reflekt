@@ -2,7 +2,7 @@ package io.reflekt.plugin.analysis.processor.uses
 
 import io.reflekt.plugin.analysis.models.ClassOrObjectInvokes
 import io.reflekt.plugin.analysis.models.ClassOrObjectUses
-import io.reflekt.plugin.analysis.models.SubTypesToAnnotations
+import io.reflekt.plugin.analysis.models.SupertypesToAnnotations
 import io.reflekt.plugin.analysis.processor.Processor
 import io.reflekt.plugin.analysis.psi.annotation.getAnnotations
 import io.reflekt.plugin.analysis.psi.isSubtypeOf
@@ -25,7 +25,7 @@ abstract class BaseUsesProcessor<Output : Any>(override val binding: BindingCont
     protected fun initClassOrObjectUses(invokes: ClassOrObjectInvokes): ClassOrObjectUses =
         invokes.map { it to ArrayList<KtClassOrObject>() }.toMap()
 
-    private fun SubTypesToAnnotations.covers(element: KtClassOrObject): Boolean =
-        // annotations set is empty when withSubTypes() method is called, so we don't need to check annotations in this case
-        (annotations.isEmpty() || element.getAnnotations(binding, annotations).isNotEmpty()) && element.isSubtypeOf(subTypes, binding)
+    private fun SupertypesToAnnotations.covers(element: KtClassOrObject): Boolean =
+        // annotations set is empty when withSupertypes() method is called, so we don't need to check annotations in this case
+        (annotations.isEmpty() || element.getAnnotations(binding, annotations).isNotEmpty()) && element.isSubtypeOf(supertypes, binding)
 }

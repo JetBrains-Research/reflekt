@@ -1,4 +1,4 @@
-### Classes: Only subtypes invokes
+### Classes: Only supertypes invokes
 
-This project contains `Reflekt` invokes, but all invokes are only subtypes. 
-Use one `withSubTypes` with several arguments and one `withSubType` with another argument.
+This project contains `Reflekt` invokes, but all invokes are only supertypes. 
+Use one `withSupertypes` with several arguments and one `withSupertype` with another argument.

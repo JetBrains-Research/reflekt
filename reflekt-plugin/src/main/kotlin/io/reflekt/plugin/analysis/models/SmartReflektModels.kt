@@ -46,8 +46,8 @@ data class IrReflektInstances(
     }
 }
 
-data class SubTypesToFilters(
-    val subType: KotlinType? = null,
+data class SupertypesToFilters(
+    val supertype: KotlinType? = null,
     val filters: List<Lambda> = emptyList(),
     val imports: List<Import> = emptyList()
 )

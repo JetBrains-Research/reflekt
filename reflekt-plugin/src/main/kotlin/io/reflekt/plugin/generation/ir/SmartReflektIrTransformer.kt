@@ -56,7 +56,7 @@ class SmartReflektIrTransformer(
         return call
     }
 
-    private inline fun <reified T, reified I> filterInstances(instances: List<IrTypeInstance<T, I>>, invokeArguments: SubTypesToFilters): List<IrTypeInstance<T, I>> {
+    private inline fun <reified T, reified I> filterInstances(instances: List<IrTypeInstance<T, I>>, invokeArguments: SupertypesToFilters): List<IrTypeInstance<T, I>> {
         val imports = importChecker.filterImports(invokeArguments.imports)
 
         val resultInstances = ArrayList<IrTypeInstance<T, I>>()

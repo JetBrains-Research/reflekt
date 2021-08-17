@@ -1,4 +1,4 @@
-### Objects: Only subtypes invokes
+### Objects: Only supertypes invokes
 
-This project contains `Reflekt` invokes, but all invokes are only subtypes. 
-Use only one `withSubType` invoked with the not top-level`AInterfaceTest` interface.
+This project contains `Reflekt` invokes, but all invokes are only supertypes. 
+Use only one `withSupertype` invoked with the not top-level`AInterfaceTest` interface.

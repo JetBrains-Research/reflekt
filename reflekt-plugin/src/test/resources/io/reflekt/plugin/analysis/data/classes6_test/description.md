@@ -1,4 +1,4 @@
-### Classes: Only subtypes invokes
+### Classes: Only supertypes invokes
 
-This project contains `Reflekt` invokes, but all invokes are only subtypes. 
-Use one `withSubTypes` and one `withSubType` invoked with the not top-level`BInterfaceTest` interface.
+This project contains `Reflekt` invokes, but all invokes are only supertypes. 
+Use one `withSupertypes` and one `withSupertype` invoked with the not top-level`BInterfaceTest` interface.

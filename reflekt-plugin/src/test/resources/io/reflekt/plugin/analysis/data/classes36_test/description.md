@@ -1,5 +1,5 @@
-### Classes: subtypes and annotations invokes
+### Classes: supertypes and annotations invokes
 
 This project contains `Reflekt` invokes. 
 First use `withAnnotations` with one argument,
-then use `withSubType` with the not top-level `BInterfaceTest`.
+then use `withSupertype` with the not top-level `BInterfaceTest`.

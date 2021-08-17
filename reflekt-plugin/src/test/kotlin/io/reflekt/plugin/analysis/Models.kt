@@ -2,13 +2,11 @@ package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.models.*
 import io.reflekt.plugin.analysis.psi.function.fqName
-import io.reflekt.plugin.util.Util
-import io.reflekt.util.FileUtil
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
 import org.jetbrains.kotlin.types.KotlinType
 
-//  We cannot use Json to store and test KotlinType (subType), so we build a string representation, sufficient to test it.
-//  We also want to check fqName of subtype, which is not included in its toString(), so we added it separately.
+//  We cannot use Json to store and test KotlinType (supertype), so we build a string representation, sufficient to test it.
+//  We also want to check fqName of supertype, which is not included in its toString(), so we added it separately.
 fun KotlinType?.toPrettyString() = "$this (${this?.fqName()})"
 
 fun Collection<KotlinType?>.toPrettyString() = joinToStringIndented { it.toPrettyString() }
@@ -25,8 +23,8 @@ fun FunctionInvokes.toPrettyString(): String {
     return joinToStringIndented { it.toPrettyString() }
 }
 
-fun SubTypesToAnnotations.toPrettyString(): String {
-    return "subTypes: ${subTypes.joinToStringIndented()},\n" +
+fun SupertypesToAnnotations.toPrettyString(): String {
+    return "supertypes: ${supertypes.joinToStringIndented()},\n" +
         "annotations: ${annotations.joinToStringIndented()}"
 }
 
@@ -35,14 +33,14 @@ fun ClassOrObjectInvokes.toPrettyString(): String {
     return joinToStringIndented { it.toPrettyString() }
 }
 
-fun SubTypesToFilters.toPrettyString(): String {
-    return "subtype: ${subType?.toPrettyString()},\n" +
+fun SupertypesToFilters.toPrettyString(): String {
+    return "supertype: ${supertype?.toPrettyString()},\n" +
         "filters: ${filters.joinToStringIndented()},\n" +
         "imports: ${imports.joinToStringIndented()}"
 }
 
-@JvmName("toPrettyStringSubTypesToFilters")
-fun Set<SubTypesToFilters>.toPrettyString(): String {
+@JvmName("toPrettyStringSupertypesToFilters")
+fun Set<SupertypesToFilters>.toPrettyString(): String {
     return joinToStringIndented { it.toPrettyString() }
 }
 
@@ -54,8 +52,8 @@ fun ReflektInvokes.toPrettyString(): String {
 
 @JvmName("toPrettyStringClassOrObjectUses")
 fun ClassOrObjectUses.toPrettyString(): String {
-    return joinToStringIndented { subTypesToAnnotations, classOrObjectList ->
-        "subTypesToAnnotations: ${listOf(subTypesToAnnotations.toPrettyString()).joinToStringIndented()},\n" +
+    return joinToStringIndented { supertypesToAnnotations, classOrObjectList ->
+        "supertypesToAnnotations: ${listOf(supertypesToAnnotations.toPrettyString()).joinToStringIndented()},\n" +
             "objectsOrClasses: ${classOrObjectList.joinToStringIndented { it.toPrettyString() }}"
     }
 }
