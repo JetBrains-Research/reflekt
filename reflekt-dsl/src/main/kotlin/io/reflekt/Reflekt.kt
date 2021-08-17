@@ -199,7 +199,7 @@ object Reflekt {
      * The main function for searching objects. The chain of calls has to end with toList() or toSet() function.
      *
      * For example:
-     *  Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+     *  Reflekt.objects().withSupertype<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
      *  Reflekt.objects().withAnnotations<AInterface>(FirstAnnotation::class).toSet()
      */
     fun objects() = Objects()
