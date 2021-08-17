@@ -10,4 +10,6 @@ fun main() {
     fooWithType<Array<out MyGenericType<String>>>("Array<out MyGenericType<String>> (kotlin.Array)")
 
     fooWithType<MyObject>("MyObject (io.reflekt.plugin.analysis.parameterizedtype.types.MyObject)")
+
+    fooWithType<MyEnumType>("MyEnumType (io.reflekt.plugin.analysis.parameterizedtype.types.MyEnumType)")
 }

@@ -33,3 +33,17 @@ class TestFunctions {
         }
     }
 }
+
+fun fooBoolean(): Boolean {
+    println("public second example foo")
+    return true
+}
+
+inline fun <reified T> fooArray(): Array<T> = emptyArray()
+
+fun <T> fooList(): List<T> = emptyList()
+
+class MyInClass<in T>
+
+fun <T> fooMyInClass(): MyInClass<T> = MyInClass()
+
