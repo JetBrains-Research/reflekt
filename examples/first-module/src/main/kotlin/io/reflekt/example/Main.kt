@@ -49,11 +49,12 @@ fun main() {
     val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList()
     println(functions)
 
-    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
-    println(smartClasses)
-
-    val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
-    println(smartObjects)
+    // TODO: it does not work (error with TestFunctions$Companion), see issue#52: https://github.com/JetBrains-Research/reflekt/issues/52
+//    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
+//    println(smartClasses)
+//
+//    val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
+//    println(smartObjects)
 
     val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
     println(smartFunctions)
@@ -61,11 +62,16 @@ fun main() {
 
     val fooBoolean = SmartReflekt.functions<() -> Boolean>().filter { it.isTopLevel && it.name == "fooBoolean" }.resolve().onEach { it() }
         .map { it.toString() }.toSet()
-    println(fooBoolean)
+    println("fooBoolean: $fooBoolean")
 
     val fooStar = SmartReflekt.functions<(List<*>) -> Unit>().filter { it.isTopLevel && it.name == "withStar" }.resolve().onEach { it(listOf(1)) }
         .map { it.toString() }.toSet()
-    println(fooStar)
+    println("fooStar: $fooStar")
+
+    // TODO: we will support gnerics with bounds
+//    val fooBound = SmartReflekt.functions<(Number) -> Unit>().filter { it.isTopLevel && it.name == "withBound" }.resolve().onEach { it(listOf(1)) }
+//        .map { it.toString() }.toSet()
+//    println("fooBound: $fooBound")
 
     /**
      * Such calls still fail, but it seems it's not a Reflekt problem since Kotlin doesn't consider our functions as subtypes of the given signature.

@@ -47,7 +47,7 @@ plugins {
     kotlin("jvm") version "1.5.10" apply true
 
     // Please, use the latest Reflekt version
-    id("io.reflekt") version "0.1.0" apply true
+    id("io.reflekt") version "0.2.0" apply true
 
     // Necessary only for this example, for Kotless library
     id("io.kotless") version "0.1.6" apply true
@@ -84,7 +84,7 @@ the following lines in the `dependencies` section:
 ```kotlin
 dependencies {
     // The version here and the version in the plugins sections should be equal
-    implementation("io.reflekt", "reflekt-dsl", "0.1.0")
+    implementation("io.reflekt", "reflekt-dsl", "0.2.0")
 
     // Necessary for this example
     compileOnly("io.kotless", "kotless-lang", "0.1.6")
@@ -198,7 +198,7 @@ write this version in the plugins and dependencies sections.
 - [x] Compile-time reflection by custom users' filters for `multi-module` projects
   by [SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt)
     - [x] project's files
-    - [x] external libraries
+    - [ ] external libraries
 - [x] Bytecode generation -> IR generation
 - [ ] Incremental compilation process
 - [ ] Search in all modules of the project

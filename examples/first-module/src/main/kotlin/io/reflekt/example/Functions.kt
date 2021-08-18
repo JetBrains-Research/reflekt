@@ -48,3 +48,5 @@ class MyInClass<in T>
 fun <T> fooMyInClass(): MyInClass<T> = MyInClass()
 
 fun withStar(a: List<*>) { }
+
+fun <T: Number> withBound(a: T) { }
