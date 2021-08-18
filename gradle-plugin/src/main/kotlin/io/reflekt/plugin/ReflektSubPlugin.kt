@@ -1,17 +1,17 @@
 package io.reflekt.plugin
 
-import io.reflekt.cli.Util.DEPENDENCY_JAR_OPTION_INFO
+import io.reflekt.util.Util.DEPENDENCY_JAR_OPTION_INFO
 import io.reflekt.util.FileUtil.extractAllFiles
 import org.gradle.api.artifacts.Configuration
 import org.jetbrains.kotlin.gradle.plugin.*
 import java.io.File
-import io.reflekt.cli.Util.GRADLE_ARTIFACT_ID
-import io.reflekt.cli.Util.ENABLED_OPTION_INFO
-import io.reflekt.cli.Util.GRADLE_GROUP_ID
-import io.reflekt.cli.Util.INTROSPECT_FILE_OPTION_INFO
-import io.reflekt.cli.Util.OUTPUT_DIR_OPTION_INFO
-import io.reflekt.cli.Util.PLUGIN_ID
-import io.reflekt.cli.Util.VERSION
+import io.reflekt.util.Util.GRADLE_ARTIFACT_ID
+import io.reflekt.util.Util.ENABLED_OPTION_INFO
+import io.reflekt.util.Util.GRADLE_GROUP_ID
+import io.reflekt.util.Util.INTROSPECT_FILE_OPTION_INFO
+import io.reflekt.util.Util.OUTPUT_DIR_OPTION_INFO
+import io.reflekt.util.Util.PLUGIN_ID
+import io.reflekt.util.Util.VERSION
 import org.gradle.api.provider.Provider
 
 @Suppress("unused")

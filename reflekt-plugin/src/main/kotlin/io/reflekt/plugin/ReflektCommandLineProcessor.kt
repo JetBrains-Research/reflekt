@@ -1,11 +1,11 @@
 package io.reflekt.plugin
 
 import com.google.auto.service.AutoService
-import io.reflekt.cli.Util.DEPENDENCY_JAR_OPTION_INFO
-import io.reflekt.cli.Util.ENABLED_OPTION_INFO
-import io.reflekt.cli.Util.INTROSPECT_FILE_OPTION_INFO
-import io.reflekt.cli.Util.OUTPUT_DIR_OPTION_INFO
-import io.reflekt.cli.Util.PLUGIN_ID
+import io.reflekt.util.Util.DEPENDENCY_JAR_OPTION_INFO
+import io.reflekt.util.Util.ENABLED_OPTION_INFO
+import io.reflekt.util.Util.INTROSPECT_FILE_OPTION_INFO
+import io.reflekt.util.Util.OUTPUT_DIR_OPTION_INFO
+import io.reflekt.util.Util.PLUGIN_ID
 import io.reflekt.plugin.utils.Keys
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
