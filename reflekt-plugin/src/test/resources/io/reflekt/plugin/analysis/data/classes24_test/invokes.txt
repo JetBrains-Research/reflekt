@@ -1,0 +1,10 @@
+objects: [],
+classes: [
+	supertypes: [
+		io.reflekt.test.B3
+	],
+	annotations: [
+		io.reflekt.test.FirstAnnotationTest
+	]
+],
+functions: []

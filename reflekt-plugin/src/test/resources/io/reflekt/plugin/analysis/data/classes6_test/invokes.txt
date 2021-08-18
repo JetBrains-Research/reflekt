@@ -1,0 +1,8 @@
+objects: [],
+classes: [
+	supertypes: [
+		io.reflekt.test.BInterfaceTest
+	],
+	annotations: []
+],
+functions: []

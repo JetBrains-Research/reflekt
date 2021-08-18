@@ -1,18 +1,20 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.models.ElementType
-import io.reflekt.plugin.analysis.models.ParameterizedType
 import io.reflekt.plugin.analysis.psi.getFqName
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.psi.KtTypeReference
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.types.KotlinType
 import java.util.*
 
-/*
+
+/**
  * Get a list of all parents of nodes and find the last occurrence of a vertex whose type is A ([elementType]).
- * Moreover, all previous vertices also had type A.
+ * Moreover, all previous vertices also have type A.
  *
  * For example, if we have a list of vertices with types [A, A, A, A, B], and [elementType == A]
  * then we must return index 3, because the last occurrence index is 4 (B != A).
@@ -61,12 +63,12 @@ fun ASTNode.getLambdaParameters(): List<String> {
     }
 }
 
-/*
- * Traverse all children of the node (use BFS order) and return all children nodes which satisfy the filter condition
+/**
+ * Traverse all children of the node (use BFS order) and return all child nodes which satisfy the filter condition
  */
 fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode> {
     val filtered = ArrayList<ASTNode>()
-    val nodes: Queue<ASTNode> = LinkedList<ASTNode>(listOf(this))
+    val nodes: Queue<ASTNode> = LinkedList(listOf(this))
     while (nodes.isNotEmpty()) {
         val currentNode = nodes.poll()
         if (filter(currentNode)) {
@@ -77,34 +79,33 @@ fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode
     return filtered.asSequence()
 }
 
-/*
- * Extract list of types from ASTNode.
+/**
+ * Extract list of parameters from [ASTNode].
  * For example, CALL_EXPRESSION and USER_TYPE both may have TYPE_ARGUMENT_LIST as the child node.
- * It has the following structure: root -> <list type> -> [<entry type>] -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE
+ * It has the following structure: root -> <list type> -> <[entryType]>
  */
-fun ASTNode.getTypeList(listType: ElementType, entryType: ElementType): List<ASTNode> =
+private fun ASTNode.getParameterList(listType: ElementType, entryType: ElementType): List<ASTNode> =
     (children().firstOrNull { it.hasType(listType) }?.children()?.toList() ?: emptyList())
         .filter { it.hasType(entryType) }
-        .map { it.children().first { it.hasType(ElementType.TypeReference) }.firstChildNode }
-        .toList()
+
+/**
+ * Get type of [ASTNode] parameter.
+ * It has the following structure: root -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE|NULLABLE_TYPE
+ */
+fun ASTNode.getParameterType(): ASTNode = children().first { it.hasType(ElementType.TypeReference) }.firstChildNode
+
+/**
+ * Extract list of types from [ASTNode].
+ * For example, CALL_EXPRESSION and USER_TYPE both may have TYPE_ARGUMENT_LIST as the child node.
+ * It has the following structure: root -> <list type> -> <[entryType]> -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE
+ */
+private fun ASTNode.getTypeList(listType: ElementType, entryType: ElementType): List<ASTNode> =
+    getParameterList(listType, entryType).map { it.getParameterType() }
+
 
 fun ASTNode.getTypeArguments(): List<ASTNode> = getTypeList(ElementType.TypeArgumentList, ElementType.TypeProjection)
 
-fun ASTNode.getValueParameters(): List<ASTNode> = getTypeList(ElementType.ValueParameterList, ElementType.ValueParameter)
-
-fun ASTNode.getParameterizedType(binding: BindingContext): ParameterizedType {
-    return when (val type = elementType.toString()) {
-        ElementType.UserType.value -> {
-            val parameters = getTypeArguments().map { it.getParameterizedType(binding) }
-            val fqName = children().first { it.hasType(ElementType.ReferenceExpression) }.psi.getFqName(binding)!!
-            ParameterizedType(fqName, parameters)
-        }
-        ElementType.FunctionType.value -> {
-            val argumentTypes = getValueParameters().map { it.getParameterizedType(binding) }
-            val returnType = children().first { it.hasType(ElementType.TypeReference) }.firstChildNode.getParameterizedType(binding)
-            val fqName = "kotlin.Function${argumentTypes.size}"
-            ParameterizedType(fqName, argumentTypes.plus(returnType))
-        }
-        else -> error("Unrecognized element type: $type")
-    }
+/** Constructs ParameterizedType representing [ASTNode] of type USER_TYPE/FUNCTION_TYPE/NULLABLE_TYPE */
+fun ASTNode.toParameterizedType(binding: BindingContext): KotlinType {
+    return binding.get(BindingContext.TYPE, this.psi.context as KtTypeReference) ?: error("Unrecognized element type: $elementType")
 }

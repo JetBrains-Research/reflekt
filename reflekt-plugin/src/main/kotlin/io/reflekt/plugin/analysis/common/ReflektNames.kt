@@ -23,8 +23,8 @@ enum class ReflektEntity(
 }
 
 enum class ReflektFunction(val functionName: String) {
-    WITH_SUBTYPE("withSubType"),
-    WITH_SUBTYPES("${WITH_SUBTYPE.functionName}s"),
+    WITH_SUPERTYPE("withSupertype"),
+    WITH_SUPERTYPES("${WITH_SUPERTYPE.functionName}s"),
     WITH_ANNOTATIONS("withAnnotations"),
 }
 
@@ -33,7 +33,7 @@ enum class SmartReflektFunction(val functionName: String) {
 }
 
 enum class ReflektNestedClass(val className: String) {
-    WITH_SUBTYPES(ReflektFunction.WITH_SUBTYPES.functionName.capitalize()),
+    WITH_SUPERTYPES(ReflektFunction.WITH_SUPERTYPES.functionName.capitalize()),
     WITH_ANNOTATIONS(ReflektFunction.WITH_ANNOTATIONS.functionName.capitalize()),
 }
 

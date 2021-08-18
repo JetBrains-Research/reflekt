@@ -21,6 +21,9 @@ user analysis. The first one will be called Reflekt, and the second SmartReflekt
 
 **Restrictions**. Reflekt analyses only `.kt` files (in the psoject and in the libraries); uses
 Kotlin `1.4.20`. Reflekt does not currently support incremental compilation.
+
+**Note**, we use [Intermediate Representation](https://kotlinlang.org/docs/whatsnew14.html#unified-backends-and-extensibility) of code in this plugin.
+It means, that Reflekt can be used for all available platforms: JVM, Native and JavaScript.
 ___
 
 ## Table of contents
@@ -40,11 +43,11 @@ add the following lines in the `plugins` section:
 
 ```kotlin
 plugins {
-    // Version of Kotlin should be 1.4.20+
-    kotlin("jvm") version "1.4.20" apply true
+    // Version of Kotlin should be 1.4.30+ that supports IR backend
+    kotlin("jvm") version "1.5.10" apply true
 
     // Please, use the latest Reflekt version
-    id("io.reflekt") version "0.1.0" apply true
+    id("io.reflekt") version "0.2.0" apply true
 
     // Necessary only for this example, for Kotless library
     id("io.kotless") version "0.1.6" apply true
@@ -81,7 +84,7 @@ the following lines in the `dependencies` section:
 ```kotlin
 dependencies {
     // The version here and the version in the plugins sections should be equal
-    implementation("io.reflekt", "reflekt-dsl", "0.1.0")
+    implementation("io.reflekt", "reflekt-dsl", "0.2.0")
 
     // Necessary for this example
     compileOnly("io.kotless", "kotless-lang", "0.1.6")
@@ -114,21 +117,19 @@ _Please note that the `librariesToIntrospect` argument should contain only the d
 use in the `dependencies` section. These dependencies may be implemented in Java or Kotlin language,
 but the analysis will be made only on Kotlin files._
 
-To avoid some bugs, please add the following compilation settings for Java and Kotlin in
-the `build.gradle.kts` file:
+To avoid some bugs and enable IR, please add the following compilation settings 
+for Java and Kotlin in the `build.gradle.kts` file:
 
 ```kotlin
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "11"
-    languageVersion = "1.4"
-    apiVersion = "1.4"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "11"
-    languageVersion = "1.4"
-    apiVersion = "1.4"
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        useIR = true
+        languageVersion = "1.5"
+        apiVersion = "1.5"
+        jvmTarget = "11"
+    }
 }
 ```
 
@@ -150,10 +151,10 @@ kotlin.incremental = false
 Now you can use the Reflekt plugin to find objects, classes, and functions in your project:
 
 ```kotlin
-val objects = Reflekt.objects().withSubType<AInterface>()
+val objects = Reflekt.objects().withSupertype<AInterface>()
     .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
 
-val classes = Reflekt.classes().withSubType<BInterface>().toSet()
+val classes = Reflekt.classes().withSupertype<BInterface>().toSet()
 
 val functions = Reflekt.functions().withAnnotations<() -> Unit>().toList()
 ```
@@ -197,10 +198,10 @@ write this version in the plugins and dependencies sections.
 - [x] Compile-time reflection by custom users' filters for `multi-module` projects
   by [SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt)
     - [x] project's files
-    - [x] external libraries
+    - [ ] external libraries
+- [x] Bytecode generation -> IR generation
 - [ ] Incremental compilation process
 - [ ] Search in all modules of the project
-- [ ] Bytecode generation -> IR generation
 - [ ] Code generation.
 
 _Note: We analyze modules independently of each other. If an object\class\function is in module A,

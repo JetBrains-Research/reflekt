@@ -1,0 +1,36 @@
+objects: {},
+classes: {
+	supertypesToAnnotations: [
+		supertypes: [
+			io.reflekt.test.AInterfaceTest,
+			io.reflekt.test.BInterfaceTest
+		],
+		annotations: []
+	],
+	objectsOrClasses: [
+		io.reflekt.test.B1,
+		io.reflekt.test.B2,
+		io.reflekt.test.B3,
+		io.reflekt.test.B3.B4
+	],
+	supertypesToAnnotations: [
+		supertypes: [
+			kotlin.Any
+		],
+		annotations: []
+	],
+	objectsOrClasses: [
+		io.reflekt.test.B1,
+		io.reflekt.test.B2,
+		io.reflekt.test.B3,
+		io.reflekt.test.B3.B4,
+		io.reflekt.test.FirstAnnotationTest,
+		io.reflekt.test.FunTest1,
+		io.reflekt.test.FunTest2,
+		io.reflekt.test.FunTest3,
+		io.reflekt.test.FunctionsTestAnnotation,
+		io.reflekt.test.SecondAnnotationTest,
+		io.reflekt.test.TestFunctions
+	]
+},
+functions: {}

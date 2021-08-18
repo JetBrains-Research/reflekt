@@ -3,7 +3,7 @@ package io.reflekt.plugin.generation.code.generator.models
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import io.reflekt.plugin.analysis.models.ClassOrObjectUses
-import io.reflekt.plugin.analysis.models.SubTypesToAnnotations
+import io.reflekt.plugin.analysis.models.SupertypesToAnnotations
 import io.reflekt.plugin.generation.code.generator.*
 import org.jetbrains.kotlin.psi.KtClassOrObject
 
@@ -12,10 +12,10 @@ abstract class HelperClassGenerator : ClassGenerator() {
     abstract val returnParameter: TypeName
     protected open val typeSuffix: String = ""
 
-    open val withSubTypesFunctionBody: CodeBlock
+    open val withSupertypesFunctionBody: CodeBlock
         get() = statement(
             "return %T(%N)",
-            typeName.nestedClass(WITH_SUBTYPES_CLASS_NAME).parameterizedBy(typeVariable),
+            typeName.nestedClass(WITH_SUPERTYPES_CLASS_NAME).parameterizedBy(typeVariable),
             FQ_NAMES
         )
 
@@ -24,24 +24,24 @@ abstract class HelperClassGenerator : ClassGenerator() {
             "return %T(%N, %N)",
             typeName.nestedClass(WITH_ANNOTATIONS_CLASS_NAME).parameterizedBy(typeVariable),
             ANNOTATION_FQ_NAMES,
-            SUBTYPE_FQ_NAMES
+            SUPERTYPE_FQ_NAMES
         )
 
-    open val withSubTypesParameters = mapOf(
+    open val withSupertypesParameters = mapOf(
         FQ_NAMES to SET_OF_STRINGS
     ).toParameterSpecs()
 
     open val withAnnotationsParameters = mapOf(
         ANNOTATION_FQ_NAMES to SET_OF_STRINGS,
-        SUBTYPE_FQ_NAMES to SET_OF_STRINGS
+        SUPERTYPE_FQ_NAMES to SET_OF_STRINGS
     ).toParameterSpecs()
 
-    fun generateWithSubTypesFunction() {
+    fun generateWithSupertypesFunction() {
         builder.addFunction(generateFunction(
-            name = WITH_SUBTYPES_FUNCTION_NAME,
-            body = withSubTypesFunctionBody,
+            name = WITH_SUPERTYPES_FUNCTION_NAME,
+            body = withSupertypesFunctionBody,
             typeVariables = listOf(typeVariable),
-            arguments = withSubTypesParameters
+            arguments = withSupertypesParameters
         ))
     }
 
@@ -61,10 +61,10 @@ abstract class HelperClassGenerator : ClassGenerator() {
         override val returnParameter: TypeName
     ) : SelectorClassGenerator()
 
-    protected abstract inner class WithSubTypesGenerator : SelectorClassGeneratorWrapper(
-        typeName = this.typeName.nestedClass(WITH_SUBTYPES_CLASS_NAME),
+    protected abstract inner class WithSupertypesGenerator : SelectorClassGeneratorWrapper(
+        typeName = this.typeName.nestedClass(WITH_SUPERTYPES_CLASS_NAME),
         typeVariable = this.typeVariable,
-        parameters = this.withSubTypesParameters,
+        parameters = this.withSupertypesParameters,
         returnParameter = this.returnParameter
     )
 
@@ -109,23 +109,23 @@ abstract class HelperClassGenerator : ClassGenerator() {
         return generateWhenBody(uses.asIterable(), conditionVariable, generateBranchForWhenOption, toAddReturn)
     }
 
-    protected fun generateNestedWhenBody(uses: ClassOrObjectUses, annotationFqNames: String, subtypeFqNames: String): CodeBlock {
-        val mainFunction = { o: Map.Entry<SubTypesToAnnotations, MutableList<KtClassOrObject>> ->
-            getWhenOption(o.key.annotations, wrappedCode(generateWhenBody(mapOf(o.key.subTypes to o.value), subtypeFqNames, toAddReturn = false)))
+    protected fun generateNestedWhenBody(uses: ClassOrObjectUses, annotationFqNames: String, supertypeFqNames: String): CodeBlock {
+        val mainFunction = { o: Map.Entry<SupertypesToAnnotations, MutableList<KtClassOrObject>> ->
+            getWhenOption(o.key.annotations, wrappedCode(generateWhenBody(mapOf(o.key.supertypes to o.value), supertypeFqNames, toAddReturn = false)))
         }
         return generateWhenBody(uses.toMap().asIterable(), annotationFqNames, mainFunction)
     }
 
     protected companion object {
-        const val WITH_SUBTYPES_FUNCTION_NAME = "withSubTypes"
-        val WITH_SUBTYPES_CLASS_NAME = WITH_SUBTYPES_FUNCTION_NAME.capitalize()
+        const val WITH_SUPERTYPES_FUNCTION_NAME = "withSupertypes"
+        val WITH_SUPERTYPES_CLASS_NAME = WITH_SUPERTYPES_FUNCTION_NAME.capitalize()
 
         const val WITH_ANNOTATIONS_FUNCTION_NAME = "withAnnotations"
         val WITH_ANNOTATIONS_CLASS_NAME = WITH_ANNOTATIONS_FUNCTION_NAME.capitalize()
 
         const val FQ_NAMES = "fqNames"
         const val ANNOTATION_FQ_NAMES = "annotationFqNames"
-        const val SUBTYPE_FQ_NAMES = "subtypeFqNames"
+        const val SUPERTYPE_FQ_NAMES = "supertypeFqNames"
 
         const val UNKNOWN_FQ_NAME = "Unknown fully qualified names set"
 

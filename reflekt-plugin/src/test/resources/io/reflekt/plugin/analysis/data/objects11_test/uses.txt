@@ -1,0 +1,15 @@
+objects: {
+	supertypesToAnnotations: [
+		supertypes: [
+			io.reflekt.test.AInterfaceTest
+		],
+		annotations: [
+			io.reflekt.test.FirstAnnotationTest
+		]
+	],
+	objectsOrClasses: [
+		io.reflekt.test.A3
+	]
+},
+classes: {},
+functions: {}

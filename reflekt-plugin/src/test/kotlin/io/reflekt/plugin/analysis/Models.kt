@@ -1,32 +1,72 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.models.*
+import io.reflekt.plugin.analysis.psi.function.fqName
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
+import org.jetbrains.kotlin.types.KotlinType
 
-typealias TypeUsesTest<K> = Map<K, Set<String>>
-typealias ClassOrObjectUsesTest = TypeUsesTest<SubTypesToAnnotations>
-typealias FunctionUsesTest = TypeUsesTest<SignatureToAnnotations>
+//  We cannot use Json to store and test KotlinType (supertype), so we build a string representation, sufficient to test it.
+//  We also want to check fqName of supertype, which is not included in its toString(), so we added it separately.
+fun KotlinType?.toPrettyString() = "$this (${this?.fqName()})"
 
-data class ReflektUsesTest(
-    val objects: ClassOrObjectUsesTest = HashMap(),
-    val classes: ClassOrObjectUsesTest = HashMap(),
-    val functions: FunctionUsesTest = HashMap()
-)
+fun Collection<KotlinType?>.toPrettyString() = joinToStringIndented { it.toPrettyString() }
 
-data class SubTypesToFiltersTest(
-    val subTypesToFilters: Set<SubTypesToFilters>
-)
+fun KtNamedDeclaration.toPrettyString() = fqName.toString()
 
-fun Set<SubTypesToFilters>.toSubTypesToFiltersTest() = SubTypesToFiltersTest(this)
+fun SignatureToAnnotations.toPrettyString(): String {
+    return "signature: ${signature.toPrettyString()},\n" +
+        "annotations: ${annotations.joinToStringIndented()}"
+}
 
-private fun <K, V: KtNamedDeclaration> fromTypeUses(uses: TypeUses<K, V>) : TypeUsesTest<K> {
-    return uses.mapValues { (_, items) ->
-        items.map { it.fqName!!.toString() }.toSet()
+@JvmName("toPrettyStringSFunctionInvokes")
+fun FunctionInvokes.toPrettyString(): String {
+    return joinToStringIndented { it.toPrettyString() }
+}
+
+fun SupertypesToAnnotations.toPrettyString(): String {
+    return "supertypes: ${supertypes.joinToStringIndented()},\n" +
+        "annotations: ${annotations.joinToStringIndented()}"
+}
+
+@JvmName("toPrettyStringClassOrObjectInvokes")
+fun ClassOrObjectInvokes.toPrettyString(): String {
+    return joinToStringIndented { it.toPrettyString() }
+}
+
+fun SupertypesToFilters.toPrettyString(): String {
+    return "supertype: ${supertype?.toPrettyString()},\n" +
+        "filters: ${filters.joinToStringIndented()},\n" +
+        "imports: ${imports.joinToStringIndented()}"
+}
+
+@JvmName("toPrettyStringSupertypesToFilters")
+fun Set<SupertypesToFilters>.toPrettyString(): String {
+    return joinToStringIndented { it.toPrettyString() }
+}
+
+fun ReflektInvokes.toPrettyString(): String {
+    return "objects: ${objects.toPrettyString()},\n" +
+        "classes: ${classes.toPrettyString()},\n" +
+        "functions: ${functions.toPrettyString()}"
+}
+
+@JvmName("toPrettyStringClassOrObjectUses")
+fun ClassOrObjectUses.toPrettyString(): String {
+    return joinToStringIndented { supertypesToAnnotations, classOrObjectList ->
+        "supertypesToAnnotations: ${listOf(supertypesToAnnotations.toPrettyString()).joinToStringIndented()},\n" +
+            "objectsOrClasses: ${classOrObjectList.joinToStringIndented { it.toPrettyString() }}"
     }
 }
 
-fun ReflektUses.toTestUses() = ReflektUsesTest(
-    objects = fromTypeUses(objects),
-    classes = fromTypeUses(classes),
-    functions = fromTypeUses(functions)
-)
+fun FunctionUses.toPrettyString(): String {
+    return joinToStringIndented { signatureToAnnotations, namedFunctionList ->
+        "signatureToAnnotations: ${listOf(signatureToAnnotations.toPrettyString()).joinToStringIndented()},\n" +
+            "namedFunctions: ${namedFunctionList.joinToStringIndented { it.toPrettyString() }}"
+    }
+}
+
+fun ReflektUses.toPrettyString(): String {
+    return "objects: ${objects.toPrettyString()},\n" +
+        "classes: ${classes.toPrettyString()},\n" +
+        "functions: ${functions.toPrettyString()}"
+}

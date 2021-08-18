@@ -1,0 +1,13 @@
+objects: {},
+classes: {
+	supertypesToAnnotations: [
+		supertypes: [
+			io.reflekt.test.B1
+		],
+		annotations: []
+	],
+	objectsOrClasses: [
+		io.reflekt.test.B1
+	]
+},
+functions: {}

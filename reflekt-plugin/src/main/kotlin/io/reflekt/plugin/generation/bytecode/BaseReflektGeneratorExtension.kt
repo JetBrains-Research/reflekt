@@ -1,10 +1,8 @@
 package io.reflekt.plugin.generation.bytecode
 
-import io.reflekt.plugin.analysis.common.ReflektEntity
-import io.reflekt.plugin.generation.bytecode.util.pushArray
-import io.reflekt.plugin.generation.bytecode.util.pushFunctionN
-import io.reflekt.plugin.generation.bytecode.util.pushKClass
-import io.reflekt.plugin.generation.bytecode.util.pushObject
+import io.reflekt.plugin.analysis.common.*
+import io.reflekt.plugin.generation.bytecode.util.*
+import io.reflekt.plugin.generation.common.*
 import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.codegen.StackValue
@@ -50,22 +48,22 @@ open class BaseReflektGeneratorExtension(private val messageCollector: MessageCo
     }
 }
 
-/*
- * Any Reflekt invoke as an expression looks like this:
- * [1]...Reflekt.[2]|Classes/Objects/Functions|.[3]|nested function|.[4]|toList/toSet/etc|
- * If it does not end with terminal function (like toList), we skip it.
- */
-internal abstract class BaseReflektInvokeParts(
-    open val entityType: ReflektEntity
-) {
-    // Push a value of specified type on stack depending on which kind it is.
-    val pushItemFunction: InstructionAdapter.(Type) -> Unit
-        get() = when (entityType) {
-            ReflektEntity.OBJECTS -> InstructionAdapter::pushObject
-            ReflektEntity.CLASSES -> InstructionAdapter::pushKClass
-            ReflektEntity.FUNCTIONS -> InstructionAdapter::pushFunctionN
+// Push a value of specified type on stack depending on which kind it is.
+private val BaseReflektInvokeParts.pushItemFunction: InstructionAdapter.(Type) -> Unit
+    get() = when (entityType) {
+        ReflektEntity.OBJECTS -> InstructionAdapter::pushObject
+        ReflektEntity.CLASSES -> InstructionAdapter::pushKClass
+        ReflektEntity.FUNCTIONS -> InstructionAdapter::pushFunctionN
+    }
+// Invoke terminal function after preparing arguments.
+private val BaseReflektInvokeParts.invokeTerminalFunction: InstructionAdapter.() -> Unit
+    get() = when (this) {
+        is ReflektInvokeParts -> when (terminalFunction) {
+            ReflektTerminalFunction.TO_LIST -> InstructionAdapter::invokeListOf
+            ReflektTerminalFunction.TO_SET -> InstructionAdapter::invokeSetOf
         }
-    // Invoke terminal function after preparing arguments.
-    abstract val invokeTerminalFunction: InstructionAdapter.() -> Unit
-}
+        is SmartReflektInvokeParts -> when (terminalFunction) {
+            SmartReflektTerminalFunction.RESOLVE -> InstructionAdapter::invokeListOf
+        }
+    }
 

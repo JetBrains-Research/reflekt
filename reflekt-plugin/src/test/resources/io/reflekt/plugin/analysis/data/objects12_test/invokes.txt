@@ -1,0 +1,11 @@
+objects: [
+	supertypes: [
+		io.reflekt.test.AInterfaceTest
+	],
+	annotations: [
+		io.reflekt.test.FirstAnnotationTest,
+		io.reflekt.test.SecondAnnotationTest
+	]
+],
+classes: [],
+functions: []

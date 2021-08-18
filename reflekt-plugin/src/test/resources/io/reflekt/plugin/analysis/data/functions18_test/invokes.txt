@@ -1,0 +1,8 @@
+objects: [],
+classes: [],
+functions: [
+	signature: Function1<List<Int>, List<Float>> (kotlin.Function1),
+	annotations: [
+		io.reflekt.test.FunctionsTestAnnotation
+	]
+]

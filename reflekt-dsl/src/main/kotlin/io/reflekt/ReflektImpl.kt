@@ -1,38 +1,37 @@
 package io.reflekt
 
-import io.reflekt.models.compileTime
 import kotlin.reflect.KClass
 
-@Suppress("UNUSED_PARAMETER")
+@Suppress("unused")
 object ReflektImpl {
     class Objects {
-        fun <T> withSubTypes(fqNames: Set<String>) = WithSubTypes<T>(fqNames)
-        fun <T> withAnnotations(annotationFqNames: Set<String>, subtypeFqNames: Set<String>) =
-            WithAnnotations<T>(annotationFqNames, subtypeFqNames)
+        fun <T> withSupertypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
+        fun <T> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>) =
+            WithAnnotations<T>(annotationFqNames, supertypeFqNames)
 
-        class WithSubTypes<T>(val fqNames: Set<String>) {
-            fun toList(): List<T> = compileTime()
+        class WithSuperTypes<T>(val fqNames: Set<String>) {
+            fun toList(): List<T> = error("This method should be replaced during compilation")
             fun toSet(): Set<T> = toList().toSet()
         }
 
-        class WithAnnotations<T>(val annotationFqNames: Set<String>, subtypeFqNames: Set<String>) {
-            fun toList(): List<T> = compileTime()
+        class WithAnnotations<T>(val annotationFqNames: Set<String>, supertypeFqNames: Set<String>) {
+            fun toList(): List<T> = error("This method should be replaced during compilation")
             fun toSet(): Set<T> = toList().toSet()
         }
     }
 
     class Classes {
-        fun <T: Any> withSubTypes(fqNames: Set<String>) = WithSubTypes<T>(fqNames)
-        fun <T: Any> withAnnotations(annotationFqNames: Set<String>, subtypeFqNames: Set<String>) =
-            WithAnnotations<T>(annotationFqNames, subtypeFqNames)
+        fun <T: Any> withSupertypes(fqNames: Set<String>) = WithSupertypes<T>(fqNames)
+        fun <T: Any> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>) =
+            WithAnnotations<T>(annotationFqNames, supertypeFqNames)
 
-        class WithSubTypes<T: Any>(val fqNames: Set<String>) {
-            fun toList(): List<KClass<T>> = compileTime()
+        class WithSupertypes<T: Any>(val fqNames: Set<String>) {
+            fun toList(): List<KClass<T>> = error("This method should be replaced during compilation")
             fun toSet(): Set<KClass<T>> = toList().toSet()
         }
 
-        class WithAnnotations<T: Any>(val annotationFqNames: Set<String>, subtypeFqNames: Set<String>) {
-            fun toList(): List<KClass<T>> = compileTime()
+        class WithAnnotations<T: Any>(val annotationFqNames: Set<String>, supertypeFqNames: Set<String>) {
+            fun toList(): List<KClass<T>> = error("This method should be replaced during compilation")
             fun toSet(): Set<KClass<T>> = toList().toSet()
         }
     }
@@ -40,7 +39,7 @@ object ReflektImpl {
     class Functions {
         // T - returned class
         class WithAnnotations<T: Function<*>>(val annotationFqNames: Set<String>) {
-            fun toList(): List<T> = compileTime()
+            fun toList(): List<T> = error("This method should be replaced during compilation")
             fun toSet(): Set<T> = toList().toSet()
         }
 

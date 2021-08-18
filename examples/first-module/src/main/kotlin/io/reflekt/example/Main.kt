@@ -8,20 +8,20 @@ class Test(var a: List<Any>, b: List<Any>)
 
 fun main() {
     val tmp = Test(emptyList(), emptyList())
-    tmp.a = listOf(Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class))
-    println(tmp)
+    tmp.a = Reflekt.objects().withSupertype<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class).toList()
+    println(tmp.a)
 
-    val objects = Reflekt.objects().withSubType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+    val objects = Reflekt.objects().withSupertype<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
     println(objects)
-    val objects1 = Reflekt.objects().withSubType<AInterface>()
+    val objects1 = Reflekt.objects().withSupertype<AInterface>()
         .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
     println(objects1)
 
-    val objects2 = Reflekt.objects().withSubTypes(AInterface::class, A1::class)
+    val objects2 = Reflekt.objects().withSupertypes(AInterface::class, A1::class)
         .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
     println(objects2)
 
-    val objects3 = Reflekt.objects().withSubTypes(AInterface::class, A1::class)
+    val objects3 = Reflekt.objects().withSupertypes(AInterface::class, A1::class)
         .withAnnotations<AInterface>(FirstAnnotation::class).toList()
     println(objects3)
 
@@ -29,33 +29,78 @@ fun main() {
     println(objects4)
     val objects5 = Reflekt.objects().withAnnotations<AInterface>(FirstAnnotation::class).toList()
     println(objects5)
-    val objects6 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSubType<AInterface>().toList()
+    val objects6 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSupertype<AInterface>().toList()
     println(objects6)
-    val objects7 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSubTypes(AInterface::class).toList()
+    val objects7 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSupertypes(AInterface::class).toList()
     println(objects7)
-    val objects8 = Reflekt.objects().withSubType<AInterface>().toList()
+    val objects8 = Reflekt.objects().withSupertype<AInterface>().toList()
     println(objects8)
 
-    val classes1 = Reflekt.classes().withSubType<AInterface>().toList()
+    val classes1 = Reflekt.classes().withSupertype<AInterface>().toList()
     println(classes1)
-    val classes2 = Reflekt.classes().withSubType<BInterface>().toSet()
+    val classes2 = Reflekt.classes().withSupertype<BInterface>().toSet()
     println(classes2)
     val classes3 = Reflekt.classes().withAnnotations<B2>(FirstAnnotation::class, SecondAnnotation::class).toList()
     println(classes3)
 
-    val classes4 = Reflekt.classes().withSubType<Action>().toList()
+    val classes4 = Reflekt.classes().withSupertype<Action>().toList()
     println(classes4)
 
     val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList()
     println(functions)
 
-    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
-    println(smartClasses)
-
-    val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
-    println(smartObjects)
+    // TODO: it does not work (error with TestFunctions$Companion), see issue#52: https://github.com/JetBrains-Research/reflekt/issues/52
+//    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
+//    println(smartClasses)
+//
+//    val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
+//    println(smartObjects)
 
     val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
     println(smartFunctions)
     smartFunctions.forEach { it() }
+
+    val fooBoolean = SmartReflekt.functions<() -> Boolean>().filter { it.isTopLevel && it.name == "fooBoolean" }.resolve().onEach { it() }
+        .map { it.toString() }.toSet()
+    println("fooBoolean: $fooBoolean")
+
+    val fooStar = SmartReflekt.functions<(List<*>) -> Unit>().filter { it.isTopLevel && it.name == "withStar" }.resolve().onEach { it(listOf(1)) }
+        .map { it.toString() }.toSet()
+    println("fooStar: $fooStar")
+
+    // TODO: we will support gnerics with bounds
+//    val fooBound = SmartReflekt.functions<(Number) -> Unit>().filter { it.isTopLevel && it.name == "withBound" }.resolve().onEach { it(listOf(1)) }
+//        .map { it.toString() }.toSet()
+//    println("fooBound: $fooBound")
+
+    /**
+     * Such calls still fail, but it seems it's not a Reflekt problem since Kotlin doesn't consider our functions as subtypes of the given signature.
+     */
+
+//        val fooArray = SmartReflekt.functions<Function0<Array<*>>>().filter { it.isTopLevel && it.name == "fooArray" }.resolve().onEach { it() }.map { it.toString() }.toSet()
+//        println(fooArray)
+//
+//        val fooList = SmartReflekt.functions<Function0<List<*>>>().filter { it.isTopLevel && it.name == "fooList" }.resolve().onEach { it() }.map { it.toString() }.toSet()
+//        println(fooList)
+//
+//        val fooMyInClass = SmartReflekt.functions<Function0<MyInClass<*>>>().filter { it.isTopLevel && it.name == "fooMyInClass" }.resolve().onEach { it() }.map { it.toString() }.toSet()
+//        println(fooMyInClass)
+
+    /**
+     * The simplest way to check it's to pass our functions as a parameter of an argument with the given signature:
+     */
+    //    arrayTestFun(::fooArray)
+    //    listTestFun(::fooList)
+    //    myInClassTestFun(::fooMyInClass)
+
+    /**
+     * For each of the functions Kotlin says [NEW_INFERENCE_NO_INFORMATION_FOR_PARAMETER] Not enough information to infer type variable T
+     * Maybe we need to check https://kotlinlang.org/spec/type-system.html#mixed-site-variance
+     */
 }
+
+fun arrayTestFun(funToTest: Function0<Array<*>>) {}
+
+fun listTestFun(funToTest: Function0<List<*>>) {}
+
+fun myInClassTestFun(funToTest: Function0<MyInClass<*>>) {}

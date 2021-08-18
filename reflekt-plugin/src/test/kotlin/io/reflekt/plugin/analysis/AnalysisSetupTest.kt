@@ -14,7 +14,7 @@ class AnalysisSetupTest {
         private const val WINDOWS_USER_PROFILE = "USERPROFILE"
 
         // Todo: can we get the version from the project?
-        fun getReflektProjectJars(version: String = "0.1.0"): Set<File> {
+        fun getReflektProjectJars(version: String = "0.2.0"): Set<File> {
             val baseReflektPath = "${getMavenLocalPath()}/io/reflekt"
             val reflektNames = listOf("gradle-plugin", "reflekt-core", "reflekt-dsl")
             return reflektNames.map {
