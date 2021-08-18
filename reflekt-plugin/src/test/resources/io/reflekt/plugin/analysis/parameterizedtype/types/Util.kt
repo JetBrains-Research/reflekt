@@ -17,3 +17,5 @@ class MyInheritedType : MyInterfaceType
 class MyGenericType<T : CharSequence>
 
 object MyObject
+
+enum class MyEnumType : MyInterfaceType { MY_ENUM }

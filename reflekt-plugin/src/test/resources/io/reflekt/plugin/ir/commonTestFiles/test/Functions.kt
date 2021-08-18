@@ -12,6 +12,11 @@ fun fun3(): List<Int> = listOf(3)
 @IrTestAnnotation
 fun fun4(a: Int, b: Float?, c: Set<Boolean>): List<String> = listOf(a.toString(), b.toString(), c.toString())
 
+fun fooBoolean(): Boolean {
+    println("public second example foo")
+    return true
+}
+
 class FunctionTestClass {
     @IrTestAnnotation
     fun fun1() {}

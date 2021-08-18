@@ -3,6 +3,7 @@ package io.reflekt.plugin.analysis.parameterizedtype.functions
 typealias MyAlias = Int
 interface MyInterface
 class MyClass : MyInterface
+enum class MyEnum : MyInterface { MY_ENUM }
 
 
 /**
@@ -26,6 +27,7 @@ fun foo0_Unit() {}
  *   [foo0_List],
  *   [foo0_MyAlias],
  *   [foo0_MyClass],
+ *   [foo0_MyEnum]
  *   [foo0_MyInterface],
  *   [foo0_Number],
  *   [foo0_String],
@@ -76,6 +78,7 @@ fun foo0_MyAlias(): MyAlias = 0
  * @subtypes:
  *   [MyGenericClass.foo0_MyGenericClass],
  *   [foo0_MyClass],
+ *   [foo0_MyEnum]
  *   [foo0_T]
  */
 fun foo0_MyInterface(): MyInterface = object : MyInterface {}
@@ -85,6 +88,12 @@ fun foo0_MyInterface(): MyInterface = object : MyInterface {}
  * @subtypes: no subtypes
  */
 fun foo0_MyClass(): MyClass = MyClass()
+
+/**
+ * @kotlinType Function0<MyEnum> (kotlin.Function0)
+ * @subtypes: no subtypes
+ */
+fun foo0_MyEnum(): MyEnum = MyEnum.MY_ENUM
 
 /**
  * @kotlinType Function0<Function0<Unit>> (kotlin.Function0)
