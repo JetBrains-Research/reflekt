@@ -47,8 +47,8 @@ plugins {
     kotlin("jvm") version "1.5.10" apply true
 
     // Please, use the latest Reflekt version. 
-    // The current latest version is: 0.2.1
-    id("io.reflekt") version "0.2.1" apply true
+    // The current latest version is: 0.2.0
+    id("io.reflekt") version "0.2.0" apply true
 
     // Necessary only for this example, for Kotless library
     id("io.kotless") version "0.1.6" apply true
@@ -85,7 +85,7 @@ the following lines in the `dependencies` section:
 ```kotlin
 dependencies {
     // The version here and the version in the plugins sections should be equal
-    implementation("io.reflekt", "reflekt-dsl", "0.2.1")
+    implementation("io.reflekt", "reflekt-dsl", "0.2.0")
 
     // Necessary for this example
     compileOnly("io.kotless", "kotless-lang", "0.1.6")

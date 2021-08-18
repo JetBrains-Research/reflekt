@@ -7,9 +7,9 @@ group = "io.reflekt"
 *  - VERSION const in the Util.kt in the reflekt-core module
 *  - version argument in the getReflektProjectJars function in AnalysisSetupTest
 *    class in tests in the reflekt-plugin module
-*  - two places in the main README.md file
+*  - two places in the main README.md file (after realising)
 *
-* Also, you should change the version in two places in the build.gradle.kts file in the example project
+* Also, you should change the version in two places in the build.gradle.kts file in the example project (after realising)
 * */
 version = "0.2.1"
 
