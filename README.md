@@ -48,6 +48,9 @@ plugins {
 
     // Please, use the latest Reflekt version
     id("io.reflekt") version "0.1.0" apply true
+
+    // Necessary only for this example, for Kotless library
+    id("io.kotless") version "0.1.6" apply true
 }
 ```
 
@@ -68,6 +71,9 @@ pluginManagement {
         gradlePluginPortal()
         //add the dependency to Reflekt Maven repository
         maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
+
+        // Necessary only for this example, for Kotless library
+        maven(url = uri("https://plugins.gradle.org/m2/"))
     }
 }
 ```
@@ -81,7 +87,7 @@ dependencies {
     implementation("io.reflekt", "reflekt-dsl", "0.1.0")
 
     // Necessary for this example
-    compileOnly("io.kotless", "kotless-dsl", "0.1.6")
+    compileOnly("io.kotless", "kotless-lang", "0.1.6")
 }
 ```
 

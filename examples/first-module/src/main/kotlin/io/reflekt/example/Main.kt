@@ -52,6 +52,9 @@ fun main() {
     val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
     println(smartClasses)
 
+    val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
+    println(smartObjects)
+
     val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
     println(smartFunctions)
     smartFunctions.forEach { it() }
