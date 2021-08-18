@@ -56,9 +56,13 @@ fun main() {
     println(smartFunctions)
     smartFunctions.forEach { it() }
 
-    val fooBoolean = SmartReflekt.functions<() -> Boolean>().filter { it.isTopLevel && it.name == "fooBoolean" }.resolve().also { f -> f.forEach { it() } }
+    val fooBoolean = SmartReflekt.functions<() -> Boolean>().filter { it.isTopLevel && it.name == "fooBoolean" }.resolve().onEach { it() }
         .map { it.toString() }.toSet()
     println(fooBoolean)
+
+    val fooStar = SmartReflekt.functions<(List<*>) -> Unit>().filter { it.isTopLevel && it.name == "withStar" }.resolve().onEach { it(listOf(1)) }
+        .map { it.toString() }.toSet()
+    println(fooStar)
 
     /**
      * Such calls still fail, but it seems it's not a Reflekt problem since Kotlin doesn't consider our functions as subtypes of the given signature.
