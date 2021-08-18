@@ -61,17 +61,17 @@ fun main() {
     println(fooBoolean)
 
     /**
-     * Such calls still fail, but it seems it's not a reflekt problem since kotlin doesn't consider our functions as subtypes of the given signature.
+     * Such calls still fail, but it seems it's not a Reflekt problem since Kotlin doesn't consider our functions as subtypes of the given signature.
      */
 
-    //    val fooArray = SmartReflekt.functions<Function0<Array<*>>>().filter { it.isTopLevel && it.name == "fooArray" }.resolve().also { f -> f.forEach { it() } }.map { it.toString() }.toSet()
-    //    println(fooArray)
-
-    //    val fooList = SmartReflekt.functions<Function0<List<*>>>().filter { it.isTopLevel && it.name == "fooList" }.resolve().also { f -> f.forEach { it() } }.map { it.toString() }.toSet()
-    //    println(fooList)
-
-    //    val fooMyInClass = SmartReflekt.functions<Function0<MyInClass<*>>>().filter { it.isTopLevel && it.name == "fooMyInClass" }.resolve().also { f -> f.forEach { it() } }.map { it.toString() }.toSet()
-    //    println(fooMyInClass)
+//        val fooArray = SmartReflekt.functions<Function0<Array<*>>>().filter { it.isTopLevel && it.name == "fooArray" }.resolve().onEach { it() }.map { it.toString() }.toSet()
+//        println(fooArray)
+//
+//        val fooList = SmartReflekt.functions<Function0<List<*>>>().filter { it.isTopLevel && it.name == "fooList" }.resolve().onEach { it() }.map { it.toString() }.toSet()
+//        println(fooList)
+//
+//        val fooMyInClass = SmartReflekt.functions<Function0<MyInClass<*>>>().filter { it.isTopLevel && it.name == "fooMyInClass" }.resolve().onEach { it() }.map { it.toString() }.toSet()
+//        println(fooMyInClass)
 
     /**
      * The simplest way to check it's to pass our functions as a parameter of an argument with the given signature:
