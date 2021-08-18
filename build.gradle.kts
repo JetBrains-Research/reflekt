@@ -1,7 +1,17 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 group = "io.reflekt"
-version = "0.2.0"
+/*
+* To change version you should change the version in the following places:
+*  - here (the main build.gradle.kts file)
+*  - VERSION const in the Util.kt in the reflekt-core module
+*  - version argument in the getReflektProjectJars function in AnalysisSetupTest
+*    class in tests in the reflekt-plugin module
+*  - two places in the main README.md file
+*
+* Also, you should change the version in two places in the build.gradle.kts file in the example project
+* */
+version = "0.2.1"
 
 plugins {
     id("tanvd.kosogor") version "1.0.10" apply true

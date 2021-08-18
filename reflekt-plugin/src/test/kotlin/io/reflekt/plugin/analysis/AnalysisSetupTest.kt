@@ -2,6 +2,7 @@ package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.util.Util.Command
 import io.reflekt.plugin.util.Util.runProcessBuilder
+import io.reflekt.util.Util
 import org.gradle.internal.impldep.org.apache.commons.lang.SystemUtils
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -13,8 +14,8 @@ class AnalysisSetupTest {
     companion object {
         private const val WINDOWS_USER_PROFILE = "USERPROFILE"
 
-        // Todo: can we get the version from the project?
-        fun getReflektProjectJars(version: String = "0.2.0"): Set<File> {
+        // We should use a const here since we can not get it frm the project
+        fun getReflektProjectJars(version: String = "0.2.1"): Set<File> {
             val baseReflektPath = "${getMavenLocalPath()}/io/reflekt"
             val reflektNames = listOf("gradle-plugin", "reflekt-core", "reflekt-dsl")
             return reflektNames.map {
