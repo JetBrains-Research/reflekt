@@ -55,7 +55,7 @@ plugins {
 }
 ```
 
-At the same time, add to he `settings.gradle.kts` file the following snippet:
+At the same time, add to the `settings.gradle.kts` file the following snippet:
 
 ```kotlin
 pluginManagement {
