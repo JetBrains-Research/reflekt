@@ -3,20 +3,20 @@ package io.reflekt.plugin.analysis.processor.invokes
 import io.reflekt.plugin.analysis.common.ReflektEntity
 import io.reflekt.plugin.analysis.common.findReflektFunctionInvokeArgumentsByExpressionPart
 import io.reflekt.plugin.analysis.models.FunctionInvokes
+import io.reflekt.plugin.analysis.processor.fullName
 import io.reflekt.plugin.analysis.psi.getFqName
-import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtReferenceExpression
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.utils.addIfNotNull
 
-class FunctionInvokesProcessor (override val binding: BindingContext): BaseInvokesProcessor<FunctionInvokes>(binding){
-    override val invokes: FunctionInvokes = HashSet()
+class FunctionInvokesProcessor(override val binding: BindingContext) : BaseInvokesProcessor<FunctionInvokes>(binding) {
+    override val fileToInvokes: HashMap<String, FunctionInvokes> = HashMap()
 
-    override fun process(element: KtElement): FunctionInvokes {
+    override fun process(element: KtElement, file: KtFile): HashMap<String, FunctionInvokes> {
         (element as? KtReferenceExpression)?.let {
-            invokes.addIfNotNull(findReflektFunctionInvokeArgumentsByExpressionPart(element, binding))
+            fileToInvokes.getOrPut(file.fullName) { HashSet() }.addIfNotNull(findReflektFunctionInvokeArgumentsByExpressionPart(element, binding))
         }
-        return invokes
+        return fileToInvokes
     }
 
     override fun isValidExpression(expression: KtReferenceExpression) = expression.getFqName(binding) == ReflektEntity.FUNCTIONS.fqName

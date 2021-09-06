@@ -4,12 +4,15 @@ import io.reflekt.plugin.analysis.models.ClassOrObjectUses
 import io.reflekt.plugin.analysis.models.ReflektInvokes
 import io.reflekt.plugin.analysis.processor.isPublicObject
 import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 
-class ObjectUsesProcessor(override val binding: BindingContext, private val reflektInvokes: ReflektInvokes) : BaseUsesProcessor<ClassOrObjectUses>(binding) {
-    override val uses: ClassOrObjectUses = initClassOrObjectUses(reflektInvokes.objects)
+class ObjectUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes) : BaseUsesProcessor<ClassOrObjectUses>(binding) {
+    override val fileToUses: HashMap<String, ClassOrObjectUses> = HashMap()
+    private val invokes = groupFilesByInvokes(reflektInvokes.objects).keys.flatten().toMutableSet()
 
-    override fun process(element: KtElement): ClassOrObjectUses = processClassOrObjectUses(element, reflektInvokes.objects, uses)
+    override fun process(element: KtElement, file: KtFile): HashMap<String, ClassOrObjectUses> =
+        processClassOrObjectUses(element, file, invokes, fileToUses)
 
     override fun shouldRunOn(element: KtElement) = element.isPublicObject
 }

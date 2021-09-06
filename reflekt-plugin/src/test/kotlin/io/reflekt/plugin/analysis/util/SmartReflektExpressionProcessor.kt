@@ -3,19 +3,20 @@ package io.reflekt.plugin.analysis.util
 import io.reflekt.SmartReflekt
 import io.reflekt.plugin.analysis.common.ReflektEntity
 import io.reflekt.plugin.analysis.processor.Processor
+import io.reflekt.plugin.analysis.processor.fullName
 import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.utils.enumToRegexOptions
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
-class SmartReflektExpressionProcessor(override val binding: BindingContext): Processor<MutableList<KtNameReferenceExpression>>(binding) {
-    val expressions: MutableList<KtNameReferenceExpression> = ArrayList()
+class SmartReflektExpressionProcessor(override val binding: BindingContext) : Processor<MutableList<KtNameReferenceExpression>>(binding) {
+    val fileToExpressions: HashMap<String, MutableList<KtNameReferenceExpression>> = HashMap()
 
-    override fun process(element: KtElement): MutableList<KtNameReferenceExpression> {
+    override fun process(element: KtElement, file: KtFile): HashMap<String, MutableList<KtNameReferenceExpression>> {
         (element as? KtNameReferenceExpression)?.let {
-            expressions.add(it)
+            fileToExpressions.getOrPut(file.fullName) { ArrayList() }.add(it)
         }
-        return expressions
+        return fileToExpressions
     }
 
     private fun isValidExpression(expression: KtNameReferenceExpression): Boolean {

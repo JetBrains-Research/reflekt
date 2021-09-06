@@ -12,3 +12,7 @@ internal val KtElement.isPublicFunction: Boolean
 
 internal val KtElement.isPublicNotAbstractClass: Boolean
     get() = this is KtClass && this.isPublic && !this.isAbstract()
+
+// TODO: is it enough to identify a file?
+internal val KtFile.fullName: String
+    get() = "${this.packageFqName.asString()}.${this.name}"

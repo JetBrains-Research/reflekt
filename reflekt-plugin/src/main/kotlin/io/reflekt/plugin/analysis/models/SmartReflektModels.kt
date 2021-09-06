@@ -10,15 +10,15 @@ import org.jetbrains.kotlin.types.KotlinType
  * Store a set of qualified names that exist in the project and additional libraries
  */
 data class ReflektInstances(
-    val objects: List<KtObjectDeclaration> = ArrayList(),
-    val classes: List<KtClass> = ArrayList(),
-    val functions: List<KtNamedFunction> = ArrayList()
+    val objects: HashMap<String, MutableList<KtObjectDeclaration>> = HashMap(),
+    val classes: HashMap<String, MutableList<KtClass>> = HashMap(),
+    val functions: HashMap<String, MutableList<KtNamedFunction>> = HashMap()
 ) {
-    companion object{
+    companion object {
         fun createByProcessors(processors: Set<BaseInstancesProcessor<*>>) = ReflektInstances(
-            objects = processors.mapNotNull { it as? ObjectInstancesProcessor }.first().instances,
-            classes = processors.mapNotNull { it as? ClassInstancesProcessor }.first().instances,
-            functions = processors.mapNotNull { it as? FunctionInstancesProcessor }.first().instances
+            objects = processors.mapNotNull { it as? ObjectInstancesProcessor }.first().fileToInstances,
+            classes = processors.mapNotNull { it as? ClassInstancesProcessor }.first().fileToInstances,
+            functions = processors.mapNotNull { it as? FunctionInstancesProcessor }.first().fileToInstances
         )
     }
 }
@@ -39,9 +39,9 @@ data class IrReflektInstances(
 ) {
     companion object {
         fun fromReflektInstances(instances: ReflektInstances, binding: BindingContext) = IrReflektInstances(
-            objects = instances.objects.map { IrObjectInstance(it, it.fqName.toString()) },
-            classes = instances.classes.map { IrClassInstance(it, it.fqName.toString()) },
-            functions = instances.functions.map { IrFunctionInstance(it, it.toFunctionInfo(binding)) },
+            objects = instances.objects.values.flatten().map { IrObjectInstance(it, it.fqName.toString()) },
+            classes = instances.classes.values.flatten().map { IrClassInstance(it, it.fqName.toString()) },
+            functions = instances.functions.values.flatten().map { IrFunctionInstance(it, it.toFunctionInfo(binding)) },
         )
     }
 }

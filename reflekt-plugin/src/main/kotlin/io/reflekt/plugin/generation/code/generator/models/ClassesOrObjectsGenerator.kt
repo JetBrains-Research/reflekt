@@ -17,7 +17,7 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) 
         addNestedTypes(object : WithSupertypesGenerator() {
             override val toListFunctionBody = run {
                 // Get item without annotations
-                val supertypesToFqNames = uses.filter { it.key.annotations.isEmpty() }.toSupertypesToFqNamesMap()
+                val supertypesToFqNames = HashMap(uses.filter { it.key.annotations.isEmpty() }).toSupertypesToFqNamesMap()
                 if (supertypesToFqNames.isNotEmpty()) {
                     generateWhenBody(supertypesToFqNames, FQ_NAMES)
                 } else {
@@ -29,7 +29,7 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) 
         addNestedTypes(object : WithAnnotationsGenerator() {
             override val toListFunctionBody = run {
                 // Delete items which don't have annotations
-                generateNestedWhenBody(uses.filter { it.key.annotations.isNotEmpty() }, ANNOTATION_FQ_NAMES, SUPERTYPE_FQ_NAMES)
+                generateNestedWhenBody(HashMap(uses.filter { it.key.annotations.isNotEmpty() }), ANNOTATION_FQ_NAMES, SUPERTYPE_FQ_NAMES)
             }
         }.generate())
     }

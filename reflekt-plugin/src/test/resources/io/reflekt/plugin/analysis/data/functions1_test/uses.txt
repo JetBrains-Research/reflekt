@@ -1,17 +1,43 @@
 objects: {},
 classes: {},
 functions: {
-	signatureToAnnotations: [
-		signature: Function0<Unit> (kotlin.Function0),
-		annotations: []
-	],
-	namedFunctions: [
-		io.reflekt.test.TestFunctions.Companion.foo,
-		io.reflekt.test.bar,
-		io.reflekt.test.foo,
-		io.reflekt.test.fun1,
-		io.reflekt.test.fun2,
-		io.reflekt.test.main,
-		io.reflekt.test.nested.foo
-	]
+	file: io.reflekt.test.FunctionSignatures.kt: {
+		signatureToAnnotations: [
+			signature: Function0<Unit> (kotlin.Function0),
+			annotations: []
+		],
+		namedFunctions: [
+			io.reflekt.test.fun1,
+			io.reflekt.test.fun2
+		]
+	},
+	file: io.reflekt.test.Functions.kt: {
+		signatureToAnnotations: [
+			signature: Function0<Unit> (kotlin.Function0),
+			annotations: []
+		],
+		namedFunctions: [
+			io.reflekt.test.TestFunctions.Companion.foo,
+			io.reflekt.test.bar,
+			io.reflekt.test.foo
+		]
+	},
+	file: io.reflekt.test.Main.kt: {
+		signatureToAnnotations: [
+			signature: Function0<Unit> (kotlin.Function0),
+			annotations: []
+		],
+		namedFunctions: [
+			io.reflekt.test.main
+		]
+	},
+	file: io.reflekt.test.nested.Functions.kt: {
+		signatureToAnnotations: [
+			signature: Function0<Unit> (kotlin.Function0),
+			annotations: []
+		],
+		namedFunctions: [
+			io.reflekt.test.nested.foo
+		]
+	}
 }

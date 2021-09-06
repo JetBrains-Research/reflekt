@@ -8,15 +8,20 @@ import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.utils.addIfNotNull
 
-abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingContext): Processor<Output>(binding) {
-    abstract val invokes: Output
+abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingContext) : Processor<Output>(binding) {
+    // Store invokes by file
+    abstract val fileToInvokes: HashMap<String, Output>
 
-    protected fun processClassOrObjectInvokes(element: KtElement): ClassOrObjectInvokes {
+    protected fun processClassOrObjectInvokes(element: KtElement): ClassOrObjectInvokes? {
         val invokes: ClassOrObjectInvokes = HashSet()
         (element as? KtReferenceExpression)?.let { expression ->
             invokes.addIfNotNull(findReflektInvokeArgumentsByExpressionPart(expression, binding))
         }
-        return invokes
+        return if (invokes.isEmpty()) {
+            null
+        } else {
+            invokes
+        }
     }
 
     protected abstract fun isValidExpression(expression: KtReferenceExpression): Boolean
