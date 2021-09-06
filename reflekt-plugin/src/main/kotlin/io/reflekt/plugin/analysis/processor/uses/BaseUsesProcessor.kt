@@ -32,13 +32,15 @@ abstract class BaseUsesProcessor<Output : Any>(override val binding: BindingCont
     // we will group invokes by files and process each of them once
     // MutableSet<*> here is ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
     //   or FunctionInvokes = MutableSet<SignatureToAnnotations> MutableSet<*>
-    protected fun <T> groupFilesByInvokes(fileToInvokes: HashMap<String, T>): HashMap<T, MutableSet<String>> {
+    private fun <T> groupFilesByInvokes(fileToInvokes: HashMap<String, T>): HashMap<T, MutableSet<String>> {
         val filesByInvokes = HashMap<T, MutableSet<String>>()
         fileToInvokes.forEach { (file, invoke) ->
             filesByInvokes.getOrPut(invoke) { mutableSetOf() }.add(file)
         }
         return filesByInvokes
     }
+
+    protected fun <K, V: MutableSet<K>> getGroupedInvokes(fileToInvokes: HashMap<String, V>) = groupFilesByInvokes(fileToInvokes).keys.flatten().toMutableSet()
 
     private fun SupertypesToAnnotations.covers(element: KtClassOrObject): Boolean =
         // annotations set is empty when withSupertypes() method is called, so we don't need to check annotations in this case

@@ -4,7 +4,6 @@ import io.reflekt.plugin.analysis.processor.Processor
 import org.jetbrains.kotlin.psi.*
 
 
-// TODO: rename??
 fun KtFile.visit(processors: Set<Processor<*>>) {
     acceptChildren(object : KtDefaultVisitor() {
         override fun visitObjectDeclaration(declaration: KtObjectDeclaration) {

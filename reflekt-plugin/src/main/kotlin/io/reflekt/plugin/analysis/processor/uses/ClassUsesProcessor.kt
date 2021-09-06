@@ -8,9 +8,7 @@ import org.jetbrains.kotlin.resolve.BindingContext
 
 class ClassUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes) : BaseUsesProcessor<ClassOrObjectUses>(binding) {
     override val fileToUses: HashMap<String, ClassOrObjectUses> = HashMap()
-
-    // TODO: can we move into a function?
-    private val invokes = groupFilesByInvokes(reflektInvokes.classes).keys.flatten().toMutableSet()
+    private val invokes = getGroupedInvokes(reflektInvokes.classes)
 
     override fun process(element: KtElement, file: KtFile): HashMap<String, ClassOrObjectUses> =
         processClassOrObjectUses(element, file, invokes, fileToUses)
