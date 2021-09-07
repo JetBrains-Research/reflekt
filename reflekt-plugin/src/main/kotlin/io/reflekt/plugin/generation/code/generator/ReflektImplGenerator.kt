@@ -26,10 +26,10 @@ class ReflektImplGenerator(private val uses: ReflektUses) : FileGenerator() {
                 FunctionsGenerator(typeName, uses.functions.flatten(), this@ReflektImplGenerator)
             )
 
-            addFunctions(innerGenerators.map {
+            addFunctions(innerGenerators.map { generator ->
                 generateFunction(
-                    name = it.typeName.simpleName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
-                    body = statement("return %T()", it.typeName)
+                    name = generator.typeName.simpleName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
+                    body = statement("return %T()", generator.typeName)
                 )
             })
             addNestedTypes(innerGenerators.map { it.generate() })

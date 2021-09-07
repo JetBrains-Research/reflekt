@@ -28,7 +28,7 @@ class FunctionsGenerator(enclosingClassName: ClassName, private val uses: Functi
         generateWithAnnotationsFunction()
 
         addNestedTypes(object : WithAnnotationsGenerator() {
-            //override val toListFunctionBody = generateWhenBody(uses, ANNOTATION_FQ_NAMES, ::functionReference)
+//            override val toListFunctionBody = generateWhenBody(uses, ANNOTATION_FQ_NAMES, ::functionReference)
         }.generate())
     }
 

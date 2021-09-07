@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.types.KotlinType
 
 open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
+
     override fun visitElement(element: IrElement, data: Nothing?) {
         element.acceptChildren(this, data)
     }

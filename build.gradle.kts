@@ -14,11 +14,11 @@ group = "io.reflekt"
 version = "0.2.1"
 
 plugins {
-    id("tanvd.kosogor") version "1.0.10" apply true
-    kotlin("jvm") version "1.5.10" apply true
-    id("com.github.gmazzo.buildconfig") version "2.0.2" apply false
+    id("tanvd.kosogor") version "1.0.12" apply true
+    kotlin("jvm") version "1.5.30" apply true
+    id("com.github.gmazzo.buildconfig") version "3.0.3" apply false
     `maven-publish`
-    kotlin("kapt") version "1.5.10" apply true
+    kotlin("kapt") version "1.5.30" apply true
 }
 
 allprojects {

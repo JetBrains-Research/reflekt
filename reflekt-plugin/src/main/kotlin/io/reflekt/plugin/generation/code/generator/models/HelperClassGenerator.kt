@@ -5,7 +5,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import io.reflekt.plugin.analysis.models.ClassOrObjectUses
 import io.reflekt.plugin.analysis.models.SupertypesToAnnotations
 import io.reflekt.plugin.generation.code.generator.*
-import org.jetbrains.kotlin.psi.KtClassOrObject
+import java.util.*
 
 abstract class HelperClassGenerator : ClassGenerator() {
     abstract val typeVariable: TypeVariableName
@@ -37,21 +37,25 @@ abstract class HelperClassGenerator : ClassGenerator() {
     ).toParameterSpecs()
 
     fun generateWithSupertypesFunction() {
-        builder.addFunction(generateFunction(
-            name = WITH_SUPERTYPES_FUNCTION_NAME,
-            body = withSupertypesFunctionBody,
-            typeVariables = listOf(typeVariable),
-            arguments = withSupertypesParameters
-        ))
+        builder.addFunction(
+            generateFunction(
+                name = WITH_SUPERTYPES_FUNCTION_NAME,
+                body = withSupertypesFunctionBody,
+                typeVariables = listOf(typeVariable),
+                arguments = withSupertypesParameters
+            )
+        )
     }
 
     fun generateWithAnnotationsFunction() {
-        builder.addFunction(generateFunction(
-            name = WITH_ANNOTATIONS_FUNCTION_NAME,
-            body = withAnnotationsFunctionBody,
-            typeVariables = listOf(typeVariable),
-            arguments = withAnnotationsParameters
-        ))
+        builder.addFunction(
+            generateFunction(
+                name = WITH_ANNOTATIONS_FUNCTION_NAME,
+                body = withAnnotationsFunctionBody,
+                typeVariables = listOf(typeVariable),
+                arguments = withAnnotationsParameters
+            )
+        )
     }
 
     protected abstract class SelectorClassGeneratorWrapper(
@@ -88,16 +92,21 @@ abstract class HelperClassGenerator : ClassGenerator() {
             .build()
     }
 
-    private fun <T> generateWhenBody(uses: Iterable<T>, conditionVariable: String, generateBranchForWhenOption: (T) -> CodeBlock, toAddReturn: Boolean = true): CodeBlock {
+    private fun <T> generateWhenBody(
+        uses: Iterable<T>,
+        conditionVariable: String,
+        generateBranchForWhenOption: (T) -> CodeBlock,
+        toAddReturn: Boolean = true
+    ): CodeBlock {
         val builder = CodeBlock.builder()
         if (toAddReturn) {
             builder.add("return ")
         }
         builder.beginControlFlow("when (%N)", conditionVariable)
-        uses.forEach{
+        uses.forEach {
             builder.add(generateBranchForWhenOption(it))
         }
-        builder.addStatement("else -> error(%S)", UNKNOWN_FQ_NAME)
+        builder.addStatement("else -> emptyList()")
         builder.endControlFlow()
         return builder.build()
     }
@@ -110,24 +119,22 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     protected fun generateNestedWhenBody(uses: ClassOrObjectUses, annotationFqNames: String, supertypeFqNames: String): CodeBlock {
-        val mainFunction = { o: Map.Entry<SupertypesToAnnotations, MutableList<KtClassOrObject>> ->
+        val mainFunction = { o: Map.Entry<SupertypesToAnnotations, List<String>> ->
             getWhenOption(o.key.annotations, wrappedCode(generateWhenBody(mapOf(o.key.supertypes to o.value), supertypeFqNames, toAddReturn = false)))
         }
-        return generateWhenBody(uses.toMap().asIterable(), annotationFqNames, mainFunction)
+        return generateWhenBody(uses.mapValues { (_, v) -> v.mapNotNull { it.fqName?.toString() } }.toMap().asIterable(), annotationFqNames, mainFunction)
     }
 
     protected companion object {
         const val WITH_SUPERTYPES_FUNCTION_NAME = "withSupertypes"
-        val WITH_SUPERTYPES_CLASS_NAME = WITH_SUPERTYPES_FUNCTION_NAME.capitalize()
+        val WITH_SUPERTYPES_CLASS_NAME = WITH_SUPERTYPES_FUNCTION_NAME.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
         const val WITH_ANNOTATIONS_FUNCTION_NAME = "withAnnotations"
-        val WITH_ANNOTATIONS_CLASS_NAME = WITH_ANNOTATIONS_FUNCTION_NAME.capitalize()
+        val WITH_ANNOTATIONS_CLASS_NAME = WITH_ANNOTATIONS_FUNCTION_NAME.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
         const val FQ_NAMES = "fqNames"
         const val ANNOTATION_FQ_NAMES = "annotationFqNames"
         const val SUPERTYPE_FQ_NAMES = "supertypeFqNames"
-
-        const val UNKNOWN_FQ_NAME = "Unknown fully qualified names set"
 
         val SET_OF_STRINGS = Set::class.parameterizedBy(String::class)
     }
