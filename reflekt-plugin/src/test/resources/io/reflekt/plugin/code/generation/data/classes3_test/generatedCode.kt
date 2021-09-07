@@ -7,49 +7,51 @@ import kotlin.collections.Set
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
-object ReflektImpl {
-    fun objects() = Objects()
+public object ReflektImpl {
+    public fun objects() = Objects()
 
-    fun classes() = Classes()
+    public fun classes() = Classes()
 
-    fun functions() = Functions()
+    public fun functions() = Functions()
 
-    class Objects {
-        fun <T> withSupertypes(fqNames: Set<String>) = WithSupertypes<T>(fqNames)
+    public class Objects {
+        public fun <T> withSupertypes(fqNames: Set<String>) = WithSupertypes<T>(fqNames)
 
-        fun <T> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>) =
-                WithAnnotations<T>(annotationFqNames, supertypeFqNames)
+        public fun <T> withAnnotations(annotationFqNames: Set<String>,
+                supertypeFqNames: Set<String>) = WithAnnotations<T>(annotationFqNames,
+                supertypeFqNames)
 
-        class WithSupertypes<T>(
-            val fqNames: Set<String>
+        public class WithSupertypes<T>(
+            public val fqNames: Set<String>
         ) {
-            fun toList(): List<T> = emptyList()
+            public fun toList(): List<T> = emptyList()
 
-            fun toSet(): Set<T> = toList().toSet()
+            public fun toSet(): Set<T> = toList().toSet()
         }
 
-        class WithAnnotations<T>(
-            val annotationFqNames: Set<String>,
-            val supertypeFqNames: Set<String>
+        public class WithAnnotations<T>(
+            public val annotationFqNames: Set<String>,
+            public val supertypeFqNames: Set<String>
         ) {
-            fun toList(): List<T> = when (annotationFqNames) {
+            public fun toList(): List<T> = when (annotationFqNames) {
                 else -> emptyList()
             }
 
-            fun toSet(): Set<T> = toList().toSet()
+            public fun toSet(): Set<T> = toList().toSet()
         }
     }
 
-    class Classes {
-        fun <T : Any> withSupertypes(fqNames: Set<String>) = WithSupertypes<T>(fqNames)
+    public class Classes {
+        public fun <T : Any> withSupertypes(fqNames: Set<String>) = WithSupertypes<T>(fqNames)
 
-        fun <T : Any> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>)
-                = WithAnnotations<T>(annotationFqNames, supertypeFqNames)
+        public fun <T : Any> withAnnotations(annotationFqNames: Set<String>,
+                supertypeFqNames: Set<String>) = WithAnnotations<T>(annotationFqNames,
+                supertypeFqNames)
 
-        class WithSupertypes<T : Any>(
-            val fqNames: Set<String>
+        public class WithSupertypes<T : Any>(
+            public val fqNames: Set<String>
         ) {
-            fun toList(): List<KClass<T>> = when (fqNames) {
+            public fun toList(): List<KClass<T>> = when (fqNames) {
                 setOf("io.reflekt.codegen.test.BInterfaceTest",
                         "io.reflekt.codegen.test.AInterfaceTest") ->
                         listOf(io.reflekt.codegen.test.B1::class as KClass<T>,
@@ -65,31 +67,31 @@ object ReflektImpl {
                 else -> emptyList()
             }
 
-            fun toSet(): Set<KClass<T>> = toList().toSet()
+            public fun toSet(): Set<KClass<T>> = toList().toSet()
         }
 
-        class WithAnnotations<T : Any>(
-            val annotationFqNames: Set<String>,
-            val supertypeFqNames: Set<String>
+        public class WithAnnotations<T : Any>(
+            public val annotationFqNames: Set<String>,
+            public val supertypeFqNames: Set<String>
         ) {
-            fun toList(): List<KClass<T>> = when (annotationFqNames) {
+            public fun toList(): List<KClass<T>> = when (annotationFqNames) {
                 else -> emptyList()
             }
 
-            fun toSet(): Set<KClass<T>> = toList().toSet()
+            public fun toSet(): Set<KClass<T>> = toList().toSet()
         }
     }
 
-    class Functions {
-        fun <T : Any> withAnnotations(annotationFqNames: Set<String>) =
+    public class Functions {
+        public fun <T : Any> withAnnotations(annotationFqNames: Set<String>) =
                 WithAnnotations<T>(annotationFqNames)
 
-        class WithAnnotations<T : Any>(
-            val annotationFqNames: Set<String>
+        public class WithAnnotations<T : Any>(
+            public val annotationFqNames: Set<String>
         ) {
-            fun toList(): List<KFunction<T>> = emptyList()
+            public fun toList(): List<KFunction<T>> = emptyList()
 
-            fun toSet(): Set<KFunction<T>> = toList().toSet()
+            public fun toSet(): Set<KFunction<T>> = toList().toSet()
         }
     }
 }
