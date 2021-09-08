@@ -56,6 +56,10 @@ fun ClassOrObjectUses.toSupertypesToFqNamesMap(): Map<Set<String>, List<String>>
     return this.map { it.key.supertypes to it.value.mapNotNull { it.fqName?.toString() } }.toMap()
 }
 
+fun FunctionUses.toAnnotationsToFunction(): Map<Set<String>, List<KtNamedFunction>> {
+    return this.map { it.key.annotations to it.value }.toMap()
+}
+
 /**
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]
  */

@@ -76,6 +76,22 @@ public object ReflektImpl {
             public val supertypeFqNames: Set<String>
         ) {
             public fun toList(): List<KClass<T>> = when (annotationFqNames) {
+                setOf("io.reflekt.codegen.test.FirstAnnotationTest") -> {
+                    when (supertypeFqNames) {
+                        setOf("kotlin.Any") -> listOf(io.reflekt.codegen.test.B2::class as
+                                KClass<T>, io.reflekt.codegen.test.B3::class as KClass<T>)
+                        else -> emptyList()
+                    }
+                }
+                setOf("io.reflekt.codegen.test.FirstAnnotationTest") -> {
+                    when (supertypeFqNames) {
+                        setOf("io.reflekt.codegen.test.BInterfaceTest",
+                                "io.reflekt.codegen.test.AInterfaceTest") ->
+                                listOf(io.reflekt.codegen.test.B2::class as KClass<T>,
+                                io.reflekt.codegen.test.B3::class as KClass<T>)
+                        else -> emptyList()
+                    }
+                }
                 else -> emptyList()
             }
 

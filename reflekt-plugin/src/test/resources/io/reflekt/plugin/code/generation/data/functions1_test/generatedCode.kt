@@ -6,6 +6,9 @@ import kotlin.collections.List
 import kotlin.collections.Set
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import io.reflekt.codegen.test.bar as barN1
+import io.reflekt.codegen.test.foo as fooN1
+import io.reflekt.codegen.test.main as mainN1
 
 public object ReflektImpl {
     public fun objects() = Objects()
@@ -51,22 +54,7 @@ public object ReflektImpl {
         public class WithSupertypes<T : Any>(
             public val fqNames: Set<String>
         ) {
-            public fun toList(): List<KClass<T>> = when (fqNames) {
-                setOf("io.reflekt.codegen.test.BInterfaceTest",
-                        "io.reflekt.codegen.test.AInterfaceTest") ->
-                        listOf(io.reflekt.codegen.test.B1::class as KClass<T>,
-                        io.reflekt.codegen.test.B2::class as KClass<T>,
-                        io.reflekt.codegen.test.B3::class as KClass<T>,
-                        io.reflekt.codegen.test.B3.B4::class as KClass<T>)
-                setOf("kotlin.Any") -> listOf(io.reflekt.codegen.test.TestFunctions::class as
-                        KClass<T>, io.reflekt.codegen.test.FirstAnnotationTest::class as KClass<T>,
-                        io.reflekt.codegen.test.SecondAnnotationTest::class as KClass<T>,
-                        io.reflekt.codegen.test.B1::class as KClass<T>,
-                        io.reflekt.codegen.test.B2::class as KClass<T>,
-                        io.reflekt.codegen.test.B3::class as KClass<T>,
-                        io.reflekt.codegen.test.B3.B4::class as KClass<T>)
-                else -> emptyList()
-            }
+            public fun toList(): List<KClass<T>> = emptyList()
 
             public fun toSet(): Set<KClass<T>> = toList().toSet()
         }
@@ -91,6 +79,9 @@ public object ReflektImpl {
             public val annotationFqNames: Set<String>
         ) {
             public fun toList(): List<KFunction<T>> = when (annotationFqNames) {
+                emptySet<String>() -> listOf(::fooN1 as KFunction<T>, ::barN1 as KFunction<T>,
+                        io.reflekt.codegen.test.TestFunctions.Companion::foo as KFunction<T>,
+                        ::mainN1 as KFunction<T>)
                 else -> emptyList()
             }
 

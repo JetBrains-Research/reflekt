@@ -11,8 +11,6 @@ fun controlFlow(code: CodeBlock, format: String, vararg args: Any?): CodeBlock =
 
 fun wrappedCode(code: CodeBlock): CodeBlock = controlFlow(code, "{")
 
-fun notImplementedError(): CodeBlock = statement("error(%S)", "Not implemented")
-
 fun emptyListCode(): CodeBlock = statement("return emptyList()")
 
 fun Map<String, TypeName>.toParameterSpecs(): List<ParameterSpec> = entries.map { ParameterSpec(it.key, it.value) }

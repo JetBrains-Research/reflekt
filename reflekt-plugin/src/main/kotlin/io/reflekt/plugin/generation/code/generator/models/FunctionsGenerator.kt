@@ -2,7 +2,7 @@ package io.reflekt.plugin.generation.code.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import io.reflekt.plugin.analysis.models.FunctionUses
+import io.reflekt.plugin.analysis.models.*
 import io.reflekt.plugin.generation.code.generator.statement
 import io.reflekt.plugin.generation.code.generator.toParameterSpecs
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -28,7 +28,7 @@ class FunctionsGenerator(enclosingClassName: ClassName, private val uses: Functi
         generateWithAnnotationsFunction()
 
         addNestedTypes(object : WithAnnotationsGenerator() {
-//            override val toListFunctionBody = generateWhenBody(uses, ANNOTATION_FQ_NAMES, ::functionReference)
+            override val toListFunctionBody = generateWhenBody(uses.toAnnotationsToFunction(), ANNOTATION_FQ_NAMES, ::functionReference)
         }.generate())
     }
 

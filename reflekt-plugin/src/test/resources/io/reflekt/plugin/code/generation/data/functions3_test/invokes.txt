@@ -1,0 +1,10 @@
+objects: {},
+classes: {},
+functions: {
+	file: io.reflekt.test.Main.kt: [
+		signature: Function0<Unit> (kotlin.Function0),
+		annotations: [
+			io.reflekt.test.FirstAnnotationTest
+		]
+	]
+}

@@ -86,8 +86,13 @@ abstract class HelperClassGenerator : ClassGenerator() {
      * Get something like this: setOf("invokes[0]", "invokes[1]" ...) -> listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
      * */
     private fun getWhenOption(invokes: Set<String>, rightPart: CodeBlock): CodeBlock {
+        val setOfBlock = if (invokes.isEmpty()) {
+            "emptySet<String>() -> "
+        } else {
+            "setOf(${invokes.joinToString(separator = ", ") { "\"$it\"" }}) -> "
+        }
         return CodeBlock.builder()
-            .add("setOf(${invokes.joinToString(separator = ", ") { "\"$it\"" }}) -> ")
+            .add(setOfBlock)
             .add(rightPart)
             .build()
     }

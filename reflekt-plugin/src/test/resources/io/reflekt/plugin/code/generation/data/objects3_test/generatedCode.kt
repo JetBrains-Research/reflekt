@@ -24,7 +24,16 @@ public object ReflektImpl {
         public class WithSupertypes<T>(
             public val fqNames: Set<String>
         ) {
-            public fun toList(): List<T> = emptyList()
+            public fun toList(): List<T> = when (fqNames) {
+                setOf("io.reflekt.codegen.test.BInterfaceTest",
+                        "io.reflekt.codegen.test.AInterfaceTest") ->
+                        listOf(io.reflekt.codegen.test.A1 as T, io.reflekt.codegen.test.A2 as T,
+                        io.reflekt.codegen.test.A3 as T, io.reflekt.codegen.test.A4 as T)
+                setOf("kotlin.Any") -> listOf(io.reflekt.codegen.test.TestFunctions.Companion as T,
+                        io.reflekt.codegen.test.A1 as T, io.reflekt.codegen.test.A2 as T,
+                        io.reflekt.codegen.test.A3 as T, io.reflekt.codegen.test.A4 as T)
+                else -> emptyList()
+            }
 
             public fun toSet(): Set<T> = toList().toSet()
         }
@@ -51,22 +60,7 @@ public object ReflektImpl {
         public class WithSupertypes<T : Any>(
             public val fqNames: Set<String>
         ) {
-            public fun toList(): List<KClass<T>> = when (fqNames) {
-                setOf("io.reflekt.codegen.test.BInterfaceTest",
-                        "io.reflekt.codegen.test.AInterfaceTest") ->
-                        listOf(io.reflekt.codegen.test.B1::class as KClass<T>,
-                        io.reflekt.codegen.test.B2::class as KClass<T>,
-                        io.reflekt.codegen.test.B3::class as KClass<T>,
-                        io.reflekt.codegen.test.B3.B4::class as KClass<T>)
-                setOf("kotlin.Any") -> listOf(io.reflekt.codegen.test.TestFunctions::class as
-                        KClass<T>, io.reflekt.codegen.test.FirstAnnotationTest::class as KClass<T>,
-                        io.reflekt.codegen.test.SecondAnnotationTest::class as KClass<T>,
-                        io.reflekt.codegen.test.B1::class as KClass<T>,
-                        io.reflekt.codegen.test.B2::class as KClass<T>,
-                        io.reflekt.codegen.test.B3::class as KClass<T>,
-                        io.reflekt.codegen.test.B3.B4::class as KClass<T>)
-                else -> emptyList()
-            }
+            public fun toList(): List<KClass<T>> = emptyList()
 
             public fun toSet(): Set<KClass<T>> = toList().toSet()
         }

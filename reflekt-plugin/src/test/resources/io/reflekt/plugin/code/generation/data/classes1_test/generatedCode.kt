@@ -82,7 +82,9 @@ public object ReflektImpl {
         public class WithAnnotations<T : Any>(
             public val annotationFqNames: Set<String>
         ) {
-            public fun toList(): List<KFunction<T>> = emptyList()
+            public fun toList(): List<KFunction<T>> = when (annotationFqNames) {
+                else -> emptyList()
+            }
 
             public fun toSet(): Set<KFunction<T>> = toList().toSet()
         }
