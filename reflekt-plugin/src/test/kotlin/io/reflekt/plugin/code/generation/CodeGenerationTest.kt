@@ -20,7 +20,9 @@ class CodeGenerationTest {
             val commonTestFiles = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(CodeGenerationTest::class, "commonTestFiles")).toSet()
             return getTestsDirectories(CodeGenerationTest::class).filter { !it.name.endsWith("functions3_test") }.map { directory ->
                 val project = getProjectFilesInDirectory(directory)
-                val generatedCode = directory.findInDirectory("generatedCode.kt").readText().trim()
+                // We use txt format instead of kt files since each of generatedCode file has the same package name
+                // and Idea highlight it as en error
+                val generatedCode = directory.findInDirectory("generatedCode.txt").readText().trim()
                 Arguments.of(commonTestFiles.union(project), generatedCode, directory.name)
             }
         }
