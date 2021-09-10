@@ -1,6 +1,7 @@
 package io.reflekt.plugin.analysis.processor.uses
 
 import io.reflekt.plugin.analysis.models.*
+import io.reflekt.plugin.analysis.processor.*
 import io.reflekt.plugin.analysis.processor.fullName
 import io.reflekt.plugin.analysis.processor.isPublicFunction
 import io.reflekt.plugin.analysis.psi.annotation.getAnnotations
@@ -23,7 +24,7 @@ class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes
         return fileToUses
     }
 
-    override fun shouldRunOn(element: KtElement) = element.isPublicFunction
+    override fun shouldRunOn(element: KtElement) = element.isPublicFunction && !element.isMainFunction
 
     private fun SignatureToAnnotations.covers(function: KtNamedFunction): Boolean {
         return (annotations.isEmpty() || function.getAnnotations(binding, annotations).isNotEmpty()) &&

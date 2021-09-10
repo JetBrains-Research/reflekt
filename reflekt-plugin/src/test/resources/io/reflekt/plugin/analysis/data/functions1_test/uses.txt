@@ -22,15 +22,6 @@ functions: {
 			io.reflekt.test.foo
 		]
 	},
-	file: io.reflekt.test.Main.kt: {
-		signatureToAnnotations: [
-			signature: Function0<Unit> (kotlin.Function0),
-			annotations: []
-		],
-		namedFunctions: [
-			io.reflekt.test.main
-		]
-	},
 	file: io.reflekt.test.nested.Functions.kt: {
 		signatureToAnnotations: [
 			signature: Function0<Unit> (kotlin.Function0),
