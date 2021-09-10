@@ -29,4 +29,4 @@ class TestFunctions {
 
 @FirstAnnotationTest
 @SecondAnnotationTest("test")
-fun fooWithArg(a: Int) {}
+fun fooWithReturnedValue(): Int { return 5 }
