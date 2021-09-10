@@ -8,7 +8,7 @@ internal val KtElement.isPublicObject: Boolean
     get() = this is KtObjectDeclaration && this.isPublic
 
 internal val KtElement.isPublicFunction: Boolean
-    get() = this is KtNamedFunction && this.isPublic && this.nameIdentifier?.text != "main"
+    get() = this is KtNamedFunction && this.isPublic
 
 internal val KtElement.isMainFunction: Boolean
     get() = this.isPublicFunction && (this as KtNamedFunction).nameIdentifier?.let { it.text == "main" } ?: false
