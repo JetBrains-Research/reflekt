@@ -23,7 +23,7 @@ class AstNodeToParameterizedTypeTest {
             val files = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(AstNodeToParameterizedTypeTest::class, TEST_DIR_NAME))
             val visitor = KtCallExpressionVisitor()
             val binding = visitKtElements(files, listOf(visitor))
-            return visitor.typeArguments.map { Arguments.of(binding, it.argument, it.expectedType) }
+            return visitor.typeArguments.map { Arguments.of(binding, it.astNodeArgument, it.stringArgument) }
         }
     }
 
