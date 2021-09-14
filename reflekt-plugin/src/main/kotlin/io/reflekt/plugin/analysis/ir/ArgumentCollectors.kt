@@ -85,11 +85,11 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
 
 /**
  * IR version of [findSmartReflektInvokeArguments] function.
- * Traverses subtree of expression and collects arguments of filter calls to construct [SupertypesToFilters].
+ * Traverses subtree of expression and collects arguments of filter calls to construct [TypeArgumentToFilters].
  */
 class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) : IrRecursiveVisitor() {
-    private var supertype: KotlinType? = null
-    private var supertypeFqName: String? = null
+    private var typeArgument: KotlinType? = null
+    private var typeArgumentFqName: String? = null
     private val filters = ArrayList<Lambda>()
 
     @ObsoleteDescriptorBasedAPI
@@ -98,8 +98,8 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
         val function = expression.symbol.owner
         if (function.name.asString() in ReflektEntity.values().map { it.entityType }) {
             val typeArgument = expression.getTypeArgument(0)
-            supertype = typeArgument?.toParameterizedType()
-            supertypeFqName = typeArgument?.classFqName?.asString()
+            this.typeArgument = typeArgument?.toParameterizedType()
+            typeArgumentFqName = typeArgument?.classFqName?.asString()
         }
     }
 
@@ -120,8 +120,8 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
             val visitor = SmartReflektInvokeArgumentsCollector(sourceFile)
             expression.accept(visitor, null)
             return TypeArgumentToFilters(
-                typeArgument = visitor.supertype,
-                typeArgumentFqName = visitor.supertypeFqName,
+                typeArgument = visitor.typeArgument,
+                typeArgumentFqName = visitor.typeArgumentFqName,
                 filters = visitor.filters,
                 imports = sourceFile.imports
             )
