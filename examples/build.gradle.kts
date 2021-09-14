@@ -6,7 +6,7 @@ version = rootProject.version
 
 plugins {
     id("tanvd.kosogor") version "1.0.10" apply true
-    id("io.reflekt") version "0.2.1" apply true
+    id("io.reflekt") version "0.2.0" apply true
     kotlin("jvm") version "1.5.30" apply true
 }
 
@@ -27,15 +27,15 @@ allprojects {
     }
 
     dependencies {
-        implementation("io.reflekt", "reflekt-dsl", "0.2.1")
+        implementation("io.reflekt", "reflekt-dsl", "0.2.0")
         implementation("com.github.gumtreediff", "core", "2.1.2")
     }
 
     repositories {
         mavenCentral()
         google()
-        mavenLocal()
-//        maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
+//        mavenLocal()
+        maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
     }
 
     reflekt {

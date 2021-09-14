@@ -66,3 +66,11 @@ data class SourceFile(
     val imports: List<Import>,
     val content: String
 )
+
+data class TypeArgumentToFilters(
+    val typeArgument: KotlinType? = null,
+    val typeArgumentFqName: String? = null,
+    val filters: List<Lambda> = emptyList(),
+    val imports: List<Import> = emptyList()
+)
+
