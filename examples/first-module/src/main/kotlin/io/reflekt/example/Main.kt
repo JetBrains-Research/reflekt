@@ -36,9 +36,8 @@ fun main() {
     val objects8 = Reflekt.objects().withSupertype<AInterface>().toList()
     println(objects8)
 
-    // TODO: it does not work since it should return empty list
-//    val classes1 = Reflekt.classes().withSupertype<AInterface>().toList()
-//    println(classes1)
+    val classes1 = Reflekt.classes().withSupertype<AInterface>().toList()
+    println(classes1)
     val classes2 = Reflekt.classes().withSupertype<BInterface>().toSet()
     println(classes2)
     val classes3 = Reflekt.classes().withAnnotations<B2>(FirstAnnotation::class, SecondAnnotation::class).toList()
