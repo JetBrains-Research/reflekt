@@ -3,7 +3,7 @@ package io.reflekt.plugin.util.type.representation.kotlinTypes
 
 
 /**
- * Function to test Ia string representation of KotlinTypes, a test key is passed as argument
+ * Function to test a string representation of KotlinTypes, a test key is passed as argument
  */
 fun <T> fooWithType(testKey: String) { }
 
