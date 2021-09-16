@@ -2,17 +2,16 @@ package io.reflekt.plugin.analysis.util
 
 import io.reflekt.SmartReflekt
 import io.reflekt.plugin.analysis.common.ReflektEntity
-import io.reflekt.plugin.analysis.processor.Processor
-import io.reflekt.plugin.analysis.processor.fullName
+import io.reflekt.plugin.analysis.processor.*
 import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.utils.enumToRegexOptions
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class SmartReflektExpressionProcessor(override val binding: BindingContext) : Processor<MutableList<KtNameReferenceExpression>>(binding) {
-    val fileToExpressions: HashMap<String, MutableList<KtNameReferenceExpression>> = HashMap()
+    val fileToExpressions: HashMap<FileID, MutableList<KtNameReferenceExpression>> = HashMap()
 
-    override fun process(element: KtElement, file: KtFile): HashMap<String, MutableList<KtNameReferenceExpression>> {
+    override fun process(element: KtElement, file: KtFile): HashMap<FileID, MutableList<KtNameReferenceExpression>> {
         (element as? KtNameReferenceExpression)?.let {
             fileToExpressions.getOrPut(file.fullName) { ArrayList() }.add(it)
         }

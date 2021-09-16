@@ -1,5 +1,6 @@
 package io.reflekt.plugin.analysis.models
 
+import io.reflekt.plugin.analysis.processor.FileID
 import io.reflekt.plugin.analysis.processor.invokes.*
 import io.reflekt.plugin.analysis.processor.uses.*
 import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
@@ -25,9 +26,9 @@ typealias ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
 typealias FunctionInvokes = MutableSet<SignatureToAnnotations>
 
 data class ReflektInvokes(
-    val objects: HashMap<String, ClassOrObjectInvokes> = HashMap(),
-    val classes: HashMap<String, ClassOrObjectInvokes> = HashMap(),
-    val functions: HashMap<String, FunctionInvokes> = HashMap()
+    val objects: HashMap<FileID, ClassOrObjectInvokes> = HashMap(),
+    val classes: HashMap<FileID, ClassOrObjectInvokes> = HashMap(),
+    val functions: HashMap<FileID, FunctionInvokes> = HashMap()
 ) {
     companion object {
         fun createByProcessors(processors: Set<BaseInvokesProcessor<*>>) = ReflektInvokes(
@@ -60,9 +61,9 @@ fun ClassOrObjectUses.toSupertypesToFqNamesMap(): Map<Set<String>, MutableList<K
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]
  */
 data class ReflektUses(
-    val objects: HashMap<String, ClassOrObjectUses> = HashMap(),
-    val classes: HashMap<String, ClassOrObjectUses> = HashMap(),
-    val functions: HashMap<String, FunctionUses> = HashMap()
+    val objects: HashMap<FileID, ClassOrObjectUses> = HashMap(),
+    val classes: HashMap<FileID, ClassOrObjectUses> = HashMap(),
+    val functions: HashMap<FileID, FunctionUses> = HashMap()
 ) {
     companion object {
         fun createByProcessors(processors: Set<BaseUsesProcessor<*>>) = ReflektUses(
@@ -73,7 +74,7 @@ data class ReflektUses(
     }
 }
 
-fun <T, V : KtElement> HashMap<String, TypeUses<T, V>>.flatten(): TypeUses<T, V> {
+fun <T, V : KtElement> HashMap<FileID, TypeUses<T, V>>.flatten(): TypeUses<T, V> {
     val uses: TypeUses<T, V> = HashMap()
     this.forEach { (_, typeUses) ->
         typeUses.forEach { (k, v) ->
