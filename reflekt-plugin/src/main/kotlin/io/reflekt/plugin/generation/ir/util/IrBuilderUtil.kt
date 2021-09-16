@@ -45,7 +45,7 @@ fun IrBuilderWithScope.irKClass(symbol: IrClassSymbol) =
 fun IrBuilderWithScope.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFunctionReference {
     require(type is IrSimpleType)
     val kFunctionType = IrSimpleTypeImpl(
-        // TODO: replace into this one in the next Kotlin version since API will be changed
+        // TODO: replace to this one in the next Kotlin version since API will be changed
 //        context.irBuiltIns.functionN(type.arguments.size - 1).symbol,
         context.irBuiltIns.functionFactory.kFunctionN(type.arguments.size - 1).symbol,
         false,
