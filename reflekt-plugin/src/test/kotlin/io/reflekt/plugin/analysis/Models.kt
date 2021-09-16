@@ -2,6 +2,7 @@ package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.models.*
 import io.reflekt.plugin.analysis.psi.function.shortFqName
+import io.reflekt.plugin.analysis.processor.FileID
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
 import org.jetbrains.kotlin.types.KotlinType
 
@@ -46,7 +47,7 @@ fun Set<SupertypesToFilters>.toPrettyString(): String {
 
 
 @JvmName("toPrettyStringSupertypesToFiltersWithReflektInvokes")
-fun <T> HashMap<String, MutableSet<T>>.toPrettyString(toPrettyStringForT: (T) -> String): String {
+fun <T> HashMap<FileID, MutableSet<T>>.toPrettyString(toPrettyStringForT: (T) -> String): String {
     return this.joinToStringIndented { k, v ->
         "file: $k: ${v.joinToStringIndented { toPrettyStringForT(it) }}"
     }
@@ -74,7 +75,7 @@ fun FunctionUses.toPrettyString(): String {
 }
 
 @JvmName("toPrettyStringSupertypesToFiltersWithReflektUses")
-fun <T> HashMap<String, T>.toPrettyString(toPrettyStringForT: (T) -> String): String {
+fun <T> HashMap<FileID, T>.toPrettyString(toPrettyStringForT: (T) -> String): String {
     return this.joinToStringIndented { k, v ->
         "file: $k: ${toPrettyStringForT(v)}"
     }

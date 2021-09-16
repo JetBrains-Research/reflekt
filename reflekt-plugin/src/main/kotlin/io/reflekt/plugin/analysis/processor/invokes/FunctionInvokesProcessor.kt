@@ -3,6 +3,7 @@ package io.reflekt.plugin.analysis.processor.invokes
 import io.reflekt.plugin.analysis.common.ReflektEntity
 import io.reflekt.plugin.analysis.common.findReflektFunctionInvokeArgumentsByExpressionPart
 import io.reflekt.plugin.analysis.models.FunctionInvokes
+import io.reflekt.plugin.analysis.processor.FileID
 import io.reflekt.plugin.analysis.processor.fullName
 import io.reflekt.plugin.analysis.psi.getFqName
 import org.jetbrains.kotlin.psi.*
@@ -11,9 +12,9 @@ import org.jetbrains.kotlin.utils.addIfNotNull
 
 // TODO: should we filter functions with <main> name? since it can be error-prone
 class FunctionInvokesProcessor(override val binding: BindingContext) : BaseInvokesProcessor<FunctionInvokes>(binding) {
-    override val fileToInvokes: HashMap<String, FunctionInvokes> = HashMap()
+    override val fileToInvokes: HashMap<FileID, FunctionInvokes> = HashMap()
 
-    override fun process(element: KtElement, file: KtFile): HashMap<String, FunctionInvokes> {
+    override fun process(element: KtElement, file: KtFile): HashMap<FileID, FunctionInvokes> {
         (element as? KtReferenceExpression)?.let {
             fileToInvokes.getOrPut(file.fullName) { HashSet() }.addIfNotNull(findReflektFunctionInvokeArgumentsByExpressionPart(element, binding))
         }

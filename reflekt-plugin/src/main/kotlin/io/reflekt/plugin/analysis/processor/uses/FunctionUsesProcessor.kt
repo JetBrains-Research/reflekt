@@ -12,10 +12,10 @@ import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
 
 class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes) : BaseUsesProcessor<FunctionUses>(binding) {
-    override val fileToUses: HashMap<String, FunctionUses> = HashMap()
-    private val invokes = getGroupedInvokes(reflektInvokes.functions)
+    override val fileToUses: HashMap<FileID, FunctionUses> = HashMap()
+    private val invokes = getInvokesGroupedByFiles(reflektInvokes.functions)
 
-    override fun process(element: KtElement, file: KtFile): HashMap<String, FunctionUses> {
+    override fun process(element: KtElement, file: KtFile): HashMap<FileID, FunctionUses> {
         (element as? KtNamedFunction)?.let {
             invokes.filter { it.covers(element) }.forEach {
                 fileToUses.getOrPut(file.fullName) { HashMap() }.getOrPut(it) { mutableListOf() }.add(element)
