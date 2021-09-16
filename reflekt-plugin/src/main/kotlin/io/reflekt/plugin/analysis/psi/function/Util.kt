@@ -52,7 +52,11 @@ fun KtNamedFunction.toFunctionInfo(binding: BindingContext): IrFunctionInfo =
 
 
 fun KtNamedFunction.toParameterizedType(binding: BindingContext): KotlinType? {
-    return (getDescriptor(binding) as? SimpleFunctionDescriptor)?.createFunctionTypeWithDispatchReceiver(DefaultBuiltIns.Instance)
+    return getDescriptor(binding).toParameterizedType()
+}
+
+fun FunctionDescriptor.toParameterizedType(): KotlinType? {
+    return (this as? SimpleFunctionDescriptor)?.createFunctionTypeWithDispatchReceiver(DefaultBuiltIns.Instance)
 }
 
 /**

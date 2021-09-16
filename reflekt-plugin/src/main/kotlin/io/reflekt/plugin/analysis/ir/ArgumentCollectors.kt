@@ -1,11 +1,12 @@
 package io.reflekt.plugin.analysis.ir
 
-import io.reflekt.plugin.analysis.models.*
 import io.reflekt.plugin.analysis.common.*
+import io.reflekt.plugin.analysis.models.*
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrFunctionExpression
+import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.types.KotlinType
 
@@ -84,10 +85,11 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
 
 /**
  * IR version of [findSmartReflektInvokeArguments] function.
- * Traverses subtree of expression and collects arguments of filter calls to construct [SupertypesToFilters].
+ * Traverses subtree of expression and collects arguments of filter calls to construct [TypeArgumentToFilters].
  */
 class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) : IrRecursiveVisitor() {
-    private var supertype: KotlinType? = null
+    private var typeArgument: KotlinType? = null
+    private var typeArgumentFqName: String? = null
     private val filters = ArrayList<Lambda>()
 
     @ObsoleteDescriptorBasedAPI
@@ -95,7 +97,9 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
         super.visitCall(expression, data)
         val function = expression.symbol.owner
         if (function.name.asString() in ReflektEntity.values().map { it.entityType }) {
-            supertype = expression.getTypeArgument(0)?.toParameterizedType()
+            val typeArgument = expression.getTypeArgument(0)
+            this.typeArgument = typeArgument?.toParameterizedType()
+            typeArgumentFqName = typeArgument?.classFqName?.asString()
         }
     }
 
@@ -112,11 +116,12 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
     }
 
     companion object {
-        fun collectInvokeArguments(expression: IrCall, sourceFile: SourceFile): SupertypesToFilters {
+        fun collectInvokeArguments(expression: IrCall, sourceFile: SourceFile): TypeArgumentToFilters {
             val visitor = SmartReflektInvokeArgumentsCollector(sourceFile)
             expression.accept(visitor, null)
-            return SupertypesToFilters(
-                supertype = visitor.supertype,
+            return TypeArgumentToFilters(
+                typeArgument = visitor.typeArgument,
+                typeArgumentFqName = visitor.typeArgumentFqName,
                 filters = visitor.filters,
                 imports = sourceFile.imports
             )
