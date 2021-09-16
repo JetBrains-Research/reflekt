@@ -36,9 +36,8 @@ fun main() {
     val objects8 = Reflekt.objects().withSupertype<AInterface>().toList()
     println(objects8)
 
-    // TODO: it does not work since it should return empty list
-//    val classes1 = Reflekt.classes().withSupertype<AInterface>().toList()
-//    println(classes1)
+    val classes1 = Reflekt.classes().withSupertype<AInterface>().toList()
+    println(classes1)
     val classes2 = Reflekt.classes().withSupertype<BInterface>().toSet()
     println(classes2)
     val classes3 = Reflekt.classes().withAnnotations<B2>(FirstAnnotation::class, SecondAnnotation::class).toList()
@@ -50,13 +49,12 @@ fun main() {
     val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList()
     println(functions)
 
-    // TODO: it does not work (error with TestFunctions$Companion), see issue#52: https://github.com/JetBrains-Research/reflekt/issues/52
-//    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
-//    println(smartClasses)
-//
-//    val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
-//    println(smartObjects)
-//
+    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
+    println(smartClasses)
+
+    val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
+    println(smartObjects)
+
     val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
     println(smartFunctions)
     smartFunctions.forEach { it() }
