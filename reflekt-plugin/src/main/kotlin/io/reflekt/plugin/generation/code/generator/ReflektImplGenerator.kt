@@ -2,9 +2,11 @@ package io.reflekt.plugin.generation.code.generator
 
 import com.squareup.kotlinpoet.ClassName
 import io.reflekt.plugin.analysis.models.ReflektUses
+import io.reflekt.plugin.analysis.models.flatten
 import io.reflekt.plugin.generation.code.generator.models.ClassesGenerator
 import io.reflekt.plugin.generation.code.generator.models.ObjectsGenerator
 import io.reflekt.plugin.generation.code.generator.models.*
+import java.util.*
 
 class ReflektImplGenerator(private val uses: ReflektUses) : FileGenerator() {
     override val packageName = "io.reflekt"
@@ -19,15 +21,15 @@ class ReflektImplGenerator(private val uses: ReflektUses) : FileGenerator() {
 
         override fun generateImpl() {
             val innerGenerators = listOf(
-                ObjectsGenerator(typeName, uses.objects),
-                ClassesGenerator(typeName, uses.classes),
-                FunctionsGenerator(typeName, uses.functions, this@ReflektImplGenerator)
+                ObjectsGenerator(typeName, uses.objects.flatten()),
+                ClassesGenerator(typeName, uses.classes.flatten()),
+                FunctionsGenerator(typeName, uses.functions.flatten(), this@ReflektImplGenerator)
             )
 
-            addFunctions(innerGenerators.map {
+            addFunctions(innerGenerators.map { generator ->
                 generateFunction(
-                    name = it.typeName.simpleName.decapitalize(),
-                    body = statement("return %T()", it.typeName)
+                    name = generator.typeName.simpleName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
+                    body = statement("return %T()", generator.typeName)
                 )
             })
             addNestedTypes(innerGenerators.map { it.generate() })

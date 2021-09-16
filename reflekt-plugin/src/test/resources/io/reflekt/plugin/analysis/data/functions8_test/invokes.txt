@@ -1,8 +1,10 @@
-objects: [],
-classes: [],
-functions: [
-	signature: Function0<Array<in FunTest3>> (kotlin.Function0),
-	annotations: [
-		io.reflekt.test.FunctionsTestAnnotation
+objects: {},
+classes: {},
+functions: {
+	file: io.reflekt.test.Main.kt: [
+		signature: Function0<Array<in FunTest3>> (kotlin.Function0),
+		annotations: [
+			io.reflekt.test.FunctionsTestAnnotation
+		]
 	]
-]
+}

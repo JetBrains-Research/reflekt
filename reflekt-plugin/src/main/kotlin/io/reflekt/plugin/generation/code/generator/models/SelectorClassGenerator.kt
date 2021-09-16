@@ -2,9 +2,7 @@ package io.reflekt.plugin.generation.code.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import io.reflekt.plugin.generation.code.generator.generateFunction
-import io.reflekt.plugin.generation.code.generator.notImplementedError
-import io.reflekt.plugin.generation.code.generator.statement
+import io.reflekt.plugin.generation.code.generator.*
 import kotlin.reflect.KClass
 
 abstract class SelectorClassGenerator : ClassGenerator() {
@@ -12,7 +10,7 @@ abstract class SelectorClassGenerator : ClassGenerator() {
     protected abstract val returnParameter: TypeName
     protected abstract val parameters: List<ParameterSpec>
 
-    protected open val toListFunctionBody = notImplementedError()
+    protected open val toListFunctionBody = emptyListCode()
     protected open val toSetFunctionBody = statement("return toList().toSet()")
 
     final override fun initBuilder() {
@@ -37,9 +35,11 @@ abstract class SelectorClassGenerator : ClassGenerator() {
         klass: KClass<*>,
         body: CodeBlock
     ) =
-        addFunctions(generateFunction(
-            name = "to${klass.simpleName}",
-            body = body,
-            returnType = klass.asClassName().parameterizedBy(returnParameter)
-        ))
+        addFunctions(
+            generateFunction(
+                name = "to${klass.simpleName}",
+                body = body,
+                returnType = klass.asClassName().parameterizedBy(returnParameter)
+            )
+        )
 }

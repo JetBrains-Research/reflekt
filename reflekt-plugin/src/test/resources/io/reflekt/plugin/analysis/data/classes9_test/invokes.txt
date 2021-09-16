@@ -1,13 +1,15 @@
-objects: [],
-classes: [
-	supertypes: [
-		io.reflekt.test.AInterfaceTest,
-		io.reflekt.test.BInterfaceTest
-	],
-	annotations: [],
-	supertypes: [
-		kotlin.Any
-	],
-	annotations: []
-],
-functions: []
+objects: {},
+classes: {
+	file: io.reflekt.test.Main.kt: [
+		supertypes: [
+			io.reflekt.test.AInterfaceTest,
+			io.reflekt.test.BInterfaceTest
+		],
+		annotations: [],
+		supertypes: [
+			kotlin.Any
+		],
+		annotations: []
+	]
+},
+functions: {}

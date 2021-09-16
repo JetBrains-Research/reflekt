@@ -7,7 +7,7 @@ version = rootProject.version
 plugins {
     id("tanvd.kosogor") version "1.0.10" apply true
     id("io.reflekt") version "0.2.0" apply true
-    kotlin("jvm") version "1.5.10" apply true
+    kotlin("jvm") version "1.5.30" apply true
 }
 
 allprojects {

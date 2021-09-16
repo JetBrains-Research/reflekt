@@ -1,15 +1,17 @@
 objects: {},
 classes: {
-	supertypesToAnnotations: [
-		supertypes: [
-			io.reflekt.test.B3
+	file: io.reflekt.test.B.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				io.reflekt.test.B3
+			],
+			annotations: [
+				io.reflekt.test.FirstAnnotationTest
+			]
 		],
-		annotations: [
-			io.reflekt.test.FirstAnnotationTest
+		objectsOrClasses: [
+			io.reflekt.test.B3
 		]
-	],
-	objectsOrClasses: [
-		io.reflekt.test.B3
-	]
+	}
 },
 functions: {}

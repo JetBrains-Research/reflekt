@@ -1,10 +1,12 @@
-objects: [],
-classes: [
-	supertypes: [
-		io.reflekt.test.BInterfaceTest
-	],
-	annotations: [
-		io.reflekt.test.SecondAnnotationTest
+objects: {},
+classes: {
+	file: io.reflekt.test.Main.kt: [
+		supertypes: [
+			io.reflekt.test.BInterfaceTest
+		],
+		annotations: [
+			io.reflekt.test.SecondAnnotationTest
+		]
 	]
-],
-functions: []
+},
+functions: {}

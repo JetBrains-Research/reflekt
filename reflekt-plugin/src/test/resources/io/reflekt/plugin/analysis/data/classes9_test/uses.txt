@@ -1,36 +1,68 @@
 objects: {},
 classes: {
-	supertypesToAnnotations: [
-		supertypes: [
-			io.reflekt.test.AInterfaceTest,
-			io.reflekt.test.BInterfaceTest
+	file: io.reflekt.test.Annotations.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
 		],
-		annotations: []
-	],
-	objectsOrClasses: [
-		io.reflekt.test.B1,
-		io.reflekt.test.B2,
-		io.reflekt.test.B3,
-		io.reflekt.test.B3.B4
-	],
-	supertypesToAnnotations: [
-		supertypes: [
-			kotlin.Any
+		objectsOrClasses: [
+			io.reflekt.test.FirstAnnotationTest,
+			io.reflekt.test.SecondAnnotationTest
+		]
+	},
+	file: io.reflekt.test.B.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				io.reflekt.test.AInterfaceTest,
+				io.reflekt.test.BInterfaceTest
+			],
+			annotations: []
 		],
-		annotations: []
-	],
-	objectsOrClasses: [
-		io.reflekt.test.B1,
-		io.reflekt.test.B2,
-		io.reflekt.test.B3,
-		io.reflekt.test.B3.B4,
-		io.reflekt.test.FirstAnnotationTest,
-		io.reflekt.test.FunTest1,
-		io.reflekt.test.FunTest2,
-		io.reflekt.test.FunTest3,
-		io.reflekt.test.FunctionsTestAnnotation,
-		io.reflekt.test.SecondAnnotationTest,
-		io.reflekt.test.TestFunctions
-	]
+		objectsOrClasses: [
+			io.reflekt.test.B1,
+			io.reflekt.test.B2,
+			io.reflekt.test.B3,
+			io.reflekt.test.B3.B4
+		],
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			io.reflekt.test.B1,
+			io.reflekt.test.B2,
+			io.reflekt.test.B3,
+			io.reflekt.test.B3.B4
+		]
+	},
+	file: io.reflekt.test.FunctionSignatures.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			io.reflekt.test.FunTest1,
+			io.reflekt.test.FunTest2,
+			io.reflekt.test.FunTest3,
+			io.reflekt.test.FunctionsTestAnnotation
+		]
+	},
+	file: io.reflekt.test.Functions.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			io.reflekt.test.TestFunctions
+		]
+	}
 },
 functions: {}

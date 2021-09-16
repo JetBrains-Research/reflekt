@@ -1,8 +1,10 @@
-objects: [],
-classes: [],
-functions: [
-	signature: Function3<Int, Boolean, Float, Any> (kotlin.Function3),
-	annotations: [
-		io.reflekt.test.FunctionsTestAnnotation
+objects: {},
+classes: {},
+functions: {
+	file: io.reflekt.test.Main.kt: [
+		signature: Function3<Int, Boolean, Float, Any> (kotlin.Function3),
+		annotations: [
+			io.reflekt.test.FunctionsTestAnnotation
+		]
 	]
-]
+}

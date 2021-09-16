@@ -1,7 +1,5 @@
 package io.reflekt.util
 
-import java.io.File
-
 data class MyCliOption(
     val name: String,
     val valueDescription: String,

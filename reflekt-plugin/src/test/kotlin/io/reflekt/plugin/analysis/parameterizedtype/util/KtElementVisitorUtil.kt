@@ -53,11 +53,11 @@ class KtNamedFunctionVisitor : KtVisitor<Void, BindingContext>() {
  * simulating the behaviour of [findReflektFunctionInvokeArguments].
  */
 class KtCallExpressionVisitor : KtVisitor<Void, BindingContext>() {
-    data class TypeArgument(val argument: ASTNode, val expectedType: String)
+    data class TypeArgument(val astNodeArgument: ASTNode, val stringArgument: String)
     val typeArguments = mutableListOf<TypeArgument>()
 
     override fun visitCallExpression(expression: KtCallExpression,  data: BindingContext): Void? {
-        val typeArgument = expression.node.getTypeArguments().firstOrNull() ?: error("No arguments found in expression ${expression}")
+        val typeArgument = expression.node.getTypeArguments().firstOrNull() ?: error("No arguments found in expression $expression")
         val expectedType = expression.valueArguments.firstOrNull()?.text ?: error("No value passed as expected KotlinType in expression $expression")
         // if argument has String type, its text contains extra quotes, so we need to trim them
         typeArguments.add(TypeArgument(typeArgument, expectedType.trim { it == '"' }))

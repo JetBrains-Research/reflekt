@@ -42,7 +42,8 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
         val outputDir = configuration[Keys.OUTPUT_DIR]
         val reflektContext = ReflektContext()
 
-        // Todo: will this be called multiple times (for each project module)? can we avoid this?
+        // This will be called multiple times (for each project module),
+        // since compilation process runs module by module
         AnalysisHandlerExtension.registerExtension(
             project,
             ReflektModuleAnalysisExtension(

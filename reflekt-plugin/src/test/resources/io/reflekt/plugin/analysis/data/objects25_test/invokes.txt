@@ -1,11 +1,13 @@
-objects: [
-	supertypes: [
-		io.reflekt.test.A3
-	],
-	annotations: [
-		io.reflekt.test.FirstAnnotationTest,
-		io.reflekt.test.SecondAnnotationTest
+objects: {
+	file: io.reflekt.test.Main.kt: [
+		supertypes: [
+			io.reflekt.test.A3
+		],
+		annotations: [
+			io.reflekt.test.FirstAnnotationTest,
+			io.reflekt.test.SecondAnnotationTest
+		]
 	]
-],
-classes: [],
-functions: []
+},
+classes: {},
+functions: {}

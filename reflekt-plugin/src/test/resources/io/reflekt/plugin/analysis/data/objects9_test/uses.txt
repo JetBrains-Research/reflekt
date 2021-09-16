@@ -1,30 +1,42 @@
 objects: {
-	supertypesToAnnotations: [
-		supertypes: [
-			io.reflekt.test.AInterfaceTest,
-			io.reflekt.test.BInterfaceTest
+	file: io.reflekt.test.A.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				io.reflekt.test.AInterfaceTest,
+				io.reflekt.test.BInterfaceTest
+			],
+			annotations: []
 		],
-		annotations: []
-	],
-	objectsOrClasses: [
-		io.reflekt.test.A1,
-		io.reflekt.test.A2,
-		io.reflekt.test.A3,
-		io.reflekt.test.A4
-	],
-	supertypesToAnnotations: [
-		supertypes: [
-			kotlin.Any
+		objectsOrClasses: [
+			io.reflekt.test.A1,
+			io.reflekt.test.A2,
+			io.reflekt.test.A3,
+			io.reflekt.test.A4
 		],
-		annotations: []
-	],
-	objectsOrClasses: [
-		io.reflekt.test.A1,
-		io.reflekt.test.A2,
-		io.reflekt.test.A3,
-		io.reflekt.test.A4,
-		io.reflekt.test.TestFunctions.Companion
-	]
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			io.reflekt.test.A1,
+			io.reflekt.test.A2,
+			io.reflekt.test.A3,
+			io.reflekt.test.A4
+		]
+	},
+	file: io.reflekt.test.Functions.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			io.reflekt.test.TestFunctions.Companion
+		]
+	}
 },
 classes: {},
 functions: {}

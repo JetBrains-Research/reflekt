@@ -36,7 +36,7 @@ class ReflektIrTransformer(
                 messageCollector?.log("[IR] INVOKE ARGUMENTS: $invokeArguments")
                 newIrBuilder(pluginContext).resultIrCall(
                     invokeParts,
-                    usesType[invokeArguments] ?: throw ReflektGenerationException("No uses stored for $invokeArguments"),
+                    usesType.getOrDefault(invokeArguments, emptyList()),
                     expression.type,
                     pluginContext
                 )
@@ -47,7 +47,7 @@ class ReflektIrTransformer(
                 messageCollector?.log("[IR] INVOKE ARGUMENTS: $invokeArguments")
                 newIrBuilder(pluginContext).functionResultIrCall(
                     invokeParts,
-                    usesType[invokeArguments] ?: throw ReflektGenerationException("No uses stored for $invokeArguments"),
+                    usesType.getOrDefault(invokeArguments, emptyList()),
                     expression.type,
                     pluginContext
                 )

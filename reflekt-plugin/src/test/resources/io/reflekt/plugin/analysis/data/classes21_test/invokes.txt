@@ -1,8 +1,10 @@
-objects: [],
-classes: [
-	supertypes: [
-		io.reflekt.test.B1
-	],
-	annotations: []
-],
-functions: []
+objects: {},
+classes: {
+	file: io.reflekt.test.Main.kt: [
+		supertypes: [
+			io.reflekt.test.B1
+		],
+		annotations: []
+	]
+},
+functions: {}
