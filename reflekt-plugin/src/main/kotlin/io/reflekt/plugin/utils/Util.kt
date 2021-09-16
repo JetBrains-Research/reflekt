@@ -1,15 +1,16 @@
 package io.reflekt.plugin.utils
 
-import io.reflekt.plugin.analysis.models.ReflektInstances
-import io.reflekt.plugin.analysis.models.ReflektUses
 import io.reflekt.plugin.analysis.analyzer.ReflektAnalyzer
 import io.reflekt.plugin.analysis.analyzer.SmartReflektAnalyzer
+import io.reflekt.plugin.analysis.models.ReflektInstances
+import io.reflekt.plugin.analysis.models.ReflektUses
+import io.reflekt.util.TypeStringRepresentationUtil
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.BindingTrace
+import org.jetbrains.kotlin.resolve.*
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.util.slicedMap.Slices
 import org.jetbrains.kotlin.util.slicedMap.WritableSlice
 import java.io.File
@@ -31,8 +32,10 @@ object Util {
     fun CompilerConfiguration.initMessageCollector(filePath: String) {
         val file = File(filePath)
         file.createNewFile()
-        this.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-            PrintingMessageCollector(PrintStream(file.outputStream()), MessageRenderer.PLAIN_FULL_PATHS, true))
+        this.put(
+            CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
+            PrintingMessageCollector(PrintStream(file.outputStream()), MessageRenderer.PLAIN_FULL_PATHS, true)
+        )
     }
 
     fun MessageCollector.log(message: String) {
@@ -80,3 +83,19 @@ fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, transform: T.() -> String
 
 fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T =
     values.first { it.transform() == this }
+
+fun KotlinType.stringRepresentation(): String {
+    val declaration = requireNotNull(constructor.declarationDescriptor) {
+        "declarationDescriptor is null for constructor = $constructor with ${constructor.javaClass}"
+    }
+    val typeArguments = arguments.map {
+        // We should use * symbol in start projection instead of bounds according to KType representation
+        if (it.isStarProjection) {
+            TypeStringRepresentationUtil.STAR_SYMBOL
+        } else {
+            val representation = it.type.stringRepresentation()
+            TypeStringRepresentationUtil.markAsNullable(it.type.stringRepresentation(), it.type.isMarkedNullable)
+        }
+    }
+    return TypeStringRepresentationUtil.getStringRepresentation(DescriptorUtils.getFqName(declaration).asString(), typeArguments)
+}

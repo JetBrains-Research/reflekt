@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.utils.addIfNotNull
 
+// TODO: should we filter functions with <main> name? since it can be error-prone
 class FunctionInvokesProcessor(override val binding: BindingContext) : BaseInvokesProcessor<FunctionInvokes>(binding) {
     override val fileToInvokes: HashMap<String, FunctionInvokes> = HashMap()
 

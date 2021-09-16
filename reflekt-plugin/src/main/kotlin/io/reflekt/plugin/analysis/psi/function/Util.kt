@@ -46,7 +46,7 @@ fun KtNamedFunction.checkSignature(signature: KotlinType, binding: BindingContex
 fun KtNamedFunction.toFunctionInfo(binding: BindingContext): IrFunctionInfo =
     IrFunctionInfo(
         fqName.toString(),
-        receiverFqName = receiverType(binding)?.fqName(),
+        receiverFqName = receiverType(binding)?.shortFqName(),
         isObjectReceiver = receiverType(binding)?.isObject() ?: false
     )
 
@@ -137,7 +137,7 @@ fun SimpleFunctionDescriptor.createFunctionTypeWithDispatchReceiver(
 
 fun DeclarationDescriptor?.isObject() = (this as? ClassDescriptor)?.kind == ClassKind.OBJECT
 
-fun KotlinType.fqName() = getJetTypeFqName(false)
+fun KotlinType.shortFqName() = getJetTypeFqName(false)
 
 fun KotlinType.isObject() = constructor.declarationDescriptor.isObject()
 

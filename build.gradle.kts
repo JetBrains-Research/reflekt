@@ -37,6 +37,14 @@ allprojects {
     repositories {
         jcenter()
         google()
+        // Uncomment it for using the last kotlin compiler version
+        // The full list of the build can be found here:
+        // https://teamcity.jetbrains.com/buildConfiguration/Kotlin_KotlinPublic_BuildNumber?mode=builds&tag=bootstrap
+        // (see builds with <boostrap> tag)
+        // Note: uncomment it also in the settings.gradle.kts
+//        maven {
+//            url = uri("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
+//        }
     }
 
     // We should publish the project in the local maven repository before the tests running

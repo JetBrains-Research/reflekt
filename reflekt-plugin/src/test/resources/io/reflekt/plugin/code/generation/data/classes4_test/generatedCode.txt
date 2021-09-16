@@ -51,21 +51,7 @@ public object ReflektImpl {
         public class WithSupertypes<T : Any>(
             public val fqNames: Set<String>
         ) {
-            public fun toList(): List<KClass<T>> = when (fqNames) {
-                setOf("io.reflekt.codegen.test.BInterfaceTest",
-                        "io.reflekt.codegen.test.AInterfaceTest") ->
-                        listOf(io.reflekt.codegen.test.B1::class as KClass<T>,
-                        io.reflekt.codegen.test.B2::class as KClass<T>,
-                        io.reflekt.codegen.test.B3::class as KClass<T>,
-                        io.reflekt.codegen.test.B3.B4::class as KClass<T>)
-                setOf("kotlin.Any") -> listOf(io.reflekt.codegen.test.FirstAnnotationTest::class as
-                        KClass<T>, io.reflekt.codegen.test.SecondAnnotationTest::class as KClass<T>,
-                        io.reflekt.codegen.test.B1::class as KClass<T>,
-                        io.reflekt.codegen.test.B2::class as KClass<T>,
-                        io.reflekt.codegen.test.B3::class as KClass<T>,
-                        io.reflekt.codegen.test.B3.B4::class as KClass<T>)
-                else -> emptyList()
-            }
+            public fun toList(): List<KClass<T>> = emptyList()
 
             public fun toSet(): Set<KClass<T>> = toList().toSet()
         }
@@ -83,13 +69,16 @@ public object ReflektImpl {
     }
 
     public class Functions {
-        public fun <T : Any> withAnnotations(annotationFqNames: Set<String>) =
-                WithAnnotations<T>(annotationFqNames)
+        public fun <T : Any> withAnnotations(annotationFqNames: Set<String>, signature: String) =
+                WithAnnotations<T>(annotationFqNames, signature)
 
         public class WithAnnotations<T : Any>(
-            public val annotationFqNames: Set<String>
+            public val annotationFqNames: Set<String>,
+            public val signature: String
         ) {
-            public fun toList(): List<KFunction<T>> = emptyList()
+            public fun toList(): List<KFunction<T>> = when (annotationFqNames) {
+                else -> emptyList()
+            }
 
             public fun toSet(): Set<KFunction<T>> = toList().toSet()
         }
