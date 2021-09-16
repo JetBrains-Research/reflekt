@@ -97,7 +97,8 @@ class SmartReflektIrTransformer(
     }
 
     private inline fun <reified T, reified I> evalFilterBody(
-        imports: List<Import>, filters: List<Lambda>,
+        imports: List<Import>,
+        filters: List<Lambda>,
         instance: IrTypeInstance<T, I>
     ): Boolean {
         for (filter in filters) {
