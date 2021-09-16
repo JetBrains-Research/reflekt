@@ -21,20 +21,20 @@ dependencies {
 
     testImplementation(gradleTestKit())
 
-    implementation("com.squareup", "kotlinpoet", "1.6.0")
+    implementation("com.squareup", "kotlinpoet", "1.9.0")
 
     implementation("org.reflections", "reflections", "0.9.12")
 
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.0")
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
-    testImplementation("com.google.code.gson", "gson", "2.8.6")
-    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.1")
+    testImplementation("com.google.code.gson", "gson", "2.8.8")
+    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.4")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform {
-        includeTags = setOf("analysis", "scripting", "ir", "parametrizedType")
+        includeTags = setOf("analysis", "scripting", "ir", "parametrizedType", "codegen")
     }
 
     testLogging {

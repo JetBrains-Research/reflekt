@@ -7,7 +7,6 @@ import io.reflekt.plugin.analysis.psi.isSubtypeOf
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
-//TODO: check code generation case when invokes are not empty but uses are empty and add tests for code generation
 abstract class BaseUsesProcessor<Output : Any>(override val binding: BindingContext) : Processor<Output>(binding) {
     // Store uses by file
     abstract val fileToUses: HashMap<FileID, Output>

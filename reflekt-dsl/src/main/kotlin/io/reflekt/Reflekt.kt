@@ -1,6 +1,8 @@
 package io.reflekt
 
+import io.reflekt.util.stringRepresentation
 import kotlin.reflect.KClass
+import kotlin.reflect.typeOf
 
 /**
  * The main Reflekt DSL for `multi-module` projects
@@ -174,11 +176,11 @@ object Reflekt {
         /**
          * The class represents DSL for searching functions by the signature with several annotations.
          */
-        class WithAnnotations<T : Function<*>>(private val annotationFqNames: Set<String>) {
+        class WithAnnotations<T : Function<*>>(private val annotationFqNames: Set<String>, private val signature: String) {
             /**
              * Get list of functions with [T] signature and [annotationFqNames] annotations.
              */
-            fun toList(): List<T> = ReflektImpl.functions().withAnnotations<T>(annotationFqNames).toList()
+            fun toList(): List<T> = ReflektImpl.functions().withAnnotations<T>(annotationFqNames, signature).toList()
 
             /**
              * Get set of functions with [T] signature and [annotationFqNames] annotations.
@@ -191,8 +193,9 @@ object Reflekt {
          * Filter functions with [T] signature by several annotations.
          * If [klasses] was not passed the list\set with result will contain only functions with [T] signature.
          */
+        @OptIn(ExperimentalStdlibApi::class)
         inline fun <reified T : Function<*>> withAnnotations(vararg klasses: KClass<out Annotation>) =
-            WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet())
+            WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet(), typeOf<T>().stringRepresentation())
     }
 
     /**

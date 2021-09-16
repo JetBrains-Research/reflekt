@@ -17,7 +17,7 @@ data class ResultFile<T>(
     val resultMethod: String = "getResult",
     val resultMethodBody: String = "TODO()"
 ) {
-    val classPath = "$path.${name.split('.').joinToString("") { it.capitalize() }}"
+    val classPath = "$path.${name.split('.').joinToString("") { it.replaceFirstChar(Char::titlecase) }}"
     val file = SourceFile.kotlin(name, """
 package $path
 ${import?.let { "import $it" }}

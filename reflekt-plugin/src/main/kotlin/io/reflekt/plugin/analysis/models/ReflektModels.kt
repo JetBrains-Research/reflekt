@@ -53,8 +53,12 @@ data class IrFunctionInfo(
 typealias IrClassOrObjectUses = TypeUses<SupertypesToAnnotations, String>
 typealias IrFunctionUses = TypeUses<SignatureToAnnotations, IrFunctionInfo>
 
-fun ClassOrObjectUses.toSupertypesToFqNamesMap(): Map<Set<String>, MutableList<KtClassOrObject>> {
-    return this.map { it.key.supertypes to it.value }.toMap()
+fun ClassOrObjectUses.toSupertypesToFqNamesMap(): Map<Set<String>, List<String>> {
+    return this.map { it.key.supertypes to it.value.mapNotNull { it.fqName?.toString() } }.toMap()
+}
+
+fun FunctionUses.toAnnotationsToFunction(): Map<Set<String>, List<KtNamedFunction>> {
+    return this.map { it.key.annotations to it.value }.toMap()
 }
 
 /**

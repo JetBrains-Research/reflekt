@@ -49,12 +49,11 @@ fun main() {
     val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList()
     println(functions)
 
-    // TODO: it does not work (error with TestFunctions$Companion), see issue#52: https://github.com/JetBrains-Research/reflekt/issues/52
-//    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
-//    println(smartClasses)
-//
-//    val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
-//    println(smartObjects)
+    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
+    println(smartClasses)
+
+    val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
+    println(smartObjects)
 
     val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
     println(smartFunctions)

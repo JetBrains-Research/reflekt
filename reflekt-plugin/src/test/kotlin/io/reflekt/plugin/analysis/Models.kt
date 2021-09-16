@@ -1,15 +1,14 @@
 package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.models.*
+import io.reflekt.plugin.analysis.psi.function.shortFqName
 import io.reflekt.plugin.analysis.processor.FileID
-import io.reflekt.plugin.analysis.psi.function.fqName
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
-import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.types.KotlinType
 
 //  We cannot use Json to store and test KotlinType (supertype), so we build a string representation, sufficient to test it.
 //  We also want to check fqName of supertype, which is not included in its toString(), so we added it separately.
-fun KotlinType?.toPrettyString() = "$this (${this?.fqName()})"
+fun KotlinType?.toPrettyString() = "$this (${this?.shortFqName()})"
 
 fun Collection<KotlinType?>.toPrettyString() = joinToStringIndented { it.toPrettyString() }
 
