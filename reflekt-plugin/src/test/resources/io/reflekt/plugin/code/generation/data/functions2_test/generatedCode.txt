@@ -71,16 +71,23 @@ public object ReflektImpl {
     }
 
     public class Functions {
-        public fun <T : Any> withAnnotations(annotationFqNames: Set<String>) =
-                WithAnnotations<T>(annotationFqNames)
+        public fun <T : Any> withAnnotations(annotationFqNames: Set<String>, signature: String) =
+                WithAnnotations<T>(annotationFqNames, signature)
 
         public class WithAnnotations<T : Any>(
-            public val annotationFqNames: Set<String>
+            public val annotationFqNames: Set<String>,
+            public val signature: String
         ) {
             public fun toList(): List<KFunction<T>> = when (annotationFqNames) {
-                setOf("io.reflekt.codegen.test.FirstAnnotationTest") -> listOf(::fooN1 as
-                        KFunction<T>, ::barN1 as KFunction<T>,
-                        io.reflekt.codegen.test.TestFunctions.Companion::foo as KFunction<T>)
+                setOf("io.reflekt.codegen.test.FirstAnnotationTest") -> {
+                    when (signature) {
+                        "kotlin.Function0<kotlin.Unit>" -> listOf(::fooN1 as KFunction<T>, ::barN1
+                                as KFunction<T>,
+                                io.reflekt.codegen.test.TestFunctions.Companion::foo as
+                                KFunction<T>)
+                        else -> emptyList()
+                    }
+                }
                 else -> emptyList()
             }
 
