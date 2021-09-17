@@ -49,10 +49,10 @@ add the following lines in the `plugins` section:
 ```kotlin
 plugins {
     // Version of Kotlin should be 1.5.0+ that supports IR backend
-    kotlin("jvm") version "1.5.10" apply true
+    kotlin("jvm") version "1.5.30" apply true
 
     // Please, use the same version with the Kotlin version in your project
-    id("io.reflekt") version "1.5.10" apply true
+    id("io.reflekt") version "1.5.30" apply true
 
     // Necessary only for this example, for Kotless library
     id("io.kotless") version "0.1.6" apply true
@@ -89,7 +89,7 @@ the following lines in the `dependencies` section:
 ```kotlin
 dependencies {
     // The version here and the version in the plugins sections should be equal
-    implementation("io.reflekt", "reflekt-dsl", "1.5.10")
+    implementation("io.reflekt", "reflekt-dsl", "1.5.30")
 
     // Necessary for this example
     compileOnly("io.kotless", "kotless-lang", "0.1.6")
