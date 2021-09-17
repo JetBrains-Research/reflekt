@@ -6,8 +6,8 @@ version = rootProject.version
 
 plugins {
     id("tanvd.kosogor") version "1.0.10" apply true
-    id("io.reflekt") version "1.5.30" apply true
-    kotlin("jvm") version "1.5.30" apply true
+    id("io.reflekt") version "1.5.10" apply true
+    kotlin("jvm") version "1.5.10" apply true
 }
 
 allprojects {
@@ -27,7 +27,7 @@ allprojects {
     }
 
     dependencies {
-        implementation("io.reflekt", "reflekt-dsl", "1.5.30")
+        implementation("io.reflekt", "reflekt-dsl", "1.5.10")
         implementation("com.github.gumtreediff", "core", "2.1.2")
     }
 
