@@ -11,7 +11,7 @@ group = "io.reflekt"
 *
 * Also, you should change the version in two places in the build.gradle.kts file in the example project
 * */
-version = "1.5.10"
+version = "1.5.20"
 
 plugins {
     id("tanvd.kosogor") version "1.0.12" apply true
