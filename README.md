@@ -39,7 +39,7 @@ ___
 ## Getting started
 
 **Note**, currently we support the following Reflekt and Kotlin versions:
-`1.5.30`
+`1.5.30`, `1.5.21`, `1.5.20`, `1.5.10`, `1.5.0`
 
 Reflekt uses Gradle. If you have a Gradle project, you only need to do three things.
 
