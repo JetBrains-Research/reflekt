@@ -9,9 +9,9 @@ group = "io.reflekt"
 *    class in tests in the reflekt-plugin module
 *  - two places in the main README.md file (after realising)
 *
-* Also, you should change the version in two places in the build.gradle.kts file in the example project (after realising)
+* Also, you should change the version in two places in the build.gradle.kts file in the example project
 * */
-version = "0.2.1"
+version = "1.5.30"
 
 plugins {
     id("tanvd.kosogor") version "1.0.12" apply true
