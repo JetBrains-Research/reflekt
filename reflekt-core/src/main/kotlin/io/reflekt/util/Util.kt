@@ -16,7 +16,7 @@ object Util {
      * Just needs to be consistent with the artifactId in reflekt-plugin build.gradle.kts#publishJar
      */
     const val GRADLE_ARTIFACT_ID = "reflekt-plugin"
-    const val VERSION = "1.5.10"
+    const val VERSION = "1.5.20"
 
     val ENABLED_OPTION_INFO = MyCliOption(
         name = "enabled",
