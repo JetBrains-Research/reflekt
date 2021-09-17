@@ -3,8 +3,9 @@
 
 # Reflekt
 
-Reflekt is a compile-time reflection library that leverages the flows of the standard reflection
-approach.
+Reflekt is a compile-time reflection library that leverages the flows of the 
+standard reflection approach and can find classes, objects (singleton classes) or functions 
+by some conditions in compile-time.
 
 Instead of relying on JVM reflection, Reflekt performs compile-time resolution of reflection queries
 using Kotlin compiler analysis, providing a convenient reflection API without actually using
@@ -16,11 +17,12 @@ necessity of GraalVM support in modern Java applications, especially on Serverle
 the help of the Reflekt project, Kotless will be able to provide access to GraalVM to users of
 historically reflection-based frameworks such as Spring or their own Kotless DSL.
 
-We have implemented two approaches - searching classes\objects or functions by DSL and by custom
-user analysis. The first one will be called Reflekt, and the second SmartReflekt.
+We have implemented two approaches - searching classes\objects or functions via a limited DSL 
+and by custom user condition via an extended DSL. 
+The first one will be called `Reflekt`, and the second `SmartReflekt`.
 
-**Restrictions**. Reflekt analyses only `.kt` files (in the psoject and in the libraries); uses
-Kotlin `1.4.20`. Reflekt does not currently support incremental compilation.
+**Restrictions**. Reflekt analyses only `.kt` files (in the project and in the libraries); uses
+Kotlin `1.5.30`. Reflekt does not currently support incremental compilation.
 
 **Note**, we use [Intermediate Representation](https://kotlinlang.org/docs/whatsnew14.html#unified-backends-and-extensibility) of code in this plugin.
 It means, that Reflekt can be used for all available platforms: JVM, Native and JavaScript.
@@ -46,9 +48,8 @@ plugins {
     // Version of Kotlin should be 1.4.30+ that supports IR backend
     kotlin("jvm") version "1.5.10" apply true
 
-    // Please, use the latest Reflekt version. 
-    // The current latest version is: 0.2.0
-    id("io.reflekt") version "0.2.0" apply true
+    // Please, use the same version with the Kotlin version in your project
+    id("io.reflekt") version "1.5.10" apply true
 
     // Necessary only for this example, for Kotless library
     id("io.kotless") version "0.1.6" apply true
@@ -85,7 +86,7 @@ the following lines in the `dependencies` section:
 ```kotlin
 dependencies {
     // The version here and the version in the plugins sections should be equal
-    implementation("io.reflekt", "reflekt-dsl", "0.2.0")
+    implementation("io.reflekt", "reflekt-dsl", "1.5.10")
 
     // Necessary for this example
     compileOnly("io.kotless", "kotless-lang", "0.1.6")
@@ -96,7 +97,7 @@ At the same time, add the following lines in the `repositories` section:
 ```kotlin
 repositories {
     //... Any other repositories
-    //add Reflekt repository for libraries resolving
+    // add Reflekt repository for libraries resolving
     maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
 }
 ```
@@ -134,11 +135,11 @@ tasks.withType<KotlinCompile> {
 }
 ```
 
-This gives you access to [Reflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/Reflekt.kt)
+This gives you access to [the limited  Reflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/Reflekt.kt)
 interfaces.
 
 This gives you access
-to [SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt), which allow
+to [the extended SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt), which allow
 filtering classes/objects\functions by user condition.
 
 Please note that the current version of Reflekt and SmartReflekt does not support incremental
@@ -219,6 +220,10 @@ and by [SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.
 
 You can also find many examples of searching algorithm work in the [test](./reflekt-plugin/src/test)
 folder.
+
+By default the examples project uses Reflekt from the local maven repository. 
+If you would like to use a released version, please, 
+uncomment the corresponding lines in the `setting.gradle.kts` and `build.gradle.kts` files in the examples project.
 
 ## Want to know more?
 
