@@ -15,7 +15,7 @@ class AnalysisSetupTest {
         private const val WINDOWS_USER_PROFILE = "USERPROFILE"
 
         // We should use a const here since we can not get it from the project
-        fun getReflektProjectJars(version: String = "1.5.20"): Set<File> {
+        fun getReflektProjectJars(version: String = "1.5.21"): Set<File> {
             val baseReflektPath = "${getMavenLocalPath()}/io/reflekt"
             val reflektNames = listOf("gradle-plugin", "reflekt-core", "reflekt-dsl")
             return reflektNames.map {
