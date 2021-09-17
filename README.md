@@ -38,6 +38,9 @@ ___
 
 ## Getting started
 
+**Note**, currently we support the following Reflekt and Kotlin versions:
+`1.5.30`
+
 Reflekt uses Gradle. If you have a Gradle project, you only need to do three things.
 
 Firstly, set up the Reflekt plugin. You need to apply the plugin. In the `build.gradle.kts` file,
@@ -45,7 +48,7 @@ add the following lines in the `plugins` section:
 
 ```kotlin
 plugins {
-    // Version of Kotlin should be 1.4.30+ that supports IR backend
+    // Version of Kotlin should be 1.5.0+ that supports IR backend
     kotlin("jvm") version "1.5.10" apply true
 
     // Please, use the same version with the Kotlin version in your project
