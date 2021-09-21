@@ -19,7 +19,6 @@ plugins {
     id("com.github.gmazzo.buildconfig") version "3.0.3" apply false
     `maven-publish`
     kotlin("kapt") version "1.5.30" apply true
-    `java-gradle-plugin`
 }
 
 allprojects {
@@ -73,12 +72,3 @@ subprojects {
         }
     }
 }
-
-//gradlePlugin {
-//    plugins {
-//        create("reflekt") {
-//            id = "io.reflekt.reflekt-dsl"
-//            implementationClass = "io.reflekt"
-//        }
-//    }
-//}
