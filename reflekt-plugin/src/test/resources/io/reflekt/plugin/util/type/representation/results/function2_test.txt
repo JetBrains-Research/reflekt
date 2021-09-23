@@ -1,0 +1,1 @@
+kotlin.Function2<kotlin.Int, kotlin.collections.Iterable<*>, kotlin.Unit>

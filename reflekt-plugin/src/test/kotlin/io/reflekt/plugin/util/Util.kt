@@ -14,7 +14,7 @@ object Util {
     fun getResourcesRootPath(
         cls: KClass<*>,
         resourcesRootName: String = "data"
-    ): String = cls.java.getResource(resourcesRootName).path
+    ): String = cls.java.getResource(resourcesRootName)?.path ?: error("Was not found the resource: ${resourcesRootName}")
 
     inline fun <reified T> parseJson(json: File): T =
         gson.fromJson(json.readText(), T::class.java)

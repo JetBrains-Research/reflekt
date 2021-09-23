@@ -13,7 +13,7 @@ enum class ReflektEntity(
     FUNCTIONS("functions", "FunctionCompileTimeExpression");
 
     // Reflekt nested class - Classes/Objects/Functions
-    val className = entityType.capitalize()
+    val className = entityType.replaceFirstChar(Char::titlecase)
 
     val fqName: String = "${Reflekt::class.qualifiedName}.$entityType"
     val classFqName = "${Reflekt::class.qualifiedName}.$className"
@@ -33,8 +33,8 @@ enum class SmartReflektFunction(val functionName: String) {
 }
 
 enum class ReflektNestedClass(val className: String) {
-    WITH_SUPERTYPES(ReflektFunction.WITH_SUPERTYPES.functionName.capitalize()),
-    WITH_ANNOTATIONS(ReflektFunction.WITH_ANNOTATIONS.functionName.capitalize()),
+    WITH_SUPERTYPES(ReflektFunction.WITH_SUPERTYPES.functionName.replaceFirstChar(Char::titlecase)),
+    WITH_ANNOTATIONS(ReflektFunction.WITH_ANNOTATIONS.functionName.replaceFirstChar(Char::titlecase)),
 }
 
 enum class ReflektTerminalFunction(val functionName: String) {

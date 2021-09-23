@@ -1,14 +1,24 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 group = "io.reflekt"
-version = "0.1.0"
+/*
+* To change version you should change the version in the following places:
+*  - here (the main build.gradle.kts file)
+*  - VERSION const in the Util.kt in the reflekt-core module
+*  - version argument in the getReflektProjectJars function in AnalysisSetupTest
+*    class in tests in the reflekt-plugin module
+*  - two places in the main README.md file (after realising)
+*
+* Also, you should change the version in two places in the build.gradle.kts file in the example project
+* */
+version = "1.5.30"
 
 plugins {
-    id("tanvd.kosogor") version "1.0.10" apply true
-    kotlin("jvm") version "1.5.10" apply true
-    id("com.github.gmazzo.buildconfig") version "2.0.2" apply false
+    id("tanvd.kosogor") version "1.0.12" apply true
+    kotlin("jvm") version "1.5.30" apply true
+    id("com.github.gmazzo.buildconfig") version "3.0.3" apply false
     `maven-publish`
-    kotlin("kapt") version "1.5.10" apply true
+    kotlin("kapt") version "1.5.30" apply true
 }
 
 allprojects {
@@ -27,6 +37,14 @@ allprojects {
     repositories {
         jcenter()
         google()
+        // Uncomment it for using the last kotlin compiler version
+        // The full list of the build can be found here:
+        // https://teamcity.jetbrains.com/buildConfiguration/Kotlin_KotlinPublic_BuildNumber?mode=builds&tag=bootstrap
+        // (see builds with <boostrap> tag)
+        // Note: uncomment it also in the settings.gradle.kts
+//        maven {
+//            url = uri("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
+//        }
     }
 
     // We should publish the project in the local maven repository before the tests running

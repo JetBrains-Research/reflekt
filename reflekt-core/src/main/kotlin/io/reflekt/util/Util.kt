@@ -1,4 +1,4 @@
-package io.reflekt.cli
+package io.reflekt.util
 
 data class MyCliOption(
     val name: String,
@@ -16,7 +16,7 @@ object Util {
      * Just needs to be consistent with the artifactId in reflekt-plugin build.gradle.kts#publishJar
      */
     const val GRADLE_ARTIFACT_ID = "reflekt-plugin"
-    const val VERSION = "0.1.0"
+    const val VERSION = "1.5.30"
 
     val ENABLED_OPTION_INFO = MyCliOption(
         name = "enabled",

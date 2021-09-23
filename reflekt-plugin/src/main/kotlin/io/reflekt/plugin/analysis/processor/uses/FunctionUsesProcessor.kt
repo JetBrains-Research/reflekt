@@ -1,30 +1,30 @@
 package io.reflekt.plugin.analysis.processor.uses
 
 import io.reflekt.plugin.analysis.models.*
+import io.reflekt.plugin.analysis.processor.*
+import io.reflekt.plugin.analysis.processor.fullName
 import io.reflekt.plugin.analysis.processor.isPublicFunction
 import io.reflekt.plugin.analysis.psi.annotation.getAnnotations
 import io.reflekt.plugin.analysis.psi.function.toParameterizedType
-import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
 
-class FunctionUsesProcessor(override val binding: BindingContext, private val reflektInvokes: ReflektInvokes) : BaseUsesProcessor<FunctionUses>(binding) {
-    override val uses: FunctionUses = reflektInvokes.functions.associateWith { ArrayList() }
+class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes) : BaseUsesProcessor<FunctionUses>(binding) {
+    override val fileToUses: HashMap<FileID, FunctionUses> = HashMap()
+    private val invokes = getInvokesGroupedByFiles(reflektInvokes.functions)
 
-    override fun process(element: KtElement): FunctionUses {
+    override fun process(element: KtElement, file: KtFile): HashMap<FileID, FunctionUses> {
         (element as? KtNamedFunction)?.let {
-            reflektInvokes.functions.forEach {
-                if (it.covers(element)) {
-                    uses.getValue(it).add(element)
-                }
+            invokes.filter { it.covers(element) }.forEach {
+                fileToUses.getOrPut(file.fullName) { HashMap() }.getOrPut(it) { mutableListOf() }.add(element)
             }
         }
-        return uses
+        return fileToUses
     }
 
-    override fun shouldRunOn(element: KtElement) = element.isPublicFunction
+    override fun shouldRunOn(element: KtElement) = element.isPublicFunction && !element.isMainFunction
 
     private fun SignatureToAnnotations.covers(function: KtNamedFunction): Boolean {
         return (annotations.isEmpty() || function.getAnnotations(binding, annotations).isNotEmpty()) &&

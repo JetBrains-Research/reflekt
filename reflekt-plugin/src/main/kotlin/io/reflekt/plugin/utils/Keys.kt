@@ -1,6 +1,6 @@
 package io.reflekt.plugin.utils
 
-import io.reflekt.cli.Util.PLUGIN_ID
+import io.reflekt.util.Util.PLUGIN_ID
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import java.io.File
 

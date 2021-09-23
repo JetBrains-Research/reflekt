@@ -1,14 +1,3 @@
 objects: {},
-classes: {
-	supertypesToAnnotations: [
-		supertypes: [
-			io.reflekt.test.B1
-		],
-		annotations: [
-			io.reflekt.test.FirstAnnotationTest,
-			io.reflekt.test.SecondAnnotationTest
-		]
-	],
-	objectsOrClasses: []
-},
+classes: {},
 functions: {}

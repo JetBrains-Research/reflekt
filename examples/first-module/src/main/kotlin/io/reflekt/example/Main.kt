@@ -52,7 +52,54 @@ fun main() {
     val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
     println(smartClasses)
 
+    val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
+    println(smartObjects)
+
     val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
     println(smartFunctions)
     smartFunctions.forEach { it() }
+
+    val fooBoolean = SmartReflekt.functions<() -> Boolean>().filter { it.isTopLevel && it.name == "fooBoolean" }.resolve().onEach { it() }
+        .map { it.toString() }.toSet()
+    println("fooBoolean: $fooBoolean")
+
+    val fooStar = SmartReflekt.functions<(List<*>) -> Unit>().filter { it.isTopLevel && it.name == "withStar" }.resolve().onEach { it(listOf(1)) }
+        .map { it.toString() }.toSet()
+    println("fooStar: $fooStar")
+
+    // TODO: we will support gnerics with bounds
+//    val fooBound = SmartReflekt.functions<(Number) -> Unit>().filter { it.isTopLevel && it.name == "withBound" }.resolve().onEach { it(listOf(1)) }
+//        .map { it.toString() }.toSet()
+//    println("fooBound: $fooBound")
+
+    /**
+     * Such calls still fail, but it seems it's not a Reflekt problem since Kotlin doesn't consider our functions as subtypes of the given signature.
+     */
+
+//        val fooArray = SmartReflekt.functions<Function0<Array<*>>>().filter { it.isTopLevel && it.name == "fooArray" }.resolve().onEach { it() }.map { it.toString() }.toSet()
+//        println(fooArray)
+//
+//        val fooList = SmartReflekt.functions<Function0<List<*>>>().filter { it.isTopLevel && it.name == "fooList" }.resolve().onEach { it() }.map { it.toString() }.toSet()
+//        println(fooList)
+//
+//        val fooMyInClass = SmartReflekt.functions<Function0<MyInClass<*>>>().filter { it.isTopLevel && it.name == "fooMyInClass" }.resolve().onEach { it() }.map { it.toString() }.toSet()
+//        println(fooMyInClass)
+
+    /**
+     * The simplest way to check it's to pass our functions as a parameter of an argument with the given signature:
+     */
+    //    arrayTestFun(::fooArray)
+    //    listTestFun(::fooList)
+    //    myInClassTestFun(::fooMyInClass)
+
+    /**
+     * For each of the functions Kotlin says [NEW_INFERENCE_NO_INFORMATION_FOR_PARAMETER] Not enough information to infer type variable T
+     * Maybe we need to check https://kotlinlang.org/spec/type-system.html#mixed-site-variance
+     */
 }
+
+fun arrayTestFun(funToTest: Function0<Array<*>>) {}
+
+fun listTestFun(funToTest: Function0<List<*>>) {}
+
+fun myInClassTestFun(funToTest: Function0<MyInClass<*>>) {}

@@ -1,3 +1,3 @@
-objects: [],
-classes: [],
-functions: []
+objects: {},
+classes: {},
+functions: {}
