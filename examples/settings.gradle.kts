@@ -15,10 +15,11 @@ pluginManagement {
 //    }
 
     repositories {
-        gradlePluginPortal()
         mavenLocal()
         // add the dependency to Reflekt Maven repository
         // Uncomment to use a released version
-        // maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
+//        maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
+        // Necessary only for this example, for Kotless library
+        maven(url = uri("https://plugins.gradle.org/m2/"))
     }
 }
