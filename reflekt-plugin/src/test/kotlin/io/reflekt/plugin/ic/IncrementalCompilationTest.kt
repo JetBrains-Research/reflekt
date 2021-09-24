@@ -1,0 +1,112 @@
+package io.reflekt.plugin.ic
+
+import io.reflekt.plugin.analysis.getTestsDirectories
+import io.reflekt.plugin.ic.modification.Modification
+import io.reflekt.plugin.util.Util
+import io.reflekt.plugin.util.Util.getTempPath
+import io.reflekt.util.FileUtil
+import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
+import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.io.File
+
+class IncrementalCompilationTest {
+    // File with compiler arguments (see K2JVMCompilerArguments)
+    // If we would like to add additional arguments in tests we can use this file
+    private val argumentsFileName = "args.txt"
+
+    // The name of file with the main function
+    private val mainFileName = "Main"
+    private val outFolderName = "out"
+
+    companion object {
+        @JvmStatic
+        fun data(): List<Arguments> {
+            return getTestsDirectories(IncrementalCompilationTest::class).map { directory ->
+                // TODO: get modifications for each directory (maybe deserialize it?)
+                Arguments.of(directory, HashMap<File, Modification>())
+            }
+        }
+    }
+
+    // These tests change sources, but don't change Reflekt output
+    @Tag("ic")
+    @MethodSource("data")
+    @ParameterizedTest(name = "test {index}")
+    fun incrementalCompilationBaseTest(sourcesPath: File, modifications: HashMap<File, Modification>) {
+        val testRoot = initTestRoot()
+        val srcDir = File(testRoot, "src").apply { mkdirs() }
+        val cacheDir = File(testRoot, "incremental-data").apply { mkdirs() }
+        val outDir = File(testRoot, outFolderName).apply { mkdirs() }
+
+        sourcesPath.copyRecursively(srcDir, overwrite = true)
+        val testDataPath = File(Util.getResourcesRootPath(IncrementalCompilationTest::class))
+        val pathToDownloadKotlinSources = File(testDataPath.parent, "kotlinSources").apply { mkdirs() }
+        val compilerArgs = createCompilerArguments(outDir, srcDir, pathToDownloadKotlinSources).apply {
+            parseCommandLineArguments(parseAdditionalArgs(srcDir), this)
+        }
+        compileSources(cacheDir, listOf(srcDir), compilerArgs, "Initial")
+        val expectedResult = runCompiledCode(outDir)
+
+        val changedSources = applyModifications(srcDir, modifications)
+        compileSources(cacheDir, changedSources, compilerArgs, "Modified")
+        val actualResult = runCompiledCode(outDir)
+        Assertions.assertEquals(expectedResult, actualResult)
+
+        testRoot.deleteRecursively()
+    }
+
+    private fun runCompiledCode(outDir: File) = Util.runProcessBuilder(Util.Command(listOf("java", getMainClass(outDir)), directory = outDir.absolutePath))
+
+    // Find [mainFileName]Kt.class file in [outDir] and make the following transformations:
+    //  - сut <class> extension
+    //  - get the relative path with [outDir]
+    //  - replace all "/" into "."
+    private fun getMainClass(outDir: File): String {
+        val allFiles = FileUtil.getAllNestedFiles(outDir.absolutePath)
+        val mainClass = allFiles.find { it.name == "${mainFileName}Kt.class" }?.absolutePath?.removeSuffix(".class")
+            ?: error("The output directory doe not contains ${mainFileName}Kt.class file")
+        return mainClass.substring(mainClass.indexOf("$outFolderName/") + outFolderName.length + 1).replace("/", ".")
+    }
+
+    // If we had failed tests the previous results were not deleted and it can throw some compiler errors
+    private fun initTestRoot(): File {
+        val testRoot = File(getTempPath(), IncrementalCompilationTest::class.java.simpleName)
+        if (testRoot.exists()) {
+            testRoot.deleteRecursively()
+        }
+        testRoot.apply { mkdirs() }
+        return testRoot
+    }
+
+    private fun compileSources(cacheDir: File, sources: List<File>, compilerArgs: K2JVMCompilerArguments, errorMessagePrefix: String) {
+        val (_, errors) = compile(cacheDir, sources, compilerArgs)
+        check(errors.isEmpty()) { "$errorMessagePrefix build failed: \n${errors.joinToString("\n")}" }
+    }
+
+    private fun parseAdditionalArgs(testDir: File): List<String> {
+        return File(testDir, argumentsFileName)
+            .takeIf { it.exists() }
+            ?.readText()
+            ?.split(" ", "\n")
+            ?.filter { it.isNotBlank() }
+            ?: emptyList()
+    }
+
+    private fun applyModifications(sourcesDir: File, modifications: HashMap<File, Modification>): List<File> {
+        val allSources = FileUtil.getAllNestedFiles(sourcesDir.absolutePath)
+        val changedSources = mutableListOf<File>()
+        allSources.forEach { sourceFile ->
+            modifications.getOrDefault(sourceFile, null)?.let { m ->
+                m.applyActions()?.let {
+                    changedSources.add(it)
+                }
+            } ?: changedSources.add(sourceFile)
+        }
+        return changedSources
+    }
+}

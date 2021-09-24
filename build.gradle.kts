@@ -5,7 +5,7 @@ group = "io.reflekt"
 * To change version you should change the version in the following places:
 *  - here (the main build.gradle.kts file)
 *  - VERSION const in the Util.kt in the reflekt-core module
-*  - version argument in the getReflektProjectJars function in AnalysisSetupTest
+*  - VERSION const in the MavenLocalUtil object
 *    class in tests in the reflekt-plugin module
 *  - two places in the main README.md file (after realising)
 *

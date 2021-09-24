@@ -2,6 +2,7 @@ package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.analysis.AnalysisUtil.getReflektAnalyzer
 import io.reflekt.plugin.analysis.models.ReflektInvokes
+import io.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import io.reflekt.plugin.util.Util.getResourcesRootPath
 import io.reflekt.plugin.util.Util.parseJson
 import io.reflekt.util.FileUtil.getAllNestedFiles
@@ -32,7 +33,7 @@ class AnalysisTest {
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
     fun `project analyzer test`(sources: Set<File>, expectedInvokes: String, expectedUses: String, directory: String) {
-        val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
+        val reflektClassPath = getReflektProjectJars()
         val analyzer = getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
         val actualInvokes = analyzer.invokes()
         Assertions.assertEquals(expectedInvokes, actualInvokes.toPrettyString(), "Incorrect invokes for directory $directory")
