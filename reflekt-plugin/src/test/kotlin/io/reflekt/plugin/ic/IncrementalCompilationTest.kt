@@ -28,16 +28,15 @@ class IncrementalCompilationTest {
         fun data(): List<Arguments> {
             return getTestsDirectories(IncrementalCompilationTest::class).map { directory ->
                 // TODO: get modifications for each directory (maybe deserialize it?)
-                Arguments.of(directory, HashMap<File, Modification>())
+                Arguments.of(directory, HashMap<File, Modification>(), null)
             }
         }
     }
 
-    // These tests change sources, but don't change Reflekt output
     @Tag("ic")
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
-    fun incrementalCompilationBaseTest(sourcesPath: File, modifications: HashMap<File, Modification>) {
+    fun incrementalCompilationBaseTest(sourcesPath: File, modifications: HashMap<File, Modification>, expectedResult: String?) {
         val testRoot = initTestRoot()
         val srcDir = File(testRoot, "src").apply { mkdirs() }
         val cacheDir = File(testRoot, "incremental-data").apply { mkdirs() }
@@ -50,14 +49,27 @@ class IncrementalCompilationTest {
             parseCommandLineArguments(parseAdditionalArgs(srcDir), this)
         }
         compileSources(cacheDir, listOf(srcDir), compilerArgs, "Initial")
-        val expectedResult = runCompiledCode(outDir)
+        // If expectedResult was not passed then the initial result should be the same
+        // with the result after sources modification
+        val realExpectedResult = expectedResult ?: runCompiledCode(outDir)
 
-        val changedSources = applyModifications(srcDir, modifications)
-        compileSources(cacheDir, changedSources, compilerArgs, "Modified")
+        applyModifications(srcDir, modifications)
+        compileSources(cacheDir, listOf(srcDir), compilerArgs, "Modified")
         val actualResult = runCompiledCode(outDir)
-        Assertions.assertEquals(expectedResult, actualResult)
+        Assertions.assertEquals(realExpectedResult, actualResult, "Result after IC is wrong!")
+
+        // Compare the initial result and result without IC
+        cacheDir.clear()
+        compileSources(cacheDir, listOf(srcDir), compilerArgs, "Without IC")
+        val actualResultWithoutIC = runCompiledCode(outDir)
+        Assertions.assertEquals(realExpectedResult, actualResultWithoutIC, "The initial result and result after IC are different!")
 
         testRoot.deleteRecursively()
+    }
+
+    private fun File.clear() {
+        this.deleteRecursively()
+        this.mkdir()
     }
 
     private fun runCompiledCode(outDir: File) = Util.runProcessBuilder(Util.Command(listOf("java", getMainClass(outDir)), directory = outDir.absolutePath))
