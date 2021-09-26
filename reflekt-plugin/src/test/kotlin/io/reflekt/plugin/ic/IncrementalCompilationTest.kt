@@ -41,6 +41,7 @@ class IncrementalCompilationTest {
         val srcDir = File(testRoot, "src").apply { mkdirs() }
         val cacheDir = File(testRoot, "incremental-data").apply { mkdirs() }
         val outDir = File(testRoot, outFolderName).apply { mkdirs() }
+        val srcRoots = listOf(srcDir)
 
         sourcesPath.copyRecursively(srcDir, overwrite = true)
         val testDataPath = File(Util.getResourcesRootPath(IncrementalCompilationTest::class))
@@ -48,19 +49,19 @@ class IncrementalCompilationTest {
         val compilerArgs = createCompilerArguments(outDir, srcDir, pathToDownloadKotlinSources).apply {
             parseCommandLineArguments(parseAdditionalArgs(srcDir), this)
         }
-        compileSources(cacheDir, listOf(srcDir), compilerArgs, "Initial")
+        compileSources(cacheDir, srcRoots, compilerArgs, "Initial")
         // If expectedResult was not passed then the initial result should be the same
         // with the result after sources modification
         val realExpectedResult = expectedResult ?: runCompiledCode(outDir)
 
         applyModifications(srcDir, modifications)
-        compileSources(cacheDir, listOf(srcDir), compilerArgs, "Modified")
+        compileSources(cacheDir, srcRoots, compilerArgs, "Modified")
         val actualResult = runCompiledCode(outDir)
         Assertions.assertEquals(realExpectedResult, actualResult, "Result after IC is wrong!")
 
         // Compare the initial result and result without IC
         cacheDir.clear()
-        compileSources(cacheDir, listOf(srcDir), compilerArgs, "Without IC")
+        compileSources(cacheDir, srcRoots, compilerArgs, "Without IC")
         val actualResultWithoutIC = runCompiledCode(outDir)
         Assertions.assertEquals(realExpectedResult, actualResultWithoutIC, "The initial result and result after IC are different!")
 
