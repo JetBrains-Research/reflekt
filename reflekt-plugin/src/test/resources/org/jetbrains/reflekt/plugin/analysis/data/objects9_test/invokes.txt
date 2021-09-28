@@ -1,0 +1,19 @@
+objects: {
+	file: org.jetbrains.reflekt.test.Main.kt: [
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
+		],
+		supertypesToAnnotations: [
+			supertypes: [
+				org.jetbrains.reflekt.test.AInterfaceTest,
+				org.jetbrains.reflekt.test.BInterfaceTest
+			],
+			annotations: []
+		]
+	]
+},
+classes: {},
+functions: {}

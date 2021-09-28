@@ -1,9 +1,0 @@
-[
-	supertype: AInterface1Test (io.reflekt.test.AInterface1Test),
-	filters: [
-		Lambda(body=it.isInterface(), parameters=[it])
-	],
-	imports: [
-		Import(fqName=io.reflekt.SmartReflekt, text=import io.reflekt.SmartReflekt)
-	]
-]

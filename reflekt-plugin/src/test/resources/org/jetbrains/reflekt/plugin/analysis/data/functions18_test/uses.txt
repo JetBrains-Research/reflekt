@@ -1,0 +1,15 @@
+objects: {},
+classes: {},
+functions: {
+	file: org.jetbrains.reflekt.test.FunctionSignatures.kt: {
+		signatureToAnnotations: [
+			signature: Function1<List<Int>, List<Float>> (kotlin.Function1),
+			annotations: [
+				org.jetbrains.reflekt.test.FunctionsTestAnnotation
+			]
+		],
+		namedFunctions: [
+			org.jetbrains.reflekt.test.fun15
+		]
+	}
+}

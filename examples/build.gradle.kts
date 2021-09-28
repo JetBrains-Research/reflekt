@@ -1,4 +1,4 @@
-import io.reflekt.plugin.reflekt
+import org.jetbrains.reflekt.plugin.reflekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = rootProject.group
@@ -6,7 +6,7 @@ version = rootProject.version
 
 plugins {
     id("tanvd.kosogor") version "1.0.10" apply true
-    id("io.reflekt") version "1.5.30" apply true
+    id("org.jetbrains.reflekt") version "1.5.30" apply true
     kotlin("jvm") version "1.5.30" apply true
 }
 
@@ -14,7 +14,7 @@ allprojects {
     apply {
         plugin("kotlin")
         plugin("tanvd.kosogor")
-        plugin("io.reflekt")
+        plugin("org.jetbrains.reflekt")
     }
 
     tasks.withType<KotlinCompile> {
@@ -29,7 +29,7 @@ allprojects {
     }
 
     dependencies {
-        implementation("io.reflekt", "reflekt-dsl", "1.5.30")
+        implementation("org.jetbrains.reflekt", "reflekt-dsl", "1.5.30")
         implementation("com.github.gumtreediff", "core", "2.1.2")
     }
 

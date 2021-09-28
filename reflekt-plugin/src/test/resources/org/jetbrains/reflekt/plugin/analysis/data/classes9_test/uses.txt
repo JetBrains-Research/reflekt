@@ -1,0 +1,68 @@
+objects: {},
+classes: {
+	file: org.jetbrains.reflekt.test.Annotations.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			org.jetbrains.reflekt.test.FirstAnnotationTest,
+			org.jetbrains.reflekt.test.SecondAnnotationTest
+		]
+	},
+	file: org.jetbrains.reflekt.test.B.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			org.jetbrains.reflekt.test.B1,
+			org.jetbrains.reflekt.test.B2,
+			org.jetbrains.reflekt.test.B3,
+			org.jetbrains.reflekt.test.B3.B4
+		],
+		supertypesToAnnotations: [
+			supertypes: [
+				org.jetbrains.reflekt.test.AInterfaceTest,
+				org.jetbrains.reflekt.test.BInterfaceTest
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			org.jetbrains.reflekt.test.B1,
+			org.jetbrains.reflekt.test.B2,
+			org.jetbrains.reflekt.test.B3,
+			org.jetbrains.reflekt.test.B3.B4
+		]
+	},
+	file: org.jetbrains.reflekt.test.FunctionSignatures.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			org.jetbrains.reflekt.test.FunTest1,
+			org.jetbrains.reflekt.test.FunTest2,
+			org.jetbrains.reflekt.test.FunTest3,
+			org.jetbrains.reflekt.test.FunctionsTestAnnotation
+		]
+	},
+	file: org.jetbrains.reflekt.test.Functions.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				kotlin.Any
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			org.jetbrains.reflekt.test.TestFunctions
+		]
+	}
+},
+functions: {}

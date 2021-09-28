@@ -52,7 +52,7 @@ plugins {
     kotlin("jvm") version "1.5.30" apply true
 
     // Please, use the same version with the Kotlin version in your project
-    id("io.reflekt") version "1.5.30" apply true
+    id("org.jetbrains.reflekt") version "1.5.30" apply true
 
     // Necessary only for this example, for Kotless library
     id("io.kotless") version "0.1.6" apply true
@@ -66,8 +66,8 @@ pluginManagement {
     resolutionStrategy {
         this.eachPlugin {
             
-            if (requested.id.id == "io.reflekt") {
-                useModule("io.reflekt:gradle-plugin:${this.requested.version}")
+            if (requested.id.id == "org.jetbrains.reflekt") {
+                useModule("org.jetbrains.reflekt:gradle-plugin:${this.requested.version}")
             }
         }
     }
@@ -88,7 +88,7 @@ the following lines in the `dependencies` section:
 ```kotlin
 dependencies {
     // The version here and the version in the plugins sections should be equal
-    implementation("io.reflekt", "reflekt-dsl", "1.5.30")
+    implementation("org.jetbrains.reflekt", "reflekt-dsl", "1.5.30")
 
     // Necessary for this example
     compileOnly("io.kotless", "kotless-lang", "0.1.6")
