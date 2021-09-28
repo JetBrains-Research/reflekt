@@ -17,19 +17,7 @@ allprojects {
         plugin("io.reflekt")
     }
 
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            useIR = true
-            languageVersion = "1.5"
-            apiVersion = "1.5"
-            jvmTarget = "11"
-            // Current Reflekt version does not support incremental compilation process
-            incremental = false
-        }
-    }
-
     dependencies {
-        implementation("io.reflekt", "reflekt-dsl", "1.5.30")
         implementation("com.github.gumtreediff", "core", "2.1.2")
     }
 

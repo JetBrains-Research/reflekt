@@ -4,7 +4,7 @@
 # Reflekt
 
 Reflekt is a compile-time reflection library that leverages the flows of the 
-standard reflection approach and can find classes, objects (singleton classes) or functions 
+standard reflection approach and can find classes, objects (singleton classes), or functions 
 by some conditions in compile-time.
 
 Instead of relying on JVM reflection, Reflekt performs compile-time resolution of reflection queries
@@ -17,7 +17,7 @@ necessity of GraalVM support in modern Java applications, especially on Serverle
 the help of the Reflekt project, Kotless will be able to provide access to GraalVM to users of
 historically reflection-based frameworks such as Spring or their own Kotless DSL.
 
-We have implemented two approaches - searching classes\objects or functions via a limited DSL 
+We have implemented two approaches - searching classes/objects or functions via a limited DSL 
 and by custom user condition via an extended DSL. 
 The first one will be called `Reflekt`, and the second `SmartReflekt`.
 
@@ -41,9 +41,9 @@ ___
 **Note**, currently we support the following Reflekt and Kotlin versions:
 `1.5.30`, `1.5.21`, `1.5.20`, `1.5.10`, `1.5.0`
 
-Reflekt uses Gradle. If you have a Gradle project, you only need to do three things.
+Reflekt uses Gradle. If you have a Gradle project, you need to do the following steps to set up the Reflekt plugin.
 
-Firstly, set up the Reflekt plugin. You need to apply the plugin. In the `build.gradle.kts` file,
+Firstly, apply the plugin. In the `build.gradle.kts` file,
 add the following lines in the `plugins` section:
 
 ```kotlin
@@ -82,20 +82,8 @@ pluginManagement {
 }
 ```
 
-Secondly, add the Reflekt DSL as a library to your application. In the `build.gradle.kts` file, add
-the following lines in the `dependencies` section:
 
-```kotlin
-dependencies {
-    // The version here and the version in the plugins sections should be equal
-    implementation("io.reflekt", "reflekt-dsl", "1.5.30")
-
-    // Necessary for this example
-    compileOnly("io.kotless", "kotless-lang", "0.1.6")
-}
-```
-
-At the same time, add the following lines in the `repositories` section:
+And add the following lines in the `repositories` section of `build.gradle.kts` file:
 ```kotlin
 repositories {
     //... Any other repositories
@@ -104,7 +92,7 @@ repositories {
 }
 ```
 
-Thirdly, customize the Reflekt plugin. In the `build.gradle.kts` file, add the `reflekt` object:
+Next, customize the Reflekt plugin. In the `build.gradle.kts` file, add the `reflekt` block:
 
 ```kotlin
 reflekt {
@@ -121,33 +109,8 @@ _Please note that the `librariesToIntrospect` argument should contain only the d
 use in the `dependencies` section. These dependencies may be implemented in Java or Kotlin language,
 but the analysis will be made only on Kotlin files._
 
-To avoid some bugs and enable IR, please add the following compilation settings 
-for Java and Kotlin in the `build.gradle.kts` file:
 
-```kotlin
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        useIR = true
-        languageVersion = "1.5"
-        apiVersion = "1.5"
-        jvmTarget = "11"
-        // Current Reflekt version does not support incremental compilation process
-        incremental = false
-    }
-}
-```
-
-**Note**: Please note that the current version of Reflekt and SmartReflekt does not support incremental
-compilation process
-
-This gives you access to [the limited  Reflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/Reflekt.kt)
-interfaces.
-
-This gives you access
-to [the extended SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt), which allow
-filtering classes/objects\functions by user condition.
+All of the above gives you access to [the limited  Reflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/Reflekt.kt) and [the extended SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt).
 
 Now you can use the Reflekt plugin to find objects, classes, and functions in your project:
 
@@ -160,7 +123,7 @@ val classes = Reflekt.classes().withSupertype<BInterface>().toSet()
 val functions = Reflekt.functions().withAnnotations<() -> Unit>().toList()
 ```
 
-And the SmartReflekt plugin:
+And the SmartReflekt plugin to find the same instances but by custom condition:
 
 ```kotlin
 val objects = SmartReflekt.objects<AInterface>().filter { TODO("some user's condition") }.resolve()
