@@ -20,7 +20,7 @@ internal fun createCompilerArguments(destinationDir: File, testDir: File, pathTo
     }
 }
 
-// This functions does not take into account java sources
+// This function does not take into account java sources
 internal fun compile(cacheDir: File, sourceRoots: Iterable<File>, args: K2JVMCompilerArguments): TestCompilationResult {
     val reporter = TestICReporter()
     val messageCollector = TestMessageCollector()
@@ -28,7 +28,7 @@ internal fun compile(cacheDir: File, sourceRoots: Iterable<File>, args: K2JVMCom
     return TestCompilationResult(reporter, messageCollector)
 }
 
-internal fun parseAdditionalArgs(testDir: File, argumentsFileName: String): List<String> {
+internal fun parseAdditionalCompilerArgs(testDir: File, argumentsFileName: String): List<String> {
     return File(testDir, argumentsFileName)
         .takeIf { it.exists() }
         ?.readText()

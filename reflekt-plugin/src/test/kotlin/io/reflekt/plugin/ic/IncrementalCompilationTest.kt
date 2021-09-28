@@ -48,7 +48,7 @@ class IncrementalCompilationTest {
         val testDataPath = File(Util.getResourcesRootPath(IncrementalCompilationTest::class))
         val pathToDownloadKotlinSources = File(testDataPath.parent, "kotlinSources").apply { mkdirs() }
         val compilerArgs = createCompilerArguments(outDir, srcDir, pathToDownloadKotlinSources).apply {
-            parseCommandLineArguments(parseAdditionalArgs(srcDir, argumentsFileName), this)
+            parseCommandLineArguments(parseAdditionalCompilerArgs(srcDir, argumentsFileName), this)
         }
         compileSources(cacheDir, srcRoots, compilerArgs, "Initial")
         // If expectedResult was not passed then the initial result should be the same
