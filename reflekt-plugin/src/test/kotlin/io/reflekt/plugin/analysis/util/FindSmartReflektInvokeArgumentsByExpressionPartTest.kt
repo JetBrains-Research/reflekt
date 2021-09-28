@@ -1,8 +1,8 @@
 package io.reflekt.plugin.analysis.util
 
 import io.reflekt.plugin.analysis.*
+import io.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import io.reflekt.plugin.util.Util
-import io.reflekt.plugin.util.Util.toJson
 import io.reflekt.util.FileUtil
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
@@ -30,7 +30,7 @@ class FindSmartReflektInvokeArgumentsByExpressionPartTest {
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
     fun `findSmartReflektInvokeArgumentsByExpressionPart function test`(sources: Set<File>, expectedResult: String, directory: String) {
-        val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
+        val reflektClassPath = getReflektProjectJars()
         val analyzer = SmartReflektTestAnalyzer(AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sources))
         Assertions.assertEquals(expectedResult, analyzer.analyze().toPrettyString(), "Incorrect invoke arguments for directory $directory")
     }

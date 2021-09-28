@@ -2,6 +2,7 @@ package io.reflekt.plugin.code.generation
 
 import io.reflekt.plugin.analysis.*
 import io.reflekt.plugin.generation.code.generator.ReflektImplGenerator
+import io.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import io.reflekt.plugin.util.Util
 import io.reflekt.util.FileUtil
 import org.junit.jupiter.api.Assertions
@@ -32,7 +33,7 @@ class CodeGenerationTest {
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
     fun `code generation test`(sources: Set<File>, expectedCode: String, directory: String) {
-        val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
+        val reflektClassPath = getReflektProjectJars()
         val analyzer = AnalysisUtil.getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
         val uses = analyzer.uses(analyzer.invokes())
         val actualCode = ReflektImplGenerator(uses).generate().trim()
