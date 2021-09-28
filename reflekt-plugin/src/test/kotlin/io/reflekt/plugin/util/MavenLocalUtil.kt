@@ -15,8 +15,7 @@ object MavenLocalUtil {
         val baseReflektPath = "$mavenLocalPath/io/reflekt"
         val reflektNames = listOf("gradle-plugin", "reflekt-core", "reflekt-dsl")
         return reflektNames.map {
-            val jar = File("$baseReflektPath/$it/$VERSION/$it-$VERSION.jar")
-            jar
+            File("$baseReflektPath/$it/$VERSION/$it-$VERSION.jar")
         }.toSet()
     }
 

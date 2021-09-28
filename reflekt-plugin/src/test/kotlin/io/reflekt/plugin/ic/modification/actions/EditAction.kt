@@ -6,7 +6,7 @@ interface IEditAction {
     fun apply(file: File): File?
 }
 
-sealed class EditAction: IEditAction
+sealed class EditAction : IEditAction
 
 object DeleteFile : EditAction() {
     override fun apply(file: File): File? {
@@ -15,7 +15,7 @@ object DeleteFile : EditAction() {
     }
 }
 
-class RenameFile(private val newName: String): EditAction() {
+class RenameFile(private val newName: String) : EditAction() {
     override fun apply(file: File): File {
         val dest = File(file.parentFile, "$newName.${file.extension}")
         file.renameTo(dest)

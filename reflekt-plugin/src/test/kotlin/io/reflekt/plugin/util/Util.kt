@@ -2,6 +2,7 @@ package io.reflekt.plugin.util
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import org.gradle.internal.impldep.org.apache.commons.lang.SystemUtils
 import java.io.*
 import kotlin.reflect.KClass
 
@@ -43,18 +44,22 @@ object Util {
         return BufferedReader(InputStreamReader(p.inputStream)).readLines().joinToString(separator = "\n") { it }
     }
 
-    private fun isWindows() = System.getProperty("os.name").startsWith("windows")
-
     fun getTempPath(): String {
         val file = File(System.getProperty("java.io.tmpdir"))
         try {
             val canonical = file.canonicalPath
-            if (!isWindows() || !canonical.contains(" ")) {
+            if (!SystemUtils.IS_OS_WINDOWS || !canonical.contains(" ")) {
                 return canonical
             }
         } catch (ignore: IOException) {
             // This error is ok
         }
         return file.absolutePath
+    }
+
+     fun File.clear() {
+        require(this.isDirectory) { "${this.absolutePath} is not directory" }
+        this.deleteRecursively()
+        this.mkdir()
     }
 }
