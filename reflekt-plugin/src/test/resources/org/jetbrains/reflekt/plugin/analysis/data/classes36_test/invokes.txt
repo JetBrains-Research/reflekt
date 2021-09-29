@@ -1,0 +1,14 @@
+objects: {},
+classes: {
+	file: org.jetbrains.reflekt.test.Main.kt: [
+		supertypesToAnnotations: [
+			supertypes: [
+				org.jetbrains.reflekt.test.BInterfaceTest
+			],
+			annotations: [
+				org.jetbrains.reflekt.test.SecondAnnotationTest
+			]
+		]
+	]
+},
+functions: {}

@@ -8,8 +8,8 @@ pluginManagement {
 //    resolutionStrategy {
 //        this.eachPlugin {
 //
-//            if (requested.id.id == "io.reflekt") {
-//                useModule("io.reflekt:gradle-plugin:${this.requested.version}")
+//            if (requested.id.id == "org.jetbrains.reflekt") {
+//                useModule("org.jetbrains.reflekt:gradle-plugin:${this.requested.version}")
 //            }
 //        }
 //    }

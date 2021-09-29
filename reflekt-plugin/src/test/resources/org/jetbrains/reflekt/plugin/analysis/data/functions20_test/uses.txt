@@ -1,0 +1,17 @@
+objects: {},
+classes: {},
+functions: {
+	file: org.jetbrains.reflekt.test.FunctionSignatures.kt: {
+		signatureToAnnotations: [
+			signature: Function1<Array<in FunTest1>, Array<out FunTest2>> (kotlin.Function1),
+			annotations: [
+				org.jetbrains.reflekt.test.FunctionsTestAnnotation
+			]
+		],
+		namedFunctions: [
+			org.jetbrains.reflekt.test.fun17,
+			org.jetbrains.reflekt.test.fun18,
+			org.jetbrains.reflekt.test.fun19
+		]
+	}
+}

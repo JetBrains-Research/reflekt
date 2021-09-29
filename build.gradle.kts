@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
-group = "io.reflekt"
+group = "org.jetbrains.reflekt"
 /*
 * To change version you should change the version in the following places:
 *  - here (the main build.gradle.kts file)
