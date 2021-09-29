@@ -1,0 +1,12 @@
+objects: {},
+classes: {},
+functions: {
+	file: org.jetbrains.reflekt.test.Main.kt: [
+		signatureToAnnotations: [
+			signature: Function0<Array<out FunTest3>> (kotlin.Function0),
+			annotations: [
+				org.jetbrains.reflekt.test.FunctionsTestAnnotation
+			]
+		]
+	]
+}
