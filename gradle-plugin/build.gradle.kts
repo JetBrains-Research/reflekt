@@ -33,9 +33,9 @@ pluginBundle {
 gradlePlugin {
     plugins {
         create("Reflekt") {
-            id = "io.reflekt"
+            id = "org.jetbrains.reflekt"
             displayName = "Reflekt"
-            implementationClass = "io.reflekt.plugin.ReflektSubPlugin"
+            implementationClass = "org.jetbrains.reflekt.plugin.ReflektSubPlugin"
             description = "Compile-time reflection library"
         }
     }

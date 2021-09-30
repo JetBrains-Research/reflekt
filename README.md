@@ -109,7 +109,7 @@ use in the `dependencies` section. These dependencies may be implemented in Java
 but the analysis will be made only on Kotlin files._
 
 
-All of the above gives you access to [the limited  Reflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/Reflekt.kt) and [the extended SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt).
+All of the above gives you access to [the limited  Reflekt DSL](./reflekt-dsl/src/main/kotlin/org/jetbrains/reflekt/Reflekt.kt) and [the extended SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/org/jetbrains/reflekt/SmartReflekt.kt).
 
 Now you can use the Reflekt plugin to find objects, classes, and functions in your project:
 
@@ -154,12 +154,12 @@ write this version in the plugins and dependencies sections.
 
 ## Supported features
 
-- [x] Compile-time reflection by [Reflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/Reflekt.kt)
+- [x] Compile-time reflection by [Reflekt DSL](./reflekt-dsl/src/main/kotlin/org/jetbrains/reflekt/Reflekt.kt)
   for `multi-module` projects:
     - [x] project's files
     - [x] external libraries
 - [x] Compile-time reflection by custom users' filters for `multi-module` projects
-  by [SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt)
+  by [SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/org/jetbrains/reflekt/SmartReflekt.kt)
     - [x] project's files
     - [ ] external libraries
 - [x] Bytecode generation -> IR generation
@@ -176,8 +176,8 @@ example in the [examples folder](./examples)._
 Any explanation becomes much better with a proper example.
 
 In the repository's [examples folder](./examples), you can find an example project that uses the
-Reflekt plugin by [Reflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/Reflekt.kt)
-and by [SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt).
+Reflekt plugin by [Reflekt DSL](./reflekt-dsl/src/main/kotlin/org/jetbrains/reflekt/Reflekt.kt)
+and by [SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/org/jetbrains/reflekt/SmartReflekt.kt).
 
 You can also find many examples of searching algorithm work in the [test](./reflekt-plugin/src/test)
 folder.

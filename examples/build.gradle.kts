@@ -1,5 +1,4 @@
 import org.jetbrains.reflekt.plugin.reflekt
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = rootProject.group
 version = rootProject.version
