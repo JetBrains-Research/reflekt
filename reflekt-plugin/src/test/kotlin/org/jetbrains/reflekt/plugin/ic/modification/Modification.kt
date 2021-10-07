@@ -4,8 +4,8 @@ import org.jetbrains.reflekt.plugin.ic.modification.actions.EditAction
 import java.io.File
 
 data class Modification(
-    private val file: File,
-    private val actions: List<EditAction>
+    val file: File,
+    val actions: List<EditAction>
 ) {
     fun applyActions(): File? {
         var currentFile: File? = file

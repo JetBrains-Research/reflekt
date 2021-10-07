@@ -8,6 +8,7 @@ import org.jetbrains.reflekt.plugin.util.Util.clear
 import org.jetbrains.reflekt.plugin.util.Util.getTempPath
 import org.jetbrains.reflekt.util.FileUtil
 import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
+import org.jetbrains.reflekt.plugin.ic.modification.actions.RenameFile
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -27,9 +28,13 @@ class IncrementalCompilationTest {
     companion object {
         @JvmStatic
         fun data(): List<Arguments> {
-            return getTestsDirectories(IncrementalCompilationTest::class).map { directory ->
+            val modifications = listOf(Modification(
+                File("/Users/Elena.Lyulina/IdeaProjects/reflekt/reflekt-plugin/build/resources/test/org/jetbrains/reflekt/plugin/ic/data/base_test_with_reflekt_import/A.kt"),
+                listOf(RenameFile("B"))
+            ))
+            return getTestsDirectories(IncrementalCompilationTest::class).filter { it.name.contains("reflekt") }.map { directory ->
                 // TODO: get modifications for each directory (maybe deserialize it?)
-                Arguments.of(directory, emptyList<Modification>(), null)
+                Arguments.of(directory, modifications, null)
             }
         }
     }
@@ -38,13 +43,14 @@ class IncrementalCompilationTest {
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
     fun incrementalCompilationBaseTest(sourcesPath: File, modifications: List<Modification>, expectedResult: String?) {
+        println(sourcesPath)
         val testRoot = initTestRoot()
         val srcDir = File(testRoot, "src").apply { mkdirs() }
         val cacheDir = File(testRoot, "incremental-data").apply { mkdirs() }
         val outDir = File(testRoot, outFolderName).apply { mkdirs() }
         val srcRoots = listOf(srcDir)
 
-        sourcesPath.copyRecursively(srcDir, overwrite = true)
+        val updatedModifications = sourcesPath.copyRecursivelyWithModifications(srcDir, overwrite = true, modifications)
         val testDataPath = File(Util.getResourcesRootPath(IncrementalCompilationTest::class))
         val pathToDownloadKotlinSources = File(testDataPath.parent, "kotlinSources").apply { mkdirs() }
         val compilerArgs = createCompilerArguments(outDir, srcDir, pathToDownloadKotlinSources).apply {
@@ -55,7 +61,10 @@ class IncrementalCompilationTest {
         // with the result after sources modification
         val realExpectedResult = expectedResult ?: runCompiledCode(outDir)
 
-        modifications.applyModifications()
+        println("srcRoots: ${srcRoots[0].walk().toList().map { it.name  }}")
+        updatedModifications.applyModifications()
+        println("srcRoots: ${srcRoots[0].walk().toList().map { it.name  }}")
+
         compileSources(cacheDir, srcRoots, compilerArgs, "Modified")
         val actualResult = runCompiledCode(outDir)
         Assertions.assertEquals(realExpectedResult, actualResult, "Result after IC is incorrect")
@@ -64,6 +73,8 @@ class IncrementalCompilationTest {
         cacheDir.clear()
         compileSources(cacheDir, srcRoots, compilerArgs, "Without IC")
         val actualResultWithoutIC = runCompiledCode(outDir)
+        println(realExpectedResult)
+        println(actualResultWithoutIC)
         Assertions.assertEquals(realExpectedResult, actualResultWithoutIC, "The initial result and result after IC are different!")
 
         testRoot.deleteRecursively()

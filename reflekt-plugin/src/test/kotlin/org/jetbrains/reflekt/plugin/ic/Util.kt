@@ -4,11 +4,12 @@ import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getStdLibJar
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.incremental.makeIncrementally
+import org.jetbrains.reflekt.plugin.ic.modification.Modification
 import java.io.File
 
 internal fun createCompilerArguments(destinationDir: File, testDir: File, pathToDownloadKotlinSources: File): K2JVMCompilerArguments {
     val reflektJars = getReflektProjectJars().map { it.absolutePath }
-    val compilerClasspath = reflektJars.toMutableList()
+    val compilerClasspath = reflektJars.plus(testDir).toMutableList()
     compilerClasspath.add(getStdLibJar(pathToDownloadKotlinSources).absolutePath)
     return K2JVMCompilerArguments().apply {
         moduleName = testDir.name
@@ -17,6 +18,8 @@ internal fun createCompilerArguments(destinationDir: File, testDir: File, pathTo
         pluginOptions = arrayOf("plugin:org.jetbrains.reflekt:enabled=true")
         // TODO: should we really add reflekt jars into classpath?
         classpath = compilerClasspath.joinToString(File.pathSeparator)
+        jvmTarget = "11"
+        useIR = true
     }
 }
 
@@ -40,4 +43,17 @@ internal fun parseAdditionalCompilerArgs(testDir: File, argumentsFileName: Strin
 internal fun compileSources(cacheDir: File, sources: List<File>, compilerArgs: K2JVMCompilerArguments, errorMessagePrefix: String) {
     val (_, errors) = compile(cacheDir, sources, compilerArgs)
     check(errors.isEmpty()) { "$errorMessagePrefix build failed: \n${errors.joinToString("\n")}" }
+}
+
+fun File.copyRecursivelyWithModifications(
+    target: File,
+    overwrite: Boolean = false,
+    modifications: List<Modification>
+): List<Modification> {
+    fun File.getNestedFilesSorted(): List<File> = this.walk().sortedBy { f -> f.path.substring(this.path.lastIndex) }.toList()
+
+    this.copyRecursively(target, overwrite)
+    val oldToNewFiles = this.getNestedFilesSorted().zip(target.getNestedFilesSorted()).toMap()
+
+    return modifications.map { Modification(oldToNewFiles[it.file] ?: error { "No such file ${it.file} found in target" }, it.actions) }
 }

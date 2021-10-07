@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.psi.PsiFileFactory
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.config.JVMConfigurationKeys.INCREMENTAL_COMPILATION_COMPONENTS
+import org.jetbrains.kotlin.config.JVMConfigurationKeys.OUTPUT_DIRECTORY
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
@@ -41,6 +43,8 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
         val filesToIntrospect = getKtFiles(configuration[Keys.INTROSPECT_FILES] ?: emptyList(), project)
         val outputDir = configuration[Keys.OUTPUT_DIR]
         val reflektContext = ReflektContext()
+        configuration.messageCollector.log("CompilerConfiguration out dir: ${configuration.get(OUTPUT_DIRECTORY)?.path}")
+        configuration.messageCollector.log("CompilerConfiguration incremental cache provider: ${configuration.get(INCREMENTAL_COMPILATION_COMPONENTS)}")
 
         // This will be called multiple times (for each project module),
         // since compilation process runs module by module
