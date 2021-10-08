@@ -7,20 +7,23 @@ import org.jetbrains.kotlin.incremental.makeIncrementally
 import org.jetbrains.reflekt.plugin.ic.modification.Modification
 import java.io.File
 
-internal fun createCompilerArguments(destinationDir: File, testDir: File, pathToDownloadKotlinSources: File): K2JVMCompilerArguments {
-    val reflektJars = getReflektProjectJars().map { it.absolutePath }
-    val compilerClasspath = reflektJars.plus(testDir).toMutableList()
-    compilerClasspath.add(getStdLibJar(pathToDownloadKotlinSources).absolutePath)
+internal fun createCompilerArguments(destinationDir: File, testDir: File, compilerClassPath: List<String>): K2JVMCompilerArguments {
     return K2JVMCompilerArguments().apply {
         moduleName = testDir.name
         destination = destinationDir.path
-        pluginClasspaths = reflektJars.toTypedArray()
+        pluginClasspaths = compilerClassPath.filter { "reflekt" in it }.toTypedArray()
         pluginOptions = arrayOf("plugin:org.jetbrains.reflekt:enabled=true")
-        // TODO: should we really add reflekt jars into classpath?
-        classpath = compilerClasspath.joinToString(File.pathSeparator)
+        classpath = compilerClassPath.joinToString(File.pathSeparator)
         jvmTarget = "11"
         useIR = true
     }
+}
+
+internal fun getCompilerClasspath(pathToDownloadKotlinSources: File): List<String> {
+    val reflektJars = getReflektProjectJars().map { it.canonicalPath }
+    val compilerClasspath = reflektJars.toMutableList()
+    compilerClasspath.add(getStdLibJar(pathToDownloadKotlinSources).canonicalPath)
+    return compilerClasspath
 }
 
 // This function does not take into account java sources

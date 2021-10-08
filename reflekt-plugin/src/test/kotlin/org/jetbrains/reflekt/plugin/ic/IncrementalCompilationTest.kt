@@ -1,14 +1,15 @@
 package org.jetbrains.reflekt.plugin.ic
 
+import org.gradle.internal.impldep.org.apache.commons.lang.SystemUtils
+import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
 import org.jetbrains.reflekt.plugin.analysis.getTestsDirectories
 import org.jetbrains.reflekt.plugin.ic.modification.Modification
 import org.jetbrains.reflekt.plugin.ic.modification.applyModifications
+import org.jetbrains.reflekt.plugin.util.MavenLocalUtil
 import org.jetbrains.reflekt.plugin.util.Util
 import org.jetbrains.reflekt.plugin.util.Util.clear
 import org.jetbrains.reflekt.plugin.util.Util.getTempPath
 import org.jetbrains.reflekt.util.FileUtil
-import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
-import org.jetbrains.reflekt.plugin.ic.modification.actions.RenameFile
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -28,13 +29,9 @@ class IncrementalCompilationTest {
     companion object {
         @JvmStatic
         fun data(): List<Arguments> {
-            val modifications = listOf(Modification(
-                File("/Users/Elena.Lyulina/IdeaProjects/reflekt/reflekt-plugin/build/resources/test/org/jetbrains/reflekt/plugin/ic/data/base_test_with_reflekt_import/A.kt"),
-                listOf(RenameFile("B"))
-            ))
-            return getTestsDirectories(IncrementalCompilationTest::class).filter { it.name.contains("reflekt") }.map { directory ->
+            return getTestsDirectories(IncrementalCompilationTest::class).map { directory ->
                 // TODO: get modifications for each directory (maybe deserialize it?)
-                Arguments.of(directory, modifications, null)
+                Arguments.of(directory, emptyList<Modification>(), null)
             }
         }
     }
@@ -43,44 +40,54 @@ class IncrementalCompilationTest {
     @MethodSource("data")
     @ParameterizedTest(name = "test {index}")
     fun incrementalCompilationBaseTest(sourcesPath: File, modifications: List<Modification>, expectedResult: String?) {
-        println(sourcesPath)
         val testRoot = initTestRoot()
         val srcDir = File(testRoot, "src").apply { mkdirs() }
         val cacheDir = File(testRoot, "incremental-data").apply { mkdirs() }
         val outDir = File(testRoot, outFolderName).apply { mkdirs() }
+
+        sourcesPath.copyRecursively(srcDir, overwrite = true)
         val srcRoots = listOf(srcDir)
 
         val updatedModifications = sourcesPath.copyRecursivelyWithModifications(srcDir, overwrite = true, modifications)
         val testDataPath = File(Util.getResourcesRootPath(IncrementalCompilationTest::class))
         val pathToDownloadKotlinSources = File(testDataPath.parent, "kotlinSources").apply { mkdirs() }
-        val compilerArgs = createCompilerArguments(outDir, srcDir, pathToDownloadKotlinSources).apply {
+        val compilerClassPath = getCompilerClasspath(pathToDownloadKotlinSources)
+
+        val compilerArgs = createCompilerArguments(outDir, srcDir, compilerClassPath).apply {
             parseCommandLineArguments(parseAdditionalCompilerArgs(srcDir, argumentsFileName), this)
         }
         compileSources(cacheDir, srcRoots, compilerArgs, "Initial")
         // If expectedResult was not passed then the initial result should be the same
         // with the result after sources modification
-        val realExpectedResult = expectedResult ?: runCompiledCode(outDir)
+        val realExpectedResult = expectedResult ?: runCompiledCode(outDir, compilerClassPath)
 
-        println("srcRoots: ${srcRoots[0].walk().toList().map { it.name  }}")
         updatedModifications.applyModifications()
-        println("srcRoots: ${srcRoots[0].walk().toList().map { it.name  }}")
 
         compileSources(cacheDir, srcRoots, compilerArgs, "Modified")
-        val actualResult = runCompiledCode(outDir)
+        val actualResult = runCompiledCode(outDir, compilerClassPath)
         Assertions.assertEquals(realExpectedResult, actualResult, "Result after IC is incorrect")
 
         // Compare the initial result and result without IC
         cacheDir.clear()
         compileSources(cacheDir, srcRoots, compilerArgs, "Without IC")
-        val actualResultWithoutIC = runCompiledCode(outDir)
-        println(realExpectedResult)
-        println(actualResultWithoutIC)
+        val actualResultWithoutIC = runCompiledCode(outDir, compilerClassPath)
         Assertions.assertEquals(realExpectedResult, actualResultWithoutIC, "The initial result and result after IC are different!")
 
         testRoot.deleteRecursively()
     }
 
-    private fun runCompiledCode(outDir: File) = Util.runProcessBuilder(Util.Command(listOf("java", getMainClass(outDir)), directory = outDir.absolutePath))
+    private fun runCompiledCode(outDir: File, compilerClassPath: List<String>): String {
+        val separator = if (SystemUtils.IS_OS_WINDOWS) ";" else ":"
+        val output = Util.runProcessBuilder(
+            Util.Command(
+                listOf("java", "-classpath", "${compilerClassPath.joinToString(separator)}$separator", getMainClass(outDir)),
+                directory = outDir.absolutePath
+            )
+        )
+        require("Exception" !in output) { "Compiled output has an exception: $output" }
+        return output
+    }
+
 
     // Find [mainFileName]Kt.class file in [outDir] and make the following transformations:
     //  - сut <class> extension

@@ -13,7 +13,7 @@ object MavenLocalUtil {
 
     fun getReflektProjectJars(): Set<File> {
         val baseReflektPath = "$mavenLocalPath/org/jetbrains/reflekt"
-        val reflektNames = listOf("gradle-plugin", "reflekt-core", "reflekt-dsl")
+        val reflektNames = listOf("gradle-plugin", "reflekt-core", "reflekt-dsl", "reflekt-plugin")
         return reflektNames.map {
             File("$baseReflektPath/$it/$VERSION/$it-$VERSION.jar")
         }.toSet()
