@@ -28,6 +28,12 @@ pluginBundle {
     website = "https://github.com/JetBrains-Research/reflekt"
     vcsUrl = "https://github.com/JetBrains-Research/reflekt"
     tags = listOf("kotlin", "reflection", "reflekt")
+
+    mavenCoordinates {
+        groupId = project.group as String
+        artifactId = "reflekt-plugin"
+        version = project.version as String
+    }
 }
 
 gradlePlugin {

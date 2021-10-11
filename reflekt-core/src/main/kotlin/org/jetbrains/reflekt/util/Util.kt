@@ -13,7 +13,7 @@ object Util {
 
     const val GRADLE_GROUP_ID = "org.jetbrains.reflekt"
     /**
-     * Just needs to be consistent with the artifactId in reflekt-plugin build.gradle.kts#publishJar
+     * Just needs to be consistent with the artifactId in gradle-plugin build.gradle.kts#pluginBundle
      */
     const val GRADLE_ARTIFACT_ID = "reflekt-plugin"
     const val VERSION = "1.5.30"
