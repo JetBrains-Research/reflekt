@@ -14,26 +14,34 @@ import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
 
-class ReflektModuleAnalysisExtension(private val filesToIntrospect: Set<KtFile>,
-                                     private val generationPath: File?,
-                                     private val reflektContext: ReflektContext? = null,
-                                     private val messageCollector: MessageCollector? = null) : AnalysisHandlerExtension {
+class ReflektModuleAnalysisExtension(
+    private val filesToIntrospect: Set<KtFile>,
+    private val generationPath: File?,
+    private val reflektContext: ReflektContext? = null,
+    private val messageCollector: MessageCollector? = null
+) : AnalysisHandlerExtension {
 
     override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
         messageCollector?.log("ReflektAnalysisExtension is starting...")
         messageCollector?.log("FILES: ${files.joinToString(separator = ", ") { it.name }};")
         messageCollector?.log("Start analysis ${module.name} module's files;")
         val allFiles = files.toSet().union(filesToIntrospect)
-        val uses = getUses(allFiles, bindingTrace)
-        val instances = getInstances(allFiles, bindingTrace)
+        messageCollector?.log("INTROSCPESTED FILES: ${filesToIntrospect}")
+        messageCollector?.log("ALL FILES: ${allFiles}")
+        val uses = getUses(allFiles, bindingTrace, messageCollector = messageCollector)
+        val instances = getInstances(files.toSet(), bindingTrace, messageCollector = messageCollector)
         if (reflektContext != null) {
+            messageCollector?.log("Start analysis ${module.name} module's files")
             reflektContext.uses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
-            reflektContext.instances = IrReflektInstances.fromReflektInstances(instances, bindingTrace.bindingContext)
+            messageCollector?.log("IrReflektUses were created successfully")
+            reflektContext.instances = IrReflektInstances.fromReflektInstances(instances, bindingTrace.bindingContext, messageCollector)
+            messageCollector?.log("IrReflektInstances were created successfully")
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: ${reflektContext.uses}\nInstances: ${reflektContext.instances}")
         } else {
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses\nInstances: $instances")
         }
 
+        messageCollector?.log("Start generation ReflektImpl")
         if (generationPath != null) {
             with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {
                 delete()
@@ -43,7 +51,9 @@ class ReflektModuleAnalysisExtension(private val filesToIntrospect: Set<KtFile>,
                 )
             }
         }
+        messageCollector?.log("Finish generation ReflektImpl")
 
+        messageCollector?.log("Finish analysis with ReflektModuleAnalysisExtension")
         return super.analysisCompleted(project, module, bindingTrace, files)
     }
 }

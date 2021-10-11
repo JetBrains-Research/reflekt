@@ -22,7 +22,7 @@ import java.io.File
 @AutoService(ComponentRegistrar::class)
 class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : ComponentRegistrar {
     // The path will be: pathToKotlin/daemon/reflekt-log.log
-    private val logFilePath = "reflekt-log.log"
+    private val logFilePath = "/Users/Anastasiia.Birillo/IdeaProjects/reflekt/reflekt-log.log"
 
     override fun registerProjectComponents(
         project: MockProject,
@@ -38,9 +38,11 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
         val dependencyJars = configuration[Keys.DEPENDENCY_JARS] ?: emptyList()
         configuration.messageCollector.log("DEPENDENCY JARS: ${dependencyJars.map { it.absolutePath }};")
 
+        configuration.messageCollector.log("INTROSPECT CLASS FILES: ${configuration[Keys.INTROSPECT_FILES]};")
         val filesToIntrospect = getKtFiles(configuration[Keys.INTROSPECT_FILES] ?: emptyList(), project)
         val outputDir = configuration[Keys.OUTPUT_DIR]
         val reflektContext = ReflektContext()
+
 
         // This will be called multiple times (for each project module),
         // since compilation process runs module by module

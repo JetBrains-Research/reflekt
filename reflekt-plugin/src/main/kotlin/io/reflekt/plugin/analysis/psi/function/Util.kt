@@ -1,7 +1,9 @@
 package io.reflekt.plugin.analysis.psi.function
 
 import io.reflekt.plugin.analysis.models.IrFunctionInfo
+import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.builtins.*
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -13,7 +15,7 @@ import org.jetbrains.kotlin.types.TypeUtils.equalTypes
 import org.jetbrains.kotlin.types.expressions.createFunctionType
 
 fun KtNamedFunction.getDescriptor(binding: BindingContext): FunctionDescriptor =
-    binding.get(BindingContext.FUNCTION, this)!!
+    binding.get(BindingContext.FUNCTION, this) ?: error("Function descriptor for the function ${this.text} was not found")
 
 fun KtNamedFunction.argumentTypes(binding: BindingContext): List<KotlinType> =
     getDescriptor(binding).valueParameters.map { it.type }
@@ -43,12 +45,16 @@ fun KtNamedFunction.checkSignature(signature: KotlinType, binding: BindingContex
     return this.toParameterizedType(binding)?.let { equalTypes(it, signature) } ?: false
 }
 
-fun KtNamedFunction.toFunctionInfo(binding: BindingContext): IrFunctionInfo =
-    IrFunctionInfo(
+fun KtNamedFunction.toFunctionInfo(binding: BindingContext, messageCollector: MessageCollector? = null): IrFunctionInfo {
+    messageCollector?.log("function: ${this.text}")
+    messageCollector?.log("descriptor: ${getDescriptor(binding)}")
+
+    return  IrFunctionInfo(
         fqName.toString(),
         receiverFqName = receiverType(binding)?.shortFqName(),
         isObjectReceiver = receiverType(binding)?.isObject() ?: false
     )
+}
 
 
 fun KtNamedFunction.toParameterizedType(binding: BindingContext): KotlinType? {

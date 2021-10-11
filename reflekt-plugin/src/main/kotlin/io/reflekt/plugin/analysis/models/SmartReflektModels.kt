@@ -3,6 +3,8 @@ package io.reflekt.plugin.analysis.models
 import io.reflekt.plugin.analysis.processor.FileID
 import io.reflekt.plugin.analysis.processor.instances.*
 import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
+import io.reflekt.plugin.utils.Util.log
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
@@ -39,10 +41,13 @@ data class IrReflektInstances(
     val functions: List<IrFunctionInstance> = ArrayList()
 ) {
     companion object {
-        fun fromReflektInstances(instances: ReflektInstances, binding: BindingContext) = IrReflektInstances(
+        fun fromReflektInstances(instances: ReflektInstances, binding: BindingContext, messageCollector: MessageCollector?) = IrReflektInstances(
             objects = instances.objects.values.flatten().map { IrObjectInstance(it, it.fqName.toString()) },
             classes = instances.classes.values.flatten().map { IrClassInstance(it, it.fqName.toString()) },
-            functions = instances.functions.values.flatten().map { IrFunctionInstance(it, it.toFunctionInfo(binding)) },
+            functions = instances.functions.values.flatten().map {
+                messageCollector?.log("Handle function ${it.text}")
+                IrFunctionInstance(it, it.toFunctionInfo(binding, messageCollector))
+            },
         )
     }
 }

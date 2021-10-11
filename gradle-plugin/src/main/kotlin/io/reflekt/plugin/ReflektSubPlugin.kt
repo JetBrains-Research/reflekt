@@ -73,11 +73,18 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
 
     private fun getJarFilesToIntrospect(configuration: Configuration, extension: ReflektGradleExtension): Set<File> {
         val jarsToIntrospect: MutableSet<File> = HashSet()
+        println("librariesToIntrospect: ${extension.librariesToIntrospect}")
         val filtered = configuration.dependencies.filter { "${it.group}:${it.name}:${it.version}" in extension.librariesToIntrospect }
+        val librariesNames = filtered.map { it.name }
         if (filtered.isNotEmpty()) {
+            println("filtered: ${filtered}")
             require(configuration.isCanBeResolved) { "The parameter canBeResolve must be true!" }
-            jarsToIntrospect.addAll(configuration.files(*filtered.toTypedArray()).toSet())
+            // TODO: filter only kotless files
+            jarsToIntrospect.addAll(configuration.files(*filtered.toTypedArray()).toSet().filter { f ->
+                librariesNames.any { it in f.path }
+            })
         }
+        println("jarsToIntrospect: $jarsToIntrospect")
         return jarsToIntrospect
     }
 }

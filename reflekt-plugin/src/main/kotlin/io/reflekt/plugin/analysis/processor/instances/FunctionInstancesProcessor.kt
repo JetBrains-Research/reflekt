@@ -14,5 +14,6 @@ class FunctionInstancesProcessor(override val binding: BindingContext) : BaseIns
         return fileToInstances
     }
 
-    override fun shouldRunOn(element: KtElement) = element.isPublicFunction
+    // TODO: error during getting FunctionDescriptor for <init> functions
+    override fun shouldRunOn(element: KtElement) = element.isPublicFunction && !element.isInitFunction
 }

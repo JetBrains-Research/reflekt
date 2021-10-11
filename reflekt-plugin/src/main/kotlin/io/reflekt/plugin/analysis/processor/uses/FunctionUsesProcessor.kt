@@ -24,7 +24,7 @@ class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes
         return fileToUses
     }
 
-    override fun shouldRunOn(element: KtElement) = element.isPublicFunction && !element.isMainFunction
+    override fun shouldRunOn(element: KtElement) = element.isPublicFunction && !element.isMainFunction && !element.isInitFunction
 
     private fun SignatureToAnnotations.covers(function: KtNamedFunction): Boolean {
         return (annotations.isEmpty() || function.getAnnotations(binding, annotations).isNotEmpty()) &&

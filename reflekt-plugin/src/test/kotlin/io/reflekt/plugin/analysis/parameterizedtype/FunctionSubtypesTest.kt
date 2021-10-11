@@ -1,6 +1,7 @@
 package io.reflekt.plugin.analysis.parameterizedtype
 
 import io.reflekt.plugin.analysis.parameterizedtype.util.*
+import io.reflekt.plugin.analysis.psi.function.getDescriptor
 import io.reflekt.plugin.analysis.psi.function.toParameterizedType
 import io.reflekt.plugin.util.Util
 import io.reflekt.util.FileUtil
@@ -44,6 +45,9 @@ class FunctionSubtypesTest {
     @MethodSource("getKtNamedFunctionsWithSubtypes")
     @ParameterizedTest(name = "test {index}")
     fun testFunctionSubtypes(binding: BindingContext, function: KtNamedFunction, otherFunctions: List<KtNamedFunction>, expectedSubtypes: List<String>) {
+//        val descriptor = function.getDescriptor(binding)
+//        print(descriptor)
+
         val functionType = function.toParameterizedType(binding) ?: error("KotlinType of function ${function.name} is null")
         val actualSubtypes = otherFunctions.filter { it.toParameterizedType(binding)?.isSubtypeOf(functionType) == true }
         Assertions.assertEquals(

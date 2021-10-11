@@ -10,8 +10,14 @@ internal val KtElement.isPublicObject: Boolean
 internal val KtElement.isPublicFunction: Boolean
     get() = this is KtNamedFunction && this.isPublic
 
+internal fun KtElement.isPublicNamedFunction(name: String) =
+    this.isPublicFunction && (this as KtNamedFunction).nameIdentifier?.let { it.text == name } ?: false
+
 internal val KtElement.isMainFunction: Boolean
-    get() = this.isPublicFunction && (this as KtNamedFunction).nameIdentifier?.let { it.text == "main" } ?: false
+    get() = isPublicNamedFunction("main")
+
+internal val KtElement.isInitFunction: Boolean
+    get() = isPublicNamedFunction("init")
 
 internal val KtElement.isPublicNotAbstractClass: Boolean
     get() = this is KtClass && this.isPublic && !this.isAbstract()

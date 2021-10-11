@@ -58,8 +58,8 @@ object Util {
 
     fun BindingContext.getInstances() = get(GET_INSTANCES, INSTANCES_STORE_NAME)
 
-    fun getUses(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true): ReflektUses {
-        val analyzer = ReflektAnalyzer(files, bindingTrace.bindingContext)
+    fun getUses(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true, messageCollector: MessageCollector? = null): ReflektUses {
+        val analyzer = ReflektAnalyzer(files, bindingTrace.bindingContext, messageCollector)
         val invokes = analyzer.invokes()
         val uses = analyzer.uses(invokes)
         if (toSave) {
@@ -68,8 +68,8 @@ object Util {
         return uses
     }
 
-    fun getInstances(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true): ReflektInstances {
-        val analyzer = SmartReflektAnalyzer(files, bindingTrace.bindingContext)
+    fun getInstances(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true, messageCollector: MessageCollector? = null): ReflektInstances {
+        val analyzer = SmartReflektAnalyzer(files, bindingTrace.bindingContext, messageCollector)
         val instances = analyzer.instances()
         if (toSave) {
             bindingTrace.saveInstances(instances)
