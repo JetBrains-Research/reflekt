@@ -31,7 +31,7 @@ pluginBundle {
 
     mavenCoordinates {
         groupId = project.group as String
-        artifactId = "reflekt-plugin"
+        artifactId = "gradle-plugin"
         version = project.version as String
     }
 }
