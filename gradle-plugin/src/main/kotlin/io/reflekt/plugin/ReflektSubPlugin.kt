@@ -12,8 +12,7 @@ import io.reflekt.util.Util.LIBRARY_TO_INTROSPECT
 import io.reflekt.util.Util.REFLEKT_META_FILE_OPTION_INFO
 import io.reflekt.util.Util.OUTPUT_DIR_OPTION_INFO
 import io.reflekt.util.Util.PLUGIN_ID
-import io.reflekt.util.Util.PROJECT_RESOURCES_DIR
-import io.reflekt.util.Util.REFLEKT_META_FILE
+import io.reflekt.util.Util.REFLEKT_META_FILE_PATH
 import io.reflekt.util.Util.SAVE_METADATA_OPTION_INFO
 import io.reflekt.util.Util.VERSION
 import org.gradle.api.Project
@@ -21,6 +20,9 @@ import org.gradle.api.provider.Provider
 
 @Suppress("unused")
 class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
+    private val reflektMetaFile = "ReflektMeta"
+    private val metaInfDir = "META-INF"
+
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         println("ReflektSubPlugin loaded")
         val project = kotlinCompilation.target.project
@@ -41,8 +43,20 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
                 SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) +
                 SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath) +
                 SubpluginOption(key = SAVE_METADATA_OPTION_INFO.name, value = extension.toSaveMetadata.toString()) +
-                SubpluginOption(key = PROJECT_RESOURCES_DIR.name, value = project.getResourcesPath())
+                SubpluginOption(key = REFLEKT_META_FILE_PATH.name, value = createReflektMeta(project.getResourcesPath(), extension.toSaveMetadata).absolutePath)
         }
+    }
+
+    private fun createReflektMeta(resourcesDir: String, toCreateFile: Boolean): File {
+        val metaInfDir = File("$resourcesDir/${metaInfDir}")
+        if (!metaInfDir.exists()) {
+            metaInfDir.mkdirs()
+        }
+        val reflektMetaFile = File("${metaInfDir.path}/${reflektMetaFile}")
+        if (toCreateFile) {
+            reflektMetaFile.createNewFile()
+        }
+        return reflektMetaFile
     }
 
     // TODO: can we do it better?
@@ -62,7 +76,7 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
     )
 
     private fun getReflektMetaFile(jarFile: File) =
-        extractAllFiles(jarFile).find { it.name == REFLEKT_META_FILE } ?: error("Jar file ${jarFile.absolutePath} does not have $REFLEKT_META_FILE file!")
+        extractAllFiles(jarFile).find { it.name == reflektMetaFile } ?: error("Jar file ${jarFile.absolutePath} does not have $reflektMetaFile file!")
 
     private fun getReflektMetaFiles(jarFiles: Set<File>): List<File> {
         val files: MutableList<File> = ArrayList()

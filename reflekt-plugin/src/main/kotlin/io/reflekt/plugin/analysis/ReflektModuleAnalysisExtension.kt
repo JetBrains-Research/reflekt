@@ -4,6 +4,7 @@ import io.reflekt.plugin.analysis.analyzer.descriptor.DescriptorAnalyzer
 import io.reflekt.plugin.analysis.analyzer.source.ReflektAnalyzer
 import io.reflekt.plugin.analysis.models.*
 import io.reflekt.plugin.analysis.resolve.*
+import io.reflekt.plugin.analysis.serialization.SerializationUtils
 import io.reflekt.plugin.generation.code.generator.ReflektImplGenerator
 import io.reflekt.plugin.utils.Util.getInstances
 import io.reflekt.plugin.utils.Util.log
@@ -31,8 +32,9 @@ class ReflektModuleAnalysisExtension(
 
     override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
         messageCollector?.log("ReflektAnalysisExtension is starting...")
-        // TODO: it is a temporary solution, delete it in the future (get invokes from META-INF from libraries)
+        // TODO:
         reflektMetaFiles.forEach {
+            messageCollector?.log("deserialized invokes: ${SerializationUtils.decodeInvokes(it.readBytes())}")
         }
 //        val librariesAnalyzer = ReflektAnalyzer(reflektMetaFiles, bindingTrace.bindingContext, messageCollector)
 //        val librariesInvokes = librariesAnalyzer.invokes()
@@ -42,8 +44,7 @@ class ReflektModuleAnalysisExtension(
         val analyzer = ReflektAnalyzer(setOfFiles, bindingTrace.bindingContext, messageCollector)
         val invokes = analyzer.invokes()
         if (toSaveMetadata) {
-//            reflektMetaFile
-            //TODO: write invokes to reflektMetaFile
+            reflektMetaFile.writeBytes(SerializationUtils.encodeInvokes(invokes))
         }
         val uses = analyzer.uses(invokes)
         bindingTrace.saveUses(uses)
@@ -55,13 +56,11 @@ class ReflektModuleAnalysisExtension(
             messageCollector?.log("Start analysis ${module.name} module's files")
             var sourceUses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
             (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
-            module.getAllSubPackages(FqName(rootFqName)).toSet().forEach {
-                module.packageFragmentProvider.packageFragments(it).map { d ->
-                    d.source
-                }.forEach{ messageCollector?.log("SOURCE 1: ${it}") }
-
-//
-            }
+//            module.getAllSubPackages(FqName(rootFqName)).toSet().forEach {
+//                module.packageFragmentProvider.packageFragments(it).map { d ->
+//                    d.source
+//                }.forEach{ messageCollector?.log("SOURCE 1: ${it}") }
+//            }
 
             module.getDescriptors(module.getAllSubPackages(FqName(rootFqName)).toSet()).forEach {
                 val ms = it.getMemberScope()

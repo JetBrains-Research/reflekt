@@ -5,6 +5,7 @@ version = rootProject.version
 
 plugins {
     kotlin("kapt")
+    kotlin("plugin.serialization") version "1.5.30" apply true
 }
 
 dependencies {
@@ -22,8 +23,9 @@ dependencies {
     testImplementation(gradleTestKit())
 
     implementation("com.squareup", "kotlinpoet", "1.9.0")
-
     implementation("org.reflections", "reflections", "0.9.12")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.1.0")
 
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.0")

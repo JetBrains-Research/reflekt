@@ -4,6 +4,8 @@ import io.reflekt.plugin.analysis.processor.FileID
 import io.reflekt.plugin.analysis.processor.source.invokes.*
 import io.reflekt.plugin.analysis.processor.source.uses.*
 import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
+import io.reflekt.plugin.analysis.serialization.KotlinTypeSerializer
+import kotlinx.serialization.Serializable
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
@@ -12,12 +14,15 @@ import org.jetbrains.kotlin.types.KotlinType
  * If the function [withAnnotations] is called without supertypes then [supertypes] is setOf(Any::class::qualifiedName)
  * If the function [withSupertypes] is called without annotations then [annotations] is empty
  */
+@Serializable
 data class SupertypesToAnnotations(
     val supertypes: Set<String> = emptySet(),
     val annotations: Set<String> = emptySet()
 )
 
+@Serializable
 data class SignatureToAnnotations(
+    @Serializable(with = KotlinTypeSerializer::class)
     val signature: KotlinType, // kotlin.FunctionN< ... >
     val annotations: Set<String> = emptySet()
 )

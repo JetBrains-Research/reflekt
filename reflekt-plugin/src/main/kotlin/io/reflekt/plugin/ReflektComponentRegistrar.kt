@@ -9,8 +9,6 @@ import io.reflekt.plugin.utils.Keys
 import io.reflekt.plugin.utils.Util.initMessageCollector
 import io.reflekt.plugin.utils.Util.log
 import io.reflekt.plugin.utils.Util.messageCollector
-import io.reflekt.util.Util.META_INF_FOLDER
-import io.reflekt.util.Util.REFLEKT_META_FILE
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
@@ -38,8 +36,8 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
 
         val toSaveMetadata = configuration[Keys.TO_SAVE_METADATA] ?: false
         configuration.messageCollector.log("TO SAVE METADATA FLAG $toSaveMetadata;")
-        val resourcesDir = configuration[Keys.RESOURCES_DIR]
-        if (toSaveMetadata && (resourcesDir == null || !File(resourcesDir).exists())) {
+        val reflektMetaFilePath = configuration[Keys.REFLEKT_META_PATH]
+        if (toSaveMetadata && (reflektMetaFilePath == null || !File(reflektMetaFilePath).exists())) {
             error("Resources folder was not set or doe not exist, but toSaveMetadata is $toSaveMetadata")
         }
 
@@ -63,7 +61,7 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
                 reflektContext = reflektContext,
                 messageCollector = configuration.messageCollector,
                 librariesToIntrospect = configuration[Keys.LIBRARY_TO_INTROSPECT]?.toSet() ?: emptySet(),
-                reflektMetaFile = createReflektMeta(resourcesDir!!)
+                reflektMetaFile = File(reflektMetaFilePath!!)
             )
         )
         IrGenerationExtension.registerExtension(
@@ -81,16 +79,6 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
                 messageCollector = configuration.messageCollector
             )
         )
-    }
-
-    private fun createReflektMeta(resourcesDir: String): File {
-        val metaInfDir = File("$resourcesDir/$META_INF_FOLDER")
-        if (!metaInfDir.exists()) {
-            metaInfDir.mkdirs()
-        }
-        val reflektMetaFile = File("${metaInfDir.path}/$REFLEKT_META_FILE")
-        reflektMetaFile.createNewFile()
-        return reflektMetaFile
     }
 }
 

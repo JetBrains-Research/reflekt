@@ -57,12 +57,9 @@ object Util {
         description = "Names of the libraries' for introspection"
     )
 
-    val PROJECT_RESOURCES_DIR = MyCliOption(
-        name = "resourcesDir",
-        valueDescription = "<path to the resources dir>",
-        description = "Path to the resources dir in the src folder"
+    val REFLEKT_META_FILE_PATH = MyCliOption(
+        name = "reflektMetaPath",
+        valueDescription = "<path to the ReflektMeta file>",
+        description = "Path to the ReflektMeta file in the resources dir in the src folder"
     )
-
-    const val REFLEKT_META_FILE = "ReflektMeta"
-    const val META_INF_FOLDER = "META-INF"
 }
