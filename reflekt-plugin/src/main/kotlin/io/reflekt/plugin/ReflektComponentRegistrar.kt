@@ -50,6 +50,15 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
 
         configuration.messageCollector.log("PROJECT FILE PATH: ${project.projectFilePath}")
 
+        val librariesToIntrospect = configuration[Keys.LIBRARY_TO_INTROSPECT]?.map {
+            val libraryParts = it.split(":")
+            // groupId:name:version
+            if (libraryParts.size != 3) {
+                error("Introspected library notation $it is incorrect!")
+            }
+            libraryParts[1]
+        }?.toSet() ?: emptySet()
+
         // This will be called multiple times (for each project module),
         // since compilation process runs module by module
         AnalysisHandlerExtension.registerExtension(
@@ -60,7 +69,7 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
                 generationPath = configuration[Keys.OUTPUT_DIR],
                 reflektContext = reflektContext,
                 messageCollector = configuration.messageCollector,
-                librariesToIntrospect = configuration[Keys.LIBRARY_TO_INTROSPECT]?.toSet() ?: emptySet(),
+                librariesToIntrospect = librariesToIntrospect,
                 reflektMetaFile = File(reflektMetaFilePath!!)
             )
         )

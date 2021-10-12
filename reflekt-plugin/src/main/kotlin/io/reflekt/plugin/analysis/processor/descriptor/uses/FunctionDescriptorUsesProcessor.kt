@@ -26,6 +26,6 @@ class FunctionDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override v
     override fun shouldRunOn(descriptor: DeclarationDescriptor): Boolean = descriptor.isPublicTopLevelFunction && !descriptor.isMainFunction
 
     private fun SignatureToAnnotations.covers(function: FunctionDescriptor): Boolean =
-        shouldCheckAnnotations(annotations, function) && function.toParameterizedType()?.isSubtypeOf(signature) ?: false
+        shouldCheckAnnotations(annotations, function) && function.toParameterizedType()?.isSubtypeOf(signature!!) ?: false
 
 }

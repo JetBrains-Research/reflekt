@@ -2,9 +2,9 @@ package io.reflekt.plugin.analysis.common
 
 import io.reflekt.plugin.analysis.*
 import io.reflekt.plugin.analysis.models.*
+import io.reflekt.plugin.analysis.psi.getFqName
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.KtExpression
-import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
@@ -60,6 +60,7 @@ fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, bind
     val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in ReflektFunction.values().map { it.functionName } }
 
     var signature: KotlinType? = null
+    var fqName: String? = null
     val annotations = HashSet<String>()
 
     for (node in filteredChildren) {
@@ -67,15 +68,17 @@ fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, bind
         when (node.text) {
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
-                signature = callExpressionRoot.getTypeArguments().first().toParameterizedType(binding)
+                val firstTypeArgument = callExpressionRoot.getTypeArguments().first()
+                signature = firstTypeArgument.toParameterizedType(binding)
+                fqName = firstTypeArgument.psi.getFqName(binding)
             }
             else -> error("Found an unexpected node text: ${node.text}")
         }
     }
-    if (signature == null) {
-        error("Failed to find function signature.")
+    if (signature == null || fqName == null) {
+        error("Failed to find function signature or function fqName: signature = $signature, fqName = $fqName ")
     }
-    return SignatureToAnnotations(signature, annotations)
+    return SignatureToAnnotations(signature, annotations, fqName)
 }
 
 fun findReflektFunctionInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SignatureToAnnotations? {

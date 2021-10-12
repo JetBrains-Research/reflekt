@@ -34,6 +34,6 @@ class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes
 
     private fun SignatureToAnnotations.covers(function: KtNamedFunction): Boolean {
         return (annotations.isEmpty() || function.getAnnotations(binding, annotations).isNotEmpty()) &&
-            function.toParameterizedType(binding)?.isSubtypeOf(signature) ?: false
+            function.toParameterizedType(binding)?.isSubtypeOf(signature!!) ?: false
     }
 }

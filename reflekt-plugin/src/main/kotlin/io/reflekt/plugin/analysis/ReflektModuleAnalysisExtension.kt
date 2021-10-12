@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingTrace
+import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
 
@@ -32,9 +33,10 @@ class ReflektModuleAnalysisExtension(
 
     override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
         messageCollector?.log("ReflektAnalysisExtension is starting...")
+        (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
         // TODO:
         reflektMetaFiles.forEach {
-            messageCollector?.log("deserialized invokes: ${SerializationUtils.decodeInvokes(it.readBytes())}")
+            messageCollector?.log("deserialized invokes: ${SerializationUtils.decodeInvokes(it.readBytes(), module)}")
         }
 //        val librariesAnalyzer = ReflektAnalyzer(reflektMetaFiles, bindingTrace.bindingContext, messageCollector)
 //        val librariesInvokes = librariesAnalyzer.invokes()
@@ -55,17 +57,16 @@ class ReflektModuleAnalysisExtension(
         if (reflektContext != null) {
             messageCollector?.log("Start analysis ${module.name} module's files")
             var sourceUses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
-            (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
-//            module.getAllSubPackages(FqName(rootFqName)).toSet().forEach {
-//                module.packageFragmentProvider.packageFragments(it).map { d ->
-//                    d.source
-//                }.forEach{ messageCollector?.log("SOURCE 1: ${it}") }
-//            }
-
             module.getDescriptors(module.getAllSubPackages(FqName(rootFqName)).toSet()).forEach {
-                val ms = it.getMemberScope()
-                messageCollector?.log("SOURCE 2: ${it.source}")
-                sourceUses = sourceUses.merge(DescriptorAnalyzer(ms, messageCollector).uses(invokes))
+                messageCollector?.log("SOURCE: ${it.source}")
+                messageCollector?.log("containingFile: ${it.source.containingFile.name}")
+                messageCollector?.log("librariesToIntrospect: ${librariesToIntrospect}")
+                if (it.module.name.asString() in librariesToIntrospect) {
+                    val ms = it.getMemberScope()
+                    val currentUses = DescriptorAnalyzer(ms, messageCollector).uses(invokes)
+                    messageCollector?.log("USES 2: ${currentUses}")
+                    sourceUses = sourceUses.merge(currentUses)
+                }
             }
             reflektContext.uses = sourceUses
             messageCollector?.log("IrReflektUses were created successfully")

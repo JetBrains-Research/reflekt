@@ -4,7 +4,7 @@ import io.reflekt.plugin.analysis.processor.FileID
 import io.reflekt.plugin.analysis.processor.source.invokes.*
 import io.reflekt.plugin.analysis.processor.source.uses.*
 import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
-import io.reflekt.plugin.analysis.serialization.KotlinTypeSerializer
+import io.reflekt.plugin.analysis.serialization.SignatureToAnnotationsSerializer
 import kotlinx.serialization.Serializable
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -20,11 +20,12 @@ data class SupertypesToAnnotations(
     val annotations: Set<String> = emptySet()
 )
 
-@Serializable
+@Serializable(with = SignatureToAnnotationsSerializer::class)
 data class SignatureToAnnotations(
-    @Serializable(with = KotlinTypeSerializer::class)
-    val signature: KotlinType, // kotlin.FunctionN< ... >
-    val annotations: Set<String> = emptySet()
+    var signature: KotlinType?, // kotlin.FunctionN< ... >
+    val annotations: Set<String> = emptySet(),
+    // We need to store fqName to deserialize KotlinType (only in invokes)
+    val fqName: String? = null
 )
 
 typealias ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
