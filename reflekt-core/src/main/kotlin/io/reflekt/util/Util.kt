@@ -21,7 +21,7 @@ object Util {
     val ENABLED_OPTION_INFO = MyCliOption(
         name = "enabled",
         valueDescription = "<true|false>",
-        description = "whether to enable the Reflekt plugin or not"
+        description = "Whether to enable the Reflekt plugin or not"
     )
 
     val DEPENDENCY_JAR_OPTION_INFO =
@@ -31,11 +31,11 @@ object Util {
             description = "Project dependency jar file"
         )
 
-    val INTROSPECT_FILE_OPTION_INFO =
+    val REFLEKT_META_FILE_OPTION_INFO =
         MyCliOption(
-            name = "fileToIntrospect",
+            name = "reflektMetaFile",
             valueDescription = "<file's path>",
-            description = "File's path from the library to introspect"
+            description = "File's path from the library with Reflekt meta infromation"
         )
 
     val OUTPUT_DIR_OPTION_INFO =
@@ -44,4 +44,25 @@ object Util {
             valueDescription = "<path>",
             description = "Resulting generated files"
         )
+
+    val SAVE_METADATA_OPTION_INFO = MyCliOption(
+        name = "toSaveMetadata",
+        valueDescription = "<true|false>",
+        description = "Whether to save Reflekt usages into META-INF"
+    )
+
+    val LIBRARY_TO_INTROSPECT = MyCliOption(
+        name = "introspectedLibrary",
+        valueDescription = "<library name>",
+        description = "Names of the libraries' for introspection"
+    )
+
+    val PROJECT_RESOURCES_DIR = MyCliOption(
+        name = "resourcesDir",
+        valueDescription = "<path to the resources dir>",
+        description = "Path to the resources dir in the src folder"
+    )
+
+    const val REFLEKT_META_FILE = "ReflektMeta"
+    const val META_INF_FOLDER = "META-INF"
 }

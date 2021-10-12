@@ -1,10 +1,9 @@
-package io.reflekt.plugin.analysis.analyzer
+package io.reflekt.plugin.analysis.analyzer.source
 
 import io.reflekt.plugin.analysis.models.ReflektInstances
-import io.reflekt.plugin.analysis.processor.instances.ClassInstancesProcessor
-import io.reflekt.plugin.analysis.processor.instances.FunctionInstancesProcessor
-import io.reflekt.plugin.analysis.processor.instances.ObjectInstancesProcessor
-import io.reflekt.plugin.analysis.psi.visit
+import io.reflekt.plugin.analysis.processor.source.instances.ClassInstancesProcessor
+import io.reflekt.plugin.analysis.processor.source.instances.FunctionInstancesProcessor
+import io.reflekt.plugin.analysis.processor.source.instances.ObjectInstancesProcessor
 import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.KtFile

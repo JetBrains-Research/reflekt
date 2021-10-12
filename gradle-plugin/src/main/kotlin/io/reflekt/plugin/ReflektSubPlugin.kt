@@ -8,34 +8,45 @@ import java.io.File
 import io.reflekt.util.Util.GRADLE_ARTIFACT_ID
 import io.reflekt.util.Util.ENABLED_OPTION_INFO
 import io.reflekt.util.Util.GRADLE_GROUP_ID
-import io.reflekt.util.Util.INTROSPECT_FILE_OPTION_INFO
+import io.reflekt.util.Util.LIBRARY_TO_INTROSPECT
+import io.reflekt.util.Util.REFLEKT_META_FILE_OPTION_INFO
 import io.reflekt.util.Util.OUTPUT_DIR_OPTION_INFO
 import io.reflekt.util.Util.PLUGIN_ID
+import io.reflekt.util.Util.PROJECT_RESOURCES_DIR
+import io.reflekt.util.Util.REFLEKT_META_FILE
+import io.reflekt.util.Util.SAVE_METADATA_OPTION_INFO
 import io.reflekt.util.Util.VERSION
+import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 
 @Suppress("unused")
 class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
-
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         println("ReflektSubPlugin loaded")
         val project = kotlinCompilation.target.project
         val extension = project.reflekt
 
-        val filesToIntrospect: MutableSet<File> = HashSet()
+        val reflektMetaFiles: MutableSet<File> = HashSet()
         project.configurations.forEach {
-            filesToIntrospect.addAll(getFilesToIntrospect(getJarFilesToIntrospect(it, extension)))
+            reflektMetaFiles.addAll(getReflektMetaFiles(getJarFilesToIntrospect(it, extension)))
         }
-        val librariesToIntrospect = filesToIntrospect.map { SubpluginOption(key = INTROSPECT_FILE_OPTION_INFO.name, value = it.absolutePath) }
+        val reflektMetaFilesOptions = reflektMetaFiles.map { SubpluginOption(key = REFLEKT_META_FILE_OPTION_INFO.name, value = it.absolutePath) }
         val dependencyJars = project.configurations.first { it.name == "compileClasspath" }
             .map { SubpluginOption(key = DEPENDENCY_JAR_OPTION_INFO.name, value = it.absolutePath) }
 
+        val librariesToIntrospect = extension.librariesToIntrospect.map { SubpluginOption(key = LIBRARY_TO_INTROSPECT.name, value = it) }
+
         return project.provider {
-            librariesToIntrospect + dependencyJars +
+            librariesToIntrospect + reflektMetaFilesOptions + dependencyJars +
                 SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) +
-                SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath)
+                SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath) +
+                SubpluginOption(key = SAVE_METADATA_OPTION_INFO.name, value = extension.toSaveMetadata.toString()) +
+                SubpluginOption(key = PROJECT_RESOURCES_DIR.name, value = project.getResourcesPath())
         }
     }
+
+    // TODO: can we do it better?
+    private fun Project.getResourcesPath(): String = "${project.rootDir}${project.path.replace(":", "/")}/src/main/resources"
 
     override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean = kotlinCompilation.platformType == KotlinPlatformType.jvm
 
@@ -50,18 +61,21 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
         version = VERSION
     )
 
-    private fun getFilesToIntrospect(jarFiles: Set<File>): List<File> {
+    private fun getReflektMetaFile(jarFile: File) =
+        extractAllFiles(jarFile).find { it.name == REFLEKT_META_FILE } ?: error("Jar file ${jarFile.absolutePath} does not have $REFLEKT_META_FILE file!")
+
+    private fun getReflektMetaFiles(jarFiles: Set<File>): List<File> {
         val files: MutableList<File> = ArrayList()
         jarFiles.forEach { jar ->
             getSourceJar(jar)?.let {
-                files.addAll(extractAllFiles(it))
+                files.add(getReflektMetaFile(it))
             }
         }
         return files
     }
 
     private fun getSourceJar(jarFile: File) : File? {
-        val sourceName = "${jarFile.name.substringBeforeLast('.', "")}-sources.jar"
+        val sourceName = "${jarFile.name.substringBeforeLast('.', "")}.jar"
         jarFile.parentFile.parentFile.listFiles()?.filter{ it.isDirectory }?.forEach { folder ->
             val sources = folder.listFiles()?.find { it.name == sourceName }
             if (sources != null) {
@@ -73,18 +87,14 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
 
     private fun getJarFilesToIntrospect(configuration: Configuration, extension: ReflektGradleExtension): Set<File> {
         val jarsToIntrospect: MutableSet<File> = HashSet()
-        println("librariesToIntrospect: ${extension.librariesToIntrospect}")
         val filtered = configuration.dependencies.filter { "${it.group}:${it.name}:${it.version}" in extension.librariesToIntrospect }
         val librariesNames = filtered.map { it.name }
         if (filtered.isNotEmpty()) {
-            println("filtered: ${filtered}")
             require(configuration.isCanBeResolved) { "The parameter canBeResolve must be true!" }
-            // TODO: filter only kotless files
             jarsToIntrospect.addAll(configuration.files(*filtered.toTypedArray()).toSet().filter { f ->
                 librariesNames.any { it in f.path }
             })
         }
-        println("jarsToIntrospect: $jarsToIntrospect")
         return jarsToIntrospect
     }
 }

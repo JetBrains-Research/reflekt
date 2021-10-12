@@ -82,9 +82,7 @@ public object ReflektImpl {
                 setOf("io.reflekt.codegen.test.FirstAnnotationTest") -> {
                     when (signature) {
                         "kotlin.Function0<kotlin.Unit>" -> listOf(::fooN1 as KFunction<T>, ::barN1
-                                as KFunction<T>,
-                                io.reflekt.codegen.test.TestFunctions.Companion::foo as
-                                KFunction<T>)
+                                as KFunction<T>)
                         else -> emptyList()
                     }
                 }

@@ -3,6 +3,7 @@ package io.reflekt.plugin.analysis.util
 import io.reflekt.SmartReflekt
 import io.reflekt.plugin.analysis.common.ReflektEntity
 import io.reflekt.plugin.analysis.processor.*
+import io.reflekt.plugin.analysis.processor.source.Processor
 import io.reflekt.plugin.analysis.psi.getFqName
 import io.reflekt.plugin.utils.enumToRegexOptions
 import org.jetbrains.kotlin.psi.*

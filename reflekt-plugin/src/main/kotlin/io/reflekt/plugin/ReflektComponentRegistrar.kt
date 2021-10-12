@@ -9,13 +9,12 @@ import io.reflekt.plugin.utils.Keys
 import io.reflekt.plugin.utils.Util.initMessageCollector
 import io.reflekt.plugin.utils.Util.log
 import io.reflekt.plugin.utils.Util.messageCollector
+import io.reflekt.util.Util.META_INF_FOLDER
+import io.reflekt.util.Util.REFLEKT_META_FILE
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
-import org.jetbrains.kotlin.com.intellij.psi.PsiFileFactory
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.idea.KotlinLanguage
-import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
 
@@ -28,31 +27,43 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
         project: MockProject,
         configuration: CompilerConfiguration
     ) {
+        // TODO: create a class for Reflekt configs
         if (hasConfiguration && configuration[Keys.ENABLED] != true) {
             return
         }
         configuration.initMessageCollector(logFilePath)
-        if (configuration[Keys.INTROSPECT_FILES] != null && configuration[Keys.OUTPUT_DIR] == null) {
+        if (configuration[Keys.REFLEKT_META_FILES] != null && configuration[Keys.OUTPUT_DIR] == null) {
             error("Output path not specified")
         }
+
+        val toSaveMetadata = configuration[Keys.TO_SAVE_METADATA] ?: false
+        configuration.messageCollector.log("TO SAVE METADATA FLAG $toSaveMetadata;")
+        val resourcesDir = configuration[Keys.RESOURCES_DIR]
+        if (toSaveMetadata && (resourcesDir == null || !File(resourcesDir).exists())) {
+            error("Resources folder was not set or doe not exist, but toSaveMetadata is $toSaveMetadata")
+        }
+
         val dependencyJars = configuration[Keys.DEPENDENCY_JARS] ?: emptyList()
         configuration.messageCollector.log("DEPENDENCY JARS: ${dependencyJars.map { it.absolutePath }};")
 
-        configuration.messageCollector.log("INTROSPECT CLASS FILES: ${configuration[Keys.INTROSPECT_FILES]};")
-        val filesToIntrospect = getKtFiles(configuration[Keys.INTROSPECT_FILES] ?: emptyList(), project)
-        val outputDir = configuration[Keys.OUTPUT_DIR]
+        configuration.messageCollector.log("INTROSPECT CLASS FILES: ${configuration[Keys.REFLEKT_META_FILES]};")
+        val reflektMetaFiles = if (toSaveMetadata) configuration[Keys.REFLEKT_META_FILES]?.toSet() ?: emptySet() else emptySet()
         val reflektContext = ReflektContext()
 
+        configuration.messageCollector.log("PROJECT FILE PATH: ${project.projectFilePath}")
 
         // This will be called multiple times (for each project module),
         // since compilation process runs module by module
         AnalysisHandlerExtension.registerExtension(
             project,
             ReflektModuleAnalysisExtension(
-                filesToIntrospect = filesToIntrospect,
-                generationPath = outputDir,
+                reflektMetaFiles = reflektMetaFiles,
+                toSaveMetadata = toSaveMetadata,
+                generationPath = configuration[Keys.OUTPUT_DIR],
                 reflektContext = reflektContext,
-                messageCollector = configuration.messageCollector
+                messageCollector = configuration.messageCollector,
+                librariesToIntrospect = configuration[Keys.LIBRARY_TO_INTROSPECT]?.toSet() ?: emptySet(),
+                reflektMetaFile = createReflektMeta(resourcesDir!!)
             )
         )
         IrGenerationExtension.registerExtension(
@@ -72,11 +83,14 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
         )
     }
 
-    /** Get KtFile representation for set of files */
-    private fun getKtFiles(files: Collection<File>, project: MockProject): Set<KtFile> {
-        return files.filter {  it.extension == "kt" }.mapNotNull { file ->
-            PsiFileFactory.getInstance(project).createFileFromText(KotlinLanguage.INSTANCE, file.readText()) as? KtFile
-        }.toSet()
+    private fun createReflektMeta(resourcesDir: String): File {
+        val metaInfDir = File("$resourcesDir/$META_INF_FOLDER")
+        if (!metaInfDir.exists()) {
+            metaInfDir.mkdirs()
+        }
+        val reflektMetaFile = File("${metaInfDir.path}/$REFLEKT_META_FILE")
+        reflektMetaFile.createNewFile()
+        return reflektMetaFile
     }
 }
 

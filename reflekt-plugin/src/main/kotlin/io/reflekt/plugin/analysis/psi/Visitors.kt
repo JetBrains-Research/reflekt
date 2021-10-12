@@ -1,6 +1,6 @@
 package io.reflekt.plugin.analysis.psi
 
-import io.reflekt.plugin.analysis.processor.Processor
+import io.reflekt.plugin.analysis.processor.source.Processor
 import org.jetbrains.kotlin.psi.*
 
 

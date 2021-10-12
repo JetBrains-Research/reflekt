@@ -1,4 +1,4 @@
-package io.reflekt.plugin.analysis.processor.instances
+package io.reflekt.plugin.analysis.processor.source.instances
 
 import io.reflekt.plugin.analysis.processor.*
 import org.jetbrains.kotlin.psi.*
@@ -14,6 +14,6 @@ class FunctionInstancesProcessor(override val binding: BindingContext) : BaseIns
         return fileToInstances
     }
 
-    // TODO: error during getting FunctionDescriptor for <init> functions
-    override fun shouldRunOn(element: KtElement) = element.isPublicFunction && !element.isInitFunction
+    // TODO: how can we return the member functions??
+    override fun shouldRunOn(element: KtElement) = element.isTopLevelPublicFunction
 }

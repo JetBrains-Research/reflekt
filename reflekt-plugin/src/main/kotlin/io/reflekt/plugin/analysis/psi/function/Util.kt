@@ -26,10 +26,11 @@ fun KtNamedFunction.argumentTypesWithReceiver(binding: BindingContext): List<Kot
 fun KtNamedFunction.returnType(binding: BindingContext): KotlinType? =
     getDescriptor(binding).returnType
 
-fun KtNamedFunction.receiverType(binding: BindingContext): KotlinType? {
-    val descriptor = getDescriptor(binding)
-    val extensionReceiver = descriptor.extensionReceiverParameter
-    val dispatchReceiver = descriptor.dispatchReceiverParameter
+fun KtNamedFunction.receiverType(binding: BindingContext): KotlinType? = getDescriptor(binding).receiverType()
+
+fun FunctionDescriptor.receiverType(): KotlinType? {
+    val extensionReceiver = this.extensionReceiverParameter
+    val dispatchReceiver = this.dispatchReceiverParameter
 
     return if (dispatchReceiver != null && dispatchReceiver !is TransientReceiver) {
         dispatchReceiver.type
@@ -45,16 +46,12 @@ fun KtNamedFunction.checkSignature(signature: KotlinType, binding: BindingContex
     return this.toParameterizedType(binding)?.let { equalTypes(it, signature) } ?: false
 }
 
-fun KtNamedFunction.toFunctionInfo(binding: BindingContext, messageCollector: MessageCollector? = null): IrFunctionInfo {
-    messageCollector?.log("function: ${this.text}")
-    messageCollector?.log("descriptor: ${getDescriptor(binding)}")
-
-    return  IrFunctionInfo(
+fun KtNamedFunction.toFunctionInfo(binding: BindingContext): IrFunctionInfo =
+    IrFunctionInfo(
         fqName.toString(),
         receiverFqName = receiverType(binding)?.shortFqName(),
         isObjectReceiver = receiverType(binding)?.isObject() ?: false
     )
-}
 
 
 fun KtNamedFunction.toParameterizedType(binding: BindingContext): KotlinType? {

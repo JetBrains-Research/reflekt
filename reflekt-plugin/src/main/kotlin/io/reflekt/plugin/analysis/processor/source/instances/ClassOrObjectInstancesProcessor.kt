@@ -1,4 +1,4 @@
-package io.reflekt.plugin.analysis.processor.instances
+package io.reflekt.plugin.analysis.processor.source.instances
 
 import io.reflekt.plugin.analysis.processor.*
 import io.reflekt.plugin.analysis.processor.isPublicNotAbstractClass

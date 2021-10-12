@@ -1,13 +1,16 @@
-package io.reflekt.plugin.analysis.processor.uses
+package io.reflekt.plugin.analysis.processor.source.uses
 
-import io.reflekt.plugin.analysis.models.*
-import io.reflekt.plugin.analysis.processor.FileID
+import io.reflekt.plugin.analysis.models.ClassOrObjectUses
+import io.reflekt.plugin.analysis.models.ReflektInvokes
+import io.reflekt.plugin.analysis.processor.*
 import io.reflekt.plugin.analysis.processor.isPublicNotAbstractClass
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 
-class ClassUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes) : BaseUsesProcessor<ClassOrObjectUses>(binding) {
+class ClassUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes, override val messageCollector: MessageCollector?) :
+    BaseUsesProcessor<ClassOrObjectUses>(binding, messageCollector) {
     override val fileToUses: HashMap<FileID, ClassOrObjectUses> = HashMap()
     private val invokes = getInvokesGroupedByFiles(reflektInvokes.classes)
 

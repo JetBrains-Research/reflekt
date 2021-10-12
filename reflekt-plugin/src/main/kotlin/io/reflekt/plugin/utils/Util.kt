@@ -1,7 +1,6 @@
 package io.reflekt.plugin.utils
 
-import io.reflekt.plugin.analysis.analyzer.ReflektAnalyzer
-import io.reflekt.plugin.analysis.analyzer.SmartReflektAnalyzer
+import io.reflekt.plugin.analysis.analyzer.source.SmartReflektAnalyzer
 import io.reflekt.plugin.analysis.models.ReflektInstances
 import io.reflekt.plugin.analysis.models.ReflektUses
 import io.reflekt.util.TypeStringRepresentationUtil
@@ -46,7 +45,7 @@ object Util {
         )
     }
 
-    private fun BindingTrace.saveUses(uses: ReflektUses) {
+    internal fun BindingTrace.saveUses(uses: ReflektUses) {
         record(GET_USES, USES_STORE_NAME, uses)
     }
 
@@ -57,16 +56,6 @@ object Util {
     }
 
     fun BindingContext.getInstances() = get(GET_INSTANCES, INSTANCES_STORE_NAME)
-
-    fun getUses(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true, messageCollector: MessageCollector? = null): ReflektUses {
-        val analyzer = ReflektAnalyzer(files, bindingTrace.bindingContext, messageCollector)
-        val invokes = analyzer.invokes()
-        val uses = analyzer.uses(invokes)
-        if (toSave) {
-            bindingTrace.saveUses(uses)
-        }
-        return uses
-    }
 
     fun getInstances(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true, messageCollector: MessageCollector? = null): ReflektInstances {
         val analyzer = SmartReflektAnalyzer(files, bindingTrace.bindingContext, messageCollector)

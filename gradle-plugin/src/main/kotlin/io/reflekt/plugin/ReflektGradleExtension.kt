@@ -18,6 +18,11 @@ open class ReflektGradleExtension {
      */
     var generationPath: String = "src/main/kotlin-gen"
 
+    /** If [false], Reflekt usages will not be saved into META-INF.
+     * This information will be used if the current project is included
+     * as a library for ReflektImpl file generation. */
+    var toSaveMetadata: Boolean = false
+
 }
 
 /**

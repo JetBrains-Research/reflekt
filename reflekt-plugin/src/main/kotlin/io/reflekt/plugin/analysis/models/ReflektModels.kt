@@ -1,8 +1,8 @@
 package io.reflekt.plugin.analysis.models
 
 import io.reflekt.plugin.analysis.processor.FileID
-import io.reflekt.plugin.analysis.processor.invokes.*
-import io.reflekt.plugin.analysis.processor.uses.*
+import io.reflekt.plugin.analysis.processor.source.invokes.*
+import io.reflekt.plugin.analysis.processor.source.uses.*
 import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -37,6 +37,15 @@ data class ReflektInvokes(
             functions = processors.mapNotNull { it as? FunctionInvokesProcessor }.first().fileToInvokes
         )
     }
+
+    fun merge(second: ReflektInvokes): ReflektInvokes = ReflektInvokes(
+        objects = this.objects.merge(second.objects),
+        classes = this.classes.merge(second.classes),
+        functions = this.functions.merge(second.functions)
+    )
+
+    private fun <V> HashMap<FileID, MutableSet<V>>.merge(second: HashMap<FileID, MutableSet<V>>): HashMap<FileID, MutableSet<V>> =
+        this.also { second.forEach { (k, v) -> this.getOrPut(k) { v } } }
 }
 
 typealias TypeUses<K, V> = MutableMap<K, MutableList<V>>
@@ -100,4 +109,12 @@ data class IrReflektUses(
             functions = HashMap(uses.functions.flatten().mapValues { (_, v) -> v.map { it.toFunctionInfo(binding) }.toMutableList() }),
         )
     }
+
+    fun merge(second: IrReflektUses): IrReflektUses = IrReflektUses(
+        objects = this.objects.merge(second.objects),
+        classes = this.classes.merge(second.classes),
+        functions = this.functions.merge(second.functions)
+    )
+
+    private fun <K, V> TypeUses<K, V>.merge(second: TypeUses<K, V>): TypeUses<K, V> = this.also { second.forEach { (k, v) -> this.getOrPut(k) { v } } }
 }

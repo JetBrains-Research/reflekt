@@ -10,7 +10,6 @@ functions: {
 			]
 		],
 		namedFunctions: [
-			io.reflekt.test.TestFunctions.Companion.foo,
 			io.reflekt.test.bar,
 			io.reflekt.test.foo
 		]

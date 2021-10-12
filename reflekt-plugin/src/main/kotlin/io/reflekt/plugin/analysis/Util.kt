@@ -1,9 +1,7 @@
 package io.reflekt.plugin.analysis
 
-import io.reflekt.plugin.analysis.analyzer.*
-import io.reflekt.plugin.utils.compiler.EnvironmentManager
-import io.reflekt.plugin.utils.compiler.ParseUtil
-import io.reflekt.plugin.utils.compiler.ResolveUtil
+import io.reflekt.plugin.analysis.analyzer.source.*
+import io.reflekt.plugin.utils.compiler.*
 import java.io.File
 
 object AnalysisUtil {
