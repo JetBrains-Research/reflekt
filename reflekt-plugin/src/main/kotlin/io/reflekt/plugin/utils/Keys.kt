@@ -11,4 +11,5 @@ internal object Keys {
     val REFLEKT_META_FILES = CompilerConfigurationKey<List<File>>("$PLUGIN_ID.reflektMetaFiles")
     val TO_SAVE_METADATA = CompilerConfigurationKey<Boolean>("$PLUGIN_ID.toSaveMetadata")
     val REFLEKT_META_PATH = CompilerConfigurationKey<String>("$PLUGIN_ID.reflektMeta")
+    val LIBRARY_TO_INTROSPECT = CompilerConfigurationKey<List<String>>("$PLUGIN_ID.libraryToIntrospect")
 }

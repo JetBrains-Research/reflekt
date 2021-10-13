@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService
 import io.reflekt.plugin.utils.Keys
 import io.reflekt.util.Util.DEPENDENCY_JAR_OPTION_INFO
 import io.reflekt.util.Util.ENABLED_OPTION_INFO
+import io.reflekt.util.Util.LIBRARY_TO_INTROSPECT
 import io.reflekt.util.Util.OUTPUT_DIR_OPTION_INFO
 import io.reflekt.util.Util.PLUGIN_ID
 import io.reflekt.util.Util.REFLEKT_META_FILE_OPTION_INFO
@@ -32,7 +33,8 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
             REFLEKT_META_FILE_OPTION,
             OUTPUT_DIR_OPTION,
             SAVE_METADATA_OPTION,
-            REFLEKT_META_FILE_PATH_OPTION
+            REFLEKT_META_FILE_PATH_OPTION,
+            LIBRARY_TO_INTROSPECT_OPTION,
         )
 
     override fun processOption(
@@ -47,6 +49,7 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
             OUTPUT_DIR_OPTION -> configuration.put(Keys.OUTPUT_DIR, File(value))
             SAVE_METADATA_OPTION -> configuration.put(Keys.TO_SAVE_METADATA, value.toBoolean())
             REFLEKT_META_FILE_PATH_OPTION -> configuration.put(Keys.REFLEKT_META_PATH, value)
+            LIBRARY_TO_INTROSPECT_OPTION -> configuration.addToList(Keys.LIBRARY_TO_INTROSPECT, value)
             else -> error("Unexpected config option ${option.optionName}")
         }
     }
@@ -102,6 +105,15 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
                 description = REFLEKT_META_FILE_PATH.description,
                 required = false,
                 allowMultipleOccurrences = false
+            )
+
+        val LIBRARY_TO_INTROSPECT_OPTION =
+            CliOption(
+                optionName = LIBRARY_TO_INTROSPECT.name,
+                valueDescription = LIBRARY_TO_INTROSPECT.valueDescription,
+                description = LIBRARY_TO_INTROSPECT.description,
+                required = false,
+                allowMultipleOccurrences = true
             )
     }
 
