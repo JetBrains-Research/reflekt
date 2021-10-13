@@ -26,8 +26,7 @@ class ReflektModuleAnalysisExtension(
     private val reflektMetaFiles: Set<File>,
     private val toSaveMetadata: Boolean,
     private val generationPath: File?,
-    private val reflektMetaFile: File,
-    private val librariesToIntrospect: Set<String>,
+    private val reflektMetaFile: File?,
     private val reflektContext: ReflektContext? = null,
     private val messageCollector: MessageCollector? = null
 ) : AnalysisHandlerExtension {
@@ -42,7 +41,7 @@ class ReflektModuleAnalysisExtension(
         val analyzer = ReflektAnalyzer(setOfFiles, bindingTrace.bindingContext, messageCollector)
         val invokes = analyzer.invokes()
         messageCollector?.log("Project's invokes: $invokes")
-        if (toSaveMetadata) {
+        if (toSaveMetadata && reflektMetaFile != null) {
             saveMetaData(invokes, setOfFiles)
         }
         val mergedInvokes = invokes.merge(libraryInvokes)
@@ -52,14 +51,8 @@ class ReflektModuleAnalysisExtension(
 
         if (reflektContext != null) {
             messageCollector?.log("Start analysis ${module.name} module's files")
-            var sourceUses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
-            module.getDescriptors(packages.map { FqName(it) }.toSet()).forEach {
-                val ms = it.getMemberScope()
-                val currentUses = DescriptorAnalyzer(ms, messageCollector).uses(invokes)
-                messageCollector?.log("CURRENT LIBRARY USES: $currentUses")
-                sourceUses = sourceUses.merge(currentUses)
-            }
-            reflektContext.uses = sourceUses
+            val sourceUses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
+            reflektContext.uses = sourceUses.merge(getUsesFromLibraries(module, packages, invokes))
             messageCollector?.log("IrReflektUses were created successfully")
 
             // Need only for SmartReflekt
@@ -71,22 +64,39 @@ class ReflektModuleAnalysisExtension(
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses")
         }
 
-        if (generationPath != null && !toSaveMetadata) {
-            messageCollector?.log("Start generation ReflektImpl. Base generation path: $generationPath")
-            val reflektImplFile = File(generationPath, "io/reflekt/ReflektImpl.kt")
-            messageCollector?.log("ReflektImpl generation path: ${reflektImplFile.absolutePath}")
-            with(reflektImplFile) {
-                delete()
-                parentFile.mkdirs()
-                writeText(
-                    ReflektImplGenerator(uses).generate()
-                )
-            }
-            messageCollector?.log("Finish generation ReflektImpl")
+        if (toGenerateReflektImpl()) {
+            generateReflektImpl(uses)
         }
-
         messageCollector?.log("Finish analysis with ReflektModuleAnalysisExtension")
         return super.analysisCompleted(project, module, bindingTrace, files)
+    }
+
+    private fun toGenerateReflektImpl() = generationPath != null && !toSaveMetadata
+
+    // TODO: generate ReflektImpl by IrReflektUses
+    private fun generateReflektImpl(uses: ReflektUses) {
+        messageCollector?.log("Start generation ReflektImpl. Base generation path: $generationPath")
+        val reflektImplFile = File(generationPath, "io/reflekt/ReflektImpl.kt")
+        messageCollector?.log("ReflektImpl generation path: ${reflektImplFile.absolutePath}")
+        with(reflektImplFile) {
+            delete()
+            parentFile.mkdirs()
+            writeText(
+                ReflektImplGenerator(uses).generate()
+            )
+        }
+        messageCollector?.log("Finish generation ReflektImpl")
+    }
+
+    private fun getUsesFromLibraries(module: ModuleDescriptorImpl, packages: Set<String>, invokes: ReflektInvokes): IrReflektUses {
+        var uses = IrReflektUses()
+        module.getDescriptors(packages.map { FqName(it) }.toSet()).forEach {
+            val ms = it.getMemberScope()
+            val currentUses = DescriptorAnalyzer(ms, messageCollector).uses(invokes)
+            messageCollector?.log("CURRENT LIBRARY USES: $currentUses")
+            uses = uses.merge(currentUses)
+        }
+        return uses
     }
 
     private fun getReflektMeta(reflektMetaFiles: Set<File>, module: ModuleDescriptorImpl): ReflektInvokesWithPackages {
@@ -110,7 +120,7 @@ class ReflektModuleAnalysisExtension(
 
     private fun saveMetaData(invokes: ReflektInvokes, files: Set<KtFile>) {
         messageCollector?.log("Save Reflekt meta data")
-        reflektMetaFile.createNewFile()
+        reflektMetaFile!!.createNewFile()
         reflektMetaFile.writeBytes(
             SerializationUtils.encodeInvokes(
                 ReflektInvokesWithPackages(
