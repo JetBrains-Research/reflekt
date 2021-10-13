@@ -1,5 +1,7 @@
 package io.reflekt.plugin
 
+import io.reflekt.plugin.util.kotlin
+import io.reflekt.plugin.util.mySourceSets
 import io.reflekt.util.Util.DEPENDENCY_JAR_OPTION_INFO
 import io.reflekt.util.FileUtil.extractAllFiles
 import org.gradle.api.artifacts.Configuration
@@ -37,11 +39,20 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
             .map { SubpluginOption(key = DEPENDENCY_JAR_OPTION_INFO.name, value = it.absolutePath) }
 
         val librariesToIntrospect = extension.librariesToIntrospect.map { SubpluginOption(key = LIBRARY_TO_INTROSPECT.name, value = it) }
+        val generationPath = "${project.buildDir.absolutePath}/${extension.generationPath}"
+
+        with(project) {
+            afterEvaluate {
+                project.mySourceSets.apply {
+                    this.getAt("main").kotlin.srcDir(generationPath)
+                }
+            }
+        }
 
         return project.provider {
             librariesToIntrospect + reflektMetaFilesOptions + dependencyJars +
                 SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) +
-                SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath) +
+                SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = generationPath) +
                 SubpluginOption(key = SAVE_METADATA_OPTION_INFO.name, value = extension.toSaveMetadata.toString()) +
                 SubpluginOption(key = REFLEKT_META_FILE_PATH.name, value = createReflektMeta(project.getResourcesPath()).absolutePath)
         }
@@ -52,11 +63,7 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
         if (!metaInfDir.exists()) {
             metaInfDir.mkdirs()
         }
-        val reflektMetaFile = File("${metaInfDir.path}/${reflektMetaFile}")
-//        if (toCreateFile) {
-//            reflektMetaFile.createNewFile()
-//        }
-        return reflektMetaFile
+        return File("${metaInfDir.path}/${reflektMetaFile}")
     }
 
     // TODO: can we do it better?
