@@ -23,11 +23,12 @@ object SerializationUtils {
         val decoded = protoBuf.decodeFromByteArray(ReflektInvokesSerializer, byteArray)
         val functions = decoded.functions.mapValues {
             it.value.map { sa ->
-                SignatureToAnnotations(
-                    signature = deserializeKotlinType(module, sa.fqName),
-                    annotations = sa.annotations,
-                    fqName = sa.fqName
-                )
+//                SignatureToAnnotations(
+//                    signature = deserializeKotlinType(module, sa.serializableKotlinType?.fqName),
+//                    annotations = sa.annotations,
+//                    serializableKotlinType = sa.serializableKotlinType
+//                )
+                sa
             }.toMutableSet()
         } as HashMap
 

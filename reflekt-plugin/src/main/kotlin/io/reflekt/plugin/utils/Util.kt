@@ -82,7 +82,6 @@ fun KotlinType.stringRepresentation(): String {
         if (it.isStarProjection) {
             TypeStringRepresentationUtil.STAR_SYMBOL
         } else {
-            val representation = it.type.stringRepresentation()
             TypeStringRepresentationUtil.markAsNullable(it.type.stringRepresentation(), it.type.isMarkedNullable)
         }
     }

@@ -4,11 +4,13 @@ import io.reflekt.plugin.analysis.processor.FileID
 import io.reflekt.plugin.analysis.processor.source.invokes.*
 import io.reflekt.plugin.analysis.processor.source.uses.*
 import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
+import io.reflekt.plugin.analysis.serialization.ReflektInvokesSerializer
 import io.reflekt.plugin.analysis.serialization.SignatureToAnnotationsSerializer
 import kotlinx.serialization.Serializable
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.Variance
 
 /**
  * If the function [withAnnotations] is called without supertypes then [supertypes] is setOf(Any::class::qualifiedName)
@@ -20,17 +22,29 @@ data class SupertypesToAnnotations(
     val annotations: Set<String> = emptySet()
 )
 
+@Serializable
+data class SerializableKotlinType(
+    val fqName: String,
+    val arguments: List<SerializableTypeProjection>
+)
+
+@Serializable
+data class SerializableTypeProjection(
+    val fqName: String,
+    val isStarProjection: Boolean,
+    val projectionKind: Variance,
+)
+
 @Serializable(with = SignatureToAnnotationsSerializer::class)
 data class SignatureToAnnotations(
     var signature: KotlinType?, // kotlin.FunctionN< ... >
     val annotations: Set<String> = emptySet(),
-    // We need to store fqName to deserialize KotlinType (only in invokes)
-    val fqName: String? = null
 )
 
 typealias ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
 typealias FunctionInvokes = MutableSet<SignatureToAnnotations>
 
+@Serializable(with = ReflektInvokesSerializer::class)
 data class ReflektInvokes(
     val objects: HashMap<FileID, ClassOrObjectInvokes> = HashMap(),
     val classes: HashMap<FileID, ClassOrObjectInvokes> = HashMap(),
