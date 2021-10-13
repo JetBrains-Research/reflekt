@@ -5,8 +5,10 @@ import io.reflekt.plugin.analysis.processor.source.invokes.*
 import io.reflekt.plugin.analysis.processor.source.uses.*
 import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
 import io.reflekt.plugin.analysis.serialization.*
+import io.reflekt.plugin.analysis.serialization.SerializationUtils.toKotlinType
 import io.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableKotlinType
 import kotlinx.serialization.Serializable
+import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
@@ -57,6 +59,40 @@ data class SerializableReflektInvokes(
     val classes: HashMap<FileID, ClassOrObjectInvokes> = HashMap(),
     val functions: HashMap<FileID, SerializableFunctionInvokes> = HashMap()
 )
+
+@Serializable
+data class SerializableReflektInvokesWithPackages(
+    val invokes: SerializableReflektInvokes,
+    val packages: Set<String>
+) {
+    fun toReflektInvokesWithPackages(module: ModuleDescriptorImpl) =
+        ReflektInvokesWithPackages(
+            invokes = ReflektInvokes(
+                objects = invokes.objects,
+                classes = invokes.classes,
+                functions = invokes.functions.mapValues { l ->
+                    l.value.map {
+                        SignatureToAnnotations(
+                            annotations = it.annotations,
+                            signature = it.signature?.toKotlinType(module)
+                        )
+                    }.toMutableSet()
+                } as HashMap
+            ),
+            packages = packages
+        )
+}
+
+data class ReflektInvokesWithPackages(
+    val invokes: ReflektInvokes,
+    val packages: Set<String>
+) {
+    fun toSerializableReflektInvokesWithPackages() =
+        SerializableReflektInvokesWithPackages(
+            invokes = invokes.toSerializableReflektInvokes(),
+            packages = packages
+        )
+}
 
 data class ReflektInvokes(
     val objects: HashMap<FileID, ClassOrObjectInvokes> = HashMap(),

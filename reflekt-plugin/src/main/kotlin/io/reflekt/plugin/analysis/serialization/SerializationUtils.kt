@@ -18,25 +18,13 @@ import org.jetbrains.kotlin.types.TypeProjection
 object SerializationUtils {
     private val protoBuf = ProtoBuf
 
-    fun encodeInvokes(invokes: ReflektInvokes): ByteArray {
-        return protoBuf.encodeToByteArray(invokes.toSerializableReflektInvokes())
+    fun encodeInvokes(invokesWithPackages: ReflektInvokesWithPackages): ByteArray {
+        return protoBuf.encodeToByteArray(invokesWithPackages.toSerializableReflektInvokesWithPackages())
     }
 
-    fun decodeInvokes(byteArray: ByteArray, module: ModuleDescriptorImpl): ReflektInvokes {
-        val decoded = protoBuf.decodeFromByteArray<SerializableReflektInvokes>(byteArray)
-
-        return ReflektInvokes(
-            objects = decoded.objects,
-            classes = decoded.classes,
-            functions = decoded.functions.mapValues { l ->
-                l.value.map {
-                    SignatureToAnnotations(
-                        annotations = it.annotations,
-                        signature = it.signature?.toKotlinType(module)
-                    )
-                }.toMutableSet()
-            } as HashMap
-        )
+    fun decodeInvokes(byteArray: ByteArray, module: ModuleDescriptorImpl): ReflektInvokesWithPackages {
+        val decoded = protoBuf.decodeFromByteArray<SerializableReflektInvokesWithPackages>(byteArray)
+        return decoded.toReflektInvokesWithPackages(module)
     }
 
     private fun deserializeKotlinType(module: ModuleDescriptorImpl, fqName: String?): KotlinType {

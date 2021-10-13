@@ -3,7 +3,8 @@ package io.reflekt.plugin.analysis
 import io.reflekt.plugin.analysis.analyzer.descriptor.DescriptorAnalyzer
 import io.reflekt.plugin.analysis.analyzer.source.ReflektAnalyzer
 import io.reflekt.plugin.analysis.models.*
-import io.reflekt.plugin.analysis.resolve.*
+import io.reflekt.plugin.analysis.resolve.getAllSubPackages
+import io.reflekt.plugin.analysis.resolve.getDescriptors
 import io.reflekt.plugin.analysis.serialization.SerializationUtils
 import io.reflekt.plugin.generation.code.generator.ReflektImplGenerator
 import io.reflekt.plugin.utils.Util.getInstances
@@ -12,7 +13,7 @@ import io.reflekt.plugin.utils.Util.saveUses
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
-import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtFile
@@ -31,17 +32,22 @@ class ReflektModuleAnalysisExtension(
     private val messageCollector: MessageCollector? = null
 ) : AnalysisHandlerExtension {
 
+    // TODO: store ReflektMetaInf by modules
     override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
         messageCollector?.log("ReflektAnalysisExtension is starting...")
         (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
         messageCollector?.log("reflektMetaFiles ${reflektMetaFiles}")
         var libraryInvokes = ReflektInvokes()
+        val packages = mutableSetOf<String>()
         reflektMetaFiles.forEach {
-            val currentInvokes = SerializationUtils.decodeInvokes(it.readBytes(), module)
-            messageCollector?.log("Deserialized invokes: $currentInvokes")
-            libraryInvokes = libraryInvokes.merge(currentInvokes)
+            val currentInvokesWithPackages = SerializationUtils.decodeInvokes(it.readBytes(), module)
+            messageCollector?.log("Deserialized invokes: ${currentInvokesWithPackages.invokes}")
+            messageCollector?.log("Deserialized packages: ${currentInvokesWithPackages.packages}")
+            libraryInvokes = libraryInvokes.merge(currentInvokesWithPackages.invokes)
+            packages.addAll(currentInvokesWithPackages.packages)
         }
         messageCollector?.log("Library invokes: $libraryInvokes")
+        messageCollector?.log("Library packages: $packages")
 
         val setOfFiles = files.toSet()
         val analyzer = ReflektAnalyzer(setOfFiles, bindingTrace.bindingContext, messageCollector)
@@ -50,12 +56,20 @@ class ReflektModuleAnalysisExtension(
         if (toSaveMetadata) {
             messageCollector?.log("Save Reflekt meta data")
             reflektMetaFile.createNewFile()
-            reflektMetaFile.writeBytes(SerializationUtils.encodeInvokes(invokes))
+            reflektMetaFile.writeBytes(
+                SerializationUtils.encodeInvokes(
+                    ReflektInvokesWithPackages(
+                        invokes = invokes,
+                        packages = files.map { it.packageFqName.asString() }.toSet()
+                    )
+                )
+            )
         }
         val mergedInvokes = invokes.merge(libraryInvokes)
         messageCollector?.log("Merged invokes: $mergedInvokes")
         val uses = analyzer.uses(mergedInvokes)
         bindingTrace.saveUses(uses)
+
 
         val rootFqName = "io.kotless.dsl"
         messageCollector?.log("librariesToIntrospect: ${librariesToIntrospect}")
@@ -86,8 +100,8 @@ class ReflektModuleAnalysisExtension(
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses")
         }
 
-        messageCollector?.log("Start generation ReflektImpl. Base generation path: $generationPath")
-        if (generationPath != null) {
+        if (generationPath != null && !toSaveMetadata) {
+            messageCollector?.log("Start generation ReflektImpl. Base generation path: $generationPath")
             val reflektImplFile = File(generationPath, "io/reflekt/ReflektImpl.kt")
             messageCollector?.log("ReflektImpl generation path: ${reflektImplFile.absolutePath}")
             with(reflektImplFile) {
@@ -97,8 +111,8 @@ class ReflektModuleAnalysisExtension(
                     ReflektImplGenerator(uses).generate()
                 )
             }
+            messageCollector?.log("Finish generation ReflektImpl")
         }
-        messageCollector?.log("Finish generation ReflektImpl")
 
         messageCollector?.log("Finish analysis with ReflektModuleAnalysisExtension")
         return super.analysisCompleted(project, module, bindingTrace, files)
