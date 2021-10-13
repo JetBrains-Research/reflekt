@@ -28,7 +28,7 @@ class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes
     // TODO: how can we return the member functions??
     override fun shouldRunOn(element: KtElement): Boolean {
         val shouldRunOn = element.isTopLevelPublicFunction && !element.isMainFunction
-        messageCollector?.log("Element: ${element.text}, should run on $shouldRunOn")
+        messageCollector?.log("FunctionUsesProcessor. Element: $element with text ${element.text}, should run on $shouldRunOn")
         return shouldRunOn
     }
 

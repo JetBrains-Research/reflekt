@@ -19,7 +19,7 @@ class AnalysisTest {
         fun data(): List<Arguments> {
             // We change only the Main file in each test by using different configurations of the Reflekt invokes\uses
             val commonTestFiles = getAllNestedFiles(getResourcesRootPath(AnalysisTest::class, "commonTestFiles")).toSet()
-            return getTestsDirectories(AnalysisTest::class).map { directory ->
+            return getTestsDirectories(AnalysisTest::class).filter { "functions22_test" in it.name }.map { directory ->
                 val project = getProjectFilesInDirectory(directory)
                 val invokes = directory.findInDirectory("invokes.txt").readText().trim()
                 val uses = directory.findInDirectory("uses.txt").readText().trim()

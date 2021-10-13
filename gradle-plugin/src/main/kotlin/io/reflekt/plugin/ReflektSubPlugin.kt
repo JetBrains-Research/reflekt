@@ -43,19 +43,19 @@ class ReflektSubPlugin :  KotlinCompilerPluginSupportPlugin {
                 SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) +
                 SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath) +
                 SubpluginOption(key = SAVE_METADATA_OPTION_INFO.name, value = extension.toSaveMetadata.toString()) +
-                SubpluginOption(key = REFLEKT_META_FILE_PATH.name, value = createReflektMeta(project.getResourcesPath(), extension.toSaveMetadata).absolutePath)
+                SubpluginOption(key = REFLEKT_META_FILE_PATH.name, value = createReflektMeta(project.getResourcesPath()).absolutePath)
         }
     }
 
-    private fun createReflektMeta(resourcesDir: String, toCreateFile: Boolean): File {
+    private fun createReflektMeta(resourcesDir: String): File {
         val metaInfDir = File("$resourcesDir/${metaInfDir}")
         if (!metaInfDir.exists()) {
             metaInfDir.mkdirs()
         }
         val reflektMetaFile = File("${metaInfDir.path}/${reflektMetaFile}")
-        if (toCreateFile) {
-            reflektMetaFile.createNewFile()
-        }
+//        if (toCreateFile) {
+//            reflektMetaFile.createNewFile()
+//        }
         return reflektMetaFile
     }
 

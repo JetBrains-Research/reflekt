@@ -40,7 +40,8 @@ allprojects {
     }
 
     reflekt {
-        enabled = true
+        enabled = false
+        toSaveMetadata = true
         // Use DependencyHandlers which have canBeResolve = True
         librariesToIntrospect = listOf()
     }

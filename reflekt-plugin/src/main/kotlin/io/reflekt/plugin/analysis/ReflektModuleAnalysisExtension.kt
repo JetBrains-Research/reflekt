@@ -34,21 +34,27 @@ class ReflektModuleAnalysisExtension(
     override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
         messageCollector?.log("ReflektAnalysisExtension is starting...")
         (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
-        // TODO:
+        messageCollector?.log("reflektMetaFiles ${reflektMetaFiles}")
+        var libraryInvokes = ReflektInvokes()
         reflektMetaFiles.forEach {
-            messageCollector?.log("deserialized invokes: ${SerializationUtils.decodeInvokes(it.readBytes(), module)}")
+            val currentInvokes = SerializationUtils.decodeInvokes(it.readBytes(), module)
+            messageCollector?.log("Deserialized invokes: $currentInvokes")
+            libraryInvokes = libraryInvokes.merge(currentInvokes)
         }
-//        val librariesAnalyzer = ReflektAnalyzer(reflektMetaFiles, bindingTrace.bindingContext, messageCollector)
-//        val librariesInvokes = librariesAnalyzer.invokes()
-//        messageCollector?.log("Libraries invokes: $librariesInvokes")
+        messageCollector?.log("Library invokes: $libraryInvokes")
 
         val setOfFiles = files.toSet()
         val analyzer = ReflektAnalyzer(setOfFiles, bindingTrace.bindingContext, messageCollector)
         val invokes = analyzer.invokes()
+        messageCollector?.log("Project's invokes: $invokes")
         if (toSaveMetadata) {
+            messageCollector?.log("Save Reflekt meta data")
+            reflektMetaFile.createNewFile()
             reflektMetaFile.writeBytes(SerializationUtils.encodeInvokes(invokes))
         }
-        val uses = analyzer.uses(invokes)
+        val mergedInvokes = invokes.merge(libraryInvokes)
+        messageCollector?.log("Merged invokes: $mergedInvokes")
+        val uses = analyzer.uses(mergedInvokes)
         bindingTrace.saveUses(uses)
 
         val rootFqName = "io.kotless.dsl"

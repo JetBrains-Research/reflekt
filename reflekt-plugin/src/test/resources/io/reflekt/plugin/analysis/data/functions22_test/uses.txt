@@ -1,0 +1,23 @@
+objects: {},
+classes: {},
+functions: {
+	file: io.reflekt.test.FunctionSignatures.kt: {
+		signatureToAnnotations: [
+			signature: Function0<String> (kotlin.Function0),
+			annotations: []
+		],
+		namedFunctions: [
+			io.reflekt.test.fun4
+		]
+	},
+	file: io.reflekt.test.Functions.kt: {
+		signatureToAnnotations: [
+			signature: Function0<String> (kotlin.Function0),
+			annotations: []
+		],
+		namedFunctions: [
+			io.reflekt.test.faq,
+			io.reflekt.test.fooExpression
+		]
+	}
+}

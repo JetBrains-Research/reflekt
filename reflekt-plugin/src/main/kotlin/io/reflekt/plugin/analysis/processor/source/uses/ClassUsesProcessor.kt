@@ -4,6 +4,7 @@ import io.reflekt.plugin.analysis.models.ClassOrObjectUses
 import io.reflekt.plugin.analysis.models.ReflektInvokes
 import io.reflekt.plugin.analysis.processor.*
 import io.reflekt.plugin.analysis.processor.isPublicNotAbstractClass
+import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
@@ -17,5 +18,9 @@ class ClassUsesProcessor(override val binding: BindingContext, reflektInvokes: R
     override fun process(element: KtElement, file: KtFile): HashMap<FileID, ClassOrObjectUses> =
         processClassOrObjectUses(element, file, invokes, fileToUses)
 
-    override fun shouldRunOn(element: KtElement) = element.isPublicNotAbstractClass
+    override fun shouldRunOn(element: KtElement) : Boolean {
+        val shouldRunOn = element.isPublicNotAbstractClass
+        messageCollector?.log("ClassUsesProcessor. Element: ${element.text}, should run on $shouldRunOn")
+        return shouldRunOn
+    }
 }

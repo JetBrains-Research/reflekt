@@ -1,51 +1,98 @@
 package io.reflekt.plugin.analysis.serialization
 
-import io.reflekt.plugin.analysis.models.ReflektInvokes
-import io.reflekt.plugin.analysis.models.SignatureToAnnotations
-import io.reflekt.plugin.analysis.psi.function.toParameterizedType
-import kotlinx.serialization.ExperimentalSerializationApi
+import io.reflekt.plugin.analysis.models.*
+import kotlinx.serialization.*
 import kotlinx.serialization.protobuf.ProtoBuf
-import org.jetbrains.kotlin.descriptors.FunctionDescriptor
+import org.jetbrains.kotlin.builtins.DefaultBuiltIns
+import org.jetbrains.kotlin.builtins.createFunctionType
+import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
-import org.jetbrains.kotlin.descriptors.packageFragments
-import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.resolve.DescriptorUtils
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
+import org.jetbrains.kotlin.resolve.lazy.ResolveSessionUtils.getClassDescriptorsByFqName
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.TypeProjection
 
 @OptIn(ExperimentalSerializationApi::class)
 object SerializationUtils {
     private val protoBuf = ProtoBuf
 
-    fun encodeInvokes(invokes: ReflektInvokes): ByteArray =
-        protoBuf.encodeToByteArray(ReflektInvokesSerializer, invokes)
+    fun encodeInvokes(invokes: ReflektInvokes): ByteArray {
+        return protoBuf.encodeToByteArray(invokes.toSerializableReflektInvokes())
+    }
 
     fun decodeInvokes(byteArray: ByteArray, module: ModuleDescriptorImpl): ReflektInvokes {
-        val decoded = protoBuf.decodeFromByteArray(ReflektInvokesSerializer, byteArray)
-        val functions = decoded.functions.mapValues {
-            it.value.map { sa ->
-//                SignatureToAnnotations(
-//                    signature = deserializeKotlinType(module, sa.serializableKotlinType?.fqName),
-//                    annotations = sa.annotations,
-//                    serializableKotlinType = sa.serializableKotlinType
-//                )
-                sa
-            }.toMutableSet()
-        } as HashMap
+        val decoded = protoBuf.decodeFromByteArray<SerializableReflektInvokes>(byteArray)
 
         return ReflektInvokes(
             objects = decoded.objects,
             classes = decoded.classes,
-            functions = functions
+            functions = decoded.functions.mapValues { l ->
+                l.value.map {
+                    SignatureToAnnotations(
+                        annotations = it.annotations,
+                        signature = it.signature?.toKotlinType(module)
+                    )
+                }.toMutableSet()
+            } as HashMap
         )
     }
 
-    private fun deserializeKotlinType(module: ModuleDescriptorImpl, fqName: String?): KotlinType? {
+    private fun deserializeKotlinType(module: ModuleDescriptorImpl, fqName: String?): KotlinType {
         fqName ?: error("Fq name after deserialization is null")
-        val packageFragmentDescriptor = module.packageFragmentProvider.packageFragments(FqName(fqName)).find { it.fqName.asString() == fqName }
-            ?: error("Can not find descriptor with fqName $fqName")
-        val scope = packageFragmentDescriptor.getMemberScope()
-        val name = scope.getFunctionNames().find { it.asString() == fqName } ?: error("Can not find function name $fqName")
-        val descriptor = scope.getContributedFunctions(name, NoLookupLocation.WHEN_RESOLVE_DECLARATION)
-        return (descriptor as FunctionDescriptor).toParameterizedType()
+        val classDescriptor = getClassDescriptorsByFqName(module, FqName(fqName)).find { it.fqNameSafe.asString() == fqName }
+            ?: error("Can not find class descriptor with fqName $fqName")
+        return classDescriptor.defaultType
+    }
+
+    fun SerializableKotlinType.toKotlinType(module: ModuleDescriptorImpl): KotlinType {
+//        val root = deserializeKotlinType(module, fqName) // не нужен, так как всегда FunctuionN
+        // Последний аргумент - ретерн тайп. нужно найти экстеншен ресивер при сериализации
+        val args = arguments.map {
+            val type = deserializeKotlinType(module, it.fqName)
+//            if (it.isStarProjection) {
+//                // TODO
+////                type = type.replaceArgumentsWithStarProjections()
+//            } else {
+//                TypeProjectionImpl(it.projectionKind, type)
+//            }
+            type
+        }
+        val returnType = deserializeKotlinType(module, this.returnType)
+        // TODO: calculate it
+        val receiverType: KotlinType? = null
+        return createFunctionType(
+            DefaultBuiltIns.Instance,
+            Annotations.EMPTY,
+            receiverType,
+            parameterTypes = args,
+            returnType = returnType,
+            suspendFunction = false,
+            parameterNames = null
+        )
+    }
+
+    private fun TypeProjection.toSerializableTypeProjection() =
+        SerializableTypeProjection(
+            fqName = type.fullFqName(),
+            isStarProjection = isStarProjection,
+            projectionKind = projectionKind
+        )
+
+    fun KotlinType.toSerializableKotlinType(): SerializableKotlinType {
+        val returnType = arguments.last().type.fullFqName()
+        return SerializableKotlinType(
+            fqName = fullFqName(),
+            arguments = arguments.dropLast(1).map { it.toSerializableTypeProjection() },
+            returnType = returnType
+        )
+    }
+
+    private fun KotlinType.fullFqName(): String {
+        val declaration = requireNotNull(this.constructor.declarationDescriptor) {
+            "declarationDescriptor is null for constructor = $this.constructor with ${this.constructor.javaClass}"
+        }
+        return DescriptorUtils.getFqName(declaration).asString()
     }
 }

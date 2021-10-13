@@ -37,7 +37,7 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
         val toSaveMetadata = configuration[Keys.TO_SAVE_METADATA] ?: false
         configuration.messageCollector.log("TO SAVE METADATA FLAG $toSaveMetadata;")
         val reflektMetaFilePath = configuration[Keys.REFLEKT_META_PATH]
-        if (toSaveMetadata && (reflektMetaFilePath == null || !File(reflektMetaFilePath).exists())) {
+        if (toSaveMetadata && reflektMetaFilePath == null) {
             error("Resources folder was not set or doe not exist, but toSaveMetadata is $toSaveMetadata")
         }
 
@@ -45,7 +45,7 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
         configuration.messageCollector.log("DEPENDENCY JARS: ${dependencyJars.map { it.absolutePath }};")
 
         configuration.messageCollector.log("INTROSPECT CLASS FILES: ${configuration[Keys.REFLEKT_META_FILES]};")
-        val reflektMetaFiles = if (toSaveMetadata) configuration[Keys.REFLEKT_META_FILES]?.toSet() ?: emptySet() else emptySet()
+        val reflektMetaFiles = configuration[Keys.REFLEKT_META_FILES]?.toSet() ?: emptySet()
         val reflektContext = ReflektContext()
 
         configuration.messageCollector.log("PROJECT FILE PATH: ${project.projectFilePath}")
