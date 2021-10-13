@@ -3,6 +3,10 @@ package io.reflekt
 import io.reflekt.util.stringRepresentation
 import kotlin.reflect.KClass
 import kotlin.reflect.typeOf
+import kotlin.Any
+import kotlin.String
+import kotlin.collections.List
+import kotlin.collections.Set
 
 /**
  * The main Reflekt DSL for `multi-module` projects

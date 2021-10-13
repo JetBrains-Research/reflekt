@@ -37,7 +37,8 @@ class ReflektModuleAnalysisExtension(
         (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
         val (libraryInvokes, packages) = getReflektMeta(reflektMetaFiles, module)
 
-        val setOfFiles = files.toSet()
+        // TODO: use a const
+        val setOfFiles = files.filter { it.packageFqName.asString() != "io.reflekt" }.toSet()
         val analyzer = ReflektAnalyzer(setOfFiles, bindingTrace.bindingContext, messageCollector)
         val invokes = analyzer.invokes()
         messageCollector?.log("Project's invokes: $invokes")
@@ -64,8 +65,11 @@ class ReflektModuleAnalysisExtension(
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses")
         }
 
+        val reflektImplFile = File(generationPath, "io/reflekt/ReflektImpl.kt")
         if (toGenerateReflektImpl()) {
-            generateReflektImpl(uses)
+            generateReflektImpl(uses, reflektImplFile)
+        } else {
+            reflektImplFile.delete()
         }
         messageCollector?.log("Finish analysis with ReflektModuleAnalysisExtension")
         return super.analysisCompleted(project, module, bindingTrace, files)
@@ -74,9 +78,8 @@ class ReflektModuleAnalysisExtension(
     private fun toGenerateReflektImpl() = generationPath != null && !toSaveMetadata
 
     // TODO: generate ReflektImpl by IrReflektUses
-    private fun generateReflektImpl(uses: ReflektUses) {
+    private fun generateReflektImpl(uses: ReflektUses, reflektImplFile: File) {
         messageCollector?.log("Start generation ReflektImpl. Base generation path: $generationPath")
-        val reflektImplFile = File(generationPath, "io/reflekt/ReflektImpl.kt")
         messageCollector?.log("ReflektImpl generation path: ${reflektImplFile.absolutePath}")
         with(reflektImplFile) {
             delete()

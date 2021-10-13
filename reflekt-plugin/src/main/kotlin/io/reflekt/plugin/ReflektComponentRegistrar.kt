@@ -67,7 +67,8 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
             project,
             ReflektIrGenerationExtension(
                 reflektContext = reflektContext,
-                messageCollector = configuration.messageCollector
+                messageCollector = configuration.messageCollector,
+                toReplaceIr = toSaveMetadata
             )
         )
         IrGenerationExtension.registerExtension(
@@ -75,7 +76,8 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
             SmartReflektIrGenerationExtension(
                 classpath = dependencyJars,
                 reflektContext = reflektContext,
-                messageCollector = configuration.messageCollector
+                messageCollector = configuration.messageCollector,
+                toReplaceIr = toSaveMetadata
             )
         )
     }

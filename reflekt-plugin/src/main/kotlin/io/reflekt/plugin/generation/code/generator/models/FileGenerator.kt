@@ -39,7 +39,7 @@ abstract class FileGenerator : Generator<String>() {
     }
 
     fun addUniqueAliasedImport(memberName: MemberName): String {
-        val index = aliases.getOrPut(memberName.simpleName, { 1 })
+        val index = aliases.getOrPut(memberName.simpleName) { 1 }
         val alias = "${memberName.simpleName}N$index"
         aliases[memberName.simpleName] = index + 1
         addAliasedImport(memberName, alias)

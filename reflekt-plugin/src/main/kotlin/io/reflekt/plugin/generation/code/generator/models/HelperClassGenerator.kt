@@ -7,7 +7,6 @@ import io.reflekt.plugin.generation.code.generator.*
 import io.reflekt.plugin.utils.stringRepresentation
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import java.util.*
-import kotlin.reflect.KClass
 
 abstract class HelperClassGenerator : ClassGenerator() {
     abstract val typeVariable: TypeVariableName
@@ -130,7 +129,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
         uses: Map<K, List<T>>, conditionVariable: String,
         getEntityName: (T) -> String = { it.toString() },
         toAddReturn: Boolean = true,
-        getWhenOption: (K, CodeBlock) -> CodeBlock,
+        getWhenOption: (K, CodeBlock) -> CodeBlock
     ): CodeBlock {
         val generateBranchForWhenOption = { (k, v): Map.Entry<K, List<T>> -> getWhenOption(k, listOfWhenRightPart(v, getEntityName)) }
         return generateWhenBody(uses.asIterable(), conditionVariable, generateBranchForWhenOption, toAddReturn)
