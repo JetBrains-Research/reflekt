@@ -36,57 +36,28 @@ class ReflektModuleAnalysisExtension(
     override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
         messageCollector?.log("ReflektAnalysisExtension is starting...")
         (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
-        messageCollector?.log("reflektMetaFiles ${reflektMetaFiles}")
-        var libraryInvokes = ReflektInvokes()
-        val packages = mutableSetOf<String>()
-        reflektMetaFiles.forEach {
-            val currentInvokesWithPackages = SerializationUtils.decodeInvokes(it.readBytes(), module)
-            messageCollector?.log("Deserialized invokes: ${currentInvokesWithPackages.invokes}")
-            messageCollector?.log("Deserialized packages: ${currentInvokesWithPackages.packages}")
-            libraryInvokes = libraryInvokes.merge(currentInvokesWithPackages.invokes)
-            packages.addAll(currentInvokesWithPackages.packages)
-        }
-        messageCollector?.log("Library invokes: $libraryInvokes")
-        messageCollector?.log("Library packages: $packages")
+        val (libraryInvokes, packages) = getReflektMeta(reflektMetaFiles, module)
 
         val setOfFiles = files.toSet()
         val analyzer = ReflektAnalyzer(setOfFiles, bindingTrace.bindingContext, messageCollector)
         val invokes = analyzer.invokes()
         messageCollector?.log("Project's invokes: $invokes")
         if (toSaveMetadata) {
-            messageCollector?.log("Save Reflekt meta data")
-            reflektMetaFile.createNewFile()
-            reflektMetaFile.writeBytes(
-                SerializationUtils.encodeInvokes(
-                    ReflektInvokesWithPackages(
-                        invokes = invokes,
-                        packages = files.map { it.packageFqName.asString() }.toSet()
-                    )
-                )
-            )
+            saveMetaData(invokes, setOfFiles)
         }
         val mergedInvokes = invokes.merge(libraryInvokes)
         messageCollector?.log("Merged invokes: $mergedInvokes")
         val uses = analyzer.uses(mergedInvokes)
         bindingTrace.saveUses(uses)
 
-
-        val rootFqName = "io.kotless.dsl"
-        messageCollector?.log("librariesToIntrospect: ${librariesToIntrospect}")
-
         if (reflektContext != null) {
             messageCollector?.log("Start analysis ${module.name} module's files")
             var sourceUses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
-            module.getDescriptors(module.getAllSubPackages(FqName(rootFqName)).toSet()).forEach {
-                messageCollector?.log("SOURCE: ${it.source}")
-                messageCollector?.log("containingFile: ${it.source.containingFile.name}")
-                messageCollector?.log("librariesToIntrospect: ${librariesToIntrospect}")
-                if (it.module.name.asString() in librariesToIntrospect) {
-                    val ms = it.getMemberScope()
-                    val currentUses = DescriptorAnalyzer(ms, messageCollector).uses(invokes)
-                    messageCollector?.log("USES 2: ${currentUses}")
-                    sourceUses = sourceUses.merge(currentUses)
-                }
+            module.getDescriptors(packages.map { FqName(it) }.toSet()).forEach {
+                val ms = it.getMemberScope()
+                val currentUses = DescriptorAnalyzer(ms, messageCollector).uses(invokes)
+                messageCollector?.log("CURRENT LIBRARY USES: $currentUses")
+                sourceUses = sourceUses.merge(currentUses)
             }
             reflektContext.uses = sourceUses
             messageCollector?.log("IrReflektUses were created successfully")
@@ -116,5 +87,37 @@ class ReflektModuleAnalysisExtension(
 
         messageCollector?.log("Finish analysis with ReflektModuleAnalysisExtension")
         return super.analysisCompleted(project, module, bindingTrace, files)
+    }
+
+    private fun getReflektMeta(reflektMetaFiles: Set<File>, module: ModuleDescriptorImpl): ReflektInvokesWithPackages {
+        messageCollector?.log("reflektMetaFiles $reflektMetaFiles")
+        var libraryInvokes = ReflektInvokes()
+        val packages = mutableSetOf<String>()
+        reflektMetaFiles.forEach {
+            val currentInvokesWithPackages = SerializationUtils.decodeInvokes(it.readBytes(), module)
+            messageCollector?.log("Deserialized invokes: ${currentInvokesWithPackages.invokes}")
+            messageCollector?.log("Deserialized packages: ${currentInvokesWithPackages.packages}")
+            libraryInvokes = libraryInvokes.merge(currentInvokesWithPackages.invokes)
+            packages.addAll(currentInvokesWithPackages.packages)
+        }
+        messageCollector?.log("Library invokes: $libraryInvokes")
+        messageCollector?.log("Library packages: $packages")
+        return ReflektInvokesWithPackages(
+            invokes = libraryInvokes,
+            packages = packages
+        )
+    }
+
+    private fun saveMetaData(invokes: ReflektInvokes, files: Set<KtFile>) {
+        messageCollector?.log("Save Reflekt meta data")
+        reflektMetaFile.createNewFile()
+        reflektMetaFile.writeBytes(
+            SerializationUtils.encodeInvokes(
+                ReflektInvokesWithPackages(
+                    invokes = invokes,
+                    packages = files.map { it.packageFqName.asString() }.toSet()
+                )
+            )
+        )
     }
 }
