@@ -8,8 +8,8 @@ dependencies {
     api(kotlin("compiler-embeddable"))
 }
 
-jar("jar") {
-    this.exclude("io/reflekt/ReflektImpl*.class")
-}
+//jar("jar") {
+//    this.exclude("io/reflekt/ReflektImpl*.class")
+//}
 
 publishJar {}

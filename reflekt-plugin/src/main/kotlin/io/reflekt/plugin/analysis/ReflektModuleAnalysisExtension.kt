@@ -68,8 +68,6 @@ class ReflektModuleAnalysisExtension(
         val reflektImplFile = File(generationPath, "io/reflekt/ReflektImpl.kt")
         if (toGenerateReflektImpl()) {
             generateReflektImpl(uses, reflektImplFile)
-        } else {
-            reflektImplFile.delete()
         }
         messageCollector?.log("Finish analysis with ReflektModuleAnalysisExtension")
         return super.analysisCompleted(project, module, bindingTrace, files)

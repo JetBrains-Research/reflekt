@@ -19,7 +19,7 @@ import java.io.File
 @AutoService(ComponentRegistrar::class)
 class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : ComponentRegistrar {
     // The path will be: pathToKotlin/daemon/reflekt-log.log
-    private val logFilePath = "reflekt-log.log"
+    private val logFilePath = "/Users/Anastasiia.Birillo/IdeaProjects/reflekt/reflekt-log.log"
 
     override fun registerProjectComponents(
         project: MockProject,
@@ -68,7 +68,7 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
             ReflektIrGenerationExtension(
                 reflektContext = reflektContext,
                 messageCollector = configuration.messageCollector,
-                toReplaceIr = toSaveMetadata
+                toReplaceIr = !toSaveMetadata
             )
         )
         IrGenerationExtension.registerExtension(
@@ -77,7 +77,6 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
                 classpath = dependencyJars,
                 reflektContext = reflektContext,
                 messageCollector = configuration.messageCollector,
-                toReplaceIr = toSaveMetadata
             )
         )
     }

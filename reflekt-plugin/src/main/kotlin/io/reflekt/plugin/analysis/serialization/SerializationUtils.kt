@@ -35,20 +35,9 @@ object SerializationUtils {
     }
 
     fun SerializableKotlinType.toKotlinType(module: ModuleDescriptorImpl): KotlinType {
-//        val root = deserializeKotlinType(module, fqName) // не нужен, так как всегда FunctuionN
-        // Последний аргумент - ретерн тайп. нужно найти экстеншен ресивер при сериализации
-        val args = arguments.map {
-            val type = deserializeKotlinType(module, it.fqName)
-//            if (it.isStarProjection) {
-//                // TODO
-////                type = type.replaceArgumentsWithStarProjections()
-//            } else {
-//                TypeProjectionImpl(it.projectionKind, type)
-//            }
-            type
-        }
+        val args = arguments.map { deserializeKotlinType(module, it.fqName) }
         val returnType = deserializeKotlinType(module, this.returnType)
-        // TODO: calculate it
+        // TODO: get receiverType
         val receiverType: KotlinType? = null
         return createFunctionType(
             DefaultBuiltIns.Instance,
