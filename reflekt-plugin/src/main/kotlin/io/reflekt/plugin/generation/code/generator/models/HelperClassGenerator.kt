@@ -174,7 +174,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     protected companion object {
-        const val WITH_SUPERTYPES_FUNCTION_NAME = "withSupertypes"
+        const val WITH_SUPERTYPES_FUNCTION_NAME = "withSuperTypes"
         val WITH_SUPERTYPES_CLASS_NAME =
             WITH_SUPERTYPES_FUNCTION_NAME.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 

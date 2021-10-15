@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 @Suppress("unused")
 object ReflektImpl {
     class Objects {
-        fun <T> withSupertypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
+        fun <T> withSuperTypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
         fun <T> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>) =
             WithAnnotations<T>(annotationFqNames, supertypeFqNames)
 
@@ -25,11 +25,11 @@ object ReflektImpl {
     }
 
     class Classes {
-        fun <T: Any> withSupertypes(fqNames: Set<String>) = WithSupertypes<T>(fqNames)
+        fun <T: Any> withSuperTypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
         fun <T: Any> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>) =
             WithAnnotations<T>(annotationFqNames, supertypeFqNames)
 
-        class WithSupertypes<T: Any>(val fqNames: Set<String>) {
+        class WithSuperTypes<T: Any>(val fqNames: Set<String>) {
             fun toList(): List<KClass<T>> = error("This method should be replaced during compilation")
             fun toSet(): Set<KClass<T>> = toList().toSet()
         }
