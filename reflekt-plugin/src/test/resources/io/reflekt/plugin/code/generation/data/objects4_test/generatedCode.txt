@@ -15,13 +15,13 @@ public object ReflektImpl {
     public fun functions() = Functions()
 
     public class Objects {
-        public fun <T> withSupertypes(fqNames: Set<String>) = WithSupertypes<T>(fqNames)
+        public fun <T> withSuperTypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
 
         public fun <T> withAnnotations(annotationFqNames: Set<String>,
                 supertypeFqNames: Set<String>) = WithAnnotations<T>(annotationFqNames,
                 supertypeFqNames)
 
-        public class WithSupertypes<T>(
+        public class WithSuperTypes<T>(
             public val fqNames: Set<String>
         ) {
             public fun toList(): List<T> = emptyList()
@@ -42,13 +42,13 @@ public object ReflektImpl {
     }
 
     public class Classes {
-        public fun <T : Any> withSupertypes(fqNames: Set<String>) = WithSupertypes<T>(fqNames)
+        public fun <T : Any> withSuperTypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
 
         public fun <T : Any> withAnnotations(annotationFqNames: Set<String>,
                 supertypeFqNames: Set<String>) = WithAnnotations<T>(annotationFqNames,
                 supertypeFqNames)
 
-        public class WithSupertypes<T : Any>(
+        public class WithSuperTypes<T : Any>(
             public val fqNames: Set<String>
         ) {
             public fun toList(): List<KClass<T>> = emptyList()
