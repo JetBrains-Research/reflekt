@@ -9,6 +9,7 @@ import io.reflekt.plugin.analysis.serialization.SerializationUtils
 import io.reflekt.plugin.generation.code.generator.ReflektImplGenerator
 import io.reflekt.plugin.utils.Util.getInstances
 import io.reflekt.plugin.utils.Util.log
+import io.reflekt.plugin.utils.Util.messageCollector
 import io.reflekt.plugin.utils.Util.saveUses
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -21,6 +22,7 @@ import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
+import kotlin.system.measureTimeMillis
 
 class ReflektModuleAnalysisExtension(
     private val reflektMetaFiles: Set<File>,
@@ -53,7 +55,8 @@ class ReflektModuleAnalysisExtension(
         if (reflektContext != null) {
             messageCollector?.log("Start analysis ${module.name} module's files")
             val sourceUses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
-            reflektContext.uses = sourceUses.merge(getUsesFromLibraries(module, packages, invokes))
+            val librariesUses = getUsesFromLibraries(module, packages, invokes)
+            reflektContext.uses = sourceUses.merge(librariesUses)
             messageCollector?.log("IrReflektUses were created successfully")
 
             // Need only for SmartReflekt
@@ -66,14 +69,15 @@ class ReflektModuleAnalysisExtension(
         }
 
         val reflektImplFile = File(generationPath, "io/reflekt/ReflektImpl.kt")
-        if (toGenerateReflektImpl()) {
+        if (toGenerateReflektImpl(libraryInvokes)) {
             generateReflektImpl(uses, reflektImplFile)
         }
         messageCollector?.log("Finish analysis with ReflektModuleAnalysisExtension")
+
         return super.analysisCompleted(project, module, bindingTrace, files)
     }
 
-    private fun toGenerateReflektImpl() = generationPath != null && !toSaveMetadata
+    private fun toGenerateReflektImpl(libraryInvokes: ReflektInvokes) = !libraryInvokes.isEmpty()
 
     // TODO: generate ReflektImpl by IrReflektUses
     private fun generateReflektImpl(uses: ReflektUses, reflektImplFile: File) {

@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
-// TODO: add configs for arguments and fix these tests
+// TODO: don't use kotlin-compile-testing since the compiler directory output is empty
 //@Tag("ir")
 //class IrTransformFunctionsTest {
 //    companion object {

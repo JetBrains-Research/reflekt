@@ -28,7 +28,8 @@ data class SupertypesToAnnotations(
 data class SerializableKotlinType(
     val fqName: String,
     val arguments: List<SerializableTypeProjection> = emptyList(),
-    val returnType: String
+    val returnType: String,
+    val receiverType: SerializableKotlinType?
 )
 
 @Serializable
@@ -106,6 +107,8 @@ data class ReflektInvokes(
             functions = processors.mapNotNull { it as? FunctionInvokesProcessor }.first().fileToInvokes
         )
     }
+
+    fun isEmpty() = objects.isEmpty() && classes.isEmpty() && functions.isEmpty()
 
     fun toSerializableReflektInvokes(): SerializableReflektInvokes =
         SerializableReflektInvokes(

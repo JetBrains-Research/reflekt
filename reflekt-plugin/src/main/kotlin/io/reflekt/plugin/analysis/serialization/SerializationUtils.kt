@@ -3,8 +3,7 @@ package io.reflekt.plugin.analysis.serialization
 import io.reflekt.plugin.analysis.models.*
 import kotlinx.serialization.*
 import kotlinx.serialization.protobuf.ProtoBuf
-import org.jetbrains.kotlin.builtins.DefaultBuiltIns
-import org.jetbrains.kotlin.builtins.createFunctionType
+import org.jetbrains.kotlin.builtins.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.name.FqName
@@ -37,12 +36,10 @@ object SerializationUtils {
     fun SerializableKotlinType.toKotlinType(module: ModuleDescriptorImpl): KotlinType {
         val args = arguments.map { deserializeKotlinType(module, it.fqName) }
         val returnType = deserializeKotlinType(module, this.returnType)
-        // TODO: get receiverType
-        val receiverType: KotlinType? = null
         return createFunctionType(
             DefaultBuiltIns.Instance,
             Annotations.EMPTY,
-            receiverType,
+            this.receiverType?.toKotlinType(module),
             parameterTypes = args,
             returnType = returnType,
             suspendFunction = false,
@@ -59,10 +56,12 @@ object SerializationUtils {
 
     fun KotlinType.toSerializableKotlinType(): SerializableKotlinType {
         val returnType = arguments.last().type.fullFqName()
+        val receiverType = this.getReceiverTypeFromFunctionType()?.toSerializableKotlinType()
         return SerializableKotlinType(
             fqName = fullFqName(),
             arguments = arguments.dropLast(1).map { it.toSerializableTypeProjection() },
-            returnType = returnType
+            returnType = returnType,
+            receiverType = receiverType
         )
     }
 

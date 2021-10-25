@@ -6,7 +6,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @Tag("scripting")
-class KotlinScriptTest {
+class  KotlinScriptTest {
     @Test
     fun simpleEval() {
         val script = KotlinScript("30 + 12")
@@ -26,13 +26,14 @@ class KotlinScriptTest {
 
     @Test
     fun scriptWithExtendedClasspath() {
+        val code = "import io.reflekt.Reflekt\nval a = Reflekt.objects()"
         assertThrows<RuntimeException> {
-            KotlinScript("import io.reflekt.Reflekt").run()
+            KotlinScript(code).run()
         }
 
         assertDoesNotThrow {
             KotlinScript(
-                code = "import io.reflekt.Reflekt",
+                code = code,
                 classpath = AnalysisSetupTest.getReflektProjectJars().toList()
             ).run()
         }

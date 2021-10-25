@@ -3,5 +3,5 @@ package io.reflekt.test
 import io.reflekt.Reflekt
 
 fun main() {
-    val classes = Reflekt.classes().withSupertypes(BInterfaceTest::class).withAnnotations<BInterfaceTest>(SecondAnnotationTest::class)
+    val classes = Reflekt.classes().withSuperTypes(BInterfaceTest::class).withAnnotations<BInterfaceTest>(SecondAnnotationTest::class)
 }

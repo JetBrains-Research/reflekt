@@ -3,5 +3,5 @@ package io.reflekt.test
 import io.reflekt.Reflekt
 
 fun main() {
-    val objects = Reflekt.objects().withSupertype<AInterfaceTest>().withAnnotations<AInterfaceTest>()
+    val objects = Reflekt.objects().withSuperType<AInterfaceTest>().withAnnotations<AInterfaceTest>()
 }

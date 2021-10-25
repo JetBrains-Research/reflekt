@@ -23,7 +23,7 @@ enum class ReflektEntity(
 }
 
 enum class ReflektFunction(val functionName: String) {
-    WITH_SUPERTYPE("withSupertype"),
+    WITH_SUPERTYPE("withSuperType"),
     WITH_SUPERTYPES("${WITH_SUPERTYPE.functionName}s"),
     WITH_ANNOTATIONS("withAnnotations"),
 }

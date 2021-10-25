@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
+import kotlin.system.measureTimeMillis
 
 class ReflektIrGenerationExtension(
     private val reflektContext: ReflektContext,
@@ -13,9 +14,7 @@ class ReflektIrGenerationExtension(
     private val messageCollector: MessageCollector? = null
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        messageCollector?.log("SHIT HAPPENS 1")
         if (!toReplaceIr) return
-        messageCollector?.log("SHIT HAPPENS 2")
         val uses = reflektContext.uses ?: error("Uses must be saved to reflektContext before running ReflektIrGenerationExtension")
         moduleFragment.transform(ReflektIrTransformer(pluginContext, uses, messageCollector), null)
     }

@@ -31,7 +31,7 @@ dependencies {
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.0")
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
     testImplementation("com.google.code.gson", "gson", "2.8.8")
-    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.4")
+    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.5")
 }
 
 tasks.withType<Test> {

@@ -34,15 +34,17 @@ object ResultCall {
         .map { SourceFile.fromPath(it) }
 
     fun <T> ResultFile<T>.call(useIR: Boolean = true): T {
-        val compilationResult =  KotlinCompilation().apply {
+        // TODO: KotlinCompilation does not generate IR (does not call IR extensions)
+        val compilationResult = KotlinCompilation().apply {
             sources = commonTestFiles.plus(file)
             jvmTarget = "11"
-            compilerPlugins = listOf(ReflektComponentRegistrar(false))
+            compilerPlugins = listOf(ReflektComponentRegistrar(true))
             inheritClassPath = true
             messageOutputStream
             this.useIR = useIR
         }.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, compilationResult.exitCode)
+        // TODO: the output directory is empty
         val testResults = compilationResult.classLoader.loadClass(classPath)
         val resultMethod = testResults.getMethod(resultMethod)
         return resultMethod.invoke(null) as T
@@ -79,7 +81,7 @@ enum class ReflektType(val id: String, val resolve: String) {
 
     fun objectsFqNamesCall(signature: Signature): ResultFile<Set<String>> {
         val objectsCall = when(this) {
-            REFLEKT -> "objects().withSupertype<%s>(%s)".format(*signature.fillToSize(2))
+            REFLEKT -> "objects().withSuperType<%s>(%s)".format(*signature.fillToSize(2))
             SMART_REFLEKT -> "objects<%s>().filter { %s }".format(*signature.fillToSize(2))
         }
         return resultFile("$id.$objectsCall.$resolve.map { it::class.qualifiedName!! }.toSet()")
@@ -87,7 +89,7 @@ enum class ReflektType(val id: String, val resolve: String) {
 
     fun classesFqNamesCall(signature: Signature): ResultFile<Set<String>> {
         val classesCall = when(this) {
-            REFLEKT -> "classes().withSupertype<%s>(%s)".format(*signature.fillToSize(2))
+            REFLEKT -> "classes().withSuperType<%s>(%s)".format(*signature.fillToSize(2))
             SMART_REFLEKT -> "classes<%s>().filter { %s }".format(*signature.fillToSize(2))
         }
         return resultFile("$id.$classesCall.$resolve.map { it.qualifiedName!! }.toSet()")

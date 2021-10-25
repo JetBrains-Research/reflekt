@@ -5,6 +5,7 @@ import io.reflekt.plugin.analysis.models.ClassOrObjectInvokes
 import io.reflekt.plugin.analysis.processor.FileID
 import io.reflekt.plugin.analysis.processor.fullName
 import io.reflekt.plugin.analysis.psi.getFqName
+import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
