@@ -10,7 +10,7 @@ import java.io.File
 class PluginConfig(
     configuration: CompilerConfiguration?,
     // The path will be: pathToKotlin/daemon/reflekt-log.log
-    logFilePath: String = "/Users/Anastasiia.Birillo/IdeaProjects/reflekt/reflekt-log-test.log",
+    logFilePath: String = "reflekt-log.log",
     isTestConfiguration: Boolean = false
 ) {
     var enabled = isTestConfiguration
