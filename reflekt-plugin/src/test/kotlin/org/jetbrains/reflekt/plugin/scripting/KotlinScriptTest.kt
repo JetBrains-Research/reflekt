@@ -19,20 +19,22 @@ class KotlinScriptTest {
             properties = listOf("a" to Array::class, "b" to String::class),
             code = "a.size.toString() + b",
         )
-        assertEquals("42",
+        assertEquals(
+            "42",
             script.eval(listOf(arrayOf(1, 2, 3, 4), "2"))
         )
     }
 
     @Test
     fun scriptWithExtendedClasspath() {
+        val code = "import org.jetbrains.reflekt.Reflekt\nval a = Reflekt.objects()"
         assertThrows<RuntimeException> {
-            KotlinScript("import org.jetbrains.reflekt.Reflekt").run()
+            KotlinScript(code).run()
         }
 
         assertDoesNotThrow {
             KotlinScript(
-                code = "import org.jetbrains.reflekt.Reflekt",
+                code = code,
                 classpath = getReflektProjectJars().toList()
             ).run()
         }
@@ -57,7 +59,8 @@ class KotlinScriptTest {
         // Equals private val with same name from org.jetbrains.kotlin.scripting.compiler.plugin.impl
         private const val SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY = "script.compilation.disable.plugins"
 
-        @BeforeAll @JvmStatic
+        @BeforeAll
+        @JvmStatic
         fun disableCompilerTestingPlugin() {
             System.setProperty(SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY, "com.tschuchort.compiletesting.MainComponentRegistrar")
         }

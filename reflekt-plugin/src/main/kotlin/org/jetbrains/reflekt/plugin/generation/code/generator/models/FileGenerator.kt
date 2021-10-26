@@ -1,9 +1,6 @@
 package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.MemberName
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.*
 
 abstract class FileGenerator : Generator<String>() {
     protected abstract val packageName: String
@@ -39,7 +36,7 @@ abstract class FileGenerator : Generator<String>() {
     }
 
     fun addUniqueAliasedImport(memberName: MemberName): String {
-        val index = aliases.getOrPut(memberName.simpleName, { 1 })
+        val index = aliases.getOrPut(memberName.simpleName) { 1 }
         val alias = "${memberName.simpleName}N$index"
         aliases[memberName.simpleName] = index + 1
         addAliasedImport(memberName, alias)
@@ -47,6 +44,6 @@ abstract class FileGenerator : Generator<String>() {
     }
 
     private fun addAliasedImport(memberName: MemberName, `as`: String) {
-        builder.addAliasedImport(memberName, `as`);
+        builder.addAliasedImport(memberName, `as`)
     }
 }

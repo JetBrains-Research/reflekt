@@ -2,10 +2,6 @@ package org.jetbrains.reflekt.plugin.analysis.parameterizedtype
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import org.jetbrains.reflekt.plugin.analysis.ir.ReflektFunctionInvokeArgumentsCollector
-import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
-import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.getTagContent
-import org.jetbrains.reflekt.plugin.analysis.toPrettyString
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.jvm.codegen.psiElement
@@ -23,6 +19,10 @@ import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.reflekt.plugin.analysis.ir.ReflektFunctionInvokeArgumentsCollector
+import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
+import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.getTagContent
+import org.jetbrains.reflekt.plugin.analysis.toPrettyString
 import java.io.File
 
 /**
@@ -61,6 +61,7 @@ class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, Binding
  */
 class IrFunctionTypeVisitor(val filterByName: (String) -> Boolean) : IrElementVisitor<Unit, BindingContext> {
     data class Function(val name: String, val actualType: KotlinType, val expectedType: String)
+
     val functions = mutableListOf<Function>()
 
     override fun visitFunction(declaration: IrFunction, data: BindingContext) {
@@ -84,6 +85,7 @@ class IrFunctionTypeVisitor(val filterByName: (String) -> Boolean) : IrElementVi
  */
 class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, BindingContext> {
     data class TypeArgument(val name: String, val actualType: KotlinType, val expectedType: String)
+
     val typeArguments = mutableListOf<TypeArgument>()
 
     @ObsoleteDescriptorBasedAPI

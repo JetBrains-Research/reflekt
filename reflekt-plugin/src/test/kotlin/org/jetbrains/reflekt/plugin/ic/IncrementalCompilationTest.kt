@@ -1,5 +1,6 @@
 package org.jetbrains.reflekt.plugin.ic
 
+import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
 import org.jetbrains.reflekt.plugin.analysis.getTestsDirectories
 import org.jetbrains.reflekt.plugin.ic.modification.Modification
 import org.jetbrains.reflekt.plugin.ic.modification.applyModifications
@@ -7,7 +8,6 @@ import org.jetbrains.reflekt.plugin.util.Util
 import org.jetbrains.reflekt.plugin.util.Util.clear
 import org.jetbrains.reflekt.plugin.util.Util.getTempPath
 import org.jetbrains.reflekt.util.FileUtil
-import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest

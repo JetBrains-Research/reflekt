@@ -3,8 +3,6 @@ package org.jetbrains.reflekt.plugin.generation.code.generator
 import com.squareup.kotlinpoet.ClassName
 import org.jetbrains.reflekt.plugin.analysis.models.ReflektUses
 import org.jetbrains.reflekt.plugin.analysis.models.flatten
-import org.jetbrains.reflekt.plugin.generation.code.generator.models.ClassesGenerator
-import org.jetbrains.reflekt.plugin.generation.code.generator.models.ObjectsGenerator
 import org.jetbrains.reflekt.plugin.generation.code.generator.models.*
 import java.util.*
 

@@ -1,0 +1,71 @@
+logging: reflekt: REFLEKT CONFIGURATION:
+ENABLED: false
+REFLEKT META FILES FROM LIBRARIES: []
+OUTPUT DIRECTORY: src/main/kotlin-gen
+TO SAVE METADATA: false
+REFLEKT METADATA RELATIVE PATH: null
+DEPENDENCY JARS: []
+_____________________________________________
+
+logging: reflekt: PROJECT FILE PATH: null
+logging: reflekt: ReflektAnalysisExtension is starting...
+logging: reflekt: reflektMetaFiles []
+logging: reflekt: Library invokes: ReflektInvokes(objects={}, classes={}, functions={})
+logging: reflekt: Library packages: []
+logging: reflekt: Getting invokes from sources....
+logging: reflekt: Start analyzing file script.kts (package <root>)
+logging: reflekt: Expression a is valid: false
+logging: reflekt: Expression a is valid: false
+logging: reflekt: Expression a is valid: false
+logging: reflekt: Expression size is valid: false
+logging: reflekt: Expression size is valid: false
+logging: reflekt: Expression size is valid: false
+logging: reflekt: Expression toString() is valid: false
+logging: reflekt: Expression toString() is valid: false
+logging: reflekt: Expression toString() is valid: false
+logging: reflekt: Expression toString is valid: false
+logging: reflekt: Expression toString is valid: false
+logging: reflekt: Expression toString is valid: false
+logging: reflekt: Expression + is valid: false
+logging: reflekt: Expression + is valid: false
+logging: reflekt: Expression + is valid: false
+logging: reflekt: Expression b is valid: false
+logging: reflekt: Expression b is valid: false
+logging: reflekt: Expression b is valid: false
+logging: reflekt: Finish analyzing file script.kts (package <root>)
+logging: reflekt: Getting invokes from sources has done!
+logging: reflekt: Project's invokes: ReflektInvokes(objects={}, classes={}, functions={})
+logging: reflekt: Merged invokes: ReflektInvokes(objects={}, classes={}, functions={})
+logging: reflekt: Getting uses from sources....
+logging: reflekt: Start analyzing file script.kts (package <root>)
+logging: reflekt: ClassUsesProcessor. Element: a, should run on false
+logging: reflekt: ObjectUsesProcessor. Element: a, should run on false
+logging: reflekt: FunctionUsesProcessor. Element: REFERENCE_EXPRESSION with text a, should run on false
+logging: reflekt: ClassUsesProcessor. Element: size, should run on false
+logging: reflekt: ObjectUsesProcessor. Element: size, should run on false
+logging: reflekt: FunctionUsesProcessor. Element: REFERENCE_EXPRESSION with text size, should run on false
+logging: reflekt: ClassUsesProcessor. Element: toString(), should run on false
+logging: reflekt: ObjectUsesProcessor. Element: toString(), should run on false
+logging: reflekt: FunctionUsesProcessor. Element: CALL_EXPRESSION with text toString(), should run on false
+logging: reflekt: ClassUsesProcessor. Element: toString, should run on false
+logging: reflekt: ObjectUsesProcessor. Element: toString, should run on false
+logging: reflekt: FunctionUsesProcessor. Element: REFERENCE_EXPRESSION with text toString, should run on false
+logging: reflekt: ClassUsesProcessor. Element: +, should run on false
+logging: reflekt: ObjectUsesProcessor. Element: +, should run on false
+logging: reflekt: FunctionUsesProcessor. Element: OPERATION_REFERENCE with text +, should run on false
+logging: reflekt: ClassUsesProcessor. Element: b, should run on false
+logging: reflekt: ObjectUsesProcessor. Element: b, should run on false
+logging: reflekt: FunctionUsesProcessor. Element: REFERENCE_EXPRESSION with text b, should run on false
+logging: reflekt: Finish analyzing file script.kts (package <root>)
+logging: reflekt: Getting uses from sources has done!
+logging: reflekt: Start analysis <kotlin-script> module's files
+logging: reflekt: IrReflektUses were created successfully
+logging: reflekt: Getting instances....
+logging: reflekt: Start analyzing file script.kts (package <root>)
+logging: reflekt: Finish analyzing file script.kts (package <root>)
+logging: reflekt: Getting instances has done!
+logging: reflekt: IrReflektInstances were created successfully
+logging: reflekt: Finish analysis <kotlin-script> module's files;
+Uses: IrReflektUses(objects={}, classes={}, functions={})
+Instances: IrReflektInstances(objects=[], classes=[], functions=[])
+logging: reflekt: Finish analysis with ReflektModuleAnalysisExtension

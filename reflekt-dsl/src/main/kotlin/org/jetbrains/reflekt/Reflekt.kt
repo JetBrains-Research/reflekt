@@ -16,13 +16,13 @@ object Reflekt {
         /**
          * Filter objects by one supertype. All objects will be cast to [T] type.
          */
-        inline fun <reified T : Any> withSupertype() = WithSupertypes<T>(setOf(T::class.qualifiedName!!))
+        inline fun <reified T : Any> withSuperType() = WithSuperTypes<T>(setOf(T::class.qualifiedName!!))
 
         /**
          * Filter objects by several supertypes. All objects will be cast to [Any] type.
          * If [klasses] was not passed the list\set with result will be empty.
          */
-        fun withSupertypes(vararg klasses: KClass<out Any>) = WithSupertypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
+        fun withSuperTypes(vararg klasses: KClass<out Any>) = WithSuperTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
 
 
         /**
@@ -36,12 +36,12 @@ object Reflekt {
          * The class represents DSL for searching objects with several supertypes.
          * Each item in the list\set with result will be cast to [T] type.
          */
-        class WithSupertypes<T : Any>(val fqNames: Set<String>) {
+        class WithSuperTypes<T : Any>(val fqNames: Set<String>) {
             /**
              * Get list of objects with [fqNames] supertypes.
              * Each item in the list\set with result will be cast to [T] type.
              */
-            fun toList(): List<T> = ReflektImpl.objects().withSupertypes<T>(fqNames).toList()
+            fun toList(): List<T> = ReflektImpl.objects().withSuperTypes<T>(fqNames).toList()
 
             /**
              * Get set of objects with [fqNames] supertypes.
@@ -79,12 +79,12 @@ object Reflekt {
             /**
              * Filter objects with [annotationFqNames] annotations by one supertype. All objects will be cast to [T] type.
              */
-            inline fun <reified T : Any> withSupertype() = WithSupertypes<T>(setOf(T::class.qualifiedName!!))
+            inline fun <reified T : Any> withSupertype() = WithSuperTypes<T>(setOf(T::class.qualifiedName!!))
 
             /**
              * Filter objects with [annotationFqNames] annotations by several supertypes. All objects will be cast to [Any] type.
              */
-            fun withSupertypes(vararg klasses: KClass<out Any>) = WithSupertypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
+            fun withSupertypes(vararg klasses: KClass<out Any>) = WithSuperTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
         }
     }
 
@@ -96,13 +96,13 @@ object Reflekt {
         /**
          * Filter classes by one supertype. All classes will be cast to [T] type.
          */
-        inline fun <reified T : Any> withSupertype() = WithSupertypes<T>(setOf(T::class.qualifiedName!!))
+        inline fun <reified T : Any> withSuperType() = WithSuperTypes<T>(setOf(T::class.qualifiedName!!))
 
         /**
          * Filter classes by several supertypes. All classes will be cast to [Any] type.
          * If [klasses] was not passed the list\set with result will be empty.
          */
-        fun withSupertypes(vararg klasses: KClass<out Any>) = WithSupertypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
+        fun withSuperTypes(vararg klasses: KClass<out Any>) = WithSuperTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
 
 
         /**
@@ -116,12 +116,12 @@ object Reflekt {
          * The class represents DSL for searching classes with several supertypes.
          * Each item in the list\set with result will be cast to [T] type.
          */
-        class WithSupertypes<T : Any>(val fqNames: Set<String>) {
+        class WithSuperTypes<T : Any>(val fqNames: Set<String>) {
             /**
              * Get list of classes with [fqNames] supertypes.
              * Each item in the list\set with result will be cast to [T] type.
              */
-            fun toList(): List<KClass<T>> = ReflektImpl.classes().withSupertypes<T>(fqNames).toList()
+            fun toList(): List<KClass<T>> = ReflektImpl.classes().withSuperTypes<T>(fqNames).toList()
 
             /**
              * Get set of classes with [fqNames] supertypes.
@@ -159,12 +159,12 @@ object Reflekt {
             /**
              * Filter classes with [annotationFqNames] annotations by one supertype. All classes will be cast to [T] type.
              */
-            inline fun <reified T : Any> withSupertype() = WithSupertypes<T>(supertypeFqNames)
+            inline fun <reified T : Any> withSupertype() = WithSuperTypes<T>(supertypeFqNames)
 
             /**
              * Filter classes with [annotationFqNames] annotations by several supertypes. All classes will be cast to [Any] type.
              */
-            fun withSupertypes(vararg klasses: KClass<out Any>) = WithSupertypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
+            fun withSupertypes(vararg klasses: KClass<out Any>) = WithSuperTypes<Any>(klasses.mapNotNull { it.qualifiedName }.toSet())
         }
     }
 

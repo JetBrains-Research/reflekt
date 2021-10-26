@@ -1,9 +1,7 @@
 package org.jetbrains.reflekt
 
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.reflekt.models.compileTime
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import kotlin.reflect.KClass
 
 /*
@@ -20,6 +18,7 @@ object SmartReflekt {
          * Filter classes by user's condition. All classes will be cast to [T] type.
          */
         fun filter(filter: (KtClass) -> Boolean): ClassCompileTimeExpression<T> = compileTime()
+
         /*
          * Resolve user's condition - find all classes that satisfy the condition from the filter function.
          */
@@ -39,6 +38,7 @@ object SmartReflekt {
          * Filter objects by user's condition. All objects will be cast to [T] type.
          */
         fun filter(filter: (KtObjectDeclaration) -> Boolean): ObjectCompileTimeExpression<T> = compileTime()
+
         /*
          * Resolve user's condition - find all objects that satisfy the condition from the filter function.
          */
@@ -58,6 +58,7 @@ object SmartReflekt {
          * Filter functions by user's condition. All functions will have the same signature.
          */
         fun filter(filter: (KtNamedFunction) -> Boolean): FunctionCompileTimeExpression<T> = compileTime()
+
         /*
          * Resolve user's condition - find all functions that satisfy the condition from the filter function.
          */

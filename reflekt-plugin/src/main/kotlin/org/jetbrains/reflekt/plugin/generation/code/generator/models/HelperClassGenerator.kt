@@ -2,10 +2,10 @@ package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.reflekt.plugin.analysis.models.*
 import org.jetbrains.reflekt.plugin.generation.code.generator.*
 import org.jetbrains.reflekt.plugin.utils.stringRepresentation
-import org.jetbrains.kotlin.psi.KtNamedFunction
 import java.util.*
 
 abstract class HelperClassGenerator : ClassGenerator() {
@@ -129,7 +129,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
         uses: Map<K, List<T>>, conditionVariable: String,
         getEntityName: (T) -> String = { it.toString() },
         toAddReturn: Boolean = true,
-        getWhenOption: (K, CodeBlock) -> CodeBlock,
+        getWhenOption: (K, CodeBlock) -> CodeBlock
     ): CodeBlock {
         val generateBranchForWhenOption = { (k, v): Map.Entry<K, List<T>> -> getWhenOption(k, listOfWhenRightPart(v, getEntityName)) }
         return generateWhenBody(uses.asIterable(), conditionVariable, generateBranchForWhenOption, toAddReturn)
@@ -145,7 +145,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
                 o.key.annotations,
                 wrappedCode(
                     generateWhenBody(
-                        mapOf(o.key.signature.stringRepresentation() to o.value),
+                        mapOf(o.key.signature!!.stringRepresentation() to o.value),
                         SIGNATURE,
                         toAddReturn = false,
                         getWhenOption = ::getWhenOptionForString
@@ -174,7 +174,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     protected companion object {
-        const val WITH_SUPERTYPES_FUNCTION_NAME = "withSupertypes"
+        const val WITH_SUPERTYPES_FUNCTION_NAME = "withSuperTypes"
         val WITH_SUPERTYPES_CLASS_NAME =
             WITH_SUPERTYPES_FUNCTION_NAME.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
@@ -187,7 +187,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
         const val SUPERTYPE_FQ_NAMES = "supertypeFqNames"
         const val SIGNATURE = "signature"
 
-//        val STRING = KClass::class.asClassName().parameterizedBy(TypeVariableName("T", String::class))
+        //        val STRING = KClass::class.asClassName().parameterizedBy(TypeVariableName("T", String::class))
         val SET_OF_STRINGS = Set::class.parameterizedBy(String::class)
     }
 }

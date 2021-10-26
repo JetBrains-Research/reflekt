@@ -1,7 +1,5 @@
 package org.jetbrains.reflekt.plugin.analysis
 
-import org.jetbrains.reflekt.plugin.analysis.processor.FileID
-
 fun CharSequence.indentN(n: Int): String {
     val indent = "\t".repeat(n)
     return "$indent${this.toString().replace("\n", "\n$indent")}"

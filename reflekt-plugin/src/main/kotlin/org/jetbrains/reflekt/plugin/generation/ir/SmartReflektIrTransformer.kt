@@ -1,14 +1,5 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
-import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
-import org.jetbrains.reflekt.plugin.analysis.ir.SmartReflektInvokeArgumentsCollector
-import org.jetbrains.reflekt.plugin.analysis.models.*
-import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
-import org.jetbrains.reflekt.plugin.analysis.psi.isSubtypeOf
-import org.jetbrains.reflekt.plugin.generation.common.SmartReflektInvokeParts
-import org.jetbrains.reflekt.plugin.scripting.ImportChecker
-import org.jetbrains.reflekt.plugin.scripting.KotlinScript
-import org.jetbrains.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.push
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -23,6 +14,15 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
+import org.jetbrains.reflekt.plugin.analysis.ir.SmartReflektInvokeArgumentsCollector
+import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
+import org.jetbrains.reflekt.plugin.analysis.psi.isSubtypeOf
+import org.jetbrains.reflekt.plugin.generation.common.SmartReflektInvokeParts
+import org.jetbrains.reflekt.plugin.scripting.ImportChecker
+import org.jetbrains.reflekt.plugin.scripting.KotlinScript
+import org.jetbrains.reflekt.plugin.utils.Util.log
 import java.io.File
 
 /* Replaces SmartReflekt invoke calls with their results */

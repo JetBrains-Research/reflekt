@@ -1,13 +1,13 @@
 package org.jetbrains.reflekt.plugin.analysis.parameterizedtype
 
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.KtCallExpressionVisitor
 import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.visitKtElements
 import org.jetbrains.reflekt.plugin.analysis.toParameterizedType
 import org.jetbrains.reflekt.plugin.analysis.toPrettyString
 import org.jetbrains.reflekt.plugin.util.Util
 import org.jetbrains.reflekt.util.FileUtil
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.resolve.BindingContext
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest

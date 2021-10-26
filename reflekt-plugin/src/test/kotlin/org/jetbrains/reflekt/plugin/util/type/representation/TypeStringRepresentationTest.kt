@@ -1,5 +1,6 @@
 package org.jetbrains.reflekt.plugin.util.type.representation
 
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.KtCallExpressionVisitor
 import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.visitKtElements
 import org.jetbrains.reflekt.plugin.analysis.toParameterizedType
@@ -7,7 +8,6 @@ import org.jetbrains.reflekt.plugin.util.Util.getResourcesRootPath
 import org.jetbrains.reflekt.plugin.utils.stringRepresentation
 import org.jetbrains.reflekt.util.FileUtil.getAllNestedFiles
 import org.jetbrains.reflekt.util.stringRepresentation
-import org.jetbrains.kotlin.types.KotlinType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -60,7 +60,7 @@ class TypeStringRepresentationTest {
             "function2_test" to (typeOf<(Int, Iterable<*>) -> Unit>()),
         )
 
-        private fun getResultForTest(files: Set<File>, testKey: String) : String {
+        private fun getResultForTest(files: Set<File>, testKey: String): String {
             val resFile = files.find { it.nameWithoutExtension.endsWith(testKey) } ?: error("File with results for the test $testKey was not found")
             return resFile.readText().trim()
         }

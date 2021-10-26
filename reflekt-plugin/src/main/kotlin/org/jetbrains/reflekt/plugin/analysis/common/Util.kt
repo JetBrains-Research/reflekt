@@ -1,13 +1,13 @@
 package org.jetbrains.reflekt.plugin.analysis.common
 
-import org.jetbrains.reflekt.plugin.analysis.*
-import org.jetbrains.reflekt.plugin.analysis.models.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.reflekt.plugin.analysis.*
+import org.jetbrains.reflekt.plugin.analysis.models.*
 
 // [1]Reflekt.[2]|objects()/classes() or so on|
 // [dotQualifiedExpressionNode] is [1]
@@ -67,13 +67,14 @@ fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, bind
         when (node.text) {
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
-                signature = callExpressionRoot.getTypeArguments().first().toParameterizedType(binding)
+                val firstTypeArgument = callExpressionRoot.getTypeArguments().first()
+                signature = firstTypeArgument.toParameterizedType(binding)
             }
             else -> error("Found an unexpected node text: ${node.text}")
         }
     }
     if (signature == null) {
-        error("Failed to find function signature.")
+        error("Failed to find function signature")
     }
     return SignatureToAnnotations(signature, annotations)
 }

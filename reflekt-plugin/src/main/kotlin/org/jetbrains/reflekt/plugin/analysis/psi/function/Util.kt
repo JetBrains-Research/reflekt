@@ -1,6 +1,5 @@
 package org.jetbrains.reflekt.plugin.analysis.psi.function
 
-import org.jetbrains.reflekt.plugin.analysis.models.IrFunctionInfo
 import org.jetbrains.kotlin.builtins.*
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
@@ -11,9 +10,10 @@ import org.jetbrains.kotlin.resolve.scopes.receivers.TransientReceiver
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeUtils.equalTypes
 import org.jetbrains.kotlin.types.expressions.createFunctionType
+import org.jetbrains.reflekt.plugin.analysis.models.IrFunctionInfo
 
 fun KtNamedFunction.getDescriptor(binding: BindingContext): FunctionDescriptor =
-    binding.get(BindingContext.FUNCTION, this)!!
+    binding.get(BindingContext.FUNCTION, this) ?: error("Function descriptor for the function ${this.text} was not found")
 
 fun KtNamedFunction.argumentTypes(binding: BindingContext): List<KotlinType> =
     getDescriptor(binding).valueParameters.map { it.type }
@@ -24,10 +24,11 @@ fun KtNamedFunction.argumentTypesWithReceiver(binding: BindingContext): List<Kot
 fun KtNamedFunction.returnType(binding: BindingContext): KotlinType? =
     getDescriptor(binding).returnType
 
-fun KtNamedFunction.receiverType(binding: BindingContext): KotlinType? {
-    val descriptor = getDescriptor(binding)
-    val extensionReceiver = descriptor.extensionReceiverParameter
-    val dispatchReceiver = descriptor.dispatchReceiverParameter
+fun KtNamedFunction.receiverType(binding: BindingContext): KotlinType? = getDescriptor(binding).receiverType()
+
+fun FunctionDescriptor.receiverType(): KotlinType? {
+    val extensionReceiver = this.extensionReceiverParameter
+    val dispatchReceiver = this.dispatchReceiverParameter
 
     return if (dispatchReceiver != null && dispatchReceiver !is TransientReceiver) {
         dispatchReceiver.type

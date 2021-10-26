@@ -39,7 +39,7 @@ class KotlinScript(
             source, compilationConfiguration, evaluationConfiguration
         )
         if (result !is ResultWithDiagnostics.Success) {
-            throw RuntimeException("Failed to evaluate script:\n${result.reports.map { it.render(withStackTrace = true)} }}")
+            throw RuntimeException("Failed to evaluate script:\n${result.reports.map { it.render(withStackTrace = true) }}}")
         }
         return result
     }

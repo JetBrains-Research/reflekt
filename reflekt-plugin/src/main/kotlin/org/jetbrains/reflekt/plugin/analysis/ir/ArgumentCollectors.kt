@@ -1,7 +1,5 @@
 package org.jetbrains.reflekt.plugin.analysis.ir
 
-import org.jetbrains.reflekt.plugin.analysis.common.*
-import org.jetbrains.reflekt.plugin.analysis.models.*
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.expressions.IrCall
@@ -9,6 +7,8 @@ import org.jetbrains.kotlin.ir.expressions.IrFunctionExpression
 import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.reflekt.plugin.analysis.common.*
+import org.jetbrains.reflekt.plugin.analysis.models.*
 
 open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
 

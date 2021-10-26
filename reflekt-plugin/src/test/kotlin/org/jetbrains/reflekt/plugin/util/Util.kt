@@ -57,7 +57,7 @@ object Util {
         return file.absolutePath
     }
 
-     fun File.clear() {
+    fun File.clear() {
         require(this.isDirectory) { "${this.absolutePath} is not directory" }
         this.deleteRecursively()
         this.mkdir()

@@ -1,11 +1,5 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
-import org.jetbrains.reflekt.plugin.analysis.common.*
-import org.jetbrains.reflekt.plugin.analysis.ir.*
-import org.jetbrains.reflekt.plugin.analysis.models.IrFunctionInfo
-import org.jetbrains.reflekt.plugin.generation.common.*
-import org.jetbrains.reflekt.plugin.generation.ir.util.*
-import org.jetbrains.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -17,6 +11,12 @@ import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
+import org.jetbrains.reflekt.plugin.analysis.common.*
+import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
+import org.jetbrains.reflekt.plugin.analysis.models.IrFunctionInfo
+import org.jetbrains.reflekt.plugin.generation.common.*
+import org.jetbrains.reflekt.plugin.generation.ir.util.*
+import org.jetbrains.reflekt.plugin.utils.Util.log
 
 /* Base class for Reflekt IR transformers */
 open class BaseReflektIrTransformer(private val messageCollector: MessageCollector?) : IrElementTransformerVoidWithContext() {

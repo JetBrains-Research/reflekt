@@ -1,6 +1,8 @@
 package org.jetbrains.reflekt.util
 
-import kotlin.reflect.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.KTypeParameter
 
 /*
 * This object has util functions for converting in the same String representation
@@ -13,7 +15,7 @@ object TypeStringRepresentationUtil {
 
     fun getStringRepresentation(classifierName: String, arguments: List<String>): String {
         val argumentsStr = if (arguments.isNotEmpty()) {
-           "<${arguments.joinToString(separator = SEPARATOR)}>"
+            "<${arguments.joinToString(separator = SEPARATOR)}>"
         } else {
             ""
         }
@@ -31,7 +33,7 @@ object TypeStringRepresentationUtil {
 internal fun KType.stringRepresentation(classifierName: String) =
     TypeStringRepresentationUtil.getStringRepresentation(classifierName, arguments.mapNotNull { it.type?.stringRepresentation() })
 
-fun KType.stringRepresentation() : String {
+fun KType.stringRepresentation(): String {
     // Get simple classifier name, e.g. kotlin.Function1
     val classifierName = (classifier as? KClass<*>)?.qualifiedName ?: (classifier as? KTypeParameter)?.name ?: ""
     // If type is null it means we have star projection

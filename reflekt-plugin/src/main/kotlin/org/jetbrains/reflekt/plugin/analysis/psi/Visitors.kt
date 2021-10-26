@@ -1,7 +1,7 @@
 package org.jetbrains.reflekt.plugin.analysis.psi
 
-import org.jetbrains.reflekt.plugin.analysis.processor.Processor
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
 
 
 fun KtFile.visit(processors: Set<Processor<*>>) {

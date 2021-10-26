@@ -1,9 +1,7 @@
 package org.jetbrains.reflekt.plugin.analysis
 
 import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.*
 
 class AnalysisSetupTest {
 

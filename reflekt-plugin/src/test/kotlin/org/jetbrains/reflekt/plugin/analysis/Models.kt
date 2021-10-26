@@ -1,10 +1,10 @@
 package org.jetbrains.reflekt.plugin.analysis
 
-import org.jetbrains.reflekt.plugin.analysis.models.*
-import org.jetbrains.reflekt.plugin.analysis.psi.function.shortFqName
-import org.jetbrains.reflekt.plugin.analysis.processor.FileID
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.processor.FileID
+import org.jetbrains.reflekt.plugin.analysis.psi.function.shortFqName
 
 //  We cannot use Json to store and test KotlinType (supertype), so we build a string representation, sufficient to test it.
 //  We also want to check fqName of supertype, which is not included in its toString(), so we added it separately.
@@ -29,7 +29,7 @@ fun SignatureToAnnotations.toPrettyString(): String {
     return "signatureToAnnotations: ${
         listOf(
             "signature: ${signature.toPrettyString()},\n" +
-            "annotations: ${annotations.joinToStringIndented()}"
+                "annotations: ${annotations.joinToStringIndented()}"
         ).joinToStringIndented()
     }"
 }

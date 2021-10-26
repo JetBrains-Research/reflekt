@@ -1,14 +1,15 @@
 package org.jetbrains.reflekt.plugin.analysis.parameterizedtype
 
 import com.tschuchort.compiletesting.KotlinCompilation
-import org.jetbrains.reflekt.plugin.analysis.*
-import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.*
-import org.jetbrains.reflekt.plugin.analysis.psi.function.*
-import org.jetbrains.reflekt.plugin.util.Util
-import org.jetbrains.reflekt.util.FileUtil.getAllNestedFiles
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.getFunctionsToTestFromResources
+import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.getTagContent
+import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
+import org.jetbrains.reflekt.plugin.analysis.toPrettyString
+import org.jetbrains.reflekt.plugin.util.Util
+import org.jetbrains.reflekt.util.FileUtil.getAllNestedFiles
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments

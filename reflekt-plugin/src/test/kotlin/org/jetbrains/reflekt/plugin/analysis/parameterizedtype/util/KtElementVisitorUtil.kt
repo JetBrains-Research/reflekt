@@ -1,22 +1,23 @@
 package org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util
 
-import org.jetbrains.reflekt.plugin.analysis.*
-import org.jetbrains.reflekt.plugin.analysis.common.findReflektFunctionInvokeArguments
-import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
-import org.jetbrains.reflekt.plugin.util.Util
-import org.jetbrains.reflekt.util.FileUtil
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocLink
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.reflekt.plugin.analysis.AnalysisUtil
+import org.jetbrains.reflekt.plugin.analysis.common.findReflektFunctionInvokeArguments
+import org.jetbrains.reflekt.plugin.analysis.getTypeArguments
+import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
+import org.jetbrains.reflekt.plugin.util.Util
+import org.jetbrains.reflekt.util.FileUtil
 import java.io.File
 import kotlin.reflect.KClass
 
 fun visitKtElements(sourceFiles: List<File>, visitors: List<KtVisitor<Void, BindingContext>>): BindingContext {
     val reflektClassPath = getReflektProjectJars()
-    val analyzer =  AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sourceFiles.toSet())
+    val analyzer = AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sourceFiles.toSet())
     visitors.forEach { v -> analyzer.ktFiles.forEach { it.acceptChildren(v, analyzer.binding) } }
     return analyzer.binding
 }
@@ -55,9 +56,10 @@ class KtNamedFunctionVisitor : KtVisitor<Void, BindingContext>() {
  */
 class KtCallExpressionVisitor : KtVisitor<Void, BindingContext>() {
     data class TypeArgument(val astNodeArgument: ASTNode, val stringArgument: String)
+
     val typeArguments = mutableListOf<TypeArgument>()
 
-    override fun visitCallExpression(expression: KtCallExpression,  data: BindingContext): Void? {
+    override fun visitCallExpression(expression: KtCallExpression, data: BindingContext): Void? {
         val typeArgument = expression.node.getTypeArguments().firstOrNull() ?: error("No arguments found in expression $expression")
         val expectedType = expression.valueArguments.firstOrNull()?.text ?: error("No value passed as expected KotlinType in expression $expression")
         // if argument has String type, its text contains extra quotes, so we need to trim them

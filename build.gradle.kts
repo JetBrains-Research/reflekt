@@ -11,14 +11,14 @@ group = "org.jetbrains.reflekt"
 *
 * Also, you should change the version in two places in the build.gradle.kts file in the example project
 * */
-version = "1.5.30"
+version = "1.5.31"
 
 plugins {
     id("tanvd.kosogor") version "1.0.12" apply true
-    kotlin("jvm") version "1.5.30" apply true
+    kotlin("jvm") version "1.5.31" apply true
     id("com.github.gmazzo.buildconfig") version "3.0.3" apply false
     `maven-publish`
-    kotlin("kapt") version "1.5.30" apply true
+    kotlin("kapt") version "1.5.31" apply true
 }
 
 allprojects {

@@ -2,10 +2,10 @@ package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.reflekt.plugin.analysis.models.FunctionUses
 import org.jetbrains.reflekt.plugin.generation.code.generator.statement
 import org.jetbrains.reflekt.plugin.generation.code.generator.toParameterSpecs
-import org.jetbrains.kotlin.psi.KtNamedFunction
 import kotlin.reflect.KFunction
 
 class FunctionsGenerator(enclosingClassName: ClassName, private val uses: FunctionUses, private val fileGenerator: FileGenerator) : HelperClassGenerator() {

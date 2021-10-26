@@ -1,9 +1,7 @@
 package org.jetbrains.reflekt.plugin.analysis
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.*
-import org.jetbrains.reflekt.plugin.utils.compiler.EnvironmentManager
-import org.jetbrains.reflekt.plugin.utils.compiler.ParseUtil
-import org.jetbrains.reflekt.plugin.utils.compiler.ResolveUtil
+import org.jetbrains.reflekt.plugin.analysis.analyzer.source.*
+import org.jetbrains.reflekt.plugin.utils.compiler.*
 import java.io.File
 
 object AnalysisUtil {

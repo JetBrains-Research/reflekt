@@ -3,6 +3,7 @@ package org.jetbrains.reflekt.plugin.ir
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import org.jetbrains.reflekt.plugin.ReflektComponentRegistrar
+import org.jetbrains.reflekt.plugin.ir.ResultCall.commonTestFiles
 import org.jetbrains.reflekt.plugin.util.Util
 import org.jetbrains.reflekt.util.FileUtil
 import org.junit.jupiter.api.Assertions
@@ -12,18 +13,20 @@ import org.junit.jupiter.api.Assertions
  */
 data class ResultFile<T>(
     val name: String = "Main.kt",
-    val path: String =  "org.jetbrains.reflekt.test.ir",
+    val path: String = "org.jetbrains.reflekt.test.ir",
     val import: String? = null,
     val resultMethod: String = "getResult",
     val resultMethodBody: String = "TODO()"
 ) {
     val classPath = "$path.${name.split('.').joinToString("") { it.replaceFirstChar(Char::titlecase) }}"
-    val file = SourceFile.kotlin(name, """
+    val file = SourceFile.kotlin(
+        name, """
 package $path
 ${import?.let { "import $it" }}
 
 fun $resultMethod() = $resultMethodBody
-""")
+"""
+    )
 }
 
 /**
@@ -34,15 +37,17 @@ object ResultCall {
         .map { SourceFile.fromPath(it) }
 
     fun <T> ResultFile<T>.call(useIR: Boolean = true): T {
-        val compilationResult =  KotlinCompilation().apply {
+        // TODO: KotlinCompilation does not generate IR (does not call IR extensions)
+        val compilationResult = KotlinCompilation().apply {
             sources = commonTestFiles.plus(file)
             jvmTarget = "11"
-            compilerPlugins = listOf(ReflektComponentRegistrar(false))
+            compilerPlugins = listOf(ReflektComponentRegistrar(true))
             inheritClassPath = true
             messageOutputStream
             this.useIR = useIR
         }.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, compilationResult.exitCode)
+        // TODO: the output directory is empty
         val testResults = compilationResult.classLoader.loadClass(classPath)
         val resultMethod = testResults.getMethod(resultMethod)
         return resultMethod.invoke(null) as T
@@ -78,16 +83,16 @@ enum class ReflektType(val id: String, val resolve: String) {
     }
 
     fun objectsFqNamesCall(signature: Signature): ResultFile<Set<String>> {
-        val objectsCall = when(this) {
-            REFLEKT -> "objects().withSupertype<%s>(%s)".format(*signature.fillToSize(2))
+        val objectsCall = when (this) {
+            REFLEKT -> "objects().withSuperType<%s>(%s)".format(*signature.fillToSize(2))
             SMART_REFLEKT -> "objects<%s>().filter { %s }".format(*signature.fillToSize(2))
         }
         return resultFile("$id.$objectsCall.$resolve.map { it::class.qualifiedName!! }.toSet()")
     }
 
     fun classesFqNamesCall(signature: Signature): ResultFile<Set<String>> {
-        val classesCall = when(this) {
-            REFLEKT -> "classes().withSupertype<%s>(%s)".format(*signature.fillToSize(2))
+        val classesCall = when (this) {
+            REFLEKT -> "classes().withSuperType<%s>(%s)".format(*signature.fillToSize(2))
             SMART_REFLEKT -> "classes<%s>().filter { %s }".format(*signature.fillToSize(2))
         }
         return resultFile("$id.$classesCall.$resolve.map { it.qualifiedName!! }.toSet()")

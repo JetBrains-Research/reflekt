@@ -2,10 +2,10 @@ package org.jetbrains.reflekt.plugin.ir
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
+import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.reflekt.plugin.ReflektComponentRegistrar
 import org.jetbrains.reflekt.plugin.util.Util
 import org.jetbrains.reflekt.util.FileUtil
-import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.junit.jupiter.api.Assertions
 
 object IrTransformTestHelper {
@@ -17,18 +17,21 @@ object IrTransformTestHelper {
     fun objectFqNames(reflektCall: String): Set<String> = classOrObjectFqNames(reflektCall, classSuffix = "::class")
 
     private fun classOrObjectFqNames(reflektCall: String, classSuffix: String = ""): Set<String> {
-        val mainFile = SourceFile.kotlin("Main.kt", """
+        val mainFile = SourceFile.kotlin(
+            "Main.kt", """
 package org.jetbrains.reflekt.test.ir
 
 import org.jetbrains.reflekt.Reflekt
 
 fun getResult() = $reflektCall.toList().map { it$classSuffix.qualifiedName!! }.toSet()
-        """)
+        """
+        )
         return reflektCallResult(mainFile)
     }
 
     fun functionStrings(reflektCall: String, functionCallArguments: String): Set<String> {
-        val mainFile = SourceFile.kotlin("Main.kt", """
+        val mainFile = SourceFile.kotlin(
+            "Main.kt", """
 package org.jetbrains.reflekt.test.ir
 
 import org.jetbrains.reflekt.Reflekt
@@ -38,7 +41,8 @@ fun getResult() = $reflektCall.toList().also { functions ->
         it($functionCallArguments)
     }
 }.map { it.toString() }.toSet()
-""")
+"""
+        )
         return reflektCallResult(mainFile)
     }
 
@@ -52,7 +56,7 @@ fun getResult() = $reflektCall.toList().also { functions ->
 
     private fun compile(
         sourceFiles: List<SourceFile>,
-        plugin: ComponentRegistrar = ReflektComponentRegistrar(hasConfiguration = false),
+        plugin: ComponentRegistrar = ReflektComponentRegistrar(isTestConfiguration = true),
     ): KotlinCompilation.Result {
         return KotlinCompilation().apply {
             sources = sourceFiles
@@ -65,7 +69,7 @@ fun getResult() = $reflektCall.toList().also { functions ->
 
     private fun compile(
         sourceFile: SourceFile,
-        plugin: ComponentRegistrar = ReflektComponentRegistrar(hasConfiguration = false),
+        plugin: ComponentRegistrar = ReflektComponentRegistrar(isTestConfiguration = true),
     ): KotlinCompilation.Result {
         return compile(listOf(sourceFile), plugin)
     }

@@ -1,0 +1,8 @@
+objects: {},
+classes: {},
+functions: {
+	file: org.jetbrains.reflekt.test.Main.kt: [
+		signature: Function0<String> (kotlin.Function0),
+		annotations: []
+	]
+}

@@ -1,10 +1,10 @@
 package org.jetbrains.reflekt.plugin.analysis.parameterizedtype
 
 import com.tschuchort.compiletesting.KotlinCompilation
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.reflekt.plugin.analysis.toPrettyString
 import org.jetbrains.reflekt.plugin.util.Util
 import org.jetbrains.reflekt.util.FileUtil
-import org.jetbrains.kotlin.types.KotlinType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest

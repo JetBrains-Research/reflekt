@@ -1,10 +1,5 @@
 package org.jetbrains.reflekt.plugin.utils
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.ReflektAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.analyzer.SmartReflektAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.models.ReflektInstances
-import org.jetbrains.reflekt.plugin.analysis.models.ReflektUses
-import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
@@ -13,6 +8,10 @@ import org.jetbrains.kotlin.resolve.*
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.util.slicedMap.Slices
 import org.jetbrains.kotlin.util.slicedMap.WritableSlice
+import org.jetbrains.reflekt.plugin.analysis.analyzer.source.SmartReflektAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.models.ReflektInstances
+import org.jetbrains.reflekt.plugin.analysis.models.ReflektUses
+import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
 import java.io.File
 import java.io.PrintStream
 
@@ -46,7 +45,7 @@ object Util {
         )
     }
 
-    private fun BindingTrace.saveUses(uses: ReflektUses) {
+    internal fun BindingTrace.saveUses(uses: ReflektUses) {
         record(GET_USES, USES_STORE_NAME, uses)
     }
 
@@ -58,18 +57,8 @@ object Util {
 
     fun BindingContext.getInstances() = get(GET_INSTANCES, INSTANCES_STORE_NAME)
 
-    fun getUses(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true): ReflektUses {
-        val analyzer = ReflektAnalyzer(files, bindingTrace.bindingContext)
-        val invokes = analyzer.invokes()
-        val uses = analyzer.uses(invokes)
-        if (toSave) {
-            bindingTrace.saveUses(uses)
-        }
-        return uses
-    }
-
-    fun getInstances(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true): ReflektInstances {
-        val analyzer = SmartReflektAnalyzer(files, bindingTrace.bindingContext)
+    fun getInstances(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true, messageCollector: MessageCollector? = null): ReflektInstances {
+        val analyzer = SmartReflektAnalyzer(files, bindingTrace.bindingContext, messageCollector)
         val instances = analyzer.instances()
         if (toSave) {
             bindingTrace.saveInstances(instances)
@@ -93,7 +82,6 @@ fun KotlinType.stringRepresentation(): String {
         if (it.isStarProjection) {
             TypeStringRepresentationUtil.STAR_SYMBOL
         } else {
-            val representation = it.type.stringRepresentation()
             TypeStringRepresentationUtil.markAsNullable(it.type.stringRepresentation(), it.type.isMarkedNullable)
         }
     }

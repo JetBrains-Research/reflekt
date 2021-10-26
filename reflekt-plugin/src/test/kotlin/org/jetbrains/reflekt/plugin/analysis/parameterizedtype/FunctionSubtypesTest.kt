@@ -1,11 +1,12 @@
 package org.jetbrains.reflekt.plugin.analysis.parameterizedtype
 
-import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.*
-import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
+import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.getFunctionsToTestFromResources
+import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.parseKDocLinks
+import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
