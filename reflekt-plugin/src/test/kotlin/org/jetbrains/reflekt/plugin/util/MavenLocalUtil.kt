@@ -8,7 +8,7 @@ import java.nio.file.*
 
 object MavenLocalUtil {
     // We should use a const here since we can not get it from the project
-    private const val VERSION = "1.5.30"
+    private const val VERSION = "1.5.31"
     private val mavenLocalPath = getMavenLocalPath()
 
     fun getReflektProjectJars(): Set<File> {
