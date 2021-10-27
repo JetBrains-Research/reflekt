@@ -1,15 +1,14 @@
-package org.jetbrains.reflekt.plugin.analysis.processor.source.invokes
+package org.jetbrains.reflekt.plugin.analysis.processor.source.invokes.base
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.models.ClassOrObjectInvokes
 import org.jetbrains.reflekt.plugin.analysis.processor.FileID
 import org.jetbrains.reflekt.plugin.analysis.processor.fullName
-import org.jetbrains.reflekt.plugin.analysis.psi.getFqName
 
-class ObjectInvokesProcessor(override val binding: BindingContext, override val messageCollector: MessageCollector?) :
+abstract class BaseObjectInvokesProcessor(override val binding: BindingContext, override val messageCollector: MessageCollector?) :
     BaseInvokesProcessor<ClassOrObjectInvokes>(binding, messageCollector) {
     override val fileToInvokes: HashMap<FileID, ClassOrObjectInvokes> = HashMap()
 
@@ -19,6 +18,4 @@ class ObjectInvokesProcessor(override val binding: BindingContext, override val 
         }
         return fileToInvokes
     }
-
-    override fun isValidExpression(expression: KtReferenceExpression) = expression.getFqName(binding) == ReflektEntity.OBJECTS.fqName
 }

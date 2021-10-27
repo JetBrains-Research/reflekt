@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.resolve.scopes.receivers.TransientReceiver
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeUtils.equalTypes
 import org.jetbrains.kotlin.types.expressions.createFunctionType
-import org.jetbrains.reflekt.plugin.analysis.models.IrFunctionInfo
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
 
 fun KtNamedFunction.getDescriptor(binding: BindingContext): FunctionDescriptor =
     binding.get(BindingContext.FUNCTION, this) ?: error("Function descriptor for the function ${this.text} was not found")

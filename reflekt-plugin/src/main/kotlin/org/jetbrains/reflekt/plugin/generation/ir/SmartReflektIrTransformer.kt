@@ -17,6 +17,8 @@ import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.ir.SmartReflektInvokeArgumentsCollector
 import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektInstances
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrTypeInstance
 import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 import org.jetbrains.reflekt.plugin.analysis.psi.isSubtypeOf
 import org.jetbrains.reflekt.plugin.generation.common.SmartReflektInvokeParts

@@ -5,13 +5,18 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.reflekt.plugin.analysis.models.ReflektInvokes
 import org.jetbrains.reflekt.plugin.analysis.models.ReflektUses
-import org.jetbrains.reflekt.plugin.analysis.processor.source.invokes.*
+import org.jetbrains.reflekt.plugin.analysis.processor.source.invokes.reflekt.*
 import org.jetbrains.reflekt.plugin.analysis.processor.source.uses.*
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
 class ReflektAnalyzer(override val ktFiles: Set<KtFile>, override val binding: BindingContext, override val messageCollector: MessageCollector? = null) :
     BaseAnalyzer(ktFiles, binding, messageCollector) {
     fun uses(invokes: ReflektInvokes): ReflektUses {
+        // Try to find uses only if some Reflekt calls were found
+        if (invokes.isEmpty()) {
+            messageCollector?.log("Got empty invokes")
+            return ReflektUses()
+        }
         messageCollector?.log("Getting uses from sources....")
         val processors = setOf(
             ClassUsesProcessor(binding, invokes, messageCollector),
@@ -28,9 +33,9 @@ class ReflektAnalyzer(override val ktFiles: Set<KtFile>, override val binding: B
     fun invokes(): ReflektInvokes {
         messageCollector?.log("Getting invokes from sources....")
         val processors = setOf(
-            ClassInvokesProcessor(binding, messageCollector),
-            ObjectInvokesProcessor(binding, messageCollector),
-            FunctionInvokesProcessor(binding, messageCollector)
+            ReflektClassInvokesProcessor(binding, messageCollector),
+            ReflektObjectInvokesProcessor(binding, messageCollector),
+            ReflektFunctionInvokesProcessor(binding, messageCollector)
         )
         ktFiles.forEach { file ->
             file.process(processors)

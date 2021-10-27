@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import org.jetbrains.reflekt.plugin.analysis.ReflektModuleAnalysisExtension
-import org.jetbrains.reflekt.plugin.analysis.models.ReflektContext
+import org.jetbrains.reflekt.plugin.analysis.models.ir.ReflektContext
 import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.utils.PluginConfig
@@ -31,7 +31,7 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         AnalysisHandlerExtension.registerExtension(
             project,
             ReflektModuleAnalysisExtension(
-                reflektMetaFiles = config.reflektMetaFilesFromLibraries,
+                reflektMetaFilesFromLibraries = config.reflektMetaFilesFromLibraries,
                 toSaveMetadata = config.toSaveMetadata,
                 generationPath = config.outputDir,
                 reflektContext = reflektContext,
