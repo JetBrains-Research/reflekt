@@ -17,6 +17,12 @@ typealias IrObjectInstance = IrTypeInstance<KtObjectDeclaration, String>
 typealias IrClassInstance = IrTypeInstance<KtClass, String>
 typealias IrFunctionInstance = IrTypeInstance<KtNamedFunction, IrFunctionInfo>
 
+typealias ObjectsMap = HashMap<FileId, MutableList<KtObjectDeclaration>>
+typealias ClassesMap = HashMap<FileId, MutableList<KtClass>>
+typealias FunctionsMap = HashMap<FileId, MutableList<KtNamedFunction>>
+
+typealias BaseInstanceProcessors = Set<BaseInstancesProcessor<*>>
+
 /**
  * @property objects
  * @property classes
@@ -26,12 +32,12 @@ typealias IrFunctionInstance = IrTypeInstance<KtNamedFunction, IrFunctionInfo>
  * Store a set of qualified names that exist in the project and additional libraries
  */
 data class ReflektInstances(
-    val objects: HashMap<FileId, MutableList<KtObjectDeclaration>> = HashMap(),
-    val classes: HashMap<FileId, MutableList<KtClass>> = HashMap(),
-    val functions: HashMap<FileId, MutableList<KtNamedFunction>> = HashMap(),
+    val objects: ObjectsMap = HashMap(),
+    val classes: ClassesMap = HashMap(),
+    val functions: FunctionsMap = HashMap(),
 ) {
     companion object {
-        fun createByProcessors(processors: Set<BaseInstancesProcessor<*>>) = ReflektInstances(
+        fun createByProcessors(processors: BaseInstanceProcessors) = ReflektInstances(
             objects = processors.mapNotNull { it as? ObjectInstancesProcessor }.first().fileToInstances,
             classes = processors.mapNotNull { it as? ClassInstancesProcessor }.first().fileToInstances,
             functions = processors.mapNotNull { it as? FunctionInstancesProcessor }.first().fileToInstances,
@@ -53,6 +59,7 @@ data class IrTypeInstance<T, I>(
  * @property classes
  * @property functions
  */
+@Suppress("COMPLEX_EXPRESSION")
 data class IrReflektInstances(
     val objects: List<IrObjectInstance> = ArrayList(),
     val classes: List<IrClassInstance> = ArrayList(),

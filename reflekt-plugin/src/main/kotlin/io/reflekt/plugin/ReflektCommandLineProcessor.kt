@@ -41,6 +41,7 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
         else -> error("Unexpected config option ${option.optionName}")
     }
 
+    @Suppress("TYPE_ALIAS")
     private fun <T> CompilerConfiguration.addToList(configurationKey: CompilerConfigurationKey<List<T>>, value: T) {
         val values = get(configurationKey) ?: emptyList()
         put(configurationKey, values + value)

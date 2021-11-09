@@ -1,3 +1,5 @@
+@file:Suppress("FILE_WILDCARD_IMPORTS")
+
 package io.reflekt.plugin.scripting
 
 import io.reflekt.plugin.analysis.models.Import
@@ -9,10 +11,12 @@ import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvm.updateClasspath
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 
+typealias KotlinScriptProperties = List<Pair<String, KClass<*>>>
+
 class KotlinScript(
     code: String,
     imports: List<Import> = emptyList(),
-    properties: List<Pair<String, KClass<*>>> = emptyList(),
+    properties: KotlinScriptProperties = emptyList(),
     classpath: List<File> = emptyList(),
 ) {
     private val argumentNames = properties.map { it.first }

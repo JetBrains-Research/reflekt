@@ -16,7 +16,7 @@ fun KtAnnotationEntry.getDescriptor(context: BindingContext) = context[BindingCo
 /**
  * Forcefully resolves all contents inside KtElement or Descriptor
  *
- * @return
+ * @return resolved content
  */
 fun <T> T.forced(): T = ForceResolveUtil.forceResolveAllContents(this)
 

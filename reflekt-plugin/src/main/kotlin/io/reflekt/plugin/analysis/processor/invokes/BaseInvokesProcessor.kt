@@ -10,9 +10,9 @@ import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.utils.addIfNotNull
 
-abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingContext) : Processor<Output>(binding) {
+abstract class BaseInvokesProcessor<O : Any>(override val binding: BindingContext) : Processor<O>(binding) {
     // Store invokes by file
-    abstract val fileToInvokes: HashMap<FileId, Output>
+    abstract val fileToInvokes: HashMap<FileId, O>
 
     protected fun processClassOrObjectInvokes(element: KtElement): ClassOrObjectInvokes? {
         val invokes: ClassOrObjectInvokes = HashSet()

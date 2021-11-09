@@ -17,14 +17,16 @@ object ResolveUtil {
     private fun analyze(
         files: Collection<KtFile>,
         environment: KotlinCoreEnvironment,
-        configuration: CompilerConfiguration): AnalysisResult = analyze(environment.project, files, configuration, environment::createPackagePartProvider)
+        configuration: CompilerConfiguration,
+    ): AnalysisResult = analyze(environment.project, files, configuration) { environment.createPackagePartProvider(it) }
 
     private fun analyze(
         project: Project,
         files: Collection<KtFile>,
         configuration: CompilerConfiguration,
+        trace: BindingTrace = CliBindingTrace(),
         factory: (GlobalSearchScope) -> PackagePartProvider,
-        trace: BindingTrace = CliBindingTrace()): AnalysisResult = TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration(
+    ): AnalysisResult = TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration(
         project, files, trace, configuration, factory,
     )
 }

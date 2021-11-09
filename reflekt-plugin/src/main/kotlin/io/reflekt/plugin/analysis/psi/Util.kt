@@ -18,7 +18,7 @@ fun KtExpression.getFqName(binding: BindingContext) = getReferenceTargets(bindin
  *
  * @param klasses
  * @param context
- * @return
+ * @return true if a class/object is a subtype of any of [klasses]
  */
 fun KtClassOrObject.isSubtypeOf(klasses: Set<String>, context: BindingContext) = findClassDescriptor(context).getAllSuperClassifiers().filter { it is ClassDescriptor }.any {
     it.fqNameOrNull()?.asString() in klasses

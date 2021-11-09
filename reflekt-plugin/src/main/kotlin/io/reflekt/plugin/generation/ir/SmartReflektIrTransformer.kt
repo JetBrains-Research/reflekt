@@ -76,6 +76,7 @@ class SmartReflektIrTransformer(
         function.toParameterizedType(binding)?.isSubtypeOf(typeArgument) ?: false
     } ?: error("A type argument for a function is null")
 
+    @Suppress("TYPE_ALIAS")
     private inline fun <reified T, reified I> filterInstances(
         instances: List<IrTypeInstance<T, I>>,
         invokeArguments: TypeArgumentToFilters,
@@ -91,14 +92,14 @@ class SmartReflektIrTransformer(
                 is KtNamedFunction -> isSubtypeOfForFunctions(instance.instance, invokeArguments.typeArgument, binding)
                 else -> error("Unknown type of instance")
             }
-            if (isSubtype && evalFilterBody(imports, invokeArguments.filters, instance)) {
+            if (isSubtype && isEvaluatedFilterBody(imports, invokeArguments.filters, instance)) {
                 resultInstances.push(instance)
             }
         }
         return resultInstances
     }
 
-    private inline fun <reified T, reified I> evalFilterBody(
+    private inline fun <reified T, reified I> isEvaluatedFilterBody(
         imports: List<Import>,
         filters: List<Lambda>,
         instance: IrTypeInstance<T, I>,

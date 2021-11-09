@@ -1,4 +1,4 @@
-package io.reflekt.resources.io.reflekt.plugin.analysis.commontestfiles.test
+package io.reflekt.resources.io.reflekt.plugin.analysis.commonTestFiles.test
 
 interface AinterfaceTest {
     fun description(): String

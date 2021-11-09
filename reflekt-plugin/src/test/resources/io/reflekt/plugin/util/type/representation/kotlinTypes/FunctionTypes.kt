@@ -1,4 +1,4 @@
-package io.reflekt.resources.io.reflekt.plugin.util.type.representation.kotlintypes
+package io.reflekt.resources.io.reflekt.plugin.util.type.representation.kotlinTypes
 
 fun main() {
     fooWithType<() -> Unit>("function0_unit_test")

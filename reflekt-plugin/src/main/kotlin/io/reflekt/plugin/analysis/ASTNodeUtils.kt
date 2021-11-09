@@ -27,7 +27,7 @@ import java.util.Queue
  * then we must return index 3, because the last occurrence index is 4 (B != A).
  *
  * @param elementType
- * @return
+ * @return last parent node with the provided element type (null if empty)
  */
 fun ASTNode.findLastParentByType(elementType: ElementType): ASTNode? {
     val parents = this.parents().toList()
@@ -78,7 +78,7 @@ fun ASTNode.getLambdaParameters(): List<String> {
  * Traverse all children of the node (use BFS order) and return all child nodes which satisfy the filter condition
  *
  * @param filter
- * @return
+ * @return sequence of child nodes that fit the provided filter-condition
  */
 fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode> {
     val filtered = ArrayList<ASTNode>()
@@ -97,16 +97,19 @@ fun ASTNode.filterChildren(filter: (node: ASTNode) -> Boolean): Sequence<ASTNode
  * Get type of [ASTNode] parameter.
  * It has the following structure: root -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE|NULLABLE_TYPE
  *
- * @return
+ * @return a child node for ASTNode with TYPE_REFERENCE type
  */
 fun ASTNode.getParameterType(): ASTNode = children().first { it.hasType(ElementType.TYPE_REFERENCE) }.firstChildNode
 
 fun ASTNode.getTypeArguments(): List<ASTNode> = getTypeList(ElementType.TYPE_ARGUMENT_LIST, ElementType.TYPE_PROJECTION)
 
-/** Constructs ParameterizedType representing [ASTNode] of type USER_TYPE/FUNCTION_TYPE/NULLABLE_TYPE
+/**
+ * Constructs ParameterizedType representing [ASTNode] of type USER_TYPE/FUNCTION_TYPE/NULLABLE_TYPE
  *
  * @param binding
- * @return*/
+ * @return parameterized type
+ *
+ */
 fun ASTNode.toParameterizedType(binding: BindingContext) = binding.get(BindingContext.TYPE, this.psi.context as KtTypeReference) ?: error("Unrecognized element type: $elementType")
 
 /**

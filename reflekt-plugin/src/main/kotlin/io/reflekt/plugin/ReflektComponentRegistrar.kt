@@ -37,12 +37,23 @@ class ReflektComponentRegistrar(private val hasConfiguration: Boolean = true) : 
         if (configuration[Keys.INTROSPECT_FILES] != null && configuration[Keys.OUTPUT_DIR] == null) {
             error("Output path not specified")
         }
-        val dependencyJars = configuration[Keys.DEPENDENCY_JARS] ?: emptyList()
-        configuration.messageCollector.log("DEPENDENCY JARS: ${dependencyJars.map { it.absolutePath }};")
-
+        val dependencyJars = (configuration[Keys.DEPENDENCY_JARS] ?: emptyList()).also {
+            configuration.messageCollector.log("DEPENDENCY JARS: ${it.map { it.absolutePath }};")
+        }
         val filesToIntrospect = getKtFiles(configuration[Keys.INTROSPECT_FILES] ?: emptyList(), project)
-        val outputDir = configuration[Keys.OUTPUT_DIR]
         val reflektContext = ReflektContext()
+
+        registerExtensions(project, filesToIntrospect, reflektContext, configuration, dependencyJars)
+    }
+
+    private fun registerExtensions(
+        project: MockProject,
+        filesToIntrospect: Set<KtFile>,
+        reflektContext: ReflektContext,
+        configuration: CompilerConfiguration,
+        dependencyJars: List<File>,
+    ) {
+        val outputDir = configuration[Keys.OUTPUT_DIR]
 
         // This will be called multiple times (for each project module),
         // since compilation process runs module by module

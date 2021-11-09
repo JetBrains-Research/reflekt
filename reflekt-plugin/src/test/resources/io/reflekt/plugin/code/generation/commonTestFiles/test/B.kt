@@ -1,4 +1,4 @@
-package io.reflekt.resources.io.reflekt.plugin.code.generation.commontestfiles.test
+package io.reflekt.resources.io.reflekt.plugin.code.generation.commonTestFiles.test
 
 class B1 : BInterfaceTest {
 }

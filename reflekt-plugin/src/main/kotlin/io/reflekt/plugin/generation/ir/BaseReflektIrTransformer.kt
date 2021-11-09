@@ -38,7 +38,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
      * @param resultValues list of qualified names of objects or classes to return
      * @param resultType
      * @param context
-     * @return
+     * @return replacement for a result of terminal function
      * @throws ReflektGenerationException
      */
     protected fun IrBuilderWithScope.resultIrCall(
@@ -74,10 +74,11 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
      * @param resultValues list of function qualified names with additional info to generate the right call
      * @param resultType
      * @param context
-     * @return
+     * @return IrExpression
      * @throws ReflektGenerationException
      */
     @ObsoleteDescriptorBasedAPI
+    @Suppress("TOO_MANY_LINES_IN_LAMBDA")
     protected fun IrBuilderWithScope.functionResultIrCall(
         invokeParts: BaseReflektInvokeParts,
         resultValues: List<IrFunctionInfo>,
@@ -113,5 +114,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
                 pluginContext,
                 currentScope!!.scope,
                 UNDEFINED_OFFSET,
-                UNDEFINED_OFFSET) {}
+                UNDEFINED_OFFSET) {
+                // no need to pass a body to this object
+            }
 }

@@ -28,7 +28,7 @@
   configuration:
     useRecommendedImportsOrder: true
 - name: FILE_WILDCARD_IMPORTS
-  enabled: true
+  enabled: false
   configuration:
     allowedWildcards: "org.jetbrains.kotlin.psi.*"
 - name: BRACES_BLOCK_STRUCTURE_ERROR
@@ -106,15 +106,6 @@
   configuration:
     valueArgument: true
     valueParameter: true
-# disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1090
-- name: GENERIC_VARIABLE_WRONG_DECLARATION
-  enabled: false
-# disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1091
-- name: COMMENTED_OUT_CODE
-  enabled: false
-# disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1093
-- name: SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
-  enabled: false
 # disabled due to a huge number of documentation that should be added
 - name: MISSING_KDOC_ON_FUNCTION
   enabled: false
@@ -131,9 +122,25 @@
 # In Java world such single-symbol prefixes are not a good practice
 - name: VARIABLE_HAS_PREFIX
   enabled: false
+# In this project everything is built using dummy utility objects. Their refactoring should be done in a separate PR
+# These Utility classes are completely useless and make code heavier, as Kotlin supports top-level extension methods in files
+- name: AVOID_USING_UTILITY_CLASS
+  enabled: false
+# Custom getters and setters should be revised later
+- name: CUSTOM_GETTERS_SETTERS
+  enabled: false
 # https://github.com/diktat-static-analysis/diKTat/issues/1106
 - name: TRAILING_COMMA
   enabled: false
 # https://github.com/diktat-static-analysis/diKTat/issues/1109
 - name: VARIABLE_NAME_INCORRECT_FORMAT
+  enabled: false
+# disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1090
+- name: GENERIC_VARIABLE_WRONG_DECLARATION
+  enabled: false
+# disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1091
+- name: COMMENTED_OUT_CODE
+  enabled: false
+# disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1093
+- name: SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
   enabled: false

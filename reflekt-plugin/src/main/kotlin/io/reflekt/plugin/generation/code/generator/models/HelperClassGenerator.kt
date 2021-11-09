@@ -85,8 +85,8 @@ abstract class HelperClassGenerator : ClassGenerator() {
     private fun <T> generateWhenBody(
         uses: Iterable<T>,
         conditionVariable: String,
-        generateBranchForWhenOption: (T) -> CodeBlock,
         toAddReturn: Boolean = true,
+        generateBranchForWhenOption: (T) -> CodeBlock,
     ): CodeBlock {
         val builder = CodeBlock.builder()
         if (toAddReturn) {
@@ -101,28 +101,37 @@ abstract class HelperClassGenerator : ClassGenerator() {
         return builder.build()
     }
 
+    @Suppress(
+        "LAMBDA_IS_NOT_LAST_PARAMETER",
+        "IDENTIFIER_LENGTH",
+        "TYPE_ALIAS")
     protected fun <K, T> generateWhenBody(
         uses: Map<K, List<T>>,
         conditionVariable: String,
         getEntityName: (T) -> String = { it.toString() },
         toAddReturn: Boolean = true,
         getWhenOption: (K, CodeBlock) -> CodeBlock,
-    ): CodeBlock {
-        val generateBranchForWhenOption = { (k, v): Map.Entry<K, List<T>> -> getWhenOption(k, listOfWhenRightPart(v, getEntityName)) }
-        return generateWhenBody(uses.asIterable(), conditionVariable, generateBranchForWhenOption, toAddReturn)
+    ): CodeBlock = generateWhenBody(uses.asIterable(), conditionVariable, toAddReturn) { (k, v): Map.Entry<K, List<T>> ->
+        getWhenOption(k, listOfWhenRightPart(v, getEntityName))
     }
 
+    @Suppress("TYPE_ALIAS")
     // TODO: group by annotations (store set of signatures for the same set of annotations)
     protected fun generateNestedWhenBodyForFunctions(
         uses: FunctionUses,
         getEntityName: (KtNamedFunction) -> String = { it.toString() },
     ): CodeBlock {
-        val mainFunction = { o: Map.Entry<SignatureToAnnotations, List<String>> ->
+        val namedFunctions = uses.mapValues { (_, namedFunction) -> namedFunction.map { getEntityName(it) } }.toMap().asIterable()
+
+        return generateWhenBody(
+            namedFunctions,
+            ANNOTATION_FQ_NAMES,
+        ) { obj: Map.Entry<SignatureToAnnotations, List<String>> ->
             getWhenOptionForSet(
-                o.key.annotations,
+                obj.key.annotations,
                 wrappedCode(
                     generateWhenBody(
-                        mapOf(o.key.signature.stringRepresentation() to o.value),
+                        mapOf(obj.key.signature.stringRepresentation() to obj.value),
                         SIGNATURE,
                         toAddReturn = false,
                         getWhenOption = ::getWhenOptionForString,
@@ -130,16 +139,18 @@ abstract class HelperClassGenerator : ClassGenerator() {
                 ),
             )
         }
-        return generateWhenBody(uses.mapValues { (_, v) -> v.map { getEntityName(it) } }.toMap().asIterable(), ANNOTATION_FQ_NAMES, mainFunction)
     }
 
+    @Suppress("TYPE_ALIAS")
     protected fun generateNestedWhenBodyForClassesOrObjects(uses: ClassOrObjectUses): CodeBlock {
-        val mainFunction = { o: Map.Entry<SupertypesToAnnotations, List<String>> ->
+        val classesOrObjects = uses.mapValues { (_, clOrObj) -> clOrObj.mapNotNull { it.fqName?.toString() } }.toMap().asIterable()
+
+        return generateWhenBody(classesOrObjects, ANNOTATION_FQ_NAMES) { obj: Map.Entry<SupertypesToAnnotations, List<String>> ->
             getWhenOptionForSet(
-                o.key.annotations,
+                obj.key.annotations,
                 wrappedCode(
                     generateWhenBody(
-                        mapOf(o.key.supertypes to o.value),
+                        mapOf(obj.key.supertypes to obj.value),
                         SUPERTYPE_FQ_NAMES,
                         toAddReturn = false,
                         getWhenOption = ::getWhenOptionForSet,
@@ -147,7 +158,6 @@ abstract class HelperClassGenerator : ClassGenerator() {
                 ),
             )
         }
-        return generateWhenBody(uses.mapValues { (_, v) -> v.mapNotNull { it.fqName?.toString() } }.toMap().asIterable(), ANNOTATION_FQ_NAMES, mainFunction)
     }
 
     protected abstract class SelectorClassGeneratorWrapper(

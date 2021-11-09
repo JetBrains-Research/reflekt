@@ -6,6 +6,7 @@ import io.reflekt.plugin.analysis.processor.isPublicObject
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
+@Suppress("TYPE_ALIAS")
 open class ClassOrObjectInstancesProcessor<T : KtClassOrObject>(override val binding: BindingContext) : BaseInstancesProcessor<MutableList<T>>(binding) {
     override val fileToInstances: HashMap<FileId, MutableList<T>> = HashMap()
 

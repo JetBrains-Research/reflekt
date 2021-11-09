@@ -18,6 +18,8 @@ typealias FunctionUses = TypeUses<SignatureToAnnotations, KtNamedFunction>
 typealias IrClassOrObjectUses = TypeUses<SupertypesToAnnotations, String>
 typealias IrFunctionUses = TypeUses<SignatureToAnnotations, IrFunctionInfo>
 
+typealias BaseInvokesProcessors = Set<BaseInvokesProcessor<*>>
+
 /**
  * If the function [withAnnotations] is called without supertypes then [supertypes] is setOf(Any::class::qualifiedName)
  * If the function [withSupertypes] is called without annotations then [annotations] is empty
@@ -48,7 +50,7 @@ data class ReflektInvokes(
     val functions: HashMap<FileId, FunctionInvokes> = HashMap(),
 ) {
     companion object {
-        fun createByProcessors(processors: Set<BaseInvokesProcessor<*>>) = ReflektInvokes(
+        fun createByProcessors(processors: BaseInvokesProcessors) = ReflektInvokes(
             objects = processors.mapNotNull { it as? ObjectInvokesProcessor }.first().fileToInvokes,
             classes = processors.mapNotNull { it as? ClassInvokesProcessor }.first().fileToInvokes,
             functions = processors.mapNotNull { it as? FunctionInvokesProcessor }.first().fileToInvokes,
@@ -57,11 +59,12 @@ data class ReflektInvokes(
 }
 
 /**
+ * Stores enough information to generate function reference IR
+ *
  * @property fqName
  * @property receiverFqName
  * @property isObjectReceiver
  */
-/* Stores enough information to generate function reference IR */
 data class IrFunctionInfo(
     val fqName: String,
     val receiverFqName: String?,
@@ -70,6 +73,7 @@ data class IrFunctionInfo(
 
 /**
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]
+ *
  * @property objects
  * @property classes
  * @property functions
@@ -100,17 +104,16 @@ data class IrReflektUses(
 ) {
     companion object {
         fun fromReflektUses(uses: ReflektUses, binding: BindingContext) = IrReflektUses(
-            objects = HashMap(uses.objects.flatten().mapValues { (_, v) -> v.map { it.fqName!!.toString() }.toMutableList() }),
-            classes = HashMap(uses.classes.flatten().mapValues { (_, v) -> v.map { it.fqName!!.toString() }.toMutableList() }),
-            functions = HashMap(uses.functions.flatten().mapValues { (_, v) -> v.map { it.toFunctionInfo(binding) }.toMutableList() }),
+            objects = HashMap(uses.objects.flatten().mapValues { (_, objects) -> objects.map { it.fqName!!.toString() }.toMutableList() }),
+            classes = HashMap(uses.classes.flatten().mapValues { (_, classes) -> classes.map { it.fqName!!.toString() }.toMutableList() }),
+            functions = HashMap(uses.functions.flatten().mapValues { (_, namedFunctions) -> namedFunctions.map { it.toFunctionInfo(binding) }.toMutableList() }),
         )
     }
 }
 
 fun ClassOrObjectUses.toSupertypesToFqNamesMap() = this.map { it.key.supertypes to it.value.mapNotNull { it.fqName?.toString() } }.toMap()
 
-fun FunctionUses.toAnnotationsToFunction() = this.map { it.key.annotations to it.value }.toMap()
-
+@Suppress("IDENTIFIER_LENGTH", "TYPE_ALIAS")
 fun <T, V : KtElement> HashMap<FileId, TypeUses<T, V>>.flatten(): TypeUses<T, V> {
     val uses: TypeUses<T, V> = HashMap()
     this.forEach { (_, typeUses) ->

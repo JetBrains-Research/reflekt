@@ -1,4 +1,4 @@
-package io.reflekt.resources.io.reflekt.plugin.analysis.commontestfiles.test
+package io.reflekt.resources.io.reflekt.plugin.analysis.commonTestFiles.test
 
 object A1 : AInterfaceTest {
     override fun description(): String = "HELLO A1"

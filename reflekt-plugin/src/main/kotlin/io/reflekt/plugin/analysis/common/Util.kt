@@ -11,10 +11,12 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
 
+private fun ASTNode.findMatchingFunctionInExpression() = this.filterChildren { node -> node.text in ReflektFunction.values().map { it.functionName } }
+
 // [1]Reflekt.[2]|objects()/classes() or so on|
 // [dotQualifiedExpressionNode] is [1]
 fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SupertypesToAnnotations? {
-    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in ReflektFunction.values().map { it.functionName } }
+    val filteredChildren = dotQualifiedExpressionNode.findMatchingFunctionInExpression()
 
     val supertypes = HashSet<String>()
     val annotations = HashSet<String>()
@@ -59,10 +61,10 @@ fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding
 }
 
 fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SignatureToAnnotations {
-    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode -> n.text in ReflektFunction.values().map { it.functionName } }
+    val filteredChildren = dotQualifiedExpressionNode.findMatchingFunctionInExpression()
 
-    var signature: KotlinType? = null
     val annotations = HashSet<String>()
+    var signature: KotlinType? = null
 
     for (node in filteredChildren) {
         val callExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CALL_EXPRESSION) } ?: continue
@@ -90,9 +92,9 @@ fun findReflektFunctionInvokeArgumentsByExpressionPart(expression: KtExpression,
 // [1]SmartReflekt.[2]|objects()/classes() or so on|
 // [dotQualifiedExpressionNode] is [1]
 fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SupertypesToFilters? {
-    val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode ->
-        (n.text in SmartReflektFunction.values().map { it.functionName } || n.text in ReflektEntity.values().map { it.entityType }) &&
-                n.hasType(ElementType.REFERENCE_EXPRESSION)
+    val filteredChildren = dotQualifiedExpressionNode.filterChildren { node ->
+        (node.text in SmartReflektFunction.values().map { it.functionName } || node.text in ReflektEntity.values().map { it.entityType }) &&
+                node.hasType(ElementType.REFERENCE_EXPRESSION)
     }
     var supertype: KotlinType? = null
     val filters = ArrayList<Lambda>()

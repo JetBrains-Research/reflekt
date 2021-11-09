@@ -16,7 +16,7 @@ import org.gradle.kotlin.dsl.configure
 fun Project.configureDiktat() {
     apply<DiktatGradlePlugin>()
     configure<DiktatExtension> {
-        excludes = files("**/src/test/**")
+        inputs = fileTree("src/main").apply { include("**/*.kt") }
     }
 }
 

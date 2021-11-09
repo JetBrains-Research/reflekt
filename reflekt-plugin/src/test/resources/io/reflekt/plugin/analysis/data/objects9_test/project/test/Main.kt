@@ -1,4 +1,4 @@
-package io.reflekt.resources.io.reflekt.plugin.analysis.data.objects9test.project.test
+package io.reflekt.resources.io.reflekt.plugin.analysis.data.objects9_test.project.test
 
 import io.reflekt.Reflekt
 

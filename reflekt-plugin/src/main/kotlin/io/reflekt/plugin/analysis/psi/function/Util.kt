@@ -96,7 +96,7 @@ fun FunctionDescriptor.toParameterizedType() = (this as? SimpleFunctionDescripto
  * @param builtIns
  * @param suspendFunction
  * @param shouldUseVarargType
- * @return
+ * @return created kotlin type
  */
 fun SimpleFunctionDescriptor.createFunctionTypeWithDispatchReceiver(
     builtIns: KotlinBuiltIns,

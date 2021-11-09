@@ -12,12 +12,15 @@ import java.io.File
  * AnalysisUtils object wraps complex logic of parsing Kotlin file into AST
  * and getting BindingContext (kind of type context) of it.
  */
+@Suppress("AVOID_USING_UTILITY_CLASS")
 object ParseUtil {
-    /** Get KtFile representation for set of files in specified environment
+    /**
+     * Get KtFile representation for set of files in specified environment
      *
      * @param files
      * @param environment
-     * @return*/
+     * @return set of KtFile representations
+     */
     fun analyze(files: Collection<File>, environment: KotlinCoreEnvironment): Set<KtFile> {
         val factory: PsiFileFactoryImpl = PsiFileFactory.getInstance(environment.project) as PsiFileFactoryImpl
         return files.mapNotNull { file ->

@@ -1,4 +1,4 @@
-package io.reflekt.resources.io.reflekt.plugin.analysis.data.classes22test.project.test
+package io.reflekt.resources.io.reflekt.plugin.analysis.data.classes22_test.project.test
 
 import io.reflekt.Reflekt
 

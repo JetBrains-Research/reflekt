@@ -7,9 +7,9 @@ import io.reflekt.plugin.analysis.psi.isSubtypeOf
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
-abstract class BaseUsesProcessor<Output : Any>(override val binding: BindingContext) : Processor<Output>(binding) {
+abstract class BaseUsesProcessor<O : Any>(override val binding: BindingContext) : Processor<O>(binding) {
     // Store uses by file
-    abstract val fileToUses: HashMap<FileId, Output>
+    abstract val fileToUses: HashMap<FileId, O>
 
     protected fun processClassOrObjectUses(
         element: KtElement,
@@ -18,7 +18,7 @@ abstract class BaseUsesProcessor<Output : Any>(override val binding: BindingCont
         fileToUses: HashMap<FileId, ClassOrObjectUses>,
     ): HashMap<FileId, ClassOrObjectUses> {
         (element as? KtClassOrObject)?.let {
-            invokes.filter { it.covers(element) }.forEach {
+            invokes.filter { it.isCovering(element) }.forEach {
                 fileToUses.getOrPut(file.fullName) { HashMap() }.getOrPut(it) { mutableListOf() }.add(element)
             }
         }
@@ -29,6 +29,7 @@ abstract class BaseUsesProcessor<Output : Any>(override val binding: BindingCont
     // we will group files by invokes and process each of them once
     // MutableSet<*> here is ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
     // or FunctionInvokes = MutableSet<SignatureToAnnotations> MutableSet<*>
+    @Suppress("TYPE_ALIAS")
     private fun <T> groupFilesByInvokes(fileToInvokes: HashMap<FileId, T>): HashMap<T, MutableSet<String>> {
         val filesByInvokes = HashMap<T, MutableSet<FileId>>()
         fileToInvokes.forEach { (file, invoke) ->
@@ -40,7 +41,7 @@ abstract class BaseUsesProcessor<Output : Any>(override val binding: BindingCont
     protected fun <K, V : MutableSet<K>> getInvokesGroupedByFiles(fileToInvokes: HashMap<FileId, V>) =
             groupFilesByInvokes(fileToInvokes).keys.flatten().toMutableSet()
 
-    private fun SupertypesToAnnotations.covers(element: KtClassOrObject): Boolean =
+    private fun SupertypesToAnnotations.isCovering(element: KtClassOrObject): Boolean =
             // annotations set is empty when withSupertypes() method is called, so we don't need to check annotations in this case
             (annotations.isEmpty() || element.getAnnotations(binding, annotations).isNotEmpty()) && element.isSubtypeOf(supertypes, binding)
 }

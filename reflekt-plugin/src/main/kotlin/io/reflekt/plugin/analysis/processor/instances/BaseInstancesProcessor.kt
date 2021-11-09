@@ -4,7 +4,7 @@ import io.reflekt.plugin.analysis.processor.FileId
 import io.reflekt.plugin.analysis.processor.Processor
 import org.jetbrains.kotlin.resolve.BindingContext
 
-abstract class BaseInstancesProcessor<Output : Any>(override val binding: BindingContext) : Processor<Output>(binding) {
+abstract class BaseInstancesProcessor<O : Any>(override val binding: BindingContext) : Processor<O>(binding) {
     // Store instances by file
-    abstract val fileToInstances: HashMap<FileId, Output>
+    abstract val fileToInstances: HashMap<FileId, O>
 }
