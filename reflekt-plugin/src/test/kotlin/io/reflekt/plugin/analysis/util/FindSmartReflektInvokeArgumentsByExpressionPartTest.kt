@@ -11,6 +11,17 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
 
 class FindSmartReflektInvokeArgumentsByExpressionPartTest {
+    @Tag("analysis")
+    @MethodSource("data")
+    @ParameterizedTest(name = "test {index}")
+    fun `findSmartReflektInvokeArgumentsByExpressionPart function test`(
+        sources: Set<File>,
+        expectedResult: String,
+        directory: String) {
+        val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
+        val analyzer = SmartReflektTestAnalyzer(AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sources))
+        Assertions.assertEquals(expectedResult, analyzer.analyze().toPrettyString(), "Incorrect invoke arguments for directory $directory")
+    }
 
     companion object {
         @JvmStatic
@@ -23,14 +34,5 @@ class FindSmartReflektInvokeArgumentsByExpressionPartTest {
                 Arguments.of(commonTestFiles.union(project), supertypesToFilters, directory.name)
             }
         }
-    }
-
-    @Tag("analysis")
-    @MethodSource("data")
-    @ParameterizedTest(name = "test {index}")
-    fun `findSmartReflektInvokeArgumentsByExpressionPart function test`(sources: Set<File>, expectedResult: String, directory: String) {
-        val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
-        val analyzer = SmartReflektTestAnalyzer(AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sources))
-        Assertions.assertEquals(expectedResult, analyzer.analyze().toPrettyString(), "Incorrect invoke arguments for directory $directory")
     }
 }

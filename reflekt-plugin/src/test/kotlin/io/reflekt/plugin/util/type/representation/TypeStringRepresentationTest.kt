@@ -18,9 +18,24 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 class TypeStringRepresentationTest {
+    @Tag("codegen")
+    @MethodSource("data")
+    @ParameterizedTest(name = "test {index} {2}")
+    fun `types string representation test`(
+        kType: KType,
+        kotlinType: KotlinType,
+        expectedStringRepresentation: String) {
+        // TODO: can we use classes for KType from the resources folder?
+        val resourcePackageName = "io.reflekt.plugin.util.type.representation.kotlinTypes"
+        val srcPackageName = "io.reflekt.plugin.util.type.representation"
+
+        val kTypeStr = kType.stringRepresentation().replace(srcPackageName, resourcePackageName)
+        Assertions.assertEquals(expectedStringRepresentation, kTypeStr, "Incorrect string representation for KType $kType")
+        val kotlinTypeStr: String = kotlinType.stringRepresentation()
+        Assertions.assertEquals(expectedStringRepresentation, kotlinTypeStr, "Incorrect string representation for KotlinType $kotlinType")
+    }
 
     companion object {
-
         @OptIn(ExperimentalStdlibApi::class)
         private val test_data = mapOf(
             "function0_unit_test" to (typeOf<() -> Unit>()),
@@ -60,7 +75,7 @@ class TypeStringRepresentationTest {
             "function2_test" to (typeOf<(Int, Iterable<*>) -> Unit>()),
         )
 
-        private fun getResultForTest(files: Set<File>, testKey: String) : String {
+        private fun getResultForTest(files: Set<File>, testKey: String): String {
             val resFile = files.find { it.nameWithoutExtension.endsWith(testKey) } ?: error("File with results for the test $testKey was not found")
             return resFile.readText().trim()
         }
@@ -77,24 +92,9 @@ class TypeStringRepresentationTest {
                 Arguments.of(
                     kType,
                     testKeyToKotlinTypeMap[testKey] ?: error("KotlinType for the test $testKey was not found"),
-                    getResultForTest(resFilesSet, testKey)
+                    getResultForTest(resFilesSet, testKey),
                 )
             }
         }
     }
-
-    @Tag("codegen")
-    @MethodSource("data")
-    @ParameterizedTest(name = "test {index} {2}")
-    fun `types string representation test`(kType: KType, kotlinType: KotlinType, expectedStringRepresentation: String) {
-        // TODO: can we use classes for KType from the resources folder?
-        val resourcePackageName = "io.reflekt.plugin.util.type.representation.kotlinTypes"
-        val srcPackageName = "io.reflekt.plugin.util.type.representation"
-
-        val kTypeStr = kType.stringRepresentation().replace(srcPackageName, resourcePackageName)
-        Assertions.assertEquals(expectedStringRepresentation, kTypeStr, "Incorrect string representation for KType $kType")
-        val kotlinTypeStr: String = kotlinType.stringRepresentation()
-        Assertions.assertEquals(expectedStringRepresentation, kotlinTypeStr, "Incorrect string representation for KotlinType $kotlinType")
-    }
-
 }

@@ -1,3 +1,5 @@
+@file:Suppress("FILE_WILDCARD_IMPORTS")
+
 package io.reflekt.plugin.analysis.common
 
 import io.reflekt.plugin.analysis.*

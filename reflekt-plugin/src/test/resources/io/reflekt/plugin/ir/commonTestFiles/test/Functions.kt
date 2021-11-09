@@ -1,21 +1,4 @@
-package io.reflekt.test.ir
-
-@IrTestAnnotation
-fun fun1() {}
-
-@IrTestAnnotation
-fun fun2(): Int = 3
-
-@IrTestAnnotation
-fun fun3(): List<Int> = listOf(3)
-
-@IrTestAnnotation
-fun fun4(a: Int, b: Float?, c: Set<Boolean>): List<String> = listOf(a.toString(), b.toString(), c.toString())
-
-fun fooBoolean(): Boolean {
-    println("public second example foo")
-    return true
-}
+package io.reflekt.resources.io.reflekt.plugin.ir.commontestfiles.test
 
 class FunctionTestClass {
     @IrTestAnnotation
@@ -28,7 +11,10 @@ class FunctionTestClass {
     fun fun3(): List<Int> = listOf(3)
 
     @IrTestAnnotation
-    fun fun4(a: Int, b: Float?, c: Set<Boolean>): List<String> = listOf(a.toString(), b.toString(), c.toString())
+    fun fun4(
+        a: Int,
+        b: Float?,
+        c: Set<Boolean>): List<String> = listOf(a.toString(), b.toString(), c.toString())
 
     companion object {
         @IrTestAnnotation
@@ -41,7 +27,10 @@ class FunctionTestClass {
         fun fun3(): List<Int> = listOf(3)
 
         @IrTestAnnotation
-        fun fun4(a: Int, b: Float?, c: Set<Boolean>): List<String> = listOf(a.toString(), b.toString(), c.toString())
+        fun fun4(
+            a: Int,
+            b: Float?,
+            c: Set<Boolean>): List<String> = listOf(a.toString(), b.toString(), c.toString())
     }
 }
 
@@ -56,5 +45,28 @@ object FunctionTestObject {
     fun fun3(): List<Int> = listOf(3)
 
     @IrTestAnnotation
-    fun fun4(a: Int, b: Float?, c: Set<Boolean>): List<String> = listOf(a.toString(), b.toString(), c.toString())
+    fun fun4(
+        a: Int,
+        b: Float?,
+        c: Set<Boolean>): List<String> = listOf(a.toString(), b.toString(), c.toString())
+}
+
+@IrTestAnnotation
+fun fun1() {}
+
+@IrTestAnnotation
+fun fun2(): Int = 3
+
+@IrTestAnnotation
+fun fun3(): List<Int> = listOf(3)
+
+@IrTestAnnotation
+fun fun4(
+    a: Int,
+    b: Float?,
+    c: Set<Boolean>): List<String> = listOf(a.toString(), b.toString(), c.toString())
+
+fun fooBoolean(): Boolean {
+    println("public second example foo")
+    return true
 }

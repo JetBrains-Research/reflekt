@@ -1,4 +1,4 @@
-package io.reflekt.test
+package io.reflekt.resources.io.reflekt.plugin.analysis.util.data.onefilterwithparameterandtypetest.project.test
 
 import io.reflekt.SmartReflekt
 import org.jetbrains.kotlin.psi.KtClass

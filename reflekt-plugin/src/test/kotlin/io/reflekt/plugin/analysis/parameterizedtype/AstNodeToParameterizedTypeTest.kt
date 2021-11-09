@@ -15,6 +15,15 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
 class AstNodeToParameterizedTypeTest {
+    @Tag("parametrizedType")
+    @MethodSource("getAstNodeKotlinTypes")
+    @ParameterizedTest(name = "test {index}")
+    fun testAstNodeToParameterizedType(
+        binding: BindingContext,
+        astNode: ASTNode,
+        expectedType: String) {
+        Assertions.assertEquals(expectedType, astNode.toParameterizedType(binding).toPrettyString(), "Incorrect type for ASTNode ${astNode.text}")
+    }
     companion object {
         private const val TEST_DIR_NAME = "types"
 
@@ -25,12 +34,5 @@ class AstNodeToParameterizedTypeTest {
             val binding = visitKtElements(files, listOf(visitor))
             return visitor.typeArguments.map { Arguments.of(binding, it.astNodeArgument, it.stringArgument) }
         }
-    }
-
-    @Tag("parametrizedType")
-    @MethodSource("getAstNodeKotlinTypes")
-    @ParameterizedTest(name = "test {index}")
-    fun testAstNodeToParameterizedType(binding: BindingContext, astNode: ASTNode, expectedType: String) {
-        Assertions.assertEquals(expectedType, astNode.toParameterizedType(binding).toPrettyString(), "Incorrect type for ASTNode ${astNode.text}")
     }
 }

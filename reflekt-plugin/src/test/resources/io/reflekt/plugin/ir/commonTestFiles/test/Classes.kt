@@ -1,6 +1,6 @@
-package io.reflekt.test.ir
+package io.reflekt.resources.io.reflekt.plugin.ir.commontestfiles.test
 
-interface CInterface
+interface Cinterface
 
 open class C1 : CInterface
 

@@ -1,7 +1,6 @@
-package io.reflekt.plugin.analysis.parameterizedtype.functions
+package io.reflekt.resources.io.reflekt.plugin.analysis.parameterizedtype.functions
 
 interface MySimpleInterface {
-
     /**
      * @kotlinType [@kotlin.ExtensionFunctionType] Function1<MySimpleInterface, Any> (kotlin.Function1)
      * @subtypes:
@@ -9,14 +8,13 @@ interface MySimpleInterface {
      *   [foo1_Any_Any_nested],
      *   [foo1_Any_Any_nested_nested],
      *   [foo1_Any_Unit]
+     *
+     * @return
      */
-    fun foo1_MySimpleInterface_Any(): Any
-
+    fun foo1MySimpleInterfaceAny(): Any
 }
 
-
-class MySimpleClass : MySimpleInterface {
-
+object MySimpleClass : MySimpleInterface {
     /**
      * @kotlinType [@kotlin.ExtensionFunctionType] Function1<MySimpleClass, Any> (kotlin.Function1)
      * @subtypes:
@@ -26,5 +24,5 @@ class MySimpleClass : MySimpleInterface {
      *   [foo1_Any_Any_nested_nested],
      *   [foo1_Any_Unit]
      */
-    override fun foo1_MySimpleInterface_Any(): Any = 0
+    override fun foo1MySimpleInterfaceAny(): Any = 0
 }

@@ -1,4 +1,4 @@
-package io.reflekt.test
+package io.reflekt.resources.io.reflekt.plugin.analysis.commontestfiles.test
 
 annotation class FunctionsTestAnnotation
 
@@ -36,13 +36,22 @@ fun fun8(): Array<FunTest3>? = null
 fun fun9(): Int? = null
 
 @FunctionsTestAnnotation
-fun fun10(a: Int, b: Boolean, c: Float): Int = a
+fun fun10(
+    a: Int,
+    b: Boolean,
+    c: Float): Int = a
 
 @FunctionsTestAnnotation
-fun fun11(a: Int, b: Boolean, c: Float): Boolean = b
+fun fun11(
+    a: Int,
+    b: Boolean,
+    c: Float): Boolean = b
 
 @FunctionsTestAnnotation
-fun fun12(a: Int, b: Boolean, c: Float): Float = c
+fun fun12(
+    a: Int,
+    b: Boolean,
+    c: Float): Float = c
 
 @FunctionsTestAnnotation
 fun fun13(a: List<Int>): List<*> = emptyList<Int>()

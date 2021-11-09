@@ -17,11 +17,10 @@ import java.io.File
 import java.io.PrintStream
 
 object Util {
-    private val GET_USES: WritableSlice<String, ReflektUses> = Slices.createSimpleSlice()
     private const val USES_STORE_NAME = "ReflektUses"
-
-    private val GET_INSTANCES: WritableSlice<String, ReflektInstances> = Slices.createSimpleSlice()
     private const val INSTANCES_STORE_NAME = "ReflektInstances"
+    private val GET_USES: WritableSlice<String, ReflektUses> = Slices.createSimpleSlice()
+    private val GET_INSTANCES: WritableSlice<String, ReflektInstances> = Slices.createSimpleSlice()
 
     val CompilerConfiguration.messageCollector: MessageCollector
         get() = this.get(
@@ -58,7 +57,10 @@ object Util {
 
     fun BindingContext.getInstances() = get(GET_INSTANCES, INSTANCES_STORE_NAME)
 
-    fun getUses(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true): ReflektUses {
+    fun getUses(
+        files: Set<KtFile>,
+        bindingTrace: BindingTrace,
+        toSave: Boolean = true): ReflektUses {
         val analyzer = ReflektAnalyzer(files, bindingTrace.bindingContext)
         val invokes = analyzer.invokes()
         val uses = analyzer.uses(invokes)
@@ -68,7 +70,10 @@ object Util {
         return uses
     }
 
-    fun getInstances(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true): ReflektInstances {
+    fun getInstances(
+        files: Set<KtFile>,
+        bindingTrace: BindingTrace,
+        toSave: Boolean = true): ReflektInstances {
         val analyzer = SmartReflektAnalyzer(files, bindingTrace.bindingContext)
         val instances = analyzer.instances()
         if (toSave) {
@@ -78,11 +83,8 @@ object Util {
     }
 }
 
-fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, transform: T.() -> String): String =
-    "(${values.joinToString(separator = "|") { it.transform() }})"
-
 fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T =
-    values.first { it.transform() == this }
+        values.first { it.transform() == this }
 
 fun KotlinType.stringRepresentation(): String {
     val declaration = requireNotNull(constructor.declarationDescriptor) {
@@ -98,3 +100,6 @@ fun KotlinType.stringRepresentation(): String {
     }
     return TypeStringRepresentationUtil.getStringRepresentation(DescriptorUtils.getFqName(declaration).asString(), typeArguments)
 }
+
+fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, transform: T.() -> String): String =
+        "(${values.joinToString(separator = "|") { it.transform() }})"

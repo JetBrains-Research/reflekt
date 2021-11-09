@@ -13,6 +13,31 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
 class FunctionSubtypesTest {
+    private fun KtNamedFunction.getNameWithClass(): String {
+        var classOrObject = getParentOfType<KtClassOrObject>(true)
+        if (classOrObject is KtObjectDeclaration && classOrObject.isCompanion()) {
+            classOrObject = classOrObject.getParentOfType<KtClass>(true)
+        }
+        val className = classOrObject?.name?.let { "$it." } ?: ""
+        return this.name?.let { "$className$it" } ?: error("Name of function $this is null")
+    }
+
+    @Tag("parametrizedType")
+    @MethodSource("getKtNamedFunctionsWithSubtypes")
+    @ParameterizedTest(name = "test {index}")
+    fun testFunctionSubtypes(
+        binding: BindingContext,
+        function: KtNamedFunction,
+        otherFunctions: List<KtNamedFunction>,
+        expectedSubtypes: List<String>) {
+        val functionType = function.toParameterizedType(binding) ?: error("KotlinType of function ${function.name} is null")
+        val actualSubtypes = otherFunctions.filter { it.toParameterizedType(binding)?.isSubtypeOf(functionType) == true }
+        Assertions.assertEquals(
+            expectedSubtypes.sorted(),
+            actualSubtypes.map { it.getNameWithClass() }.sorted(),
+            "Incorrect subtypes for function ${function.name} $functionType",
+        )
+    }
     companion object {
         private const val TEST_DIR_NAME = "functions"
 
@@ -27,27 +52,5 @@ class FunctionSubtypesTest {
             functions.remove(toRemove)
             return functions
         }
-    }
-
-    private fun KtNamedFunction.getNameWithClass(): String {
-        var classOrObject = getParentOfType<KtClassOrObject>(true)
-        if (classOrObject is KtObjectDeclaration && classOrObject.isCompanion()) {
-            classOrObject = classOrObject.getParentOfType<KtClass>(true)
-        }
-        val className = classOrObject?.name?.let { "$it." } ?: ""
-        return this.name?.let { "$className$it" } ?: error("Name of function $this is null")
-    }
-
-    @Tag("parametrizedType")
-    @MethodSource("getKtNamedFunctionsWithSubtypes")
-    @ParameterizedTest(name = "test {index}")
-    fun testFunctionSubtypes(binding: BindingContext, function: KtNamedFunction, otherFunctions: List<KtNamedFunction>, expectedSubtypes: List<String>) {
-        val functionType = function.toParameterizedType(binding) ?: error("KotlinType of function ${function.name} is null")
-        val actualSubtypes = otherFunctions.filter { it.toParameterizedType(binding)?.isSubtypeOf(functionType) == true }
-        Assertions.assertEquals(
-            expectedSubtypes.sorted(),
-            actualSubtypes.map { it.getNameWithClass() }.sorted(),
-            "Incorrect subtypes for function ${function.name} $functionType"
-        )
     }
 }

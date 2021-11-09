@@ -1,12 +1,12 @@
-package io.reflekt.codegen.test
+package io.reflekt.resources.io.reflekt.plugin.code.generation.commontestfiles.test
 
-interface AInterfaceTest {
+interface AinterfaceTest {
     fun description(): String
 }
 
-interface AInterface1Test: AInterfaceTest {
+interface Ainterface1Test : AInterfaceTest {
     override fun description(): String
 }
 
-interface BInterfaceTest {
+interface BinterfaceTest {
 }

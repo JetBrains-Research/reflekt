@@ -1,4 +1,4 @@
-package io.reflekt.plugin.analysis.parameterizedtype.types
+package io.reflekt.resources.io.reflekt.plugin.analysis.parameterizedtype.types
 
 fun main() {
     fooWithType<MyTypeAlias<String>>("List<String> (kotlin.collections.List)")

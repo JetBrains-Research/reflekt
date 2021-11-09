@@ -1,0 +1,93 @@
+logging: reflekt: DEPENDENCY JARS: [];
+logging: reflekt: ReflektAnalysisExtension is starting...
+logging: reflekt: FILES: Main.kt, Annotations.kt, Classes.kt, Functions.kt, Objects.kt;
+logging: reflekt: Start analysis <main> module's files;
+logging: reflekt: Finish analysis <main> module's files;
+Uses: IrReflektUses(objects={}, classes={}, functions={SignatureToAnnotations(signature=Function4<FunctionTestClass, Int, Float?, Set<Boolean>, List<String>>, annotations=[io.reflekt.test.ir.IrTestAnnotation])=[IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestClass.fun4, receiverFqName=io.reflekt.test.ir.FunctionTestClass, isObjectReceiver=false)]})
+Instances: IrReflektInstances(objects=[IrTypeInstance(instance=OBJECT_DECLARATION, info=io.reflekt.test.ir.FunctionTestClass.Companion), IrTypeInstance(instance=OBJECT_DECLARATION, info=io.reflekt.test.ir.FunctionTestObject), IrTypeInstance(instance=OBJECT_DECLARATION, info=io.reflekt.test.ir.O1), IrTypeInstance(instance=OBJECT_DECLARATION, info=io.reflekt.test.ir.O1.O2)], classes=[IrTypeInstance(instance=CLASS, info=io.reflekt.test.ir.IrTestAnnotation), IrTypeInstance(instance=CLASS, info=io.reflekt.test.ir.C1), IrTypeInstance(instance=CLASS, info=io.reflekt.test.ir.C2), IrTypeInstance(instance=CLASS, info=io.reflekt.test.ir.C3), IrTypeInstance(instance=CLASS, info=io.reflekt.test.ir.C3.C5), IrTypeInstance(instance=CLASS, info=io.reflekt.test.ir.FunctionTestClass)], functions=[IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.getResult, receiverFqName=null, isObjectReceiver=false)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.fun1, receiverFqName=null, isObjectReceiver=false)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.fun2, receiverFqName=null, isObjectReceiver=false)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.fun3, receiverFqName=null, isObjectReceiver=false)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.fun4, receiverFqName=null, isObjectReceiver=false)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.fooBoolean, receiverFqName=null, isObjectReceiver=false)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestClass.fun1, receiverFqName=io.reflekt.test.ir.FunctionTestClass, isObjectReceiver=false)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestClass.fun2, receiverFqName=io.reflekt.test.ir.FunctionTestClass, isObjectReceiver=false)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestClass.fun3, receiverFqName=io.reflekt.test.ir.FunctionTestClass, isObjectReceiver=false)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestClass.fun4, receiverFqName=io.reflekt.test.ir.FunctionTestClass, isObjectReceiver=false)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestClass.Companion.fun1, receiverFqName=io.reflekt.test.ir.FunctionTestClass.Companion, isObjectReceiver=true)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestClass.Companion.fun2, receiverFqName=io.reflekt.test.ir.FunctionTestClass.Companion, isObjectReceiver=true)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestClass.Companion.fun3, receiverFqName=io.reflekt.test.ir.FunctionTestClass.Companion, isObjectReceiver=true)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestClass.Companion.fun4, receiverFqName=io.reflekt.test.ir.FunctionTestClass.Companion, isObjectReceiver=true)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestObject.fun1, receiverFqName=io.reflekt.test.ir.FunctionTestObject, isObjectReceiver=true)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestObject.fun2, receiverFqName=io.reflekt.test.ir.FunctionTestObject, isObjectReceiver=true)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestObject.fun3, receiverFqName=io.reflekt.test.ir.FunctionTestObject, isObjectReceiver=true)), IrTypeInstance(instance=FUN, info=IrFunctionInfo(fqName=io.reflekt.test.ir.FunctionTestObject.fun4, receiverFqName=io.reflekt.test.ir.FunctionTestObject, isObjectReceiver=true))])
+logging: reflekt: [IR] REFLEKT CALL: io.reflekt.Reflekt.Functions.WithAnnotations.toList;
+logging: reflekt: [IR] INVOKE ARGUMENTS: SignatureToAnnotations(signature=Function4<FunctionTestClass, Int, Float?, Set<Boolean>, List<String>>, annotations=[io.reflekt.test.ir.IrTestAnnotation])
+logging: reflekt: RES ARGS: [io.reflekt.test.ir.FunctionTestClass, kotlin.Int, kotlin.Float, kotlin.collections.Set, kotlin.collections.List]
+logging: reflekt: [IR] FOUND CALL (FUNCTIONS):
+CALL 'public final fun toList (): kotlin.collections.List<T of io.reflekt.Reflekt.Functions.WithAnnotations> declared in io.reflekt.Reflekt.Functions.WithAnnotations' type=kotlin.collections.List<kotlin.Function4<io.reflekt.test.ir.FunctionTestClass, kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>, kotlin.collections.List<kotlin.String>>> origin=null
+  $this: CALL 'public final fun withAnnotations <T> (vararg klasses: kotlin.reflect.KClass<out kotlin.Annotation>): io.reflekt.Reflekt.Functions.WithAnnotations<T of io.reflekt.Reflekt.Functions.withAnnotations> [inline] declared in io.reflekt.Reflekt.Functions' type=io.reflekt.Reflekt.Functions.WithAnnotations<kotlin.Function4<io.reflekt.test.ir.FunctionTestClass, kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>, kotlin.collections.List<kotlin.String>>> origin=null
+    <T>: kotlin.Function4<io.reflekt.test.ir.FunctionTestClass, kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>, kotlin.collections.List<kotlin.String>>
+    $this: CALL 'public final fun functions (): io.reflekt.Reflekt.Functions declared in io.reflekt.Reflekt' type=io.reflekt.Reflekt.Functions origin=null
+      $this: GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:Reflekt modality:FINAL visibility:public superTypes:[kotlin.Any]' type=io.reflekt.Reflekt
+    klasses: VARARG type=kotlin.Array<out kotlin.reflect.KClass<out kotlin.Annotation>> varargElementType=kotlin.reflect.KClass<out kotlin.Annotation>
+      CLASS_REFERENCE 'CLASS ANNOTATION_CLASS name:IrTestAnnotation modality:FINAL visibility:public superTypes:[kotlin.Annotation]' type=kotlin.reflect.KClass<io.reflekt.test.ir.IrTestAnnotation>
+
+logging: reflekt: [IR] GENERATE CALL:
+CALL 'public final fun listOf <T> (vararg elements: T of kotlin.collections.CollectionsKt.listOf): kotlin.collections.List<T of kotlin.collections.CollectionsKt.listOf> declared in kotlin.collections.CollectionsKt' type=kotlin.collections.List<kotlin.Function4<io.reflekt.test.ir.FunctionTestClass, kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>, kotlin.collections.List<kotlin.String>>> origin=null
+  <T>: kotlin.Function4<io.reflekt.test.ir.FunctionTestClass, kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>, kotlin.collections.List<kotlin.String>>
+  elements: VARARG type=kotlin.Array<out kotlin.Function4<io.reflekt.test.ir.FunctionTestClass, kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>, kotlin.collections.List<kotlin.String>>> varargElementType=kotlin.Function4<io.reflekt.test.ir.FunctionTestClass, kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>, kotlin.collections.List<kotlin.String>>
+    FUNCTION_REFERENCE 'public final fun fun4 (a: kotlin.Int, b: kotlin.Float?, c: kotlin.collections.Set<kotlin.Boolean>): kotlin.collections.List<kotlin.String> declared in io.reflekt.test.ir.FunctionTestClass' type=kotlin.reflect.KFunction4<io.reflekt.test.ir.FunctionTestClass, kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>, kotlin.collections.List<kotlin.String>> origin=null reflectionTarget=<same>
+
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\MainKt.class
+Sources:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\sources\Main.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\MainKt$getResult$1.class
+Sources:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\sources\Main.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\IrTestAnnotation.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Annotations.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\CInterface.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Classes.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\C1.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Classes.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\C2.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Classes.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\C3.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Classes.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\C3$C5.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Classes.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\FunctionTestClass.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Functions.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\FunctionTestClass$Companion.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Functions.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\FunctionTestObject.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Functions.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\FunctionsKt.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Functions.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\OInterface.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Objects.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\O1.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Objects.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\io\reflekt\test\ir\O1$O2.class
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Objects.kt
+output: output:
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\classes\META-INF\main.kotlin_module
+Sources:
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Functions.kt
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Objects.kt
+C:\Users\kul92\AppData\Local\Temp\Kotlin-Compilation8245397775945998531\sources\Main.kt
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Annotations.kt
+D:\reflekt\reflekt-plugin\build\resources\test\io\reflekt\plugin\ir\commonTestFiles\test\Classes.kt

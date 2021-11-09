@@ -22,6 +22,8 @@ fun File.findInDirectory(name: String, toCreateIfDoesNotExist: Boolean = false):
     }
 }
 
-fun getProjectFilesInDirectory(directory: File): Set<File> = directory.findInDirectory("project", true).absolutePath.getAllNestedFiles(ignoredDirectories = setOf(".idea")).toSet()
+fun getProjectFilesInDirectory(directory: File): Set<File> = directory.findInDirectory("project", true).absolutePath.getAllNestedFiles(ignoredDirectories = setOf(".idea"))
+    .toSet()
 
-fun getTestsDirectories(cls: KClass<*>): List<File> = Util.getResourcesRootPath(cls).getNestedDirectories().sorted().filter { "test" in it.name }
+fun getTestsDirectories(cls: KClass<*>): List<File> = Util.getResourcesRootPath(cls).getNestedDirectories().sorted()
+    .filter { "test" in it.name }

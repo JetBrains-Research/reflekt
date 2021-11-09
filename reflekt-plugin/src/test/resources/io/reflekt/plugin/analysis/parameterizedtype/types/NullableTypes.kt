@@ -1,4 +1,4 @@
-package io.reflekt.plugin.analysis.parameterizedtype.types
+package io.reflekt.resources.io.reflekt.plugin.analysis.parameterizedtype.types
 
 import java.util.ArrayList
 

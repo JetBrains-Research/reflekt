@@ -1,16 +1,4 @@
-package io.reflekt.test
-
-@FirstAnnotationTest
-@SecondAnnotationTest("test")
-fun foo() {}
-
-@FirstAnnotationTest
-@SecondAnnotationTest("test")
-private fun barPrivate() {}
-
-@FirstAnnotationTest
-@SecondAnnotationTest("test")
-fun bar() {}
+package io.reflekt.resources.io.reflekt.plugin.analysis.commontestfiles.test
 
 class TestFunctions {
     @FirstAnnotationTest
@@ -26,3 +14,15 @@ class TestFunctions {
         fun foo() {}
     }
 }
+
+@FirstAnnotationTest
+@SecondAnnotationTest("test")
+fun foo() {}
+
+@FirstAnnotationTest
+@SecondAnnotationTest("test")
+fun bar() {}
+
+@FirstAnnotationTest
+@SecondAnnotationTest("test")
+private fun barPrivate() {}

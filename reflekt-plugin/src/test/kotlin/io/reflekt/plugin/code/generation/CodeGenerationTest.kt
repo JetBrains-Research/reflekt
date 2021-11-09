@@ -12,6 +12,19 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
 
 class CodeGenerationTest {
+    @Tag("codegen")
+    @MethodSource("data")
+    @ParameterizedTest(name = "test {index}")
+    fun `code generation test`(
+        sources: Set<File>,
+        expectedCode: String,
+        directory: String) {
+        val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
+        val analyzer = AnalysisUtil.getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
+        val uses = analyzer.uses(analyzer.invokes())
+        val actualCode = ReflektImplGenerator(uses).generate().trim()
+        Assertions.assertEquals(expectedCode, actualCode, "Incorrect generated code for directory $directory")
+    }
     companion object {
         @JvmStatic
         fun data(): List<Arguments> {
@@ -25,16 +38,5 @@ class CodeGenerationTest {
                 Arguments.of(commonTestFiles.union(project), generatedCode, directory.name)
             }
         }
-    }
-
-    @Tag("codegen")
-    @MethodSource("data")
-    @ParameterizedTest(name = "test {index}")
-    fun `code generation test`(sources: Set<File>, expectedCode: String, directory: String) {
-        val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
-        val analyzer = AnalysisUtil.getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
-        val uses = analyzer.uses(analyzer.invokes())
-        val actualCode = ReflektImplGenerator(uses).generate().trim()
-        Assertions.assertEquals(expectedCode, actualCode, "Incorrect generated code for directory $directory")
     }
 }

@@ -131,3 +131,9 @@
 # In Java world such single-symbol prefixes are not a good practice
 - name: VARIABLE_HAS_PREFIX
   enabled: false
+# https://github.com/diktat-static-analysis/diKTat/issues/1106
+- name: TRAILING_COMMA
+  enabled: false
+# https://github.com/diktat-static-analysis/diKTat/issues/1109
+- name: VARIABLE_NAME_INCORRECT_FORMAT
+  enabled: false

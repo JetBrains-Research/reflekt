@@ -1,4 +1,4 @@
-package io.reflekt.codegen.test
+package io.reflekt.resources.io.reflekt.plugin.code.generation.data.objects1test.project.test
 
 import io.reflekt.Reflekt
 
