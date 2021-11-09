@@ -18,7 +18,7 @@ fun findReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: Bin
     val annotations = HashSet<String>()
 
     for (node in filteredChildren) {
-        val callExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CallExpression) } ?: continue
+        val callExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CALL_EXPRESSION) } ?: continue
         when (node.text) {
             ReflektFunction.WITH_SUPERTYPE.functionName -> callExpressionRoot.getFqNamesOfTypeArgument(binding).let { supertypes.addAll(it) }
             ReflektFunction.WITH_SUPERTYPES.functionName -> callExpressionRoot.getFqNamesOfValueArguments(binding).let { supertypes.addAll(it) }
@@ -51,7 +51,7 @@ fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding
      * To find the [1] place we should go to the 1 level above from [2]
      * by finding the root of the nested DOT_QUALIFIED_EXPRESSION nodes
      */
-    return callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
+    return callExpressionRoot.findLastParentByType(ElementType.DOT_QUALIFIED_EXPRESSION)?.let { node ->
         findReflektInvokeArguments(node, binding)
     }
 }
@@ -63,7 +63,7 @@ fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, bind
     val annotations = HashSet<String>()
 
     for (node in filteredChildren) {
-        val callExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CallExpression) } ?: continue
+        val callExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CALL_EXPRESSION) } ?: continue
         when (node.text) {
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
@@ -72,7 +72,7 @@ fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, bind
             else -> error("Found an unexpected node text: ${node.text}")
         }
     }
-    if (signature == null) {
+    signature ?: run {
         error("Failed to find function signature.")
     }
     return SignatureToAnnotations(signature, annotations)
@@ -80,7 +80,7 @@ fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, bind
 
 fun findReflektFunctionInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SignatureToAnnotations? {
     val callExpressionRoot = expression.node.parents().first()
-    return callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
+    return callExpressionRoot.findLastParentByType(ElementType.DOT_QUALIFIED_EXPRESSION)?.let { node ->
         findReflektFunctionInvokeArguments(node, binding)
     }
 }
@@ -90,28 +90,26 @@ fun findReflektFunctionInvokeArgumentsByExpressionPart(expression: KtExpression,
 fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SupertypesToFilters? {
     val filteredChildren = dotQualifiedExpressionNode.filterChildren { n: ASTNode ->
         (n.text in SmartReflektFunction.values().map { it.functionName } || n.text in ReflektEntity.values().map { it.entityType }) &&
-            n.hasType(ElementType.ReferenceExpression)
+                n.hasType(ElementType.REFERENCE_EXPRESSION)
     }
     var supertype: KotlinType? = null
     val filters = ArrayList<Lambda>()
     for (node in filteredChildren) {
-        val childCallExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CallExpression.value } ?: continue
+        val childCallExpressionRoot = node.parents().firstOrNull { it.elementType.toString() == ElementType.CALL_EXPRESSION.value } ?: continue
         when (node.text) {
             SmartReflektFunction.FILTER.functionName -> {
                 val body = childCallExpressionRoot.getLambdaBody()
                 val parameters = childCallExpressionRoot.getLambdaParameters()
                 filters.add(Lambda(body, parameters))
             }
-            in ReflektEntity.values().map { it.entityType } -> {
-                supertype = childCallExpressionRoot.getTypeArguments().first().toParameterizedType(binding)
-            }
+            in ReflektEntity.values().map { it.entityType } -> supertype = childCallExpressionRoot.getTypeArguments().first().toParameterizedType(binding)
             else -> error("Found an unexpected node text: ${node.text}")
         }
     }
     if (filters.isEmpty()) {
         return null
     }
-    val imports = (dotQualifiedExpressionNode.parents().first { it.hasType(ElementType.File) }.psi as KtFile).importDirectives.map {
+    val imports = (dotQualifiedExpressionNode.parents().first { it.hasType(ElementType.FILE) }.psi as KtFile).importDirectives.map {
         Import(it.importedFqName.toString(), it.text)
     }
 
@@ -120,7 +118,7 @@ fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding
 
 fun findSmartReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SupertypesToFilters? {
     val callExpressionRoot = expression.node.parents().first()
-    return callExpressionRoot.findLastParentByType(ElementType.DotQualifiedExpression)?.let { node ->
+    return callExpressionRoot.findLastParentByType(ElementType.DOT_QUALIFIED_EXPRESSION)?.let { node ->
         findSmartReflektInvokeArguments(node, binding)
     }
 }

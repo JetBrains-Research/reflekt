@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
+import io.reflekt.buildutils.*
 
 group = "io.reflekt"
 /*
@@ -51,7 +52,13 @@ allprojects {
     tasks.withType<Test> {
         dependsOn(tasks.withType<PublishToMavenLocal>{})
     }
+
+    configureDiktat()
+    configureDetekt()
 }
+
+createDiktatTask()
+createDetektTask()
 
 subprojects {
     apply {
@@ -63,7 +70,6 @@ subprojects {
             maven {
                 name = "SpacePackages"
                 url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt")
-
                 credentials {
                     username = System.getenv("JB_SPACE_CLIENT_ID")?.takeIf { it.isNotBlank() } ?: ""
                     password = System.getenv("JB_SPACE_CLIENT_SECRET")?.takeIf { it.isNotBlank() } ?: ""

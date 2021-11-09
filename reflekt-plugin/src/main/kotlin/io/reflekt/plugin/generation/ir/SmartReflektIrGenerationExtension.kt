@@ -10,7 +10,7 @@ import java.io.File
 class SmartReflektIrGenerationExtension(
     private val classpath: List<File>,
     private val reflektContext: ReflektContext,
-    private val messageCollector: MessageCollector? = null
+    private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         val instances = reflektContext.instances ?: error("Instances must be saved to reflektContext before running SmartReflektIrGenerationExtension")

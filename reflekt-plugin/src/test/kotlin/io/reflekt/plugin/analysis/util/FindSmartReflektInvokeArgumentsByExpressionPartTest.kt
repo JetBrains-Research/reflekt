@@ -2,8 +2,7 @@ package io.reflekt.plugin.analysis.util
 
 import io.reflekt.plugin.analysis.*
 import io.reflekt.plugin.util.Util
-import io.reflekt.plugin.util.Util.toJson
-import io.reflekt.util.FileUtil
+import io.reflekt.util.file.getAllNestedFiles
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -17,7 +16,7 @@ class FindSmartReflektInvokeArgumentsByExpressionPartTest {
         @JvmStatic
         fun data(): List<Arguments> {
             // We change only the Main file in each test by using different configurations of the Reflekt invokes\uses
-            val commonTestFiles = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(AnalysisTest::class, "commonTestFiles")).toSet()
+            val commonTestFiles = Util.getResourcesRootPath(AnalysisTest::class, "commonTestFiles").getAllNestedFiles().toSet()
             return getTestsDirectories(FindSmartReflektInvokeArgumentsByExpressionPartTest::class).map { directory ->
                 val project = getProjectFilesInDirectory(directory)
                 val supertypesToFilters = directory.findInDirectory("supertypesToFilters.txt").readText().trim()

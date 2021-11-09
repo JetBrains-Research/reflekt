@@ -5,7 +5,7 @@ import io.reflekt.plugin.analysis.*
 import io.reflekt.plugin.analysis.parameterizedtype.util.*
 import io.reflekt.plugin.analysis.psi.function.*
 import io.reflekt.plugin.util.Util
-import io.reflekt.util.FileUtil.getAllNestedFiles
+import io.reflekt.util.file.getAllNestedFiles
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
@@ -45,7 +45,7 @@ class FunctionToParameterizedTypeTest {
         }
 
         private fun visitIrFunctionsWithTypes(filterFiles: (File) -> Boolean): List<Arguments> {
-            val functionFiles = getAllNestedFiles(Util.getResourcesRootPath(FunctionToParameterizedTypeTest::class, TEST_DIR_NAME)).filter { filterFiles(it) }
+            val functionFiles = Util.getResourcesRootPath(FunctionToParameterizedTypeTest::class, TEST_DIR_NAME).getAllNestedFiles().filter { filterFiles(it) }
             // We need to filter out all default functions like "equals", "toString", etc, so every function in tests has a special prefix in its name
             val visitor = IrFunctionTypeVisitor { FUNCTION_PREFIX in it }
             val exitCode = visitIrElements(functionFiles, listOf(visitor)).exitCode

@@ -4,7 +4,7 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import io.reflekt.plugin.ReflektComponentRegistrar
 import io.reflekt.plugin.util.Util
-import io.reflekt.util.FileUtil
+import io.reflekt.util.file.getAllNestedFiles
 import org.junit.jupiter.api.Assertions
 
 /**
@@ -30,7 +30,7 @@ fun $resultMethod() = $resultMethodBody
  * Compiles ResultFile with [commonTestFiles] and returns the call result of [ResultFile.resultMethod]
  */
 object ResultCall {
-    private val commonTestFiles = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(ResultCall::class, "commonTestFiles"))
+    private val commonTestFiles = Util.getResourcesRootPath(ResultCall::class, "commonTestFiles").getAllNestedFiles()
         .map { SourceFile.fromPath(it) }
 
     fun <T> ResultFile<T>.call(useIR: Boolean = true): T {

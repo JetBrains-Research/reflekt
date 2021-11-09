@@ -26,7 +26,7 @@ object Util {
     val CompilerConfiguration.messageCollector: MessageCollector
         get() = this.get(
             CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-            MessageCollector.NONE
+            MessageCollector.NONE,
         )
 
     fun CompilerConfiguration.initMessageCollector(filePath: String) {
@@ -34,7 +34,7 @@ object Util {
         file.createNewFile()
         this.put(
             CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-            PrintingMessageCollector(PrintStream(file.outputStream()), MessageRenderer.PLAIN_FULL_PATHS, true)
+            PrintingMessageCollector(PrintStream(file.outputStream()), MessageRenderer.PLAIN_FULL_PATHS, true),
         )
     }
 
@@ -42,7 +42,7 @@ object Util {
         this.report(
             CompilerMessageSeverity.LOGGING,
             "Reflekt: $message",
-            CompilerMessageLocation.create(null)
+            CompilerMessageLocation.create(null),
         )
     }
 
@@ -93,7 +93,6 @@ fun KotlinType.stringRepresentation(): String {
         if (it.isStarProjection) {
             TypeStringRepresentationUtil.STAR_SYMBOL
         } else {
-            val representation = it.type.stringRepresentation()
             TypeStringRepresentationUtil.markAsNullable(it.type.stringRepresentation(), it.type.isMarkedNullable)
         }
     }

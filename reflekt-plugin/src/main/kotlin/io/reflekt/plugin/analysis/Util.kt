@@ -7,7 +7,6 @@ import io.reflekt.plugin.utils.compiler.ResolveUtil
 import java.io.File
 
 object AnalysisUtil {
-
     fun getReflektAnalyzer(classPath: Set<File>, sources: Set<File>): ReflektAnalyzer {
         val baseAnalyzer = getBaseAnalyzer(classPath, sources)
         return ReflektAnalyzer(baseAnalyzer.ktFiles, baseAnalyzer.binding)

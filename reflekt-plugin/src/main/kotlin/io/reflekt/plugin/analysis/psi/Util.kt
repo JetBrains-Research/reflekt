@@ -9,27 +9,21 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.bindingContextUtil.getReferenceTargets
 import org.jetbrains.kotlin.resolve.descriptorUtil.*
 
+fun PsiElement.getFqName(binding: BindingContext): String? = (this as? KtExpression)?.getFqName(binding)
 
-fun PsiElement.getFqName(binding: BindingContext): String? {
-    return (this as? KtExpression)?.getFqName(binding)
-}
-
-fun KtExpression.getFqName(binding: BindingContext): String? {
-    return getReferenceTargets(binding).singleOrNull()?.fqNameSafe?.asString()
-}
+fun KtExpression.getFqName(binding: BindingContext) = getReferenceTargets(binding).singleOrNull()?.fqNameSafe?.asString()
 
 /**
  * Checks if a given class or object is subtype of any given [klasses], so its superclasses contain at least one of the [klasses].
+ *
+ * @param klasses
+ * @param context
+ * @return
  */
-fun KtClassOrObject.isSubtypeOf(klasses: Set<String>, context: BindingContext): Boolean {
-    return findClassDescriptor(context).getAllSuperClassifiers().filter { it is ClassDescriptor }.any {
-        it.fqNameOrNull()?.asString() in klasses
-    }
+fun KtClassOrObject.isSubtypeOf(klasses: Set<String>, context: BindingContext) = findClassDescriptor(context).getAllSuperClassifiers().filter { it is ClassDescriptor }.any {
+    it.fqNameOrNull()?.asString() in klasses
 }
 
-fun KtClassOrObject.isAnnotatedWith(klasses: Set<String>, context: BindingContext): Boolean {
-    return (this as? KtAnnotated)?.getAnnotations(context, klasses)?.size != 0
-}
+fun KtClassOrObject.isAnnotatedWith(klasses: Set<String>, context: BindingContext) = (this as? KtAnnotated)?.getAnnotations(context, klasses)?.size != 0
 
 fun KtAnnotationEntry.fqName(context: BindingContext) = getDescriptor(context).qualifiedName
-

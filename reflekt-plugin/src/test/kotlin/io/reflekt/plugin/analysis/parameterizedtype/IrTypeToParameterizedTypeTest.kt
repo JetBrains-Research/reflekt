@@ -3,7 +3,7 @@ package io.reflekt.plugin.analysis.parameterizedtype
 import com.tschuchort.compiletesting.KotlinCompilation
 import io.reflekt.plugin.analysis.toPrettyString
 import io.reflekt.plugin.util.Util
-import io.reflekt.util.FileUtil
+import io.reflekt.util.file.getAllNestedFiles
 import org.jetbrains.kotlin.types.KotlinType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
@@ -17,7 +17,7 @@ class IrTypeToParameterizedTypeTest {
 
         @JvmStatic
         fun getIrTypeKotlinTypes(): List<Arguments> {
-            val files = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(IrTypeToParameterizedTypeTest::class, TEST_DIR_NAME))
+            val files = Util.getResourcesRootPath(IrTypeToParameterizedTypeTest::class, TEST_DIR_NAME).getAllNestedFiles()
             val visitor = IrCallArgumentTypeVisitor()
             val exitCode = visitIrElements(files, listOf(visitor)).exitCode
             return visitor.typeArguments.map { Arguments.of(it.name, it.actualType, it.expectedType, exitCode) }

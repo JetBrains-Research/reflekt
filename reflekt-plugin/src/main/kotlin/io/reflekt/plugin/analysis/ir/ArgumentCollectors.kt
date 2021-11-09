@@ -11,7 +11,6 @@ import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.types.KotlinType
 
 open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
-
     override fun visitElement(element: IrElement, data: Nothing?) {
         element.acceptChildren(this, data)
     }
@@ -29,15 +28,14 @@ class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
         super.visitCall(expression, data)
         val function = expression.symbol.owner
         when (function.name.asString()) {
-            ReflektFunction.WITH_SUPERTYPE.functionName -> {
-                supertypes.addAll(expression.getFqNamesOfTypeArguments())
-            }
-            ReflektFunction.WITH_SUPERTYPES.functionName -> {
-                supertypes.addAll(expression.getFqNamesOfClassReferenceValueArguments())
-            }
+            ReflektFunction.WITH_SUPERTYPE.functionName -> supertypes.addAll(expression.getFqNamesOfTypeArguments())
+            ReflektFunction.WITH_SUPERTYPES.functionName -> supertypes.addAll(expression.getFqNamesOfClassReferenceValueArguments())
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 annotations.addAll(expression.getFqNamesOfClassReferenceValueArguments())
                 supertypes.addAll(expression.getFqNamesOfTypeArguments())
+            }
+            else -> {
+                // this is a generated else block
             }
         }
     }
@@ -70,6 +68,9 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 annotations.addAll(expression.getFqNamesOfClassReferenceValueArguments())
                 signature = expression.getTypeArgument(0)?.toParameterizedType()
+            }
+            else -> {
+                // this is a generated else block
             }
         }
     }
@@ -104,9 +105,10 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
     }
 
     override fun visitFunctionExpression(expression: IrFunctionExpression, data: Nothing?) {
-        val function = expression.function
-        if (function.body == null) {
-            return
+        val function = expression.function.apply {
+            body ?: run {
+                return
+            }
         }
         val body = sourceFile.content.substring(function.body!!.startOffset, function.body!!.endOffset)
         val parameters = function.valueParameters.map { it.name.toString() }
@@ -123,7 +125,7 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
                 typeArgument = visitor.typeArgument,
                 typeArgumentFqName = visitor.typeArgumentFqName,
                 filters = visitor.filters,
-                imports = sourceFile.imports
+                imports = sourceFile.imports,
             )
         }
     }

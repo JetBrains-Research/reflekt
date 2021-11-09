@@ -2,8 +2,6 @@ package io.reflekt.plugin.analysis.parameterizedtype
 
 import io.reflekt.plugin.analysis.parameterizedtype.util.*
 import io.reflekt.plugin.analysis.psi.function.toParameterizedType
-import io.reflekt.plugin.util.Util
-import io.reflekt.util.FileUtil
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.resolve.BindingContext

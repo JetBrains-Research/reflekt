@@ -41,7 +41,8 @@ class IrTransformFunctionsTest {
             Arguments.of(
                 setOf(
                     "fun fun4(kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>): kotlin.collections.List<kotlin.String>",
-                    "fun io.reflekt.test.ir.FunctionTestClass.Companion.fun4(kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>): kotlin.collections.List<kotlin.String>",
+                    "fun io.reflekt.test.ir.FunctionTestClass.Companion.fun4(kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>):" +
+                        " kotlin.collections.List<kotlin.String>",
                     "fun io.reflekt.test.ir.FunctionTestObject.fun4(kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>): kotlin.collections.List<kotlin.String>"
                 ),
                 Signature("(a: Int, b: Float?, c: Set<Boolean>) -> List<String>", "IrTestAnnotation::class"),

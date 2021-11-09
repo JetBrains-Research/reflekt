@@ -5,7 +5,7 @@ import io.reflekt.plugin.analysis.parameterizedtype.util.visitKtElements
 import io.reflekt.plugin.analysis.toParameterizedType
 import io.reflekt.plugin.util.Util.getResourcesRootPath
 import io.reflekt.plugin.utils.stringRepresentation
-import io.reflekt.util.FileUtil.getAllNestedFiles
+import io.reflekt.util.file.getAllNestedFiles
 import io.reflekt.util.stringRepresentation
 import org.jetbrains.kotlin.types.KotlinType
 import org.junit.jupiter.api.Assertions
@@ -68,8 +68,8 @@ class TypeStringRepresentationTest {
         @OptIn(ExperimentalStdlibApi::class)
         @JvmStatic
         fun data(): List<Arguments> {
-            val resFilesSet = getAllNestedFiles(getResourcesRootPath(TypeStringRepresentationTest::class, "results")).toSet()
-            val kotlinTypesFiles = getAllNestedFiles(getResourcesRootPath(TypeStringRepresentationTest::class, "kotlinTypes"))
+            val resFilesSet = getResourcesRootPath(TypeStringRepresentationTest::class, "results").getAllNestedFiles().toSet()
+            val kotlinTypesFiles = getResourcesRootPath(TypeStringRepresentationTest::class, "kotlinTypes").getAllNestedFiles()
             val visitor = KtCallExpressionVisitor()
             val binding = visitKtElements(kotlinTypesFiles, listOf(visitor))
             val testKeyToKotlinTypeMap = visitor.typeArguments.associate { it.stringArgument to it.astNodeArgument.toParameterizedType(binding) }

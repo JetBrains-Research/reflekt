@@ -13,7 +13,7 @@ class KotlinScript(
     code: String,
     imports: List<Import> = emptyList(),
     properties: List<Pair<String, KClass<*>>> = emptyList(),
-    classpath: List<File> = emptyList()
+    classpath: List<File> = emptyList(),
 ) {
     private val argumentNames = properties.map { it.first }
     private val source = (imports.joinToString(separator = System.lineSeparator(), postfix = System.lineSeparator()) { it.text } + code).toScriptSource()
@@ -25,7 +25,7 @@ class KotlinScript(
     }
 
     fun eval(arguments: List<*> = emptyList<Any>()): Any? =
-        (execute(arguments).value.returnValue as ResultValue.Value).value
+            (execute(arguments).value.returnValue as ResultValue.Value).value
 
     fun run(arguments: List<*> = emptyList<Any>()) {
         execute(arguments)
@@ -36,10 +36,10 @@ class KotlinScript(
             providedProperties(*argumentNames.zip(arguments).toTypedArray())
         }
         val result = BasicJvmScriptingHost().eval(
-            source, compilationConfiguration, evaluationConfiguration
+            source, compilationConfiguration, evaluationConfiguration,
         )
         if (result !is ResultWithDiagnostics.Success) {
-            throw RuntimeException("Failed to evaluate script:\n${result.reports.map { it.render(withStackTrace = true)} }}")
+            throw RuntimeException("Failed to evaluate script:\n${result.reports.map { it.render(withStackTrace = true) } }}")
         }
         return result
     }

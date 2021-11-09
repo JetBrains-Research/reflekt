@@ -1,15 +1,20 @@
 package io.reflekt.plugin.generation.code.generator.models
 
+import io.reflekt.plugin.analysis.models.ClassOrObjectUses
+import io.reflekt.plugin.analysis.models.toSupertypesToFqNamesMap
+import io.reflekt.plugin.generation.code.generator.emptyListCode
+
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asClassName
-import io.reflekt.plugin.analysis.models.ClassOrObjectUses
-import io.reflekt.plugin.analysis.models.toSupertypesToFqNamesMap
-import io.reflekt.plugin.generation.code.generator.emptyListCode
+
 import kotlin.reflect.KClass
 
-abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) : HelperClassGenerator() {
+/**
+ * @property uses
+ */
+open class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) : HelperClassGenerator() {
     override fun generateImpl() {
         generateWithSupertypesFunction()
         generateWithAnnotationsFunction()

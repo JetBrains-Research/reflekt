@@ -6,7 +6,6 @@ import com.squareup.kotlinpoet.TypeSpec
 
 abstract class TypeGenerator : Generator<TypeSpec>() {
     abstract val typeName: ClassName
-
     protected lateinit var builder: TypeSpec.Builder
 
     final override fun generate(): TypeSpec {
@@ -32,13 +31,13 @@ abstract class TypeGenerator : Generator<TypeSpec>() {
     }
 }
 
-abstract class ClassGenerator : TypeGenerator() {
+open class ClassGenerator : TypeGenerator() {
     override fun initBuilder() {
         builder = TypeSpec.classBuilder(typeName)
     }
 }
 
-abstract class ObjectGenerator : TypeGenerator() {
+open class ObjectGenerator : TypeGenerator() {
     override fun initBuilder() {
         builder = TypeSpec.objectBuilder(typeName)
     }
