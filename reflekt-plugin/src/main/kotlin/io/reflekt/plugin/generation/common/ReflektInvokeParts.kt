@@ -6,19 +6,25 @@ import io.reflekt.plugin.analysis.common.*
 import io.reflekt.plugin.utils.enumToRegexOptions
 import io.reflekt.plugin.utils.toEnum
 
+/**
+ * @property entityType
+ */
 sealed class BaseReflektInvokeParts(
-    open val entityType: ReflektEntity
+    open val entityType: ReflektEntity,
 )
 
 /**
  * Reflekt invoke expression has the following structure:
  * [1]Reflekt.[2]Classes/Objects/Functions.[3]WithSupertypes/WithAnnotations.[4]toList/toSet/etc
  * [entityType] stores part [2], [nestedClass] - part [3], [terminalFunction] - part [4]
+ * @property entityType
+ * @property nestedClass
+ * @property terminalFunction
  */
 data class ReflektInvokeParts(
     override val entityType: ReflektEntity,
     val nestedClass: ReflektNestedClass,
-    val terminalFunction: ReflektTerminalFunction
+    val terminalFunction: ReflektTerminalFunction,
 ) : BaseReflektInvokeParts(entityType) {
     companion object {
         private fun getReflektFullNameRegex(): Regex {
@@ -35,7 +41,7 @@ data class ReflektInvokeParts(
             return ReflektInvokeParts(
                 klass.toEnum(ReflektEntity.values(), ReflektEntity::className),
                 nestedClass.toEnum(ReflektNestedClass.values(), ReflektNestedClass::className),
-                terminalFunction.toEnum(ReflektTerminalFunction.values(), ReflektTerminalFunction::functionName)
+                terminalFunction.toEnum(ReflektTerminalFunction.values(), ReflektTerminalFunction::functionName),
             )
         }
     }
@@ -45,10 +51,12 @@ data class ReflektInvokeParts(
  * SmartReflekt invoke expression has the following structure:
  * [1]SmartReflekt.[2]ClassCompileTimeExpression/ObjectCompileTimeExpression/FunctionCompileTimeExpression.[3]toList/toSet/etc
  * [entityType] stores part [2], [terminalFunction] - part [3]
+ * @property entityType
+ * @property terminalFunction
  */
 data class SmartReflektInvokeParts(
     override val entityType: ReflektEntity,
-    val terminalFunction: SmartReflektTerminalFunction
+    val terminalFunction: SmartReflektTerminalFunction,
 ) : BaseReflektInvokeParts(entityType) {
     companion object {
         private fun getSmartReflektFullNameRegex(): Regex {
@@ -63,7 +71,7 @@ data class SmartReflektInvokeParts(
             val (_, entityClass, terminalFunction) = matchResult.groupValues
             return SmartReflektInvokeParts(
                 entityClass.toEnum(ReflektEntity.values(), ReflektEntity::smartClassName),
-                terminalFunction.toEnum(SmartReflektTerminalFunction.values(), SmartReflektTerminalFunction::functionName)
+                terminalFunction.toEnum(SmartReflektTerminalFunction.values(), SmartReflektTerminalFunction::functionName),
             )
         }
     }

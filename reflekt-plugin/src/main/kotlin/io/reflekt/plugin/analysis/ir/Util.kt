@@ -25,12 +25,7 @@ fun IrCall.getFqNamesOfClassReferenceValueArguments(): List<String> =
         (it as IrClassReference).classType.classFqName.toString()
     } ?: emptyList()
 
-
 @ObsoleteDescriptorBasedAPI
-fun IrType.toParameterizedType(): KotlinType {
-    return toKotlinType()
-}
+fun IrType.toParameterizedType() = toKotlinType()
 
-fun IrFunction.toParameterizedType(binding: BindingContext): KotlinType? {
-    return (psiElement as? KtNamedFunction)?.toParameterizedType(binding)
-}
+fun IrFunction.toParameterizedType(binding: BindingContext): KotlinType? = (psiElement as? KtNamedFunction)?.toParameterizedType(binding)
