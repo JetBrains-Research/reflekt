@@ -21,9 +21,9 @@ fun IrCall.getFqNamesOfTypeArguments(): List<String> {
 }
 
 fun IrCall.getFqNamesOfClassReferenceValueArguments(): List<String> =
-        (getValueArgument(0) as? IrVararg)?.elements?.map {
-            (it as IrClassReference).classType.classFqName.toString()
-        } ?: emptyList()
+    (getValueArgument(0) as? IrVararg)?.elements?.map {
+        (it as IrClassReference).classType.classFqName.toString()
+    } ?: emptyList()
 
 @ObsoleteDescriptorBasedAPI
 fun IrType.toParameterizedType() = toKotlinType()

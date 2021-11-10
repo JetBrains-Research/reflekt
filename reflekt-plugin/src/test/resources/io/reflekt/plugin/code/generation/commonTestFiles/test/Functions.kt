@@ -1,4 +1,16 @@
-package io.reflekt.resources.io.reflekt.plugin.code.generation.commonTestFiles.test
+package io.reflekt.codegen.test
+
+@FirstAnnotationTest
+@SecondAnnotationTest("test")
+fun foo() {}
+
+@FirstAnnotationTest
+@SecondAnnotationTest("test")
+private fun barPrivate() {}
+
+@FirstAnnotationTest
+@SecondAnnotationTest("test")
+fun bar() {}
 
 class TestFunctions {
     @FirstAnnotationTest
@@ -17,16 +29,4 @@ class TestFunctions {
 
 @FirstAnnotationTest
 @SecondAnnotationTest("test")
-fun foo() {}
-
-@FirstAnnotationTest
-@SecondAnnotationTest("test")
-fun bar() {}
-
-@FirstAnnotationTest
-@SecondAnnotationTest("test")
-fun fooWithReturnedValue(): Int = 5
-
-@FirstAnnotationTest
-@SecondAnnotationTest("test")
-private fun barPrivate() {}
+fun fooWithReturnedValue(): Int { return 5 }

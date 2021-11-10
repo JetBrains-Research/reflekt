@@ -29,7 +29,7 @@ class KotlinScript(
     }
 
     fun eval(arguments: List<*> = emptyList<Any>()): Any? =
-            (execute(arguments).value.returnValue as ResultValue.Value).value
+        (execute(arguments).value.returnValue as ResultValue.Value).value
 
     fun run(arguments: List<*> = emptyList<Any>()) {
         execute(arguments)

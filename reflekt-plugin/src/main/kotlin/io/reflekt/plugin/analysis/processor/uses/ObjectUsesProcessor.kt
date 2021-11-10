@@ -13,7 +13,7 @@ class ObjectUsesProcessor(override val binding: BindingContext, reflektInvokes: 
     private val invokes = getInvokesGroupedByFiles(reflektInvokes.objects)
 
     override fun process(element: KtElement, file: KtFile): HashMap<FileId, ClassOrObjectUses> =
-            processClassOrObjectUses(element, file, invokes, fileToUses)
+        processClassOrObjectUses(element, file, invokes, fileToUses)
 
     override fun shouldRunOn(element: KtElement) = element.isPublicObject
 }

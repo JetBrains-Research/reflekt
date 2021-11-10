@@ -49,34 +49,34 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
 
     companion object {
         val ENABLED_OPTION =
-                CliOption(
-                    optionName = ENABLED_OPTION_INFO.name,
-                    valueDescription = ENABLED_OPTION_INFO.valueDescription,
-                    description = ENABLED_OPTION_INFO.description,
-                )
+            CliOption(
+                optionName = ENABLED_OPTION_INFO.name,
+                valueDescription = ENABLED_OPTION_INFO.valueDescription,
+                description = ENABLED_OPTION_INFO.description,
+            )
         val DEPENDENCY_JAR_OPTION =
-                CliOption(
-                    optionName = DEPENDENCY_JAR_OPTION_INFO.name,
-                    valueDescription = DEPENDENCY_JAR_OPTION_INFO.valueDescription,
-                    description = DEPENDENCY_JAR_OPTION_INFO.description,
-                    allowMultipleOccurrences = true,
-                    required = false,
-                )
+            CliOption(
+                optionName = DEPENDENCY_JAR_OPTION_INFO.name,
+                valueDescription = DEPENDENCY_JAR_OPTION_INFO.valueDescription,
+                description = DEPENDENCY_JAR_OPTION_INFO.description,
+                allowMultipleOccurrences = true,
+                required = false,
+            )
         val INTROSPECT_FILE_OPTION =
-                CliOption(
-                    optionName = INTROSPECT_FILE_OPTION_INFO.name,
-                    valueDescription = INTROSPECT_FILE_OPTION_INFO.valueDescription,
-                    description = INTROSPECT_FILE_OPTION_INFO.description,
-                    allowMultipleOccurrences = true,
-                    required = false,
-                )
+            CliOption(
+                optionName = INTROSPECT_FILE_OPTION_INFO.name,
+                valueDescription = INTROSPECT_FILE_OPTION_INFO.valueDescription,
+                description = INTROSPECT_FILE_OPTION_INFO.description,
+                allowMultipleOccurrences = true,
+                required = false,
+            )
         val OUTPUT_DIR_OPTION =
-                CliOption(
-                    optionName = OUTPUT_DIR_OPTION_INFO.name,
-                    valueDescription = OUTPUT_DIR_OPTION_INFO.valueDescription,
-                    description = OUTPUT_DIR_OPTION_INFO.description,
-                    required = false,
-                    allowMultipleOccurrences = false,
-                )
+            CliOption(
+                optionName = OUTPUT_DIR_OPTION_INFO.name,
+                valueDescription = OUTPUT_DIR_OPTION_INFO.valueDescription,
+                description = OUTPUT_DIR_OPTION_INFO.description,
+                required = false,
+                allowMultipleOccurrences = false,
+            )
     }
 }

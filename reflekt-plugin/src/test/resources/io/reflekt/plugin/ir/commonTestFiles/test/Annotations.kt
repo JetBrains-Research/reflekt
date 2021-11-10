@@ -1,3 +1,3 @@
-package io.reflekt.resources.io.reflekt.plugin.ir.commonTestFiles.test
+package io.reflekt.test.ir
 
 annotation class IrTestAnnotation

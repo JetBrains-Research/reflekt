@@ -31,13 +31,13 @@ abstract class TypeGenerator : Generator<TypeSpec>() {
     }
 }
 
-open class ClassGenerator : TypeGenerator() {
+abstract class ClassGenerator : TypeGenerator() {
     override fun initBuilder() {
         builder = TypeSpec.classBuilder(typeName)
     }
 }
 
-open class ObjectGenerator : TypeGenerator() {
+abstract class ObjectGenerator : TypeGenerator() {
     override fun initBuilder() {
         builder = TypeSpec.objectBuilder(typeName)
     }

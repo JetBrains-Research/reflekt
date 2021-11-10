@@ -1,5 +1,3 @@
-@file:Suppress("PACKAGE_NAME_INCORRECT_PREFIX", "PACKAGE_NAME_INCORRECT_PATH")
-
 package io.reflekt.plugin
 
 import org.gradle.api.Project
@@ -13,7 +11,7 @@ import org.gradle.api.Project
  */
 @Suppress("CUSTOM_GETTERS_SETTERS")
 internal val Project.reflekt: ReflektGradleExtension
-    get() = project.extensions.findByType(ReflektGradleExtension::class.java) ?: kotlin.run {
+    get() = project.extensions.findByType(ReflektGradleExtension::class.java) ?: run {
         extensions.create("reflekt", ReflektGradleExtension::class.java)
     }
 

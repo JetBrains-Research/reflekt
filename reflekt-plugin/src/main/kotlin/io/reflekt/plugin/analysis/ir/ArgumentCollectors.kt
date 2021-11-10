@@ -106,12 +106,13 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
         }
     }
 
+    @Suppress("AVOID_NULL_CHECKS")
     override fun visitFunctionExpression(expression: IrFunctionExpression, data: Nothing?) {
-        val function = expression.function.apply {
-            body ?: run {
-                return
-            }
+        val function = expression.function
+        if (function.body == null) {
+            return
         }
+
         val body = sourceFile.content.substring(function.body!!.startOffset, function.body!!.endOffset)
         val parameters = function.valueParameters.map { it.name.toString() }
         filters.add(Lambda(body = body, parameters = parameters))

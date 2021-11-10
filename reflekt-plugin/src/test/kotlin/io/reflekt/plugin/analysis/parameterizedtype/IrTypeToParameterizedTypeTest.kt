@@ -5,6 +5,8 @@ import io.reflekt.plugin.util.Util
 import io.reflekt.util.file.getAllNestedFiles
 
 import com.tschuchort.compiletesting.KotlinCompilation
+import io.reflekt.plugin.analysis.parameterizedtype.util.IrCallArgumentTypeVisitor
+import io.reflekt.plugin.analysis.parameterizedtype.util.visitIrElements
 import org.jetbrains.kotlin.types.KotlinType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag

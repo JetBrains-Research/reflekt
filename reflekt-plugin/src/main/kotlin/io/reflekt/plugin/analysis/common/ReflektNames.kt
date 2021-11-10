@@ -4,12 +4,13 @@ import io.reflekt.Reflekt
 import io.reflekt.SmartReflekt
 
 /**
- * @property entityType
- * @property smartClassName objects/classes/functions
+ * @property entityType that represents objects/classes/functions
+ * @property smartClassName SmartReflekt nested class - [Object/Class/Function]CompileTimeExpression
  */
 // Reflekt/SmartReflekt content types
 enum class ReflektEntity(
-    val entityType: String, val smartClassName: String,  // SmartReflekt nested class - [Object/Class/Function]CompileTimeExpression
+    val entityType: String,
+    val smartClassName: String,
 ) {
     CLASSES("classes", "ClassCompileTimeExpression"),
     FUNCTIONS("functions", "FunctionCompileTimeExpression"),

@@ -10,7 +10,7 @@ object ReflektImpl {
     class Objects {
         fun <T> withSupertypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
         fun <T> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>) =
-                WithAnnotations<T>(annotationFqNames, supertypeFqNames)
+            WithAnnotations<T>(annotationFqNames, supertypeFqNames)
 
         /**
          * @property fqNames
@@ -33,7 +33,7 @@ object ReflektImpl {
     class Classes {
         fun <T : Any> withSupertypes(fqNames: Set<String>) = WithSupertypes<T>(fqNames)
         fun <T : Any> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>) =
-                WithAnnotations<T>(annotationFqNames, supertypeFqNames)
+            WithAnnotations<T>(annotationFqNames, supertypeFqNames)
 
         /**
          * @property fqNames

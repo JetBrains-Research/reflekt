@@ -1,15 +1,15 @@
-package io.reflekt.resources.io.reflekt.plugin.code.generation.commonTestFiles.test
+package io.reflekt.codegen.test
 
-class B1 : BInterfaceTest {
+class B1: BInterfaceTest {
 }
 
 @FirstAnnotationTest
 @SecondAnnotationTest("Test")
-class B2 : BInterfaceTest {
+class B2: BInterfaceTest {
 }
 
 @FirstAnnotationTest
 @SecondAnnotationTest("Test")
-class B3 : BInterfaceTest {
-    class B4 : BInterfaceTest
+class B3: BInterfaceTest {
+    class B4: BInterfaceTest
 }

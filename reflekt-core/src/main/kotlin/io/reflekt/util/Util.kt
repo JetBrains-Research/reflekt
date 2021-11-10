@@ -23,23 +23,23 @@ object Util {
         description = "whether to enable the Reflekt plugin or not",
     )
     val DEPENDENCY_JAR_OPTION_INFO =
-            MyCliOption(
-                name = "dependencyJar",
-                valueDescription = "<dependency jar>",
-                description = "Project dependency jar file",
-            )
+        MyCliOption(
+            name = "dependencyJar",
+            valueDescription = "<dependency jar>",
+            description = "Project dependency jar file",
+        )
     val INTROSPECT_FILE_OPTION_INFO =
-            MyCliOption(
-                name = "fileToIntrospect",
-                valueDescription = "<file's path>",
-                description = "File's path from the library to introspect",
-            )
+        MyCliOption(
+            name = "fileToIntrospect",
+            valueDescription = "<file's path>",
+            description = "File's path from the library to introspect",
+        )
     val OUTPUT_DIR_OPTION_INFO =
-            MyCliOption(
-                name = "outputDir",
-                valueDescription = "<path>",
-                description = "Resulting generated files",
-            )
+        MyCliOption(
+            name = "outputDir",
+            valueDescription = "<path>",
+            description = "Resulting generated files",
+        )
 
     /**
      * @property name

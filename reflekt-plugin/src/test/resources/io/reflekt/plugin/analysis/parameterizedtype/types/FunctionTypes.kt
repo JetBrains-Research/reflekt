@@ -1,4 +1,4 @@
-package io.reflekt.resources.io.reflekt.plugin.analysis.parameterizedtype.types
+package io.reflekt.plugin.analysis.parameterizedtype.types
 
 fun main() {
     fooWithType<() -> Unit>("Function0<Unit> (kotlin.Function0)")

@@ -17,23 +17,23 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.types.Variance
 
 fun IrBuilderWithScope.irVarargOut(elementType: IrType, elements: List<IrExpression>) =
-        IrVarargImpl(
-            startOffset = UNDEFINED_OFFSET,
-            endOffset = UNDEFINED_OFFSET,
-            type = context.irBuiltIns.arrayClass.typeWithArguments(listOf(makeTypeProjection(elementType, Variance.OUT_VARIANCE))),
-            varargElementType = elementType,
-            elements = elements,
-        )
+    IrVarargImpl(
+        startOffset = UNDEFINED_OFFSET,
+        endOffset = UNDEFINED_OFFSET,
+        type = context.irBuiltIns.arrayClass.typeWithArguments(listOf(makeTypeProjection(elementType, Variance.OUT_VARIANCE))),
+        varargElementType = elementType,
+        elements = elements,
+    )
 
 @Suppress("FUNCTION_NAME_INCORRECT_CASE")
 fun IrBuilderWithScope.irKClass(symbol: IrClassSymbol) =
-        IrClassReferenceImpl(
-            UNDEFINED_OFFSET,
-            UNDEFINED_OFFSET,
-            context.irBuiltIns.kClassClass.typeWith(symbol.defaultType),
-            symbol,
-            symbol.defaultType,
-        )
+    IrClassReferenceImpl(
+        UNDEFINED_OFFSET,
+        UNDEFINED_OFFSET,
+        context.irBuiltIns.kClassClass.typeWith(symbol.defaultType),
+        symbol,
+        symbol.defaultType,
+    )
 
 @Suppress("FUNCTION_NAME_INCORRECT_CASE")
 fun IrBuilderWithScope.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFunctionReference {
@@ -58,25 +58,25 @@ fun IrBuilderWithScope.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFu
 }
 
 fun irTypeCast(type: IrType, argument: IrExpression) =
-        IrTypeOperatorCallImpl(
-            startOffset = UNDEFINED_OFFSET,
-            endOffset = UNDEFINED_OFFSET,
-            type = type,
-            operator = IrTypeOperator.CAST,
-            typeOperand = type,
-            argument = argument,
-        )
+    IrTypeOperatorCallImpl(
+        startOffset = UNDEFINED_OFFSET,
+        endOffset = UNDEFINED_OFFSET,
+        type = type,
+        operator = IrTypeOperator.CAST,
+        typeOperand = type,
+        argument = argument,
+    )
 
 fun funListOf(pluginContext: IrPluginContext) =
-        pluginContext.referenceFunctions(FqName("kotlin.collections.listOf"))
-            .single {
-                val parameters = it.owner.valueParameters
-                parameters.size == 1 && parameters[0].isVararg
-            }
+    pluginContext.referenceFunctions(FqName("kotlin.collections.listOf"))
+        .single {
+            val parameters = it.owner.valueParameters
+            parameters.size == 1 && parameters[0].isVararg
+        }
 
 fun funSetOf(pluginContext: IrPluginContext) =
-        pluginContext.referenceFunctions(FqName("kotlin.collections.setOf"))
-            .single {
-                val parameters = it.owner.valueParameters
-                parameters.size == 1 && parameters[0].isVararg
-            }
+    pluginContext.referenceFunctions(FqName("kotlin.collections.setOf"))
+        .single {
+            val parameters = it.owner.valueParameters
+            parameters.size == 1 && parameters[0].isVararg
+        }

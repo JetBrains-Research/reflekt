@@ -1,5 +1,6 @@
 /**
- * Helpful utilities for ASTNode
+ * Helpful utilities for ASTNode.
+ * Code style requires the name AstNodeUtils, but such notation is used all over the code.
  */
 
 @file:Suppress("FILE_NAME_INCORRECT")
@@ -118,8 +119,8 @@ fun ASTNode.toParameterizedType(binding: BindingContext) = binding.get(BindingCo
  * It has the following structure: root -> <list type> -> <[entryType]>
  */
 private fun ASTNode.getParameterList(listType: ElementType, entryType: ElementType): List<ASTNode> =
-        (children().firstOrNull { it.hasType(listType) }?.children()?.toList() ?: emptyList())
-            .filter { it.hasType(entryType) }
+    (children().firstOrNull { it.hasType(listType) }?.children()?.toList() ?: emptyList())
+        .filter { it.hasType(entryType) }
 
 /**
  * Extract list of types from [ASTNode].
@@ -127,4 +128,4 @@ private fun ASTNode.getParameterList(listType: ElementType, entryType: ElementTy
  * It has the following structure: root -> <list type> -> <[entryType]> -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE
  */
 private fun ASTNode.getTypeList(listType: ElementType, entryType: ElementType): List<ASTNode> =
-        getParameterList(listType, entryType).map { it.getParameterType() }
+    getParameterList(listType, entryType).map { it.getParameterType() }

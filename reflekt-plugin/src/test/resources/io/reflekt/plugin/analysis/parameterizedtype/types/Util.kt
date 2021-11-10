@@ -1,4 +1,10 @@
-package io.reflekt.resources.io.reflekt.plugin.analysis.parameterizedtype.types
+package io.reflekt.plugin.analysis.parameterizedtype.types
+
+
+/**
+ * Function to test IrType or AstNode -> KotlinType, expected KotlinType is passed as argument
+ */
+fun <T> fooWithType(kotlinType: String) { }
 
 typealias MyTypeAlias<T> = List<T>
 
@@ -12,13 +18,4 @@ class MyGenericType<T : CharSequence>
 
 object MyObject
 
-enum class MyEnumType : MyInterfaceType {
-    MY_ENUM
-}
-
-/**
- * Function to test IrType or AstNode -> KotlinType, expected KotlinType is passed as argument
- *
- * @param kotlinType
- */
-fun <T> fooWithType(kotlinType: String) { }
+enum class MyEnumType : MyInterfaceType { MY_ENUM }

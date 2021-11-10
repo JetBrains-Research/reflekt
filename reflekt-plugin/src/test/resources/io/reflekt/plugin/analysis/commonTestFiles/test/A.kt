@@ -1,19 +1,25 @@
-package io.reflekt.resources.io.reflekt.plugin.analysis.commonTestFiles.test
+package io.reflekt.test
 
-object A1 : AInterfaceTest {
-    override fun description(): String = "HELLO A1"
+object A1: AInterfaceTest {
+    override fun description(): String {
+        return "HELLO A1"
+    }
 }
 
 @SecondAnnotationTest("Test")
-object A2 : AInterfaceTest {
-    override fun description(): String = "HELLO A2"
+object A2: AInterfaceTest {
+    override fun description(): String {
+        return "HELLO A2"
+    }
 }
 
 @FirstAnnotationTest
-object A3 : AInterfaceTest {
-    override fun description(): String = "HELLO A3"
+object A3: AInterfaceTest {
+    override fun description(): String {
+        return "HELLO A3"
+    }
 }
 
 @SecondAnnotationTest("Test")
-object A4 : BInterfaceTest {
+object A4: BInterfaceTest {
 }

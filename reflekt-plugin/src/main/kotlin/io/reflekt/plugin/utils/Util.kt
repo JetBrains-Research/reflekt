@@ -87,7 +87,7 @@ object Util {
 }
 
 fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T =
-        values.first { it.transform() == this }
+    values.first { it.transform() == this }
 
 fun KotlinType.stringRepresentation(): String {
     val declaration = requireNotNull(constructor.declarationDescriptor) {
@@ -105,4 +105,4 @@ fun KotlinType.stringRepresentation(): String {
 }
 
 fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, transform: T.() -> String): String =
-        "(${values.joinToString(separator = "|") { it.transform() }})"
+    "(${values.joinToString(separator = "|") { it.transform() }})"

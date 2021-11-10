@@ -44,7 +44,7 @@ class FunctionSubtypesTest {
         @JvmStatic
         fun getKtNamedFunctionsWithSubtypes(): List<Arguments> {
             val (functions, binding) = getFunctionsToTestFromResources(FunctionSubtypesTest::class, TEST_DIR_NAME)
-            return functions.map { Arguments.of(binding, it, functions.removeFromList(it), it.parseKDocLinks("subtypes")) }
+            return functions.map { Arguments.of(binding, it, functions.removeFromList(it), it.parseKdocLinks("subtypes")) }
         }
 
         private fun <T> List<T>.removeFromList(toRemove: T): List<T> {

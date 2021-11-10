@@ -50,8 +50,8 @@ object ResultCall {
         }.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, compilationResult.exitCode)
         val testResults = compilationResult.classLoader.loadClass(classPath)
-        val resultMethod = testResults.getMethod(resultMethod)
-        return resultMethod.invoke(null) as T
+        val resultMethod = testResults.getMethod(resultMethod).invoke(null)
+        return resultMethod as T
     }
 }
 

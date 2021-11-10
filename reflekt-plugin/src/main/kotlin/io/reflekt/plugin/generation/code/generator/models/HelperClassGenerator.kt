@@ -61,7 +61,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     private fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String) =
-            statement("listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)}$typeSuffix as %T" }})", List(uses.size) { returnParameter })
+        statement("listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)}$typeSuffix as %T" }})", List(uses.size) { returnParameter })
 
     /*
      * Get something like this: setOf("invokes[0]", "invokes[1]" ...) -> listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
@@ -175,9 +175,9 @@ abstract class HelperClassGenerator : ClassGenerator() {
         const val WITH_ANNOTATIONS_FUNCTION_NAME = "withAnnotations"
         const val WITH_SUPERTYPES_FUNCTION_NAME = "withSupertypes"
         val WITH_SUPERTYPES_CLASS_NAME =
-                WITH_SUPERTYPES_FUNCTION_NAME.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            WITH_SUPERTYPES_FUNCTION_NAME.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
         val WITH_ANNOTATIONS_CLASS_NAME =
-                WITH_ANNOTATIONS_FUNCTION_NAME.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            WITH_ANNOTATIONS_FUNCTION_NAME.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
         // val STRING = KClass::class.asClassName().parameterizedBy(TypeVariableName("T", String::class))
         val SET_OF_STRINGS = Set::class.parameterizedBy(String::class)

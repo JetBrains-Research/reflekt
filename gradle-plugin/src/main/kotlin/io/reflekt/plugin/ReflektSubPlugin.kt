@@ -1,5 +1,3 @@
-@file:Suppress("PACKAGE_NAME_INCORRECT_PREFIX", "PACKAGE_NAME_INCORRECT_PATH")
-
 package io.reflekt.plugin
 
 import io.reflekt.util.Util.DEPENDENCY_JAR_OPTION_INFO
@@ -44,8 +42,8 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
 
         return project.provider {
             librariesToIntrospect + dependencyJars +
-                    SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) +
-                    SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath)
+                SubpluginOption(key = ENABLED_OPTION_INFO.name, value = extension.enabled.toString()) +
+                SubpluginOption(key = OUTPUT_DIR_OPTION_INFO.name, value = extension.generationPath)
         }
     }
 

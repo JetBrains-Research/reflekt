@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 /**
  * @property uses
  */
-open class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) : HelperClassGenerator() {
+abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) : HelperClassGenerator() {
     override fun generateImpl() {
         generateWithSupertypesFunction()
         generateWithAnnotationsFunction()

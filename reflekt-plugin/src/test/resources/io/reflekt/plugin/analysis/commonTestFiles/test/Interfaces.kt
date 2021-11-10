@@ -1,12 +1,12 @@
-package io.reflekt.resources.io.reflekt.plugin.analysis.commonTestFiles.test
+package io.reflekt.test
 
-interface AinterfaceTest {
+interface AInterfaceTest {
     fun description(): String
 }
 
-interface Ainterface1Test : AInterfaceTest {
+interface AInterface1Test: AInterfaceTest {
     override fun description(): String
 }
 
-interface BinterfaceTest {
+interface BInterfaceTest {
 }

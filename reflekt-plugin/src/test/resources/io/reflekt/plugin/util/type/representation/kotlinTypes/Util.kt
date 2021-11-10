@@ -1,8 +1,15 @@
-package io.reflekt.resources.io.reflekt.plugin.util.type.representation.kotlinTypes
+package io.reflekt.plugin.util.type.representation.kotlinTypes
 
-typealias MyTypeAlias<T> = List<T>
+
+
+/**
+ * Function to test a string representation of KotlinTypes, a test key is passed as argument
+ */
+fun <T> fooWithType(testKey: String) { }
 
 class MyClass
+
+typealias MyTypeAlias<T> = List<T>
 
 class MyGenericType<T : CharSequence>
 
@@ -12,13 +19,4 @@ interface MyInterfaceType
 
 class MyInheritedType : MyInterfaceType
 
-enum class MyEnumType : MyInterfaceType {
-    MY_ENUM
-}
-
-/**
- * Function to test a string representation of KotlinTypes, a test key is passed as argument
- *
- * @param testKey
- */
-fun <T> fooWithType(testKey: String) { }
+enum class MyEnumType : MyInterfaceType { MY_ENUM }

@@ -25,8 +25,8 @@ fun controlFlow(
     code: CodeBlock,
     format: String,
     vararg args: Any?): CodeBlock =
-        CodeBlock.builder().beginControlFlow(format, *args).add(code)
-            .endControlFlow().build()
+    CodeBlock.builder().beginControlFlow(format, *args).add(code)
+        .endControlFlow().build()
 
 fun wrappedCode(code: CodeBlock): CodeBlock = controlFlow(code, "{")
 
@@ -39,9 +39,9 @@ fun generateFunction(
     arguments: List<ParameterSpec> = listOf(),
     returnType: TypeName? = null,
 ): FunSpec =
-        FunSpec.builder(name).generateBody(
-            body = body,
-            typeVariables = typeVariables,
-            arguments = arguments,
-            returnType = returnType,
-        )
+    FunSpec.builder(name).generateBody(
+        body = body,
+        typeVariables = typeVariables,
+        arguments = arguments,
+        returnType = returnType,
+    )

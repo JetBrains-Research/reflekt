@@ -94,7 +94,7 @@ fun findReflektFunctionInvokeArgumentsByExpressionPart(expression: KtExpression,
 fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SupertypesToFilters? {
     val filteredChildren = dotQualifiedExpressionNode.filterChildren { node ->
         (node.text in SmartReflektFunction.values().map { it.functionName } || node.text in ReflektEntity.values().map { it.entityType }) &&
-                node.hasType(ElementType.REFERENCE_EXPRESSION)
+            node.hasType(ElementType.REFERENCE_EXPRESSION)
     }
     var supertype: KotlinType? = null
     val filters = ArrayList<Lambda>()

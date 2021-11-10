@@ -42,12 +42,12 @@ class FunctionsGenerator(
     }
 
     private fun functionReference(function: KtNamedFunction): String =
-            if (function.isTopLevel) {
-                val packageName = function.fqName!!.parent().toString()
-                val name = function.name!!
-                val memberName = MemberName(packageName, name)
-                "::${fileGenerator.addUniqueAliasedImport(memberName)}"
-            } else {
-                "${function.fqName!!.parent()}::${function.name}"
-            }
+        if (function.isTopLevel) {
+            val packageName = function.fqName!!.parent().toString()
+            val name = function.name!!
+            val memberName = MemberName(packageName, name)
+            "::${fileGenerator.addUniqueAliasedImport(memberName)}"
+        } else {
+            "${function.fqName!!.parent()}::${function.name}"
+        }
 }

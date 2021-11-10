@@ -7,9 +7,9 @@ import io.reflekt.plugin.analysis.psi.isSubtypeOf
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
-abstract class BaseUsesProcessor<O : Any>(override val binding: BindingContext) : Processor<O>(binding) {
+abstract class BaseUsesProcessor<T : Any>(override val binding: BindingContext) : Processor<T>(binding) {
     // Store uses by file
-    abstract val fileToUses: HashMap<FileId, O>
+    abstract val fileToUses: HashMap<FileId, T>
 
     protected fun processClassOrObjectUses(
         element: KtElement,
@@ -39,9 +39,9 @@ abstract class BaseUsesProcessor<O : Any>(override val binding: BindingContext) 
     }
 
     protected fun <K, V : MutableSet<K>> getInvokesGroupedByFiles(fileToInvokes: HashMap<FileId, V>) =
-            groupFilesByInvokes(fileToInvokes).keys.flatten().toMutableSet()
+        groupFilesByInvokes(fileToInvokes).keys.flatten().toMutableSet()
 
     private fun SupertypesToAnnotations.isCovering(element: KtClassOrObject): Boolean =
-            // annotations set is empty when withSupertypes() method is called, so we don't need to check annotations in this case
-            (annotations.isEmpty() || element.getAnnotations(binding, annotations).isNotEmpty()) && element.isSubtypeOf(supertypes, binding)
+        // annotations set is empty when withSupertypes() method is called, so we don't need to check annotations in this case
+        (annotations.isEmpty() || element.getAnnotations(binding, annotations).isNotEmpty()) && element.isSubtypeOf(supertypes, binding)
 }

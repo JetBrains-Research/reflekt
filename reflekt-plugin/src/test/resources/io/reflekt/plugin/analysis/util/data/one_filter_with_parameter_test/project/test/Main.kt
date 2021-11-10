@@ -1,4 +1,4 @@
-package io.reflekt.resources.io.reflekt.plugin.analysis.util.data.one_filter_with_parameter_test.project.test
+package io.reflekt.test
 
 import io.reflekt.SmartReflekt
 

@@ -51,4 +51,4 @@ fun KType.stringRepresentation(): String {
  * @return human readable string for `this` KType and classifier name
  */
 internal fun KType.stringRepresentation(classifierName: String) =
-        TypeStringRepresentationUtil.getStringRepresentation(classifierName, arguments.mapNotNull { it.type?.stringRepresentation() })
+    TypeStringRepresentationUtil.getStringRepresentation(classifierName, arguments.mapNotNull { it.type?.stringRepresentation() })

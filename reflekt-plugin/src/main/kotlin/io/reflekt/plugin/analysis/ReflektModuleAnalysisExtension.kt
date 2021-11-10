@@ -33,10 +33,9 @@ class ReflektModuleAnalysisExtension(private val filesToIntrospect: Set<KtFile>,
             reflektContext.uses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
             reflektContext.instances = IrReflektInstances.fromReflektInstances(instances, bindingTrace.bindingContext)
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: ${reflektContext.uses}\nInstances: ${reflektContext.instances}")
+        } ?: run {
+            messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses\nInstances: $instances")
         }
-            ?: run {
-                messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses\nInstances: $instances")
-            }
 
         generationPath?.let {
             with(File(generationPath, "io/reflekt/ReflektImpl.kt")) {

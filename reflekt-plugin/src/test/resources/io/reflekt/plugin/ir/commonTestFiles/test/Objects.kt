@@ -1,6 +1,6 @@
-package io.reflekt.resources.io.reflekt.plugin.ir.commonTestFiles.test
+package io.reflekt.test.ir
 
-interface Ointerface
+interface OInterface
 
 object O1 : OInterface {
     object O2 : OInterface

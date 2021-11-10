@@ -13,16 +13,16 @@ import org.jetbrains.kotlin.types.TypeUtils.equalTypes
 import org.jetbrains.kotlin.types.expressions.createFunctionType
 
 fun KtNamedFunction.getDescriptor(binding: BindingContext): FunctionDescriptor =
-        binding.get(BindingContext.FUNCTION, this)!!
+    binding.get(BindingContext.FUNCTION, this)!!
 
 fun KtNamedFunction.argumentTypes(binding: BindingContext): List<KotlinType> =
-        getDescriptor(binding).valueParameters.map { it.type }
+    getDescriptor(binding).valueParameters.map { it.type }
 
 fun KtNamedFunction.argumentTypesWithReceiver(binding: BindingContext): List<KotlinType> =
-        listOfNotNull(receiverType(binding)).filter { !it.isObject() }.plus(argumentTypes(binding))
+    listOfNotNull(receiverType(binding)).filter { !it.isObject() }.plus(argumentTypes(binding))
 
 fun KtNamedFunction.returnType(binding: BindingContext): KotlinType? =
-        getDescriptor(binding).returnType
+    getDescriptor(binding).returnType
 
 fun KtNamedFunction.receiverType(binding: BindingContext): KotlinType? {
     val descriptor = getDescriptor(binding)
@@ -42,11 +42,11 @@ fun KtNamedFunction.receiverType(binding: BindingContext): KotlinType? {
 fun KtNamedFunction.checkSignature(signature: KotlinType, binding: BindingContext) = this.toParameterizedType(binding)?.let { equalTypes(it, signature) } ?: false
 
 fun KtNamedFunction.toFunctionInfo(binding: BindingContext): IrFunctionInfo =
-        IrFunctionInfo(
-            fqName.toString(),
-            receiverFqName = receiverType(binding)?.shortFqName(),
-            isObjectReceiver = receiverType(binding)?.isObject() ?: false,
-        )
+    IrFunctionInfo(
+        fqName.toString(),
+        receiverFqName = receiverType(binding)?.shortFqName(),
+        isObjectReceiver = receiverType(binding)?.isObject() ?: false,
+    )
 
 fun KtNamedFunction.toParameterizedType(binding: BindingContext): KotlinType? = getDescriptor(binding).toParameterizedType()
 

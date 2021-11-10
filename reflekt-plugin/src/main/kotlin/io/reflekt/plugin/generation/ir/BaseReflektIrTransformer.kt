@@ -110,11 +110,11 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
     }
 
     protected fun newIrBuilder(pluginContext: IrPluginContext) =
-            object : IrBuilderWithScope(
-                pluginContext,
-                currentScope!!.scope,
-                UNDEFINED_OFFSET,
-                UNDEFINED_OFFSET) {
-                // no need to pass a body to this object
-            }
+        object : IrBuilderWithScope(
+            pluginContext,
+            currentScope!!.scope,
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET) {
+            // no need to pass a body to this object
+        }
 }
