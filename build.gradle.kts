@@ -1,5 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import io.reflekt.buildutils.*
+
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 group = "io.reflekt"
 /*
@@ -43,14 +44,15 @@ allprojects {
         // https://teamcity.jetbrains.com/buildConfiguration/Kotlin_KotlinPublic_BuildNumber?mode=builds&tag=bootstrap
         // (see builds with <boostrap> tag)
         // Note: uncomment it also in the settings.gradle.kts
-//        maven {
-//            url = uri("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
-//        }
+        // maven {
+        // url = uri("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
+        // }
     }
 
     // We should publish the project in the local maven repository before the tests running
+    @kotlin.Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
     tasks.withType<Test> {
-        dependsOn(tasks.withType<PublishToMavenLocal>{})
+        dependsOn(tasks.withType<PublishToMavenLocal> {})
     }
 
     configureDiktat()

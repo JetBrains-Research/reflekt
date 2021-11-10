@@ -28,7 +28,10 @@ fun Project.createDiktatTask() {
         apply<DiktatGradlePlugin>()
         configure<DiktatExtension> {
             diktatConfigFile = rootProject.file("diktat-analysis.yml")
-            inputs = fileTree("src/main").apply { include("**/*.kt") }
+            inputs = fileTree(".").apply {
+                include("*.kts")
+                include("buildSrc/**/*.kt")
+            }
         }
     }
     tasks.register("diktatCheckAll") {
