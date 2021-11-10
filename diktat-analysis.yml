@@ -9,7 +9,7 @@
   enabled: true
   configuration:
     enumStyle: snakeCase
-- name: KDOC_CONTAINS_DATE_OR_AUTHOR`
+- name: KDOC_CONTAINS_DATE_OR_AUTHOR
   enabled: true
   configuration:
     versionRegex: \d+\.\d+\.\d+[-.\w\d]*
