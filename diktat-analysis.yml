@@ -115,6 +115,9 @@
 # disabled due to a huge number of documentation that should be added
 - name: MISSING_KDOC_TOP_LEVEL
   enabled: false
+# disabled due to: https://github.com/JetBrains-Research/reflekt/pull/81#discussion_r748084473
+- name: WHEN_WITHOUT_ELSE
+  enabled: false
 # disabled due to a huge number of documentation that should be added
 - name: HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
   enabled: false

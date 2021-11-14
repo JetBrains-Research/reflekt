@@ -36,9 +36,6 @@ class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
                 annotations.addAll(expression.getFqNamesOfClassReferenceValueArguments())
                 supertypes.addAll(expression.getFqNamesOfTypeArguments())
             }
-            else -> {
-                // this is a generated else block
-            }
         }
     }
 
@@ -70,9 +67,6 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 annotations.addAll(expression.getFqNamesOfClassReferenceValueArguments())
                 signature = expression.getTypeArgument(0)?.toParameterizedType()
-            }
-            else -> {
-                // this is a generated else block
             }
         }
     }
