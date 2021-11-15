@@ -9,6 +9,10 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
+/**
+ * @property binding
+ * @property messageCollector
+ */
 class ClassInvokesProcessor(override val binding: BindingContext, override val messageCollector: MessageCollector?) :
     BaseInvokesProcessor<ClassOrObjectInvokes>(binding, messageCollector) {
     override val fileToInvokes: HashMap<FileId, ClassOrObjectInvokes> = HashMap()

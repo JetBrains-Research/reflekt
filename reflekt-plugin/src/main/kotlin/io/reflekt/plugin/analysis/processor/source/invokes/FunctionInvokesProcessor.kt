@@ -11,6 +11,10 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.utils.addIfNotNull
 
+/**
+ * @property binding
+ * @property messageCollector
+ */
 class FunctionInvokesProcessor(override val binding: BindingContext, override val messageCollector: MessageCollector?) :
     BaseInvokesProcessor<FunctionInvokes>(binding, messageCollector) {
     override val fileToInvokes: HashMap<FileId, FunctionInvokes> = HashMap()

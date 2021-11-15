@@ -4,6 +4,9 @@ import io.reflekt.plugin.analysis.processor.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
+/**
+ * @property binding
+ */
 class FunctionInstancesProcessor(override val binding: BindingContext) : BaseInstancesProcessor<MutableList<KtNamedFunction>>(binding) {
     override val fileToInstances: HashMap<FileId, MutableList<KtNamedFunction>> = HashMap()
 

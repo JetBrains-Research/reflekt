@@ -9,6 +9,11 @@ import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
+/**
+ * @param reflektInvokes
+ *
+ * @property messageCollector
+ */
 class FunctionDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override val messageCollector: MessageCollector?) :
     BaseDescriptorUsesProcessor<IrFunctionUses>(messageCollector) {
     override val uses: IrFunctionUses = HashMap()

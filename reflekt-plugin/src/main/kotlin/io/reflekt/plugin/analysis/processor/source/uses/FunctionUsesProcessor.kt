@@ -10,7 +10,12 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
-
+/**
+ * @param reflektInvokes
+ *
+ * @property binding
+ * @property messageCollector
+ */
 class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes, override val messageCollector: MessageCollector?)
     : BaseUsesProcessor<FunctionUses>(binding, messageCollector) {
     override val fileToUses: HashMap<FileId, FunctionUses> = HashMap()

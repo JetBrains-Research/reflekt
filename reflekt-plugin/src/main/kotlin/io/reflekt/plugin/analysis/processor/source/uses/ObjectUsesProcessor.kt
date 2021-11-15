@@ -10,6 +10,12 @@ import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 
+/**
+ * @param reflektInvokes
+ *
+ * @property binding
+ * @property messageCollector
+ */
 class ObjectUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes, override val messageCollector: MessageCollector?) :
     BaseUsesProcessor<ClassOrObjectUses>(binding, messageCollector) {
     override val fileToUses: HashMap<FileId, ClassOrObjectUses> = HashMap()

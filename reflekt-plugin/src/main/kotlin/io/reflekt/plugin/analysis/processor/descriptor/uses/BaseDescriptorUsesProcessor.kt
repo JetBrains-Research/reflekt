@@ -8,10 +8,13 @@ import org.jetbrains.kotlin.descriptors.ClassifierDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 
-abstract class BaseDescriptorUsesProcessor<Output : Any>(override val messageCollector: MessageCollector?) :
-    DescriptorProcessor<Output>(messageCollector) {
+/**
+ * @property messageCollector
+ */
+abstract class BaseDescriptorUsesProcessor<T : Any>(override val messageCollector: MessageCollector?) :
+    DescriptorProcessor<T>(messageCollector) {
     // Store uses by file
-    abstract val uses: Output
+    abstract val uses: T
 
     protected fun processClassOrObjectUses(
         descriptor: DeclarationDescriptor,
