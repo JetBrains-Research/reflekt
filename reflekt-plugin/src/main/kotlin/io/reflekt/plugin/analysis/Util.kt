@@ -6,16 +6,11 @@ import io.reflekt.plugin.utils.compiler.ParseUtil
 import io.reflekt.plugin.utils.compiler.ResolveUtil
 import java.io.File
 
+@Suppress("AVOID_USING_UTILITY_CLASS")
 object AnalysisUtil {
-
     fun getReflektAnalyzer(classPath: Set<File>, sources: Set<File>): ReflektAnalyzer {
         val baseAnalyzer = getBaseAnalyzer(classPath, sources)
         return ReflektAnalyzer(baseAnalyzer.ktFiles, baseAnalyzer.binding)
-    }
-
-    fun getSmartReflektAnalyzer(classPath: Set<File>, sources: Set<File>): SmartReflektAnalyzer {
-        val baseAnalyzer = getBaseAnalyzer(classPath, sources)
-        return SmartReflektAnalyzer(baseAnalyzer.ktFiles, baseAnalyzer.binding)
     }
 
     fun getBaseAnalyzer(classPath: Set<File>, sources: Set<File>): BaseAnalyzer {

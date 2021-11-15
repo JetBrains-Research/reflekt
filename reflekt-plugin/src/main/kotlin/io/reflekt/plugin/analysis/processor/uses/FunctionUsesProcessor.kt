@@ -10,12 +10,11 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
-
 class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes) : BaseUsesProcessor<FunctionUses>(binding) {
-    override val fileToUses: HashMap<FileID, FunctionUses> = HashMap()
+    override val fileToUses: HashMap<FileId, FunctionUses> = HashMap()
     private val invokes = getInvokesGroupedByFiles(reflektInvokes.functions)
 
-    override fun process(element: KtElement, file: KtFile): HashMap<FileID, FunctionUses> {
+    override fun process(element: KtElement, file: KtFile): HashMap<FileId, FunctionUses> {
         (element as? KtNamedFunction)?.let {
             invokes.filter { it.covers(element) }.forEach {
                 fileToUses.getOrPut(file.fullName) { HashMap() }.getOrPut(it) { mutableListOf() }.add(element)
@@ -26,8 +25,6 @@ class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes
 
     override fun shouldRunOn(element: KtElement) = element.isPublicFunction && !element.isMainFunction
 
-    private fun SignatureToAnnotations.covers(function: KtNamedFunction): Boolean {
-        return (annotations.isEmpty() || function.getAnnotations(binding, annotations).isNotEmpty()) &&
-            function.toParameterizedType(binding)?.isSubtypeOf(signature) ?: false
-    }
+    private fun SignatureToAnnotations.covers(function: KtNamedFunction) = (annotations.isEmpty() || function.getAnnotations(binding, annotations).isNotEmpty()) &&
+        function.toParameterizedType(binding)?.isSubtypeOf(signature) ?: false
 }

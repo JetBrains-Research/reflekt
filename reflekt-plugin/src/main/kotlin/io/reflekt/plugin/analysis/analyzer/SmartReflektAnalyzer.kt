@@ -1,9 +1,12 @@
 package io.reflekt.plugin.analysis.analyzer
 
 import io.reflekt.plugin.analysis.models.ReflektInstances
-import io.reflekt.plugin.analysis.processor.instances.*
-import io.reflekt.plugin.analysis.psi.*
-import org.jetbrains.kotlin.psi.*
+import io.reflekt.plugin.analysis.processor.instances.ClassInstancesProcessor
+import io.reflekt.plugin.analysis.processor.instances.FunctionInstancesProcessor
+import io.reflekt.plugin.analysis.processor.instances.ObjectInstancesProcessor
+import io.reflekt.plugin.analysis.psi.visit
+
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class SmartReflektAnalyzer(override val ktFiles: Set<KtFile>, override val binding: BindingContext) : BaseAnalyzer(ktFiles, binding) {

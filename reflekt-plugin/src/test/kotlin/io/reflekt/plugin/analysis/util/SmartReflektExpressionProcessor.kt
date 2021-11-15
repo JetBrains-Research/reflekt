@@ -9,9 +9,9 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class SmartReflektExpressionProcessor(override val binding: BindingContext) : Processor<MutableList<KtNameReferenceExpression>>(binding) {
-    val fileToExpressions: HashMap<FileID, MutableList<KtNameReferenceExpression>> = HashMap()
+    val fileToExpressions: HashMap<FileId, MutableList<KtNameReferenceExpression>> = HashMap()
 
-    override fun process(element: KtElement, file: KtFile): HashMap<FileID, MutableList<KtNameReferenceExpression>> {
+    override fun process(element: KtElement, file: KtFile): HashMap<FileId, MutableList<KtNameReferenceExpression>> {
         (element as? KtNameReferenceExpression)?.let {
             fileToExpressions.getOrPut(file.fullName) { ArrayList() }.add(it)
         }

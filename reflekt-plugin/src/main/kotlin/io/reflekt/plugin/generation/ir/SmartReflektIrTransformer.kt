@@ -30,7 +30,7 @@ class SmartReflektIrTransformer(
     private val pluginContext: IrPluginContext,
     private val instances: IrReflektInstances,
     private val classpath: List<File>,
-    private val messageCollector: MessageCollector? = null
+    private val messageCollector: MessageCollector? = null,
 ) : BaseReflektIrTransformer(messageCollector) {
     private val importChecker = ImportChecker(classpath)
     private val sources = HashMap<String, SourceFile>()
@@ -62,22 +62,25 @@ class SmartReflektIrTransformer(
         return call
     }
 
-    private fun <T : KtClassOrObject> isSubtypeOfForClassOrObject(classOrObject: T, typeArgumentFqName: String?, binding: BindingContext): Boolean {
-        return typeArgumentFqName?.let {
-            classOrObject.isSubtypeOf(setOf(typeArgumentFqName), binding)
-        } ?: error("Fq name of a type argument for class or object is null")
-    }
+    private fun <T : KtClassOrObject> isSubtypeOfForClassOrObject(
+        classOrObject: T,
+        typeArgumentFqName: String?,
+        binding: BindingContext) = typeArgumentFqName?.let {
+        classOrObject.isSubtypeOf(setOf(typeArgumentFqName), binding)
+    } ?: error("Fq name of a type argument for class or object is null")
 
-    private fun isSubtypeOfForFunctions(function: KtNamedFunction, typeArgument: KotlinType?, binding: BindingContext): Boolean {
-        return typeArgument?.let {
-            function.toParameterizedType(binding)?.isSubtypeOf(typeArgument) ?: false
-        } ?: error("A type argument for a function is null")
-    }
+    private fun isSubtypeOfForFunctions(
+        function: KtNamedFunction,
+        typeArgument: KotlinType?,
+        binding: BindingContext) = typeArgument?.let {
+        function.toParameterizedType(binding)?.isSubtypeOf(typeArgument) ?: false
+    } ?: error("A type argument for a function is null")
 
+    @Suppress("TYPE_ALIAS")
     private inline fun <reified T, reified I> filterInstances(
         instances: List<IrTypeInstance<T, I>>,
         invokeArguments: TypeArgumentToFilters,
-        binding: BindingContext
+        binding: BindingContext,
     ): List<IrTypeInstance<T, I>> {
         val imports = importChecker.filterImports(invokeArguments.imports)
 
@@ -89,24 +92,24 @@ class SmartReflektIrTransformer(
                 is KtNamedFunction -> isSubtypeOfForFunctions(instance.instance, invokeArguments.typeArgument, binding)
                 else -> error("Unknown type of instance")
             }
-            if (isSubtype && evalFilterBody(imports, invokeArguments.filters, instance)) {
+            if (isSubtype && isEvaluatedFilterBody(imports, invokeArguments.filters, instance)) {
                 resultInstances.push(instance)
             }
         }
         return resultInstances
     }
 
-    private inline fun <reified T, reified I> evalFilterBody(
+    private inline fun <reified T, reified I> isEvaluatedFilterBody(
         imports: List<Import>,
         filters: List<Lambda>,
-        instance: IrTypeInstance<T, I>
+        instance: IrTypeInstance<T, I>,
     ): Boolean {
         for (filter in filters) {
             val result = KotlinScript(
                 classpath = classpath,
                 imports = imports,
                 properties = filter.parameters.zip(listOf(T::class)),
-                code = filter.body
+                code = filter.body,
             ).eval(listOf(instance.instance)) as Boolean
             if (!result) {
                 return false
@@ -126,6 +129,6 @@ class SmartReflektIrTransformer(
         imports = lines()
             .filter { it.startsWith("import ") }
             .map { Import(it.removePrefix("import ").trim().removeSuffixIfPresent(".*"), it) },
-        content = this
+        content = this,
     )
 }

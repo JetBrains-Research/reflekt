@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 
 class ReflektIrGenerationExtension(
     private val reflektContext: ReflektContext,
-    private val messageCollector: MessageCollector? = null
+    private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         val uses = reflektContext.uses ?: error("Uses must be saved to reflektContext before running ReflektIrGenerationExtension")

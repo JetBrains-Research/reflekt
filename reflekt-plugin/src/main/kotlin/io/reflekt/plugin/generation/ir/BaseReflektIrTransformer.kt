@@ -18,18 +18,34 @@ import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
+private val BaseReflektInvokeParts.irTerminalFunction: (IrPluginContext) -> IrFunctionSymbol
+    get() = when (this) {
+        is ReflektInvokeParts -> when (terminalFunction) {
+            ReflektTerminalFunction.TO_LIST -> ::funListOf
+            ReflektTerminalFunction.TO_SET -> ::funSetOf
+        }
+        is SmartReflektInvokeParts -> when (terminalFunction) {
+            SmartReflektTerminalFunction.RESOLVE -> ::funListOf
+        }
+    }
+
 /* Base class for Reflekt IR transformers */
 open class BaseReflektIrTransformer(private val messageCollector: MessageCollector?) : IrElementTransformerVoidWithContext() {
     /**
      * Constructs replacement for result of Reflekt terminal function (toList/toSet/etc) for classes or objects
+     *
      * @param invokeParts info about invoke call to retrieve entity type (objects/classes) and terminal function (toList/toSet/etc)
      * @param resultValues list of qualified names of objects or classes to return
+     * @param resultType
+     * @param context
+     * @return replacement for a result of terminal function
+     * @throws ReflektGenerationException
      */
     protected fun IrBuilderWithScope.resultIrCall(
         invokeParts: BaseReflektInvokeParts,
         resultValues: List<String>,
         resultType: IrType,
-        context: IrPluginContext
+        context: IrPluginContext,
     ): IrExpression {
         require(resultType is IrSimpleType)
 
@@ -53,15 +69,21 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
 
     /**
      * Constructs replacement for result of Reflekt terminal function (toList/toSet/etc) for functions
+     *
      * @param invokeParts info about invoke call terminal function (toList/toSet/etc)
      * @param resultValues list of function qualified names with additional info to generate the right call
+     * @param resultType
+     * @param context
+     * @return IrExpression
+     * @throws ReflektGenerationException
      */
     @ObsoleteDescriptorBasedAPI
+    @Suppress("TOO_MANY_LINES_IN_LAMBDA")
     protected fun IrBuilderWithScope.functionResultIrCall(
         invokeParts: BaseReflektInvokeParts,
         resultValues: List<IrFunctionInfo>,
         resultType: IrType,
-        context: IrPluginContext
+        context: IrPluginContext,
     ): IrExpression {
         require(resultType is IrSimpleType)
         val itemType = resultType.arguments[0].typeOrNull
@@ -88,16 +110,11 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
     }
 
     protected fun newIrBuilder(pluginContext: IrPluginContext) =
-        object : IrBuilderWithScope(pluginContext, currentScope!!.scope, UNDEFINED_OFFSET, UNDEFINED_OFFSET) {}
+        object : IrBuilderWithScope(
+            pluginContext,
+            currentScope!!.scope,
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET) {
+            // no need to pass a body to this object
+        }
 }
-
-private val BaseReflektInvokeParts.irTerminalFunction: (IrPluginContext) -> IrFunctionSymbol
-    get() = when (this) {
-        is ReflektInvokeParts -> when (terminalFunction) {
-            ReflektTerminalFunction.TO_LIST -> ::funListOf
-            ReflektTerminalFunction.TO_SET -> ::funSetOf
-        }
-        is SmartReflektInvokeParts -> when (terminalFunction) {
-            SmartReflektTerminalFunction.RESOLVE -> ::funListOf
-        }
-    }

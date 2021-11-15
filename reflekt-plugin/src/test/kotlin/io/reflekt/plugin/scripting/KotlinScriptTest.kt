@@ -20,7 +20,7 @@ class KotlinScriptTest {
             code = "a.size.toString() + b",
         )
         assertEquals("42",
-            script.eval(listOf(arrayOf(1, 2, 3, 4), "2"))
+            script.eval(listOf(arrayOf(1, 2, 3, 4), "2")),
         )
     }
 
@@ -33,7 +33,7 @@ class KotlinScriptTest {
         assertDoesNotThrow {
             KotlinScript(
                 code = "import io.reflekt.Reflekt",
-                classpath = AnalysisSetupTest.getReflektProjectJars().toList()
+                classpath = AnalysisSetupTest.getReflektProjectJars().toList(),
             ).run()
         }
     }
@@ -48,16 +48,16 @@ class KotlinScriptTest {
                     clazz.qualifiedName
                 """.trimIndent(),
                 imports = listOf(Import("kotlin.reflect.KClass", "import kotlin.reflect.KClass")),
-                properties = listOf("t" to String::class)
-            ).eval(listOf("hello"))
+                properties = listOf("t" to String::class),
+            ).eval(listOf("hello")),
         )
     }
 
     companion object {
         // Equals private val with same name from org.jetbrains.kotlin.scripting.compiler.plugin.impl
         private const val SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY = "script.compilation.disable.plugins"
-
-        @BeforeAll @JvmStatic
+        @BeforeAll
+        @JvmStatic
         fun disableCompilerTestingPlugin() {
             System.setProperty(SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY, "com.tschuchort.compiletesting.MainComponentRegistrar")
         }

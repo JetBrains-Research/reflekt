@@ -1,8 +1,8 @@
 package io.reflekt.plugin.analysis
 
-import io.reflekt.plugin.analysis.util.FindSmartReflektInvokeArgumentsByExpressionPartTest
 import io.reflekt.plugin.util.Util
-import io.reflekt.util.FileUtil
+import io.reflekt.util.file.getAllNestedFiles
+import io.reflekt.util.file.getNestedDirectories
 import java.io.File
 import kotlin.reflect.KClass
 
@@ -22,10 +22,8 @@ fun File.findInDirectory(name: String, toCreateIfDoesNotExist: Boolean = false):
     }
 }
 
-fun getProjectFilesInDirectory(directory: File): Set<File> {
-    return FileUtil.getAllNestedFiles(directory.findInDirectory("project", true).absolutePath, ignoredDirectories = setOf(".idea")).toSet()
-}
+fun getProjectFilesInDirectory(directory: File): Set<File> = directory.findInDirectory("project", true).absolutePath.getAllNestedFiles(ignoredDirectories = setOf(".idea"))
+    .toSet()
 
-fun getTestsDirectories(cls: KClass<*>): List<File> {
-    return FileUtil.getNestedDirectories(Util.getResourcesRootPath(cls)).sorted().filter { "test" in it.name }
-}
+fun getTestsDirectories(cls: KClass<*>): List<File> = Util.getResourcesRootPath(cls).getNestedDirectories().sorted()
+    .filter { "test" in it.name }
