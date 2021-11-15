@@ -2,7 +2,7 @@ package io.reflekt.plugin.analysis.processor.source.invokes
 
 import io.reflekt.plugin.analysis.common.findReflektInvokeArgumentsByExpressionPart
 import io.reflekt.plugin.analysis.models.ClassOrObjectInvokes
-import io.reflekt.plugin.analysis.processor.FileID
+import io.reflekt.plugin.analysis.processor.FileId
 import io.reflekt.plugin.analysis.processor.source.Processor
 import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.utils.addIfNotNull
 abstract class BaseInvokesProcessor<Output : Any>(override val binding: BindingContext, override val messageCollector: MessageCollector?) :
     Processor<Output>(binding, messageCollector) {
     // Store invokes by file
-    abstract val fileToInvokes: HashMap<FileID, Output>
+    abstract val fileToInvokes: HashMap<FileId, Output>
 
     protected fun processClassOrObjectInvokes(element: KtElement): ClassOrObjectInvokes? {
         val invokes: ClassOrObjectInvokes = HashSet()

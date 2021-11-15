@@ -3,12 +3,12 @@ package io.reflekt.plugin.analysis.util
 import io.reflekt.plugin.analysis.analyzer.source.BaseAnalyzer
 import io.reflekt.plugin.analysis.common.findSmartReflektInvokeArgumentsByExpressionPart
 import io.reflekt.plugin.analysis.models.SupertypesToFilters
-import io.reflekt.plugin.analysis.processor.FileID
+import io.reflekt.plugin.analysis.processor.FileId
 import io.reflekt.plugin.analysis.psi.visit
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 
 class SmartReflektTestAnalyzer(baseAnalyzer: BaseAnalyzer) : BaseAnalyzer(baseAnalyzer.ktFiles, baseAnalyzer.binding) {
-    private fun fileToExpressions(): HashMap<FileID, MutableList<KtNameReferenceExpression>> {
+    private fun fileToExpressions(): HashMap<FileId, MutableList<KtNameReferenceExpression>> {
         val processor = SmartReflektExpressionProcessor(binding)
         ktFiles.forEach { file ->
             file.visit(setOf(processor))

@@ -1,6 +1,6 @@
 package io.reflekt.plugin.analysis.models
 
-import io.reflekt.plugin.analysis.processor.FileID
+import io.reflekt.plugin.analysis.processor.FileId
 import io.reflekt.plugin.analysis.processor.source.instances.*
 import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
 import io.reflekt.plugin.utils.Util.log
@@ -13,9 +13,9 @@ import org.jetbrains.kotlin.types.KotlinType
  * Store a set of qualified names that exist in the project and additional libraries
  */
 data class ReflektInstances(
-    val objects: HashMap<FileID, MutableList<KtObjectDeclaration>> = HashMap(),
-    val classes: HashMap<FileID, MutableList<KtClass>> = HashMap(),
-    val functions: HashMap<FileID, MutableList<KtNamedFunction>> = HashMap()
+    val objects: HashMap<FileId, MutableList<KtObjectDeclaration>> = HashMap(),
+    val classes: HashMap<FileId, MutableList<KtClass>> = HashMap(),
+    val functions: HashMap<FileId, MutableList<KtNamedFunction>> = HashMap()
 ) {
     companion object {
         fun createByProcessors(processors: Set<BaseInstancesProcessor<*>>) = ReflektInstances(

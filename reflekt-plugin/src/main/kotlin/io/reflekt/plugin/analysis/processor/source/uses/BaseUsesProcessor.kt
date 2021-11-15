@@ -12,14 +12,14 @@ import org.jetbrains.kotlin.resolve.BindingContext
 abstract class BaseUsesProcessor<Output : Any>(override val binding: BindingContext, override val messageCollector: MessageCollector?) :
     Processor<Output>(binding, messageCollector) {
     // Store uses by file
-    abstract val fileToUses: HashMap<FileID, Output>
+    abstract val fileToUses: HashMap<FileId, Output>
 
     protected fun processClassOrObjectUses(
         element: KtElement,
         file: KtFile,
         invokes: ClassOrObjectInvokes,
-        fileToUses: HashMap<FileID, ClassOrObjectUses>
-    ): HashMap<FileID, ClassOrObjectUses> {
+        fileToUses: HashMap<FileId, ClassOrObjectUses>
+    ): HashMap<FileId, ClassOrObjectUses> {
         (element as? KtClassOrObject)?.let {
             invokes.filter { it.covers(element) }.forEach {
                 fileToUses.getOrPut(file.fullName) { HashMap() }.getOrPut(it) { mutableListOf() }.add(element)

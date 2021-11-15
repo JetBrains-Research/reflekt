@@ -1,6 +1,6 @@
 package io.reflekt.plugin.analysis.models
 
-import io.reflekt.plugin.analysis.processor.FileID
+import io.reflekt.plugin.analysis.processor.FileId
 import io.reflekt.plugin.analysis.processor.source.invokes.*
 import io.reflekt.plugin.analysis.processor.source.uses.*
 import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
@@ -56,9 +56,9 @@ typealias SerializableFunctionInvokes = MutableSet<SerializableSignatureToAnnota
 
 @Serializable
 data class SerializableReflektInvokes(
-    val objects: HashMap<FileID, ClassOrObjectInvokes> = HashMap(),
-    val classes: HashMap<FileID, ClassOrObjectInvokes> = HashMap(),
-    val functions: HashMap<FileID, SerializableFunctionInvokes> = HashMap()
+    val objects: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
+    val classes: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
+    val functions: HashMap<FileId, SerializableFunctionInvokes> = HashMap()
 )
 
 @Serializable
@@ -96,9 +96,9 @@ data class ReflektInvokesWithPackages(
 }
 
 data class ReflektInvokes(
-    val objects: HashMap<FileID, ClassOrObjectInvokes> = HashMap(),
-    val classes: HashMap<FileID, ClassOrObjectInvokes> = HashMap(),
-    val functions: HashMap<FileID, FunctionInvokes> = HashMap()
+    val objects: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
+    val classes: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
+    val functions: HashMap<FileId, FunctionInvokes> = HashMap()
 ) {
     companion object {
         fun createByProcessors(processors: Set<BaseInvokesProcessor<*>>) = ReflektInvokes(
@@ -130,7 +130,7 @@ data class ReflektInvokes(
         functions = this.functions.merge(second.functions)
     )
 
-    private fun <V> HashMap<FileID, MutableSet<V>>.merge(second: HashMap<FileID, MutableSet<V>>): HashMap<FileID, MutableSet<V>> =
+    private fun <V> HashMap<FileId, MutableSet<V>>.merge(second: HashMap<FileId, MutableSet<V>>): HashMap<FileId, MutableSet<V>> =
         this.also { second.forEach { (k, v) -> this.getOrPut(k) { v } } }
 }
 
@@ -160,9 +160,9 @@ fun FunctionUses.toAnnotationsToFunction(): Map<Set<String>, List<KtNamedFunctio
  * Store a set of qualified names that match the conditions for each item from [ReflektInvokes]
  */
 data class ReflektUses(
-    val objects: HashMap<FileID, ClassOrObjectUses> = HashMap(),
-    val classes: HashMap<FileID, ClassOrObjectUses> = HashMap(),
-    val functions: HashMap<FileID, FunctionUses> = HashMap()
+    val objects: HashMap<FileId, ClassOrObjectUses> = HashMap(),
+    val classes: HashMap<FileId, ClassOrObjectUses> = HashMap(),
+    val functions: HashMap<FileId, FunctionUses> = HashMap()
 ) {
     companion object {
         fun createByProcessors(processors: Set<BaseUsesProcessor<*>>) = ReflektUses(
@@ -173,7 +173,7 @@ data class ReflektUses(
     }
 }
 
-fun <T, V : KtElement> HashMap<FileID, TypeUses<T, V>>.flatten(): TypeUses<T, V> {
+fun <T, V : KtElement> HashMap<FileId, TypeUses<T, V>>.flatten(): TypeUses<T, V> {
     val uses: TypeUses<T, V> = HashMap()
     this.forEach { (_, typeUses) ->
         typeUses.forEach { (k, v) ->

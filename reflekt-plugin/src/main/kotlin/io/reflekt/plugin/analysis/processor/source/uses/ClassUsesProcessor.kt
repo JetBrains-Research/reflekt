@@ -12,10 +12,10 @@ import org.jetbrains.kotlin.resolve.BindingContext
 
 class ClassUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes, override val messageCollector: MessageCollector?) :
     BaseUsesProcessor<ClassOrObjectUses>(binding, messageCollector) {
-    override val fileToUses: HashMap<FileID, ClassOrObjectUses> = HashMap()
+    override val fileToUses: HashMap<FileId, ClassOrObjectUses> = HashMap()
     private val invokes = getInvokesGroupedByFiles(reflektInvokes.classes)
 
-    override fun process(element: KtElement, file: KtFile): HashMap<FileID, ClassOrObjectUses> =
+    override fun process(element: KtElement, file: KtFile): HashMap<FileId, ClassOrObjectUses> =
         processClassOrObjectUses(element, file, invokes, fileToUses)
 
     override fun shouldRunOn(element: KtElement) : Boolean {
