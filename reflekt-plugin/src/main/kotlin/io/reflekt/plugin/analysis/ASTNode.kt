@@ -33,31 +33,31 @@ fun ASTNode.hasType(type: ElementType) = elementType.toString() == type.value
 fun ASTNode.getFqNamesOf(rootType: ElementType, type: ElementType, binding: BindingContext): List<String> {
     require(hasType(rootType)) { "Invalid element type ${this.elementType} of the parent node ${this.text}" }
     val typeArgumentNode = this.children().find { it.hasType(type) }!!
-    val filtered = typeArgumentNode.filterChildren { it.hasType(ElementType.ReferenceExpression) }.toList()
+    val filtered = typeArgumentNode.filterChildren { it.hasType(ElementType.REFERENCE_EXPRESSION) }.toList()
     return filtered.mapNotNull { it.psi?.getFqName(binding) }
 }
 
-fun ASTNode.getFqNamesOfTypeArgument(binding: BindingContext) = getFqNamesOf(ElementType.CallExpression, ElementType.TypeArgumentList, binding)
+fun ASTNode.getFqNamesOfTypeArgument(binding: BindingContext) = getFqNamesOf(ElementType.CALL_EXPRESSION, ElementType.TYPE_ARGUMENT_LIST, binding)
 
-fun ASTNode.getFqNamesOfValueArguments(binding: BindingContext) = getFqNamesOf(ElementType.CallExpression, ElementType.ValueArgumentList, binding)
+fun ASTNode.getFqNamesOfValueArguments(binding: BindingContext) = getFqNamesOf(ElementType.CALL_EXPRESSION, ElementType.VALUE_ARGUMENT_LIST, binding)
 
 fun ASTNode.getLambdaNode(): ASTNode {
-    require(hasType(ElementType.CallExpression)) { "Try to get lambda body from the node with type: ${this.elementType}" }
+    require(hasType(ElementType.CALL_EXPRESSION)) { "Try to get lambda body from the node with type: ${this.elementType}" }
     // CALL_EXPRESSION -> LAMBDA_ARGUMENT -> LAMBDA_EXPRESSION -> FUNCTION_LITERAL -> BLOCK
     // We need to get the last level (BLOCK)
-    return this.children().firstOrNull { it.hasType(ElementType.LambdaArgument) }
-        ?.children()?.firstOrNull { it.hasType(ElementType.LambdaExpression) }
-        ?.children()?.firstOrNull { it.hasType(ElementType.FunctionLiteral) }
+    return this.children().firstOrNull { it.hasType(ElementType.LAMBDA_ARGUMENT) }
+        ?.children()?.firstOrNull { it.hasType(ElementType.LAMBDA_EXPRESSION) }
+        ?.children()?.firstOrNull { it.hasType(ElementType.FUNCTION_LITERAL) }
         ?: error("Incorrect lambda structure in the CALL_EXPRESSION node")
 }
 
 fun ASTNode.getLambdaBody(): String {
-    return this.getLambdaNode().children().firstOrNull { it.hasType(ElementType.Block) }
+    return this.getLambdaNode().children().firstOrNull { it.hasType(ElementType.BLOCK) }
         ?.text ?: error("The lambda node does not have the text attribute")
 }
 
 fun ASTNode.getLambdaParameters(): List<String> {
-    val parameterList = this.getLambdaNode().children().firstOrNull { it.hasType(ElementType.ValueParameterList) } ?: return listOf("it")
+    val parameterList = this.getLambdaNode().children().firstOrNull { it.hasType(ElementType.VALUE_PARAMETER_LIST) } ?: return listOf("it")
     return parameterList.children().toList().mapNotNull { parameter ->
         parameter.children().firstOrNull { it as? LeafPsiElement != null }?.text
     }
@@ -92,7 +92,7 @@ private fun ASTNode.getParameterList(listType: ElementType, entryType: ElementTy
  * Get type of [ASTNode] parameter.
  * It has the following structure: root -> TYPE_REFERENCE -> USER_TYPE|FUNCTION_TYPE|NULLABLE_TYPE
  */
-fun ASTNode.getParameterType(): ASTNode = children().first { it.hasType(ElementType.TypeReference) }.firstChildNode
+fun ASTNode.getParameterType(): ASTNode = children().first { it.hasType(ElementType.TYPE_REFERENCE) }.firstChildNode
 
 /**
  * Extract list of types from [ASTNode].
@@ -103,7 +103,7 @@ private fun ASTNode.getTypeList(listType: ElementType, entryType: ElementType): 
     getParameterList(listType, entryType).map { it.getParameterType() }
 
 
-fun ASTNode.getTypeArguments(): List<ASTNode> = getTypeList(ElementType.TypeArgumentList, ElementType.TypeProjection)
+fun ASTNode.getTypeArguments(): List<ASTNode> = getTypeList(ElementType.TYPE_ARGUMENT_LIST, ElementType.TYPE_PROJECTION)
 
 /** Constructs ParameterizedType representing [ASTNode] of type USER_TYPE/FUNCTION_TYPE/NULLABLE_TYPE */
 fun ASTNode.toParameterizedType(binding: BindingContext): KotlinType {
