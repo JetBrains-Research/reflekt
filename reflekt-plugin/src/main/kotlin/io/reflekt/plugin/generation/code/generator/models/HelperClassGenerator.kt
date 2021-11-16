@@ -7,6 +7,7 @@ import io.reflekt.plugin.generation.code.generator.*
 import io.reflekt.plugin.utils.stringRepresentation
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import java.util.*
+import kotlin.reflect.KClass
 
 abstract class HelperClassGenerator : ClassGenerator() {
     abstract val typeVariable: TypeVariableName
@@ -17,7 +18,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
         get() = statement(
             "return %T(%N)",
             typeName.nestedClass(WITH_SUPERTYPES_CLASS_NAME).parameterizedBy(typeVariable),
-            FQ_NAMES
+            FQ_NAMES,
         )
 
     open val withAnnotationsFunctionBody: CodeBlock
@@ -25,16 +26,16 @@ abstract class HelperClassGenerator : ClassGenerator() {
             "return %T(%N, %N)",
             typeName.nestedClass(WITH_ANNOTATIONS_CLASS_NAME).parameterizedBy(typeVariable),
             ANNOTATION_FQ_NAMES,
-            SUPERTYPE_FQ_NAMES
+            SUPERTYPE_FQ_NAMES,
         )
 
     open val withSupertypesParameters = mapOf(
-        FQ_NAMES to SET_OF_STRINGS
+        FQ_NAMES to SET_OF_STRINGS,
     ).toParameterSpecs()
 
     open val withAnnotationsParameters = mapOf(
         ANNOTATION_FQ_NAMES to SET_OF_STRINGS,
-        SUPERTYPE_FQ_NAMES to SET_OF_STRINGS
+        SUPERTYPE_FQ_NAMES to SET_OF_STRINGS,
     ).toParameterSpecs()
 
     fun generateWithSupertypesFunction() {
@@ -43,8 +44,8 @@ abstract class HelperClassGenerator : ClassGenerator() {
                 name = WITH_SUPERTYPES_FUNCTION_NAME,
                 body = withSupertypesFunctionBody,
                 typeVariables = listOf(typeVariable),
-                arguments = withSupertypesParameters
-            )
+                arguments = withSupertypesParameters,
+            ),
         )
     }
 
@@ -54,31 +55,10 @@ abstract class HelperClassGenerator : ClassGenerator() {
                 name = WITH_ANNOTATIONS_FUNCTION_NAME,
                 body = withAnnotationsFunctionBody,
                 typeVariables = listOf(typeVariable),
-                arguments = withAnnotationsParameters
-            )
+                arguments = withAnnotationsParameters,
+            ),
         )
     }
-
-    protected abstract class SelectorClassGeneratorWrapper(
-        override val typeName: ClassName,
-        override val typeVariable: TypeVariableName,
-        override val parameters: List<ParameterSpec>,
-        override val returnParameter: TypeName
-    ) : SelectorClassGenerator()
-
-    protected abstract inner class WithSupertypesGenerator : SelectorClassGeneratorWrapper(
-        typeName = this.typeName.nestedClass(WITH_SUPERTYPES_CLASS_NAME),
-        typeVariable = this.typeVariable,
-        parameters = this.withSupertypesParameters,
-        returnParameter = this.returnParameter
-    )
-
-    protected abstract inner class WithAnnotationsGenerator : SelectorClassGeneratorWrapper(
-        typeName = this.typeName.nestedClass(WITH_ANNOTATIONS_CLASS_NAME),
-        typeVariable = this.typeVariable,
-        parameters = this.withAnnotationsParameters,
-        returnParameter = this.returnParameter
-    )
 
     private fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String) =
         statement("listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)}$typeSuffix as %T" }})", List(uses.size) { returnParameter })
@@ -95,22 +75,18 @@ abstract class HelperClassGenerator : ClassGenerator() {
         return getWhenOption(setOfBlock, rightPart)
     }
 
-    private fun getWhenOptionForString(invoke: String, rightPart: CodeBlock): CodeBlock {
-        return getWhenOption("\"$invoke\"", rightPart)
-    }
+    private fun getWhenOptionForString(invoke: String, rightPart: CodeBlock) = getWhenOption("\"$invoke\"", rightPart)
 
-    private fun getWhenOption(leftPart: String, rightPart: CodeBlock): CodeBlock {
-        return CodeBlock.builder()
-            .add("$leftPart -> ")
-            .add(rightPart)
-            .build()
-    }
+    private fun getWhenOption(leftPart: String, rightPart: CodeBlock) = CodeBlock.builder()
+        .add("$leftPart -> ")
+        .add(rightPart)
+        .build()
 
     private fun <T> generateWhenBody(
         uses: Iterable<T>,
         conditionVariable: String,
+        toAddReturn: Boolean = true,
         generateBranchForWhenOption: (T) -> CodeBlock,
-        toAddReturn: Boolean = true
     ): CodeBlock {
         val builder = CodeBlock.builder()
         if (toAddReturn) {
@@ -125,20 +101,26 @@ abstract class HelperClassGenerator : ClassGenerator() {
         return builder.build()
     }
 
+    @Suppress(
+        "LAMBDA_IS_NOT_LAST_PARAMETER",
+        "IDENTIFIER_LENGTH",
+        "TYPE_ALIAS")
     protected fun <K, T> generateWhenBody(
-        uses: Map<K, List<T>>, conditionVariable: String,
+        uses: Map<K, List<T>>,
+        conditionVariable: String,
         getEntityName: (T) -> String = { it.toString() },
         toAddReturn: Boolean = true,
-        getWhenOption: (K, CodeBlock) -> CodeBlock
+        getWhenOption: (K, CodeBlock) -> CodeBlock,
     ): CodeBlock {
         val generateBranchForWhenOption = { (k, v): Map.Entry<K, List<T>> -> getWhenOption(k, listOfWhenRightPart(v, getEntityName)) }
         return generateWhenBody(uses.asIterable(), conditionVariable, generateBranchForWhenOption, toAddReturn)
     }
 
+    @Suppress("TYPE_ALIAS")
     // TODO: group by annotations (store set of signatures for the same set of annotations)
     protected fun generateNestedWhenBodyForFunctions(
         uses: FunctionUses,
-        getEntityName: (KtNamedFunction) -> String = { it.toString() }
+        getEntityName: (KtNamedFunction) -> String = { it.toString() },
     ): CodeBlock {
         val mainFunction = { o: Map.Entry<SignatureToAnnotations, List<String>> ->
             getWhenOptionForSet(
@@ -149,13 +131,14 @@ abstract class HelperClassGenerator : ClassGenerator() {
                         SIGNATURE,
                         toAddReturn = false,
                         getWhenOption = ::getWhenOptionForString
-                    )
-                )
+                    ),
+                ),
             )
         }
         return generateWhenBody(uses.mapValues { (_, v) -> v.map { getEntityName(it) } }.toMap().asIterable(), ANNOTATION_FQ_NAMES, mainFunction)
     }
 
+    @Suppress("TYPE_ALIAS")
     protected fun generateNestedWhenBodyForClassesOrObjects(uses: ClassOrObjectUses): CodeBlock {
         val mainFunction = { o: Map.Entry<SupertypesToAnnotations, List<String>> ->
             getWhenOptionForSet(
@@ -166,12 +149,19 @@ abstract class HelperClassGenerator : ClassGenerator() {
                         SUPERTYPE_FQ_NAMES,
                         toAddReturn = false,
                         getWhenOption = ::getWhenOptionForSet
-                    )
-                )
+                    ),
+                ),
             )
         }
         return generateWhenBody(uses.mapValues { (_, v) -> v.mapNotNull { it.fqName?.toString() } }.toMap().asIterable(), ANNOTATION_FQ_NAMES, mainFunction)
     }
+
+    protected abstract class SelectorClassGeneratorWrapper(
+        override val typeName: ClassName,
+        override val typeVariable: TypeVariableName,
+        override val parameters: List<ParameterSpec>,
+        override val returnParameter: TypeName,
+    ) : SelectorClassGenerator()
 
     protected companion object {
         const val WITH_SUPERTYPES_FUNCTION_NAME = "withSuperTypes"
@@ -187,7 +177,20 @@ abstract class HelperClassGenerator : ClassGenerator() {
         const val SUPERTYPE_FQ_NAMES = "supertypeFqNames"
         const val SIGNATURE = "signature"
 
-//        val STRING = KClass::class.asClassName().parameterizedBy(TypeVariableName("T", String::class))
         val SET_OF_STRINGS = Set::class.parameterizedBy(String::class)
     }
+
+    protected abstract inner class WithSupertypesGenerator : SelectorClassGeneratorWrapper(
+        typeName = this.typeName.nestedClass(WITH_SUPERTYPES_CLASS_NAME),
+        typeVariable = this.typeVariable,
+        parameters = this.withSupertypesParameters,
+        returnParameter = this.returnParameter,
+    )
+
+    protected abstract inner class WithAnnotationsGenerator : SelectorClassGeneratorWrapper(
+        typeName = this.typeName.nestedClass(WITH_ANNOTATIONS_CLASS_NAME),
+        typeVariable = this.typeVariable,
+        parameters = this.withAnnotationsParameters,
+        returnParameter = this.returnParameter,
+    )
 }

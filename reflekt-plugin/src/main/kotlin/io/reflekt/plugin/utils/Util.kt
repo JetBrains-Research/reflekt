@@ -4,28 +4,34 @@ import io.reflekt.plugin.analysis.analyzer.source.SmartReflektAnalyzer
 import io.reflekt.plugin.analysis.models.ReflektInstances
 import io.reflekt.plugin.analysis.models.ReflektUses
 import io.reflekt.util.TypeStringRepresentationUtil
+
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
-import org.jetbrains.kotlin.cli.common.messages.*
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageLocation
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
+import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.resolve.*
+import org.jetbrains.kotlin.resolve.BindingTrace
+import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.util.slicedMap.Slices
 import org.jetbrains.kotlin.util.slicedMap.WritableSlice
+
 import java.io.File
 import java.io.PrintStream
 
 object Util {
-    private val GET_USES: WritableSlice<String, ReflektUses> = Slices.createSimpleSlice()
     private const val USES_STORE_NAME = "ReflektUses"
-
-    private val GET_INSTANCES: WritableSlice<String, ReflektInstances> = Slices.createSimpleSlice()
     private const val INSTANCES_STORE_NAME = "ReflektInstances"
+    private val GET_USES: WritableSlice<String, ReflektUses> = Slices.createSimpleSlice()
+    private val GET_INSTANCES: WritableSlice<String, ReflektInstances> = Slices.createSimpleSlice()
 
     val CompilerConfiguration.messageCollector: MessageCollector
         get() = this.get(
             CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-            MessageCollector.NONE
+            MessageCollector.NONE,
         )
 
     fun CompilerConfiguration.initMessageCollector(filePath: String) {
@@ -33,7 +39,7 @@ object Util {
         file.createNewFile()
         this.put(
             CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-            PrintingMessageCollector(PrintStream(file.outputStream()), MessageRenderer.PLAIN_FULL_PATHS, true)
+            PrintingMessageCollector(PrintStream(file.outputStream()), MessageRenderer.PLAIN_FULL_PATHS, true),
         )
     }
 
@@ -41,7 +47,7 @@ object Util {
         this.report(
             CompilerMessageSeverity.LOGGING,
             "Reflekt: $message",
-            CompilerMessageLocation.create(null)
+            CompilerMessageLocation.create(null),
         )
     }
 
@@ -57,7 +63,24 @@ object Util {
 
     fun BindingContext.getInstances() = get(GET_INSTANCES, INSTANCES_STORE_NAME)
 
-    fun getInstances(files: Set<KtFile>, bindingTrace: BindingTrace, toSave: Boolean = true, messageCollector: MessageCollector? = null): ReflektInstances {
+    fun getUses(
+        files: Set<KtFile>,
+        bindingTrace: BindingTrace,
+        toSave: Boolean = true): ReflektUses {
+        val analyzer = ReflektAnalyzer(files, bindingTrace.bindingContext)
+        val invokes = analyzer.invokes()
+        val uses = analyzer.uses(invokes)
+        if (toSave) {
+            bindingTrace.saveUses(uses)
+        }
+        return uses
+    }
+
+    fun getInstances(
+        files: Set<KtFile>,
+        bindingTrace: BindingTrace,
+        toSave: Boolean = true,
+        messageCollector: MessageCollector? = null): ReflektInstances {
         val analyzer = SmartReflektAnalyzer(files, bindingTrace.bindingContext, messageCollector)
         val instances = analyzer.instances()
         if (toSave) {
@@ -66,9 +89,6 @@ object Util {
         return instances
     }
 }
-
-fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, transform: T.() -> String): String =
-    "(${values.joinToString(separator = "|") { it.transform() }})"
 
 fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T =
     values.first { it.transform() == this }
@@ -87,3 +107,6 @@ fun KotlinType.stringRepresentation(): String {
     }
     return TypeStringRepresentationUtil.getStringRepresentation(DescriptorUtils.getFqName(declaration).asString(), typeArguments)
 }
+
+fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, transform: T.() -> String): String =
+    "(${values.joinToString(separator = "|") { it.transform() }})"

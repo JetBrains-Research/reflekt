@@ -1,15 +1,16 @@
 package io.reflekt.plugin.generation.code.generator.models
 
+import io.reflekt.plugin.generation.code.generator.*
+
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import io.reflekt.plugin.generation.code.generator.*
+
 import kotlin.reflect.KClass
 
 abstract class SelectorClassGenerator : ClassGenerator() {
     protected abstract val typeVariable: TypeVariableName
     protected abstract val returnParameter: TypeName
     protected abstract val parameters: List<ParameterSpec>
-
     protected open val toListFunctionBody = emptyListCode()
     protected open val toSetFunctionBody = statement("return toList().toSet()")
 
@@ -33,13 +34,13 @@ abstract class SelectorClassGenerator : ClassGenerator() {
 
     private fun generateConversionFunction(
         klass: KClass<*>,
-        body: CodeBlock
+        body: CodeBlock,
     ) =
         addFunctions(
             generateFunction(
                 name = "to${klass.simpleName}",
                 body = body,
-                returnType = klass.asClassName().parameterizedBy(returnParameter)
-            )
+                returnType = klass.asClassName().parameterizedBy(returnParameter),
+            ),
         )
 }

@@ -2,7 +2,6 @@ package io.reflekt.plugin.analysis
 
 import io.reflekt.plugin.util.Util.Command
 import io.reflekt.plugin.util.Util.runProcessBuilder
-import io.reflekt.util.Util
 import org.gradle.internal.impldep.org.apache.commons.lang.SystemUtils
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -10,6 +9,14 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import java.io.File
 
 class AnalysisSetupTest {
+    @Test
+    @Tag("analysis")
+    fun `analysis setup test`() {
+        /*
+         * Just check if the all necessary ReflektJars exist
+         */
+        assertDoesNotThrow { getReflektProjectJars() }
+    }
 
     companion object {
         private const val WINDOWS_USER_PROFILE = "USERPROFILE"
@@ -32,14 +39,5 @@ class AnalysisSetupTest {
             }
             return runProcessBuilder(Command(listOf("/bin/bash", "-c", "echo \$HOME"))).removeSuffix("/")
         }
-    }
-
-    @Test
-    @Tag("analysis")
-    fun `analysis setup test`() {
-        /*
-         * Just check if the all necessary ReflektJars exist
-         */
-        assertDoesNotThrow { getReflektProjectJars() }
     }
 }

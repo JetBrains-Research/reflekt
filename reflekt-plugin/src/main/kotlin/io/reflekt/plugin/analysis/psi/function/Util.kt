@@ -42,25 +42,18 @@ fun FunctionDescriptor.receiverType(): KotlinType? {
 }
 
 // Todo: do we actually need equal types or being subtype is enough?
-fun KtNamedFunction.checkSignature(signature: KotlinType, binding: BindingContext): Boolean {
-    return this.toParameterizedType(binding)?.let { equalTypes(it, signature) } ?: false
-}
+fun KtNamedFunction.checkSignature(signature: KotlinType, binding: BindingContext) = this.toParameterizedType(binding)?.let { equalTypes(it, signature) } ?: false
 
 fun KtNamedFunction.toFunctionInfo(binding: BindingContext): IrFunctionInfo =
     IrFunctionInfo(
         fqName.toString(),
         receiverFqName = receiverType(binding)?.shortFqName(),
-        isObjectReceiver = receiverType(binding)?.isObject() ?: false
+        isObjectReceiver = receiverType(binding)?.isObject() ?: false,
     )
 
+fun KtNamedFunction.toParameterizedType(binding: BindingContext): KotlinType? = getDescriptor(binding).toParameterizedType()
 
-fun KtNamedFunction.toParameterizedType(binding: BindingContext): KotlinType? {
-    return getDescriptor(binding).toParameterizedType()
-}
-
-fun FunctionDescriptor.toParameterizedType(): KotlinType? {
-    return (this as? SimpleFunctionDescriptor)?.createFunctionTypeWithDispatchReceiver(DefaultBuiltIns.Instance)
-}
+fun FunctionDescriptor.toParameterizedType() = (this as? SimpleFunctionDescriptor)?.createFunctionTypeWithDispatchReceiver(DefaultBuiltIns.Instance)
 
 /**
  * We need to create FunctionType from function descriptor, but unlike [SimpleFunctionDescriptor.createFunctionType] we want to take into account
@@ -103,13 +96,16 @@ fun FunctionDescriptor.toParameterizedType(): KotlinType? {
  *          ^
  *     extension receiver
  *
+ * @param builtIns
+ * @param suspendFunction
+ * @param shouldUseVarargType
+ * @return created kotlin type
  */
 fun SimpleFunctionDescriptor.createFunctionTypeWithDispatchReceiver(
     builtIns: KotlinBuiltIns,
     suspendFunction: Boolean = false,
-    shouldUseVarargType: Boolean = false
+    shouldUseVarargType: Boolean = false,
 ): KotlinType? {
-
     // If function is inside an object (or companion object), we dont't want to consider its dispatch receiver
     val dispatchReceiver = if (this.dispatchReceiverParameter?.containingDeclaration.isObject()) {
         null
@@ -138,7 +134,7 @@ fun SimpleFunctionDescriptor.createFunctionTypeWithDispatchReceiver(
         parameters,
         null,
         returnType ?: return null,
-        suspendFunction = suspendFunction
+        suspendFunction = suspendFunction,
     )
 }
 
@@ -149,4 +145,3 @@ fun KotlinType.shortFqName() = getJetTypeFqName(false)
 fun KotlinType.isObject() = constructor.declarationDescriptor.isObject()
 
 fun KotlinType.isCompanionObject() = constructor.declarationDescriptor?.isCompanionObject() ?: false
-

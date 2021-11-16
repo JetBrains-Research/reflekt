@@ -4,7 +4,6 @@ import io.reflekt.plugin.analysis.common.ReflektEntity
 import io.reflekt.plugin.analysis.ir.ReflektFunctionInvokeArgumentsCollector
 import io.reflekt.plugin.analysis.ir.ReflektInvokeArgumentsCollector
 import io.reflekt.plugin.analysis.models.IrReflektUses
-import io.reflekt.plugin.generation.common.ReflektGenerationException
 import io.reflekt.plugin.generation.common.ReflektInvokeParts
 import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -19,9 +18,8 @@ import org.jetbrains.kotlin.ir.util.fqNameForIrSerialization
 class ReflektIrTransformer(
     private val pluginContext: IrPluginContext,
     private val uses: IrReflektUses,
-    private val messageCollector: MessageCollector? = null
+    private val messageCollector: MessageCollector? = null,
 ) : BaseReflektIrTransformer(messageCollector) {
-
     @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall): IrExpression {
         val function = expression.symbol.owner
@@ -38,7 +36,7 @@ class ReflektIrTransformer(
                     invokeParts,
                     usesType.getOrDefault(invokeArguments, emptyList()),
                     expression.type,
-                    pluginContext
+                    pluginContext,
                 )
             }
             ReflektEntity.FUNCTIONS -> {
@@ -49,7 +47,7 @@ class ReflektIrTransformer(
                     invokeParts,
                     usesType.getOrDefault(invokeArguments, emptyList()),
                     expression.type,
-                    pluginContext
+                    pluginContext,
                 )
             }
         }

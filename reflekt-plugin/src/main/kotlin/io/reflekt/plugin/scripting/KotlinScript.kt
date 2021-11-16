@@ -1,3 +1,5 @@
+@file:Suppress("FILE_WILDCARD_IMPORTS")
+
 package io.reflekt.plugin.scripting
 
 import io.reflekt.plugin.analysis.models.Import
@@ -9,11 +11,13 @@ import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvm.updateClasspath
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 
+typealias KotlinScriptProperties = List<Pair<String, KClass<*>>>
+
 class KotlinScript(
     code: String,
     imports: List<Import> = emptyList(),
-    properties: List<Pair<String, KClass<*>>> = emptyList(),
-    classpath: List<File> = emptyList()
+    properties: KotlinScriptProperties = emptyList(),
+    classpath: List<File> = emptyList(),
 ) {
     private val argumentNames = properties.map { it.first }
     private val source = (imports.joinToString(separator = System.lineSeparator(), postfix = System.lineSeparator()) { it.text } + code).toScriptSource()
@@ -36,10 +40,10 @@ class KotlinScript(
             providedProperties(*argumentNames.zip(arguments).toTypedArray())
         }
         val result = BasicJvmScriptingHost().eval(
-            source, compilationConfiguration, evaluationConfiguration
+            source, compilationConfiguration, evaluationConfiguration,
         )
         if (result !is ResultWithDiagnostics.Success) {
-            throw RuntimeException("Failed to evaluate script:\n${result.reports.map { it.render(withStackTrace = true)} }}")
+            throw RuntimeException("Failed to evaluate script:\n${result.reports.map { it.render(withStackTrace = true) } }}")
         }
         return result
     }

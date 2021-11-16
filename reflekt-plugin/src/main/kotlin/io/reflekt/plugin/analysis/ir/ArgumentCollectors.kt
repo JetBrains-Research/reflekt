@@ -1,3 +1,5 @@
+@file:Suppress("FILE_WILDCARD_IMPORTS")
+
 package io.reflekt.plugin.analysis.ir
 
 import io.reflekt.plugin.analysis.common.*
@@ -11,7 +13,6 @@ import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.types.KotlinType
 
 open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
-
     override fun visitElement(element: IrElement, data: Nothing?) {
         element.acceptChildren(this, data)
     }
@@ -29,12 +30,8 @@ class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
         super.visitCall(expression, data)
         val function = expression.symbol.owner
         when (function.name.asString()) {
-            ReflektFunction.WITH_SUPERTYPE.functionName -> {
-                supertypes.addAll(expression.getFqNamesOfTypeArguments())
-            }
-            ReflektFunction.WITH_SUPERTYPES.functionName -> {
-                supertypes.addAll(expression.getFqNamesOfClassReferenceValueArguments())
-            }
+            ReflektFunction.WITH_SUPERTYPE.functionName -> supertypes.addAll(expression.getFqNamesOfTypeArguments())
+            ReflektFunction.WITH_SUPERTYPES.functionName -> supertypes.addAll(expression.getFqNamesOfClassReferenceValueArguments())
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 annotations.addAll(expression.getFqNamesOfClassReferenceValueArguments())
                 supertypes.addAll(expression.getFqNamesOfTypeArguments())
@@ -103,11 +100,13 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
         }
     }
 
+    @Suppress("AVOID_NULL_CHECKS")
     override fun visitFunctionExpression(expression: IrFunctionExpression, data: Nothing?) {
         val function = expression.function
         if (function.body == null) {
             return
         }
+
         val body = sourceFile.content.substring(function.body!!.startOffset, function.body!!.endOffset)
         val parameters = function.valueParameters.map { it.name.toString() }
         filters.add(Lambda(body = body, parameters = parameters))
@@ -123,7 +122,7 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
                 typeArgument = visitor.typeArgument,
                 typeArgumentFqName = visitor.typeArgumentFqName,
                 filters = visitor.filters,
-                imports = sourceFile.imports
+                imports = sourceFile.imports,
             )
         }
     }

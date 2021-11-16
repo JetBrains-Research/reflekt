@@ -9,11 +9,6 @@ abstract class FileGenerator : Generator<String>() {
     protected abstract val packageName: String
     protected abstract val fileName: String
     private val aliases: MutableMap<String, Int> = HashMap()
-
-    companion object {
-        var indent: String = " ".repeat(4)
-    }
-
     private lateinit var builder: FileSpec.Builder
 
     final override fun initBuilder() {
@@ -46,7 +41,11 @@ abstract class FileGenerator : Generator<String>() {
         return alias
     }
 
-    private fun addAliasedImport(memberName: MemberName, `as`: String) {
-        builder.addAliasedImport(memberName, `as`);
+    private fun addAliasedImport(memberName: MemberName, alias: String) {
+        builder.addAliasedImport(memberName, alias)
+    }
+
+    companion object {
+        var indent: String = " ".repeat(4)
     }
 }
