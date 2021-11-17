@@ -22,7 +22,7 @@ enum class ElementType(val value: String) {
 }
 
 // TODO: think about a better name
-interface ISizeable {
+interface Sizeable {
     fun isEmpty(): Boolean
 
     fun isNotEmpty() = !isEmpty()
@@ -32,7 +32,7 @@ open class BaseCollectionReflektData<O : Collection<*>, C : Collection<*>, F : C
     open val objects: O,
     open val classes: C,
     open val functions: F
-): ISizeable {
+): Sizeable {
     override fun isEmpty() = objects.isEmpty() && classes.isEmpty() && functions.isEmpty()
 }
 
@@ -40,7 +40,7 @@ open class BaseMapReflektData<O : HashMap<*, *>, C : HashMap<*, *>, F : HashMap<
     open val objects: O,
     open val classes: C,
     open val functions: F
-): ISizeable {
+): Sizeable {
     override fun isEmpty() = objects.isEmpty() && classes.isEmpty() && functions.isEmpty()
 }
 
@@ -53,7 +53,7 @@ open class BaseReflektDataByFile<O : Any, C : Any, F : Any>(
 fun <K : Any, T : Iterable<*>> HashMap<K, T>.merge(second: HashMap<K, T>): HashMap<K, T> =
     this.also { second.forEach { (k, v) -> this.getOrPut(k) { v } } }
 
-fun <T: ISizeable> merge(first: T, second: T, mergeFunction: (T, T) -> T): T {
+fun <T: Sizeable> merge(first: T, second: T, mergeFunction: (T, T) -> T): T {
     if (first.isEmpty()) return second
     if (second.isEmpty()) return first
     return mergeFunction(first, second)
