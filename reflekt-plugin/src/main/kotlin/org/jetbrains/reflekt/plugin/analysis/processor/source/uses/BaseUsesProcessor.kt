@@ -1,14 +1,15 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.source.uses
 
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.reflekt.plugin.analysis.models.*
-import org.jetbrains.reflekt.plugin.analysis.processor.FileID
+import org.jetbrains.reflekt.plugin.analysis.models.psi.*
+import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.reflekt.plugin.analysis.processor.fullName
 import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
 import org.jetbrains.reflekt.plugin.analysis.psi.annotation.getAnnotations
 import org.jetbrains.reflekt.plugin.analysis.psi.isSubtypeOf
+
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.resolve.BindingContext
 
 /**
  * @property binding

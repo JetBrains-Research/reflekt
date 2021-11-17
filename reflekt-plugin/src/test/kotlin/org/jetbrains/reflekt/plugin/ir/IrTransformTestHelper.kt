@@ -2,14 +2,14 @@ package org.jetbrains.reflekt.plugin.ir
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
+import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.reflekt.plugin.ReflektComponentRegistrar
 import org.jetbrains.reflekt.plugin.util.Util
-import org.jetbrains.reflekt.util.FileUtil
 import org.junit.jupiter.api.Assertions
 
 object IrTransformTestHelper {
-    private val commonTestFiles = FileUtil.getAllNestedFiles(Util.getResourcesRootPath(IrTransformTestHelper::class, "commonTestFiles"))
+    private val commonTestFiles = Util.getResourcesRootPath(IrTransformTestHelper::class, "commonTestFiles").getAllNestedFiles()
         .map { SourceFile.fromPath(it) }
 
     fun classFqNames(reflektCall: String): Set<String> = classOrObjectFqNames(reflektCall)

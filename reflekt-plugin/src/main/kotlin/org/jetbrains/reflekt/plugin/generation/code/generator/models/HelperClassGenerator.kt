@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
-import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.models.psi.*
 import org.jetbrains.reflekt.plugin.generation.code.generator.*
 import org.jetbrains.reflekt.plugin.utils.stringRepresentation
 

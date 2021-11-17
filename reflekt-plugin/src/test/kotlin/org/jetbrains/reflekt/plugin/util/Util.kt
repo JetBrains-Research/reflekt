@@ -2,9 +2,8 @@ package org.jetbrains.reflekt.plugin.util
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStreamReader
+import org.gradle.internal.impldep.org.apache.commons.lang.SystemUtils
+import java.io.*
 import kotlin.reflect.KClass
 
 object Util {

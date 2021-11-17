@@ -1,6 +1,7 @@
 package org.jetbrains.reflekt.plugin.analysis.psi.function
 
-import org.jetbrains.reflekt.plugin.analysis.models.IrFunctionInfo
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
+
 import org.jetbrains.kotlin.builtins.*
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
@@ -142,4 +143,3 @@ fun KotlinType.shortFqName() = getJetTypeFqName(false)
 fun KotlinType.isObject() = constructor.declarationDescriptor.isObject()
 
 fun KotlinType.isCompanionObject() = constructor.declarationDescriptor?.isCompanionObject() ?: false
-

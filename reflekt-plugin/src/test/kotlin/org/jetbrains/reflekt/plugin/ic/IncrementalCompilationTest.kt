@@ -1,5 +1,6 @@
 package org.jetbrains.reflekt.plugin.ic
 
+import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
 import org.jetbrains.reflekt.plugin.analysis.getTestsDirectories
 import org.jetbrains.reflekt.plugin.ic.modification.Modification
@@ -7,7 +8,6 @@ import org.jetbrains.reflekt.plugin.ic.modification.applyModifications
 import org.jetbrains.reflekt.plugin.util.Util
 import org.jetbrains.reflekt.plugin.util.Util.clear
 import org.jetbrains.reflekt.plugin.util.Util.getTempPath
-import org.jetbrains.reflekt.util.FileUtil
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -76,7 +76,7 @@ class IncrementalCompilationTest {
     //  - get the relative path with [outDir]
     //  - replace all "/" into "."
     private fun getMainClass(outDir: File): String {
-        val allFiles = FileUtil.getAllNestedFiles(outDir.absolutePath)
+        val allFiles = outDir.absolutePath.getAllNestedFiles()
         val mainClass = allFiles.find { it.name == "${mainFileName}Kt.class" }?.absolutePath?.removeSuffix(".class")
             ?: error("The output directory doe not contains ${mainFileName}Kt.class file")
         return mainClass.substring(mainClass.indexOf("$outFolderName/") + outFolderName.length + 1).replace("/", ".")

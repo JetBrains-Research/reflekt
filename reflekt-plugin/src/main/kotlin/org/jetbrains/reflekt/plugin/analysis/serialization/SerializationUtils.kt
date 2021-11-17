@@ -1,6 +1,8 @@
 package org.jetbrains.reflekt.plugin.analysis.serialization
 
-import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.models.SerializableKotlinType
+import org.jetbrains.reflekt.plugin.analysis.models.SerializableTypeProjection
+import org.jetbrains.reflekt.plugin.analysis.models.psi.*
 
 import org.jetbrains.kotlin.builtins.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations

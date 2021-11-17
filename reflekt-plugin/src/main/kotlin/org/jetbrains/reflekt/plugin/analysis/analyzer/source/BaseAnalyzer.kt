@@ -1,11 +1,12 @@
 package org.jetbrains.reflekt.plugin.analysis.analyzer.source
 
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
 import org.jetbrains.reflekt.plugin.analysis.psi.visit
 import org.jetbrains.reflekt.plugin.utils.Util.log
+
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.resolve.BindingContext
 
 /**
  * @property ktFiles

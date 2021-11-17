@@ -1,5 +1,14 @@
 package org.jetbrains.reflekt.plugin.analysis
 
+import org.jetbrains.reflekt.plugin.analysis.analyzer.source.ReflektAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.models.ir.*
+import org.jetbrains.reflekt.plugin.analysis.models.psi.*
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
+import org.jetbrains.reflekt.plugin.generation.code.generator.ReflektImplGenerator
+import org.jetbrains.reflekt.plugin.utils.Util.getInstances
+import org.jetbrains.reflekt.plugin.utils.Util.log
+import org.jetbrains.reflekt.plugin.utils.Util.saveUses
+
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
@@ -8,14 +17,7 @@ import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
-import org.jetbrains.reflekt.plugin.analysis.analyzer.source.ReflektAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.models.*
-import org.jetbrains.reflekt.plugin.analysis.models.ir.*
-import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
-import org.jetbrains.reflekt.plugin.generation.code.generator.ReflektImplGenerator
-import org.jetbrains.reflekt.plugin.utils.Util.getInstances
-import org.jetbrains.reflekt.plugin.utils.Util.log
-import org.jetbrains.reflekt.plugin.utils.Util.saveUses
+
 import java.io.File
 
 class ReflektModuleAnalysisExtension(
@@ -23,8 +25,8 @@ class ReflektModuleAnalysisExtension(
     private val toSaveMetadata: Boolean,
     private val generationPath: File?,
     private val reflektMetaFile: File?,
-    private val reflektContext: ReflektContext? = null,
-    private val messageCollector: MessageCollector? = null
+    private val reflektContext: IrReflektContext? = null,
+    private val messageCollector: MessageCollector? = null,
 ) : AnalysisHandlerExtension {
     private val reflektPackage = "org.jetbrains.reflekt"
 
@@ -50,21 +52,21 @@ class ReflektModuleAnalysisExtension(
         val uses = analyzer.uses(mergedInvokes)
         bindingTrace.saveUses(uses)
 
-        if (reflektContext != null) {
+        reflektContext?.let {
             reflektContext.uses = externalLibrariesAnalyzer.buildIrReflektUses(
                 uses,
                 bindingTrace.bindingContext,
             )
-
             // TODO: collect instances only if SmartReflekt calls exist
             // Need only for SmartReflekt
             val instances = getInstances(setOfFiles, bindingTrace, messageCollector = messageCollector)
             reflektContext.instances = IrReflektInstances.fromReflektInstances(instances, bindingTrace.bindingContext, messageCollector)
             messageCollector?.log("IrReflektInstances were created successfully")
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: ${reflektContext.uses}\nInstances: ${reflektContext.instances}")
-        } else {
-            messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses")
         }
+            ?: run {
+                messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses")
+            }
 
         val reflektImplFile = File(generationPath, "io/reflekt/ReflektImpl.kt")
         if (toGenerateReflektImpl(externalLibrariesAnalyzer.invokesWithPackages.invokes)) {
@@ -75,7 +77,7 @@ class ReflektModuleAnalysisExtension(
         return super.analysisCompleted(project, module, bindingTrace, files)
     }
 
-    private fun toGenerateReflektImpl(libraryInvokes: ReflektInvokes) = !libraryInvokes.isEmpty()
+    private fun toGenerateReflektImpl(libraryInvokes: ReflektInvokes) = libraryInvokes.isNotEmpty()
 
     // TODO: generate ReflektImpl by IrReflektUses
     private fun generateReflektImpl(uses: ReflektUses, reflektImplFile: File) {
@@ -85,7 +87,7 @@ class ReflektModuleAnalysisExtension(
             delete()
             parentFile.mkdirs()
             writeText(
-                ReflektImplGenerator(uses).generate()
+                ReflektImplGenerator(uses).generate(),
             )
         }
         messageCollector?.log("Finish generation ReflektImpl")
@@ -99,8 +101,8 @@ class ReflektModuleAnalysisExtension(
                 ReflektInvokesWithPackages(
                     invokes = invokes,
                     packages = files.map { it.packageFqName.asString() }.toSet(),
-                )
-            )
+                ),
+            ),
         )
     }
 }

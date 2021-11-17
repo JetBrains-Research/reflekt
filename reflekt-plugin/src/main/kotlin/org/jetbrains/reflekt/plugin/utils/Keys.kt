@@ -1,7 +1,9 @@
 package org.jetbrains.reflekt.plugin.utils
 
-import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import org.jetbrains.reflekt.util.Util.PLUGIN_ID
+
+import org.jetbrains.kotlin.config.CompilerConfigurationKey
+
 import java.io.File
 
 internal object Keys {

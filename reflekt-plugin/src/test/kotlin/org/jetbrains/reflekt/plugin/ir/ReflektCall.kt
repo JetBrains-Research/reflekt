@@ -2,10 +2,10 @@ package org.jetbrains.reflekt.plugin.ir
 
 import org.jetbrains.reflekt.plugin.ReflektComponentRegistrar
 import org.jetbrains.reflekt.plugin.util.Util
-import org.jetbrains.reflekt.util.file.getAllNestedFiles
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
+import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.junit.jupiter.api.Assertions
 
 /**
@@ -109,5 +109,5 @@ enum class ReflektType(val id: String, val resolve: String) {
         return resultFile("$id.$classesCall.$resolve.map { it.qualifiedName!! }.toSet()")
     }
 
-    private fun resultFile(resultMethodBody: String) = ResultFile<Set<String>>(import = "io.reflekt.$id", resultMethodBody = resultMethodBody)
+    private fun resultFile(resultMethodBody: String) = ResultFile<Set<String>>(import = "org.jetbrains.reflekt.$id", resultMethodBody = resultMethodBody)
 }

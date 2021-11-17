@@ -2,7 +2,7 @@
  * Internal utilities used to work with files in reflekt
  */
 
-package io.reflekt.util.file
+package org.jetbrains.reflekt.util.file
 
 import net.lingala.zip4j.ZipFile
 import java.io.File

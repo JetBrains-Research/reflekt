@@ -1,4 +1,4 @@
-import io.reflekt.buildutils.*
+import org.jetbrains.reflekt.buildutils.*
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
@@ -56,11 +56,12 @@ allprojects {
     }
 
     configureDiktat()
-    configureDetekt()
+    // Incomment Detekt checks after code refactoring
+    // configureDetekt()
 }
 
 createDiktatTask()
-createDetektTask()
+// createDetektTask()
 
 subprojects {
     apply {

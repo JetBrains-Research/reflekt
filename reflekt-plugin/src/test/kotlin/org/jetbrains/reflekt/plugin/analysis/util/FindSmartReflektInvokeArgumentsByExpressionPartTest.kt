@@ -1,8 +1,9 @@
 package org.jetbrains.reflekt.plugin.analysis.util
 
-import org.jetbrains.reflekt.plugin.analysis.*
-import org.jetbrains.reflekt.plugin.util.Util
 import org.jetbrains.reflekt.util.file.getAllNestedFiles
+import org.jetbrains.reflekt.plugin.analysis.*
+import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
+import org.jetbrains.reflekt.plugin.util.Util
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -18,7 +19,7 @@ class FindSmartReflektInvokeArgumentsByExpressionPartTest {
         sources: Set<File>,
         expectedResult: String,
         directory: String) {
-        val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
+        val reflektClassPath = getReflektProjectJars()
         val analyzer = SmartReflektTestAnalyzer(AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sources))
         Assertions.assertEquals(expectedResult, analyzer.analyze().toPrettyString(), "Incorrect invoke arguments for directory $directory")
     }

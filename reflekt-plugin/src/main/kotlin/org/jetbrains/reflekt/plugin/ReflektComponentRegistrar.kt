@@ -1,7 +1,7 @@
 package org.jetbrains.reflekt.plugin
 
 import org.jetbrains.reflekt.plugin.analysis.ReflektModuleAnalysisExtension
-import org.jetbrains.reflekt.plugin.analysis.models.ReflektContext
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektContext
 import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.utils.PluginConfig
@@ -24,7 +24,7 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         configuration: CompilerConfiguration,
     ) {
         val config = PluginConfig(configuration, isTestConfiguration = isTestConfiguration)
-        val reflektContext = ReflektContext()
+        val reflektContext = IrReflektContext()
 
         configuration.messageCollector.log("PROJECT FILE PATH: ${project.projectFilePath}")
 
@@ -59,4 +59,3 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         )
     }
 }
-

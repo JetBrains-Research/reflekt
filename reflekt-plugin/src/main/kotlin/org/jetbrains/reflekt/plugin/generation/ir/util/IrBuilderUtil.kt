@@ -66,7 +66,6 @@ fun irTypeCast(type: IrType, argument: IrExpression) =
         typeOperand = type,
         argument = argument,
     )
-package org.jetbrains.reflekt.plugin.generation.ir.util
 
 fun funListOf(pluginContext: IrPluginContext) =
     pluginContext.referenceFunctions(FqName("kotlin.collections.listOf"))

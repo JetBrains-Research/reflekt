@@ -1,8 +1,9 @@
 package org.jetbrains.reflekt.plugin.analysis
 
-import org.jetbrains.reflekt.plugin.analysis.AnalysisUtil.getReflektAnalyzer
-import org.jetbrains.reflekt.plugin.util.Util.getResourcesRootPath
 import org.jetbrains.reflekt.util.file.getAllNestedFiles
+import org.jetbrains.reflekt.plugin.analysis.AnalysisUtil.getReflektAnalyzer
+import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
+import org.jetbrains.reflekt.plugin.util.Util.getResourcesRootPath
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -19,7 +20,7 @@ class AnalysisTest {
         expectedInvokes: String,
         expectedUses: String,
         directory: String) {
-        val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
+        val reflektClassPath = getReflektProjectJars()
         val analyzer = getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
         val actualInvokes = analyzer.invokes()
         Assertions.assertEquals(expectedInvokes, actualInvokes.toPrettyString(), "Incorrect invokes for directory $directory")

@@ -1,5 +1,7 @@
 package org.jetbrains.reflekt.plugin.analysis.ir
 
+import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
+
 import org.jetbrains.kotlin.backend.jvm.codegen.psiElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.declarations.IrFunction
@@ -8,7 +10,6 @@ import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 
 fun IrCall.getFqNamesOfTypeArguments(): List<String> {
     val result = ArrayList<String>()

@@ -4,9 +4,9 @@ import org.jetbrains.reflekt.plugin.analysis.*
 import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.*
 import org.jetbrains.reflekt.plugin.analysis.psi.function.*
 import org.jetbrains.reflekt.plugin.util.Util
-import org.jetbrains.reflekt.util.file.getAllNestedFiles
 
 import com.tschuchort.compiletesting.KotlinCompilation
+import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType

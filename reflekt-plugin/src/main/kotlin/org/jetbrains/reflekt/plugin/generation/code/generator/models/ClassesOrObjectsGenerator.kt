@@ -1,7 +1,7 @@
 package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
-import org.jetbrains.reflekt.plugin.analysis.models.ClassOrObjectUses
-import org.jetbrains.reflekt.plugin.analysis.models.toSupertypesToFqNamesMap
+import org.jetbrains.reflekt.plugin.analysis.models.ir.toSupertypesToFqNamesMap
+import org.jetbrains.reflekt.plugin.analysis.models.psi.ClassOrObjectUses
 import org.jetbrains.reflekt.plugin.generation.code.generator.emptyListCode
 
 import com.squareup.kotlinpoet.ClassName

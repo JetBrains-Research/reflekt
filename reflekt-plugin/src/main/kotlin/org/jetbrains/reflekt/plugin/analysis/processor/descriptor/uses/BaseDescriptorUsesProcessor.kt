@@ -1,13 +1,15 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.descriptor.uses
 
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrClassOrObjectUses
+import org.jetbrains.reflekt.plugin.analysis.models.psi.ClassOrObjectInvokes
+import org.jetbrains.reflekt.plugin.analysis.models.psi.SupertypesToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.processor.descriptor.DescriptorProcessor
+import org.jetbrains.reflekt.plugin.analysis.resolve.isSubtypeOf
+
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.ClassifierDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
-import org.jetbrains.reflekt.plugin.analysis.models.*
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrClassOrObjectUses
-import org.jetbrains.reflekt.plugin.analysis.processor.descriptor.DescriptorProcessor
-import org.jetbrains.reflekt.plugin.analysis.resolve.isSubtypeOf
 
 /**
  * @property messageCollector

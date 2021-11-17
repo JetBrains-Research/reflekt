@@ -1,13 +1,14 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.source.uses
 
+import org.jetbrains.reflekt.plugin.analysis.models.psi.ClassOrObjectUses
+import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektInvokes
+import org.jetbrains.reflekt.plugin.analysis.processor.*
+import org.jetbrains.reflekt.plugin.utils.Util.log
+
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.reflekt.plugin.analysis.models.ClassOrObjectUses
-import org.jetbrains.reflekt.plugin.analysis.models.ReflektInvokes
-import org.jetbrains.reflekt.plugin.analysis.processor.*
-import org.jetbrains.reflekt.plugin.utils.Util.log
 
 /**
  * @param reflektInvokes

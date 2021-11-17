@@ -1,11 +1,11 @@
 package org.jetbrains.reflekt.plugin.util.type.representation
 
+import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.KtCallExpressionVisitor
 import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.visitKtElements
 import org.jetbrains.reflekt.plugin.analysis.toParameterizedType
 import org.jetbrains.reflekt.plugin.util.Util.getResourcesRootPath
 import org.jetbrains.reflekt.plugin.utils.stringRepresentation
-import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.jetbrains.reflekt.util.stringRepresentation
 import org.jetbrains.kotlin.types.KotlinType
 import org.junit.jupiter.api.Assertions
@@ -26,8 +26,8 @@ class TypeStringRepresentationTest {
         kotlinType: KotlinType,
         expectedStringRepresentation: String) {
         // TODO: can we use classes for KType from the resources folder?
-        val resourcePackageName = "io.reflekt.plugin.util.type.representation.kotlinTypes"
-        val srcPackageName = "io.reflekt.plugin.util.type.representation"
+        val resourcePackageName = "org.jetbrains.reflekt.plugin.util.type.representation.kotlinTypes"
+        val srcPackageName = "org.jetbrains.reflekt.plugin.util.type.representation"
 
         val kTypeStr = kType.stringRepresentation().replace(srcPackageName, resourcePackageName)
         Assertions.assertEquals(expectedStringRepresentation, kTypeStr, "Incorrect string representation for KType $kType")

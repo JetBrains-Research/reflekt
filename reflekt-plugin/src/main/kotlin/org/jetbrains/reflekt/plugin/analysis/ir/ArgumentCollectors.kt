@@ -4,7 +4,10 @@ package org.jetbrains.reflekt.plugin.analysis.ir
 
 import org.jetbrains.reflekt.plugin.analysis.common.*
 import org.jetbrains.reflekt.plugin.analysis.models.*
-import org.jetbrains.jetbrains.kotlin.ir.IrElement
+import org.jetbrains.reflekt.plugin.analysis.models.psi.SignatureToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.psi.SupertypesToAnnotations
+
+import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrFunctionExpression

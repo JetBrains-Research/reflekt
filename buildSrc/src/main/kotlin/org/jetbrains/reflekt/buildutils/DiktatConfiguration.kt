@@ -2,7 +2,7 @@
  * Configuration for diktat static analysis
  */
 
-package io.reflekt.buildutils
+package org.jetbrains.reflekt.buildutils
 
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin

@@ -1,10 +1,11 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.source.uses
 
-import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.models.psi.*
 import org.jetbrains.reflekt.plugin.analysis.processor.*
 import org.jetbrains.reflekt.plugin.analysis.psi.annotation.getAnnotations
 import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 import org.jetbrains.reflekt.plugin.utils.Util.log
+
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext

@@ -2,7 +2,7 @@
  * Configuration for detekt static analysis
  */
 
-package io.reflekt.buildutils
+package org.jetbrains.reflekt.buildutils
 
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension

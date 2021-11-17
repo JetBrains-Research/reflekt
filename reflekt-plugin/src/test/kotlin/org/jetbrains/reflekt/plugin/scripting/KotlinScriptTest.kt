@@ -2,6 +2,7 @@ package org.jetbrains.reflekt.plugin.scripting
 
 import org.jetbrains.reflekt.plugin.analysis.AnalysisSetupTest
 import org.jetbrains.reflekt.plugin.analysis.models.Import
+import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -34,7 +35,7 @@ class KotlinScriptTest {
         assertDoesNotThrow {
             KotlinScript(
                 code = code,
-                classpath = AnalysisSetupTest.getReflektProjectJars().toList(),
+                classpath = getReflektProjectJars().toList(),
             ).run()
         }
     }

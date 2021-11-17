@@ -3,7 +3,8 @@ package org.jetbrains.reflekt.plugin.code.generation
 import org.jetbrains.reflekt.plugin.analysis.*
 import org.jetbrains.reflekt.plugin.generation.code.generator.ReflektImplGenerator
 import org.jetbrains.reflekt.plugin.util.Util
-import io.reflekt.util.file.getAllNestedFiles
+import org.jetbrains.reflekt.util.file.getAllNestedFiles
+import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -19,7 +20,7 @@ class CodeGenerationTest {
         sources: Set<File>,
         expectedCode: String,
         directory: String) {
-        val reflektClassPath = AnalysisSetupTest.getReflektProjectJars()
+        val reflektClassPath = getReflektProjectJars()
         val analyzer = AnalysisUtil.getReflektAnalyzer(classPath = reflektClassPath, sources = sources)
         val uses = analyzer.uses(analyzer.invokes())
         val actualCode = ReflektImplGenerator(uses).generate().trim()

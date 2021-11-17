@@ -1,7 +1,7 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.source.invokes.base
 
 import org.jetbrains.reflekt.plugin.analysis.common.findReflektInvokeArgumentsByExpressionPart
-import org.jetbrains.reflekt.plugin.analysis.models.ClassOrObjectInvokes
+import org.jetbrains.reflekt.plugin.analysis.models.psi.ClassOrObjectInvokes
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
 import org.jetbrains.reflekt.plugin.utils.Util.log

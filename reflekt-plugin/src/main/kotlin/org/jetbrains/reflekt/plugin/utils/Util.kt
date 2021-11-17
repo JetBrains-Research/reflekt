@@ -2,8 +2,8 @@ package org.jetbrains.reflekt.plugin.utils
 
 import org.jetbrains.reflekt.plugin.analysis.analyzer.source.ReflektAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.analyzer.source.SmartReflektAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.models.ReflektInstances
-import org.jetbrains.reflekt.plugin.analysis.models.ReflektUses
+import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektInstances
+import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektUses
 import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
 
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys

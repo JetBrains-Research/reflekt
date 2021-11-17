@@ -1,13 +1,14 @@
 package org.jetbrains.reflekt.plugin.analysis.resolve
 
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
+import org.jetbrains.reflekt.plugin.analysis.psi.function.*
+
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.descriptorUtil.*
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
-import org.jetbrains.reflekt.plugin.analysis.psi.function.*
 
 // Descriptors for classes and objects
 fun MemberScope.getClassifierDescriptors(): List<ClassifierDescriptor> =

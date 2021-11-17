@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.reflekt.SmartReflekt
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
-import org.jetbrains.reflekt.plugin.analysis.processor.FileID
+import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.reflekt.plugin.analysis.processor.fullName
 import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
 import org.jetbrains.reflekt.plugin.analysis.psi.getFqName
