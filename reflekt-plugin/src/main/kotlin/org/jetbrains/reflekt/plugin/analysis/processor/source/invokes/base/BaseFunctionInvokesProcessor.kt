@@ -9,6 +9,10 @@ import org.jetbrains.reflekt.plugin.analysis.models.FunctionInvokes
 import org.jetbrains.reflekt.plugin.analysis.processor.FileID
 import org.jetbrains.reflekt.plugin.analysis.processor.fullName
 
+/**
+ * @property binding
+ * @property messageCollector
+ */
 abstract class BaseFunctionInvokesProcessor(override val binding: BindingContext, override val messageCollector: MessageCollector?) :
     BaseInvokesProcessor<FunctionInvokes>(binding, messageCollector) {
     override val fileToInvokes: HashMap<FileID, FunctionInvokes> = HashMap()

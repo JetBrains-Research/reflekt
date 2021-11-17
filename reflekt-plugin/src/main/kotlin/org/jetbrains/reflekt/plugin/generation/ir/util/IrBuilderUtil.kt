@@ -1,3 +1,5 @@
+@file:Suppress("FILE_WILDCARD_IMPORTS")
+
 package org.jetbrains.reflekt.plugin.generation.ir.util
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -20,8 +22,40 @@ fun IrBuilderWithScope.irVarargOut(elementType: IrType, elements: List<IrExpress
         endOffset = UNDEFINED_OFFSET,
         type = context.irBuiltIns.arrayClass.typeWithArguments(listOf(makeTypeProjection(elementType, Variance.OUT_VARIANCE))),
         varargElementType = elementType,
-        elements = elements
+        elements = elements,
     )
+
+@Suppress("FUNCTION_NAME_INCORRECT_CASE")
+fun IrBuilderWithScope.irKClass(symbol: IrClassSymbol) =
+    IrClassReferenceImpl(
+        UNDEFINED_OFFSET,
+        UNDEFINED_OFFSET,
+        context.irBuiltIns.kClassClass.typeWith(symbol.defaultType),
+        symbol,
+        symbol.defaultType,
+    )
+
+@Suppress("FUNCTION_NAME_INCORRECT_CASE")
+fun IrBuilderWithScope.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFunctionReference {
+    require(type is IrSimpleType)
+    val functionFactory = context.irBuiltIns.functionFactory
+    val kFunctionType = IrSimpleTypeImpl(
+        // TODO: replace to this one in the next Kotlin version since API will be changed
+        // context.irBuiltIns.functionN(type.arguments.size - 1).symbol,
+        functionFactory.kFunctionN(type.arguments.size - 1).symbol,
+        false,
+        type.arguments,
+        emptyList(),
+    )
+    return IrFunctionReferenceImpl(
+        startOffset = UNDEFINED_OFFSET,
+        endOffset = UNDEFINED_OFFSET,
+        type = kFunctionType,
+        symbol = symbol,
+        typeArgumentsCount = 0,
+        valueArgumentsCount = type.arguments.size,
+    )
+}
 
 fun irTypeCast(type: IrType, argument: IrExpression) =
     IrTypeOperatorCallImpl(
@@ -30,37 +64,9 @@ fun irTypeCast(type: IrType, argument: IrExpression) =
         type = type,
         operator = IrTypeOperator.CAST,
         typeOperand = type,
-        argument = argument
+        argument = argument,
     )
-
-fun IrBuilderWithScope.irKClass(symbol: IrClassSymbol) =
-    IrClassReferenceImpl(
-        UNDEFINED_OFFSET,
-        UNDEFINED_OFFSET,
-        context.irBuiltIns.kClassClass.typeWith(symbol.defaultType),
-        symbol,
-        symbol.defaultType
-    )
-
-fun IrBuilderWithScope.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFunctionReference {
-    require(type is IrSimpleType)
-    val kFunctionType = IrSimpleTypeImpl(
-        // TODO: replace to this one in the next Kotlin version since API will be changed
-//        context.irBuiltIns.functionN(type.arguments.size - 1).symbol,
-        context.irBuiltIns.functionFactory.kFunctionN(type.arguments.size - 1).symbol,
-        false,
-        type.arguments,
-        emptyList()
-    )
-    return IrFunctionReferenceImpl(
-        startOffset = UNDEFINED_OFFSET,
-        endOffset = UNDEFINED_OFFSET,
-        type = kFunctionType,
-        symbol = symbol,
-        typeArgumentsCount = 0,
-        valueArgumentsCount = type.arguments.size
-    )
-}
+package org.jetbrains.reflekt.plugin.generation.ir.util
 
 fun funListOf(pluginContext: IrPluginContext) =
     pluginContext.referenceFunctions(FqName("kotlin.collections.listOf"))

@@ -7,8 +7,14 @@ import org.jetbrains.reflekt.plugin.analysis.models.ReflektInstances
 import org.jetbrains.reflekt.plugin.analysis.processor.source.instances.*
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
-class SmartReflektAnalyzer(override val ktFiles: Set<KtFile>, override val binding: BindingContext, override val messageCollector: MessageCollector? = null) :
-    BaseAnalyzer(ktFiles, binding, messageCollector) {
+class SmartReflektAnalyzer(
+    override val ktFiles: Set<KtFile>,
+    override val binding: BindingContext,
+    override val messageCollector: MessageCollector? = null) :
+    BaseAnalyzer(
+    ktFiles,
+    binding,
+    messageCollector) {
     fun instances(): ReflektInstances {
         messageCollector?.log("Getting instances....")
         val processors = setOf(ClassInstancesProcessor(binding), ObjectInstancesProcessor(binding), FunctionInstancesProcessor(binding))

@@ -29,7 +29,11 @@ class ReflektModuleAnalysisExtension(
     private val reflektPackage = "org.jetbrains.reflekt"
 
     // TODO: store ReflektMetaInf by modules
-    override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
+    override fun analysisCompleted(
+        project: Project,
+        module: ModuleDescriptor,
+        bindingTrace: BindingTrace,
+        files: Collection<KtFile>): AnalysisResult? {
         messageCollector?.log("ReflektAnalysisExtension is starting...")
         (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
         val externalLibrariesAnalyzer = ExternalLibrariesAnalyzer(reflektMetaFilesFromLibraries, module, messageCollector)
@@ -94,7 +98,7 @@ class ReflektModuleAnalysisExtension(
             SerializationUtils.encodeInvokes(
                 ReflektInvokesWithPackages(
                     invokes = invokes,
-                    packages = files.map { it.packageFqName.asString() }.toSet()
+                    packages = files.map { it.packageFqName.asString() }.toSet(),
                 )
             )
         )

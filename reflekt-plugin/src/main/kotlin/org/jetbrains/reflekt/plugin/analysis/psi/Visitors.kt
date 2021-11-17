@@ -3,7 +3,6 @@ package org.jetbrains.reflekt.plugin.analysis.psi
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
 
-
 fun KtFile.visit(processors: Set<Processor<*>>) {
     acceptChildren(object : KtDefaultVisitor() {
         override fun visitObjectDeclaration(declaration: KtObjectDeclaration) {

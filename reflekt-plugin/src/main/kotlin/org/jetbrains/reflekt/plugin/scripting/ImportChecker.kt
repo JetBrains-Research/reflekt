@@ -16,7 +16,9 @@ class ImportChecker {
     private val allNames = HashSet<String>()
 
     constructor(classpath: List<File>) {
-        if (classpath.isEmpty()) return
+        if (classpath.isEmpty()) {
+            return
+        }
 
         val urls = classpath.map { it.toURI().toURL() }
         val classLoader = URLClassLoader(urls.toTypedArray())
@@ -25,7 +27,7 @@ class ImportChecker {
             ConfigurationBuilder()
                 .addClassLoader(classLoader)
                 .setUrls(urls)
-                .setScanners(SubTypesScanner(false))
+                .setScanners(SubTypesScanner(false)),
         )
 
         // Get all classes (each class is subtype of java.lang.Object)

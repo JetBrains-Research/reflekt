@@ -1,85 +1,64 @@
 package org.jetbrains.reflekt.plugin.analysis
 
-import org.jetbrains.kotlin.psi.KtNamedDeclaration
-import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.reflekt.plugin.analysis.models.*
-import org.jetbrains.reflekt.plugin.analysis.processor.FileID
+import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.reflekt.plugin.analysis.psi.function.shortFqName
 
-//  We cannot use Json to store and test KotlinType (supertype), so we build a string representation, sufficient to test it.
-//  We also want to check fqName of supertype, which is not included in its toString(), so we added it separately.
+import org.jetbrains.kotlin.psi.KtNamedDeclaration
+import org.jetbrains.kotlin.types.KotlinType
+
+// We cannot use Json to store and test KotlinType (supertype), so we build a string representation, sufficient to test it.
+// We also want to check fqName of supertype, which is not included in its toString(), so we added it separately.
 fun KotlinType?.toPrettyString() = "$this (${this?.shortFqName()})"
+
+fun Collection<KotlinType?>.toPrettyString() = joinToStringIndented { it.toPrettyString() }
 
 fun KtNamedDeclaration.toPrettyString() = fqName.toString()
 
-fun <T : Any> Pair<FileID, T>.toPrettyString(transform: (T) -> CharSequence): String {
-    return "file: ${this.first}: ${transform(this.second)}"
-}
-
-fun SupertypesToAnnotations.toPrettyString(): String {
-    return "supertypesToAnnotations: ${
-        listOf(
-            "supertypes: ${supertypes.joinToStringIndented()},\n" +
-                "annotations: ${annotations.joinToStringIndented()}"
-        ).joinToStringIndented()
-    }"
-}
-
-fun SignatureToAnnotations.toPrettyString(): String {
-    return "signatureToAnnotations: ${
-        listOf(
-            "signature: ${signature.toPrettyString()},\n" +
-                "annotations: ${annotations.joinToStringIndented()}"
-        ).joinToStringIndented()
-    }"
-}
-
-fun SupertypesToFilters.toPrettyString(): String {
-    return "supertype: ${supertype?.toPrettyString()},\n" +
-        "filters: ${filters.joinToStringIndented()},\n" +
-        "imports: ${imports.joinToStringIndented()}"
-}
-
-
-@JvmName("toPrettyStringSupertypesToFilters")
-fun Set<SupertypesToFilters>.toPrettyString(): String {
-    return joinToStringIndented { it.toPrettyString() }
-}
+fun SignatureToAnnotations.toPrettyString(): String = "signature: ${signature.toPrettyString()},\n" +
+    "annotations: ${annotations.joinToStringIndented()}"
 
 @JvmName("toPrettyStringSFunctionInvokes")
-fun FunctionInvokes.toPrettyString(): String {
-    return joinToStringIndented { it.toPrettyString() }
-}
+fun FunctionInvokes.toPrettyString(): String = joinToStringIndented { it.toPrettyString() }
+
+fun SupertypesToAnnotations.toPrettyString(): String = "supertypes: ${supertypes.joinToStringIndented()},\n" +
+    "annotations: ${annotations.joinToStringIndented()}"
 
 @JvmName("toPrettyStringClassOrObjectInvokes")
-fun ClassOrObjectInvokes.toPrettyString(): String {
-    return joinToStringIndented { it.toPrettyString() }
+fun ClassOrObjectInvokes.toPrettyString(): String = joinToStringIndented { it.toPrettyString() }
+
+fun SupertypesToFilters.toPrettyString(): String = "supertype: ${supertype?.toPrettyString()},\n" +
+    "filters: ${filters.joinToStringIndented()},\n" +
+    "imports: ${imports.joinToStringIndented()}"
+
+@JvmName("toPrettyStringSupertypesToFilters")
+fun Set<SupertypesToFilters>.toPrettyString(): String = joinToStringIndented { it.toPrettyString() }
+
+@JvmName("toPrettyStringSupertypesToFiltersWithReflektInvokes")
+fun <T> HashMap<FileId, MutableSet<T>>.toPrettyString(toPrettyStringForT: (T) -> String): String = this.joinToStringIndented { k, v ->
+    "file: $k: ${v.joinToStringIndented { toPrettyStringForT(it) }}"
 }
 
-
-fun ReflektInvokes.toPrettyString(): String {
-    return "objects: ${objects.joinToStringIndented { k, v -> (k to v).toPrettyString { v.toPrettyString() } }},\n" +
-        "classes: ${classes.joinToStringIndented { k, v -> (k to v).toPrettyString { v.toPrettyString() } }},\n" +
-        "functions: ${functions.joinToStringIndented { k, v -> (k to v).toPrettyString { v.toPrettyString() } }}"
-}
+fun ReflektInvokes.toPrettyString(): String = "objects: ${objects.toPrettyString(SupertypesToAnnotations::toPrettyString)},\n" +
+    "classes: ${classes.toPrettyString(SupertypesToAnnotations::toPrettyString)},\n" +
+    "functions: ${functions.toPrettyString(SignatureToAnnotations::toPrettyString)}"
 
 @JvmName("toPrettyStringClassOrObjectUses")
-fun ClassOrObjectUses.toPrettyString(): String {
-    return joinToStringIndented { supertypesToAnnotations, classOrObjectList ->
-        "${supertypesToAnnotations.toPrettyString()},\n" +
-            "objectsOrClasses: ${classOrObjectList.joinToStringIndented { it.toPrettyString() }}"
-    }
+fun ClassOrObjectUses.toPrettyString(): String = joinToStringIndented { supertypesToAnnotations, classOrObjectList ->
+    "supertypesToAnnotations: ${listOf(supertypesToAnnotations.toPrettyString()).joinToStringIndented()},\n" +
+        "objectsOrClasses: ${classOrObjectList.joinToStringIndented { it.toPrettyString() }}"
 }
 
-fun FunctionUses.toPrettyString(): String {
-    return joinToStringIndented { signatureToAnnotations, namedFunctionList ->
-        "${signatureToAnnotations.toPrettyString()},\n" +
-            "namedFunctions: ${namedFunctionList.joinToStringIndented { it.toPrettyString() }}"
-    }
+fun FunctionUses.toPrettyString(): String = joinToStringIndented { signatureToAnnotations, namedFunctionList ->
+    "signatureToAnnotations: ${listOf(signatureToAnnotations.toPrettyString()).joinToStringIndented()},\n" +
+        "namedFunctions: ${namedFunctionList.joinToStringIndented { it.toPrettyString() }}"
 }
 
-fun ReflektUses.toPrettyString(): String {
-    return "objects: ${objects.joinToStringIndented { k, v -> (k to v).toPrettyString { v.toPrettyString() } }},\n" +
-        "classes: ${classes.joinToStringIndented { k, v -> (k to v).toPrettyString { v.toPrettyString() } }},\n" +
-        "functions: ${functions.joinToStringIndented { k, v -> (k to v).toPrettyString { v.toPrettyString() } }}"
+@JvmName("toPrettyStringSupertypesToFiltersWithReflektUses")
+fun <T> HashMap<FileId, T>.toPrettyString(toPrettyStringForT: (T) -> String): String = this.joinToStringIndented { k, v ->
+    "file: $k: ${toPrettyStringForT(v)}"
 }
+
+fun ReflektUses.toPrettyString(): String = "objects: ${objects.toPrettyString(ClassOrObjectUses::toPrettyString)},\n" +
+    "classes: ${classes.toPrettyString(ClassOrObjectUses::toPrettyString)},\n" +
+    "functions: ${functions.toPrettyString(FunctionUses::toPrettyString)}"

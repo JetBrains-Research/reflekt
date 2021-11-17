@@ -1,13 +1,13 @@
 package org.jetbrains.reflekt.plugin.util.type.representation
 
-import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.KtCallExpressionVisitor
 import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.visitKtElements
 import org.jetbrains.reflekt.plugin.analysis.toParameterizedType
 import org.jetbrains.reflekt.plugin.util.Util.getResourcesRootPath
 import org.jetbrains.reflekt.plugin.utils.stringRepresentation
-import org.jetbrains.reflekt.util.FileUtil.getAllNestedFiles
+import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.jetbrains.reflekt.util.stringRepresentation
+import org.jetbrains.kotlin.types.KotlinType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
@@ -18,9 +18,24 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 class TypeStringRepresentationTest {
+    @Tag("codegen")
+    @MethodSource("data")
+    @ParameterizedTest(name = "test {index} {2}")
+    fun `types string representation test`(
+        kType: KType,
+        kotlinType: KotlinType,
+        expectedStringRepresentation: String) {
+        // TODO: can we use classes for KType from the resources folder?
+        val resourcePackageName = "io.reflekt.plugin.util.type.representation.kotlinTypes"
+        val srcPackageName = "io.reflekt.plugin.util.type.representation"
+
+        val kTypeStr = kType.stringRepresentation().replace(srcPackageName, resourcePackageName)
+        Assertions.assertEquals(expectedStringRepresentation, kTypeStr, "Incorrect string representation for KType $kType")
+        val kotlinTypeStr: String = kotlinType.stringRepresentation()
+        Assertions.assertEquals(expectedStringRepresentation, kotlinTypeStr, "Incorrect string representation for KotlinType $kotlinType")
+    }
 
     companion object {
-
         @OptIn(ExperimentalStdlibApi::class)
         private val test_data = mapOf(
             "function0_unit_test" to (typeOf<() -> Unit>()),
@@ -68,8 +83,8 @@ class TypeStringRepresentationTest {
         @OptIn(ExperimentalStdlibApi::class)
         @JvmStatic
         fun data(): List<Arguments> {
-            val resFilesSet = getAllNestedFiles(getResourcesRootPath(TypeStringRepresentationTest::class, "results")).toSet()
-            val kotlinTypesFiles = getAllNestedFiles(getResourcesRootPath(TypeStringRepresentationTest::class, "kotlinTypes"))
+            val resFilesSet = getResourcesRootPath(TypeStringRepresentationTest::class, "results").getAllNestedFiles().toSet()
+            val kotlinTypesFiles = getResourcesRootPath(TypeStringRepresentationTest::class, "kotlinTypes").getAllNestedFiles()
             val visitor = KtCallExpressionVisitor()
             val binding = visitKtElements(kotlinTypesFiles, listOf(visitor))
             val testKeyToKotlinTypeMap = visitor.typeArguments.associate { it.stringArgument to it.astNodeArgument.toParameterizedType(binding) }
@@ -77,24 +92,9 @@ class TypeStringRepresentationTest {
                 Arguments.of(
                     kType,
                     testKeyToKotlinTypeMap[testKey] ?: error("KotlinType for the test $testKey was not found"),
-                    getResultForTest(resFilesSet, testKey)
+                    getResultForTest(resFilesSet, testKey),
                 )
             }
         }
     }
-
-    @Tag("codegen")
-    @MethodSource("data")
-    @ParameterizedTest(name = "test {index} {2}")
-    fun `types string representation test`(kType: KType, kotlinType: KotlinType, expectedStringRepresentation: String) {
-        // TODO: can we use classes for KType from the resources folder?
-        val resourcePackageName = "org.jetbrains.reflekt.plugin.util.type.representation.kotlinTypes"
-        val srcPackageName = "org.jetbrains.reflekt.plugin.util.type.representation"
-
-        val kTypeStr = kType.stringRepresentation().replace(srcPackageName, resourcePackageName)
-        Assertions.assertEquals(expectedStringRepresentation, kTypeStr, "Incorrect string representation for KType $kType")
-        val kotlinTypeStr: String = kotlinType.stringRepresentation()
-        Assertions.assertEquals(expectedStringRepresentation, kotlinTypeStr, "Incorrect string representation for KotlinType $kotlinType")
-    }
-
 }

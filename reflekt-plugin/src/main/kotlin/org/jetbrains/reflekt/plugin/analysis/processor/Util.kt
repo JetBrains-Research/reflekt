@@ -13,7 +13,7 @@ internal val KtElement.isPublicFunction: Boolean
     get() = this is KtNamedFunction && this.isPublic
 
 internal val KtElement.isTopLevelPublicFunction: Boolean
-    get() = isPublicFunction && this is KtNamedFunction && this.isTopLevel
+    get() = isPublicFunction && (this as KtNamedFunction).isTopLevel
 
 internal val KtElement.isMainFunction: Boolean
     get() = isPublicFunction && (this as KtNamedFunction).nameIdentifier?.let { it.text == "main" } ?: false
@@ -21,16 +21,9 @@ internal val KtElement.isMainFunction: Boolean
 internal val KtElement.isPublicNotAbstractClass: Boolean
     get() = this is KtClass && this.isPublic && !this.isAbstract()
 
-typealias FileID = String
-
-internal fun getFullName(packageFqName: FqName, name: String? = null): FileID {
-    val postfix = name?.let { ".${name}" } ?: ""
-    return "${packageFqName.asString()}$postfix"
-}
-
 // TODO: is it enough to identify a file?
-internal val KtFile.fullName: FileID
-    get() = getFullName(this.packageFqName, this.name)
+internal val KtFile.fullName: FileId
+    get() = getNameWithPackage(this.packageFqName, this.name)
 
 internal val DeclarationDescriptor.isPublicNotAbstractClass: Boolean
     get() = this is ClassDescriptor && this.isClass && !this.isAbstractClass && this.isPublic
@@ -57,20 +50,28 @@ internal val ClassDescriptor.isPublic: Boolean
     get() = this.visibility.isPublicAPI
 
 internal val ClassDescriptor.isClass: Boolean
-    get() = this.kind != ClassKind.OBJECT && this.kind != ClassKind.ENUM_ENTRY
+    get() = this.kind != ClassKind.OBJECT && this.kind != ClassKind.ENUM_ENTRY && this.kind != ClassKind.INTERFACE
 
 internal val ClassDescriptor.isObject: Boolean
     get() = this.kind == ClassKind.OBJECT
 
-internal fun <K, V : MutableSet<K>> getInvokesGroupedByFiles(fileToInvokes: HashMap<FileID, V>) =
+typealias FileId = String
+
+internal fun getNameWithPackage(packageFqName: FqName, name: String? = null): FileId {
+    val postfix = name?.let { ".$name" } ?: ""
+    return "${packageFqName.asString()}$postfix"
+}
+
+internal fun <K, V : MutableSet<K>> getInvokesGroupedByFiles(fileToInvokes: HashMap<FileId, V>) =
     groupFilesByInvokes(fileToInvokes).keys.flatten().toMutableSet()
 
 // To avoid repeated checks for belonging invokes in different files,
 // we will group files by invokes and process each of them once
 // MutableSet<*> here is ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
-//   or FunctionInvokes = MutableSet<SignatureToAnnotations> MutableSet<*>
-private fun <T> groupFilesByInvokes(fileToInvokes: HashMap<FileID, T>): HashMap<T, MutableSet<String>> {
-    val filesByInvokes = HashMap<T, MutableSet<FileID>>()
+// or FunctionInvokes = MutableSet<SignatureToAnnotations> MutableSet<*>
+@Suppress("TYPE_ALIAS")
+private fun <T : MutableSet<*>> groupFilesByInvokes(fileToInvokes: HashMap<FileId, T>): HashMap<T, MutableSet<String>> {
+    val filesByInvokes = HashMap<T, MutableSet<FileId>>()
     fileToInvokes.forEach { (file, invoke) ->
         filesByInvokes.getOrPut(invoke) { mutableSetOf() }.add(file)
     }

@@ -1,7 +1,7 @@
 package org.jetbrains.reflekt.plugin.scripting
 
+import org.jetbrains.reflekt.plugin.analysis.AnalysisSetupTest
 import org.jetbrains.reflekt.plugin.analysis.models.Import
-import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -19,9 +19,8 @@ class KotlinScriptTest {
             properties = listOf("a" to Array::class, "b" to String::class),
             code = "a.size.toString() + b",
         )
-        assertEquals(
-            "42",
-            script.eval(listOf(arrayOf(1, 2, 3, 4), "2"))
+        assertEquals("42",
+            script.eval(listOf(arrayOf(1, 2, 3, 4), "2")),
         )
     }
 
@@ -35,7 +34,7 @@ class KotlinScriptTest {
         assertDoesNotThrow {
             KotlinScript(
                 code = code,
-                classpath = getReflektProjectJars().toList()
+                classpath = AnalysisSetupTest.getReflektProjectJars().toList(),
             ).run()
         }
     }
@@ -50,15 +49,14 @@ class KotlinScriptTest {
                     clazz.qualifiedName
                 """.trimIndent(),
                 imports = listOf(Import("kotlin.reflect.KClass", "import kotlin.reflect.KClass")),
-                properties = listOf("t" to String::class)
-            ).eval(listOf("hello"))
+                properties = listOf("t" to String::class),
+            ).eval(listOf("hello")),
         )
     }
 
     companion object {
         // Equals private val with same name from org.jetbrains.kotlin.scripting.compiler.plugin.impl
         private const val SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY = "script.compilation.disable.plugins"
-
         @BeforeAll
         @JvmStatic
         fun disableCompilerTestingPlugin() {

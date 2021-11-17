@@ -4,7 +4,6 @@ import com.squareup.kotlinpoet.*
 
 abstract class TypeGenerator : Generator<TypeSpec>() {
     abstract val typeName: ClassName
-
     protected lateinit var builder: TypeSpec.Builder
 
     final override fun generate(): TypeSpec {

@@ -18,18 +18,34 @@ import org.jetbrains.reflekt.plugin.generation.common.*
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
+private val BaseReflektInvokeParts.irTerminalFunction: (IrPluginContext) -> IrFunctionSymbol
+    get() = when (this) {
+        is ReflektInvokeParts -> when (terminalFunction) {
+            ReflektTerminalFunction.TO_LIST -> ::funListOf
+            ReflektTerminalFunction.TO_SET -> ::funSetOf
+        }
+        is SmartReflektInvokeParts -> when (terminalFunction) {
+            SmartReflektTerminalFunction.RESOLVE -> ::funListOf
+        }
+    }
+
 /* Base class for Reflekt IR transformers */
 open class BaseReflektIrTransformer(private val messageCollector: MessageCollector?) : IrElementTransformerVoidWithContext() {
     /**
      * Constructs replacement for result of Reflekt terminal function (toList/toSet/etc) for classes or objects
+     *
      * @param invokeParts info about invoke call to retrieve entity type (objects/classes) and terminal function (toList/toSet/etc)
      * @param resultValues list of qualified names of objects or classes to return
+     * @param resultType
+     * @param context
+     * @return replacement for a result of terminal function
+     * @throws ReflektGenerationException
      */
     protected fun IrBuilderWithScope.resultIrCall(
         invokeParts: BaseReflektInvokeParts,
         resultValues: List<String>,
         resultType: IrType,
-        context: IrPluginContext
+        context: IrPluginContext,
     ): IrExpression {
         require(resultType is IrSimpleType)
 
@@ -53,15 +69,21 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
 
     /**
      * Constructs replacement for result of Reflekt terminal function (toList/toSet/etc) for functions
+     *
      * @param invokeParts info about invoke call terminal function (toList/toSet/etc)
      * @param resultValues list of function qualified names with additional info to generate the right call
+     * @param resultType
+     * @param context
+     * @return IrExpression
+     * @throws ReflektGenerationException
      */
     @ObsoleteDescriptorBasedAPI
+    @Suppress("TOO_MANY_LINES_IN_LAMBDA")
     protected fun IrBuilderWithScope.functionResultIrCall(
         invokeParts: BaseReflektInvokeParts,
         resultValues: List<IrFunctionInfo>,
         resultType: IrType,
-        context: IrPluginContext
+        context: IrPluginContext,
     ): IrExpression {
         require(resultType is IrSimpleType)
         val itemType = resultType.arguments[0].typeOrNull
@@ -69,15 +91,17 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         require(itemType is IrSimpleType)
 
         messageCollector?.log("RES ARGS: ${itemType.arguments.map { (it as IrSimpleType).classFqName }}")
-        val items = resultValues.map {
-            val functionSymbol = context.referenceFunctions(FqName(it.fqName)).firstOrNull { symbol ->
+        val items = resultValues.map { irFunctionInfo ->
+            val functionSymbol = context.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
                 symbol.owner.toParameterizedType(context.bindingContext)?.isSubtypeOf(itemType.toParameterizedType()) ?: false
-            } ?: throw ReflektGenerationException("Failed to find function ${it.fqName} with signature ${itemType.toParameterizedType()}")
+            } ?: throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
             irKFunction(itemType, functionSymbol).also { call ->
-                if (it.receiverFqName != null && it.isObjectReceiver) {
-                    val dispatchSymbol = context.referenceClass(FqName(it.receiverFqName))
-                        ?: throw ReflektGenerationException("Failed to find receiver class ${it.receiverFqName}")
-                    call.dispatchReceiver = irGetObject(dispatchSymbol)
+                irFunctionInfo.receiverFqName?.let {
+                    if (irFunctionInfo.isObjectReceiver) {
+                        val dispatchSymbol = context.referenceClass(FqName(irFunctionInfo.receiverFqName))
+                            ?: throw ReflektGenerationException("Failed to find receiver class ${irFunctionInfo.receiverFqName}")
+                        call.dispatchReceiver = irGetObject(dispatchSymbol)
+                    }
                 }
             }
         }
@@ -88,16 +112,11 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
     }
 
     protected fun newIrBuilder(pluginContext: IrPluginContext) =
-        object : IrBuilderWithScope(pluginContext, currentScope!!.scope, UNDEFINED_OFFSET, UNDEFINED_OFFSET) {}
+        object : IrBuilderWithScope(
+            pluginContext,
+            currentScope!!.scope,
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET) {
+            // no need to pass a body to this object
+        }
 }
-
-private val BaseReflektInvokeParts.irTerminalFunction: (IrPluginContext) -> IrFunctionSymbol
-    get() = when (this) {
-        is ReflektInvokeParts -> when (terminalFunction) {
-            ReflektTerminalFunction.TO_LIST -> ::funListOf
-            ReflektTerminalFunction.TO_SET -> ::funSetOf
-        }
-        is SmartReflektInvokeParts -> when (terminalFunction) {
-            SmartReflektTerminalFunction.RESOLVE -> ::funListOf
-        }
-    }

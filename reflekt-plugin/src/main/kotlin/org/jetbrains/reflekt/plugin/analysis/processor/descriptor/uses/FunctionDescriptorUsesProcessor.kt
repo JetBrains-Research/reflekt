@@ -10,6 +10,11 @@ import org.jetbrains.reflekt.plugin.analysis.processor.*
 import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 import org.jetbrains.reflekt.plugin.analysis.resolve.toFunctionInfo
 
+/**
+ * @param reflektInvokes
+ *
+ * @property messageCollector
+ */
 class FunctionDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override val messageCollector: MessageCollector?) :
     BaseDescriptorUsesProcessor<IrFunctionUses>(messageCollector) {
     override val uses: IrFunctionUses = HashMap()
@@ -17,16 +22,16 @@ class FunctionDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override v
 
     override fun process(descriptor: DeclarationDescriptor): IrFunctionUses {
         (descriptor as? FunctionDescriptor)?.let {
-            invokes.filter { it.covers(descriptor) }.forEach {
+            invokes.filter { it.isCovering(descriptor) }.forEach {
                 uses.getOrPut(it) { mutableListOf() }.add(descriptor.toFunctionInfo())
             }
         }
         return uses
     }
 
+    // TODO: how can we return the member functions??
     override fun shouldRunOn(descriptor: DeclarationDescriptor): Boolean = descriptor.isPublicTopLevelFunction && !descriptor.isMainFunction
 
-    private fun SignatureToAnnotations.covers(function: FunctionDescriptor): Boolean =
+    private fun SignatureToAnnotations.isCovering(function: FunctionDescriptor): Boolean =
         shouldCheckAnnotations(annotations, function) && function.toParameterizedType()?.isSubtypeOf(signature!!) ?: false
-
 }

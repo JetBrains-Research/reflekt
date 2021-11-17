@@ -1,4 +1,7 @@
-package org.jetbrains.reflekt.plugin.analysis.parameterizedtype
+package org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util
+
+import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
+import org.jetbrains.reflekt.plugin.analysis.toPrettyString
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
@@ -19,31 +22,13 @@ import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.reflekt.plugin.analysis.ir.ReflektFunctionInvokeArgumentsCollector
-import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
-import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.getTagContent
-import org.jetbrains.reflekt.plugin.analysis.toPrettyString
+
 import java.io.File
 
 /**
- * We cannot access IR level when compilation is done, so to test it properly we can pass any visitor to it
- * and do any checks during compilation when IR code is generated.
- * After that, we can check the result by getting info from visitors.
+ * @property visitors
  */
-fun visitIrElements(sourceFiles: List<File>, visitors: List<IrElementVisitor<Unit, BindingContext>>): KotlinCompilation.Result {
-    val plugin = IrTestComponentRegistrar(visitors)
-    return KotlinCompilation().apply {
-        sources = sourceFiles.map { SourceFile.fromPath(it) }
-        jvmTarget = "11"
-        compilerPlugins = listOf(plugin)
-        inheritClassPath = true
-        messageOutputStream
-        useIR = true
-    }.compile()
-}
-
 class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, BindingContext>>) : ComponentRegistrar {
-
     @ObsoleteDescriptorBasedAPI
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
         IrGenerationExtension.registerExtension(project, object : IrGenerationExtension {
@@ -58,10 +43,9 @@ class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, Binding
 /**
  * Checks IrFunctions transforming to ParameterizedType, stores the result and expected Kotlin Type which is written in docs.
  * [filterByName] is used to avoid visiting special methods like equals() or toString()
+ * @property filterByName
  */
 class IrFunctionTypeVisitor(val filterByName: (String) -> Boolean) : IrElementVisitor<Unit, BindingContext> {
-    data class Function(val name: String, val actualType: KotlinType, val expectedType: String)
-
     val functions = mutableListOf<Function>()
 
     override fun visitFunction(declaration: IrFunction, data: BindingContext) {
@@ -74,9 +58,17 @@ class IrFunctionTypeVisitor(val filterByName: (String) -> Boolean) : IrElementVi
         super.visitFunction(declaration, data)
     }
 
-    override fun visitElement(element: IrElement, data: BindingContext) {
-        return element.acceptChildren(this, data)
-    }
+    override fun visitElement(element: IrElement, data: BindingContext) = element.acceptChildren(this, data)
+
+    /**
+     * @property name
+     * @property actualType
+     * @property expectedType
+     */
+    data class Function(
+        val name: String,
+        val actualType: KotlinType,
+        val expectedType: String)
 }
 
 /**
@@ -84,8 +76,6 @@ class IrFunctionTypeVisitor(val filterByName: (String) -> Boolean) : IrElementVi
  * The expected Kotlin Type is written in expression value arguments.
  */
 class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, BindingContext> {
-    data class TypeArgument(val name: String, val actualType: KotlinType, val expectedType: String)
-
     val typeArguments = mutableListOf<TypeArgument>()
 
     @ObsoleteDescriptorBasedAPI
@@ -99,7 +89,36 @@ class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, BindingContext> {
         super.visitCall(expression, data)
     }
 
-    override fun visitElement(element: IrElement, data: BindingContext) {
-        return element.acceptChildren(this, data)
-    }
+    override fun visitElement(element: IrElement, data: BindingContext) = element.acceptChildren(this, data)
+
+    /**
+     * @property name
+     * @property actualType
+     * @property expectedType
+     */
+    data class TypeArgument(
+        val name: String,
+        val actualType: KotlinType,
+        val expectedType: String)
+}
+
+/**
+ * We cannot access IR level when compilation is done, so to test it properly we can pass any visitor to it
+ * and do any checks during compilation when IR code is generated.
+ * After that, we can check the result by getting info from visitors.
+ *
+ * @param sourceFiles
+ * @param visitors
+ * @return
+ */
+fun visitIrElements(sourceFiles: List<File>, visitors: List<IrElementVisitor<Unit, BindingContext>>): KotlinCompilation.Result {
+    val plugin = IrTestComponentRegistrar(visitors)
+    return KotlinCompilation().apply {
+        sources = sourceFiles.map { SourceFile.fromPath(it) }
+        jvmTarget = "11"
+        compilerPlugins = listOf(plugin)
+        inheritClassPath = true
+        messageOutputStream
+        useIR = true
+    }.compile()
 }

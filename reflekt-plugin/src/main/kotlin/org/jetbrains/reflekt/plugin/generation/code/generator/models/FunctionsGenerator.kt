@@ -1,14 +1,19 @@
 package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
+import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.generation.code.generator.statement
+import org.jetbrains.reflekt.plugin.generation.code.generator.toParameterSpecs
+
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.reflekt.plugin.analysis.models.FunctionUses
-import org.jetbrains.reflekt.plugin.generation.code.generator.statement
-import org.jetbrains.reflekt.plugin.generation.code.generator.toParameterSpecs
+
 import kotlin.reflect.KFunction
 
-class FunctionsGenerator(enclosingClassName: ClassName, private val uses: FunctionUses, private val fileGenerator: FileGenerator) : HelperClassGenerator() {
+class FunctionsGenerator(
+    enclosingClassName: ClassName,
+    private val uses: FunctionUses,
+    private val fileGenerator: FileGenerator) : HelperClassGenerator() {
     override val typeName: ClassName = enclosingClassName.nestedClass("Functions")
     override val typeVariable = TypeVariableName("T", Any::class)
     override val returnParameter = KFunction::class.asClassName().parameterizedBy(typeVariable)
@@ -18,12 +23,12 @@ class FunctionsGenerator(enclosingClassName: ClassName, private val uses: Functi
             "return %T(%N, %N)",
             typeName.nestedClass(WITH_ANNOTATIONS_CLASS_NAME).parameterizedBy(typeVariable),
             ANNOTATION_FQ_NAMES,
-            SIGNATURE
+            SIGNATURE,
         )
 
     override val withAnnotationsParameters = mapOf(
         ANNOTATION_FQ_NAMES to SET_OF_STRINGS,
-        SIGNATURE to String::class.asClassName()
+        SIGNATURE to String::class.asClassName(),
     ).toParameterSpecs()
 
     override fun generateImpl() {

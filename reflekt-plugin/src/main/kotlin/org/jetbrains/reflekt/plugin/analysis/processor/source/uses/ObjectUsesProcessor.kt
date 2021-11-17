@@ -9,12 +9,21 @@ import org.jetbrains.reflekt.plugin.analysis.models.ReflektInvokes
 import org.jetbrains.reflekt.plugin.analysis.processor.*
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
-class ObjectUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes, override val messageCollector: MessageCollector?) :
+/**
+ * @param reflektInvokes
+ *
+ * @property binding
+ * @property messageCollector
+ */
+class ObjectUsesProcessor(
+    override val binding: BindingContext,
+    reflektInvokes: ReflektInvokes,
+    override val messageCollector: MessageCollector?) :
     BaseUsesProcessor<ClassOrObjectUses>(binding, messageCollector) {
-    override val fileToUses: HashMap<FileID, ClassOrObjectUses> = HashMap()
+    override val fileToUses: HashMap<FileId, ClassOrObjectUses> = HashMap()
     private val invokes = getInvokesGroupedByFiles(reflektInvokes.objects)
 
-    override fun process(element: KtElement, file: KtFile): HashMap<FileID, ClassOrObjectUses> =
+    override fun process(element: KtElement, file: KtFile): HashMap<FileId, ClassOrObjectUses> =
         processClassOrObjectUses(element, file, invokes, fileToUses)
 
     override fun shouldRunOn(element: KtElement): Boolean {

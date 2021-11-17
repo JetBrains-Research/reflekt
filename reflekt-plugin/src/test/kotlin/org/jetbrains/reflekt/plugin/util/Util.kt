@@ -2,32 +2,24 @@ package org.jetbrains.reflekt.plugin.util
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import org.gradle.internal.impldep.org.apache.commons.lang.SystemUtils
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.InputStreamReader
 import kotlin.reflect.KClass
-
 
 object Util {
     val gson: Gson = GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create()
 
     fun getResourcesRootPath(
         cls: KClass<*>,
-        resourcesRootName: String = "data"
-    ): String = cls.java.getResource(resourcesRootName)?.path ?: error("Was not found the resource: ${resourcesRootName}")
+        resourcesRootName: String = "data",
+    ): String = cls.java.getResource(resourcesRootName)?.path ?: error("Was not found the resource: $resourcesRootName")
 
     inline fun <reified T> parseJson(json: File): T =
         gson.fromJson(json.readText(), T::class.java)
 
     inline fun <reified T> toJson(value: T): String =
         gson.toJson(value)
-
-    /**
-     * Represents a command passed to the [ProcessBuilder], where
-     * [command] is a command to run (see [ProcessBuilder.command]),
-     * [directory] is a working directory (see [ProcessBuilder.directory]),
-     * and [environment] contains environment variables (see [ProcessBuilder.environment]).
-     */
-    data class Command(val command: List<String>, val directory: String? = null, val environment: Map<String, String>? = null)
 
     /*
      * Run ProcessBuilder and return output
@@ -62,4 +54,18 @@ object Util {
         this.deleteRecursively()
         this.mkdir()
     }
+
+    /**
+     * Represents a command passed to the [ProcessBuilder], where
+     * [command] is a command to run (see [ProcessBuilder.command]),
+     * [directory] is a working directory (see [ProcessBuilder.directory]),
+     * and [environment] contains environment variables (see [ProcessBuilder.environment]).
+     * @property command
+     * @property directory
+     * @property environment
+     */
+    data class Command(
+        val command: List<String>,
+        val directory: String? = null,
+        val environment: Map<String, String>? = null)
 }

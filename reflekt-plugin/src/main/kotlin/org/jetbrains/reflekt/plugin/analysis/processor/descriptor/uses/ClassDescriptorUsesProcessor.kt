@@ -7,6 +7,11 @@ import org.jetbrains.reflekt.plugin.analysis.models.ReflektInvokes
 import org.jetbrains.reflekt.plugin.analysis.processor.getInvokesGroupedByFiles
 import org.jetbrains.reflekt.plugin.analysis.processor.isPublicNotAbstractClass
 
+/**
+ * @param reflektInvokes
+ *
+ * @property messageCollector
+ */
 class ClassDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override val messageCollector: MessageCollector?) :
     BaseDescriptorUsesProcessor<IrClassOrObjectUses>(messageCollector) {
     override val uses: IrClassOrObjectUses = HashMap()
@@ -16,5 +21,4 @@ class ClassDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override val 
         processClassOrObjectUses(descriptor, invokes, uses)
 
     override fun shouldRunOn(descriptor: DeclarationDescriptor): Boolean = descriptor.isPublicNotAbstractClass
-
 }

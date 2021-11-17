@@ -1,7 +1,8 @@
 package org.jetbrains.reflekt
 
-import org.jetbrains.kotlin.psi.*
-import org.jetbrains.reflekt.models.compileTime
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import kotlin.reflect.KClass
 
 /*
@@ -9,6 +10,32 @@ import kotlin.reflect.KClass
 * */
 @Suppress("UNUSED_PARAMETER")
 object SmartReflekt {
+    private fun <T> compileTime(): T = error("This method should be replaced during compilation")
+
+    /*
+    * The main function for searching classes. The chain of calls has to end with resolve() function.
+    *
+    * For example:
+    *  SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
+    * */
+    fun <T : Any> classes(): ClassCompileTimeExpression<T> = compileTime()
+
+    /*
+    * The main function for searching objects. The chain of calls has to end with resolve() function.
+    *
+    * For example:
+    *  SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
+    * */
+    fun <T : Any> objects(): ObjectCompileTimeExpression<T> = compileTime()
+
+    /*
+    * The main function for searching functions. The chain of calls has to end with resolve() function.
+    *
+    * For example:
+    *  SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
+    * */
+    fun <T : Function<*>> functions(): FunctionCompileTimeExpression<T> = compileTime()
+
     /*
     * Find all classes in the project's modules and external libraries (that was marked as libraries to introspect)
     * and filter them by user's condition.
@@ -25,14 +52,6 @@ object SmartReflekt {
         fun resolve(): List<KClass<T>> = compileTime()
     }
 
-    /*
-    * The main function for searching classes. The chain of calls has to end with resolve() function.
-    *
-    * For example:
-    *  SmartReflekt.classes<BInterface>().filter { it.isData() }.resolve()
-    * */
-    fun <T : Any> classes(): ClassCompileTimeExpression<T> = compileTime()
-
     class ObjectCompileTimeExpression<T : Any> {
         /*
          * Filter objects by user's condition. All objects will be cast to [T] type.
@@ -45,14 +64,6 @@ object SmartReflekt {
         fun resolve(): List<T> = compileTime()
     }
 
-    /*
-    * The main function for searching objects. The chain of calls has to end with resolve() function.
-    *
-    * For example:
-    *  SmartReflekt.objects<BInterface>().filter { it.isCompanion() }.resolve()
-    * */
-    fun <T : Any> objects(): ObjectCompileTimeExpression<T> = compileTime()
-
     class FunctionCompileTimeExpression<T : Function<*>> {
         /*
          * Filter functions by user's condition. All functions will have the same signature.
@@ -64,12 +75,4 @@ object SmartReflekt {
          */
         fun resolve(): List<T> = compileTime()
     }
-
-    /*
-    * The main function for searching functions. The chain of calls has to end with resolve() function.
-    *
-    * For example:
-    *  SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name == "foo" }.resolve()
-    * */
-    fun <T : Function<*>> functions(): FunctionCompileTimeExpression<T> = compileTime()
 }

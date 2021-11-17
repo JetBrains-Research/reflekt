@@ -9,25 +9,28 @@ import org.jetbrains.reflekt.plugin.analysis.models.ir.IrClassOrObjectUses
 import org.jetbrains.reflekt.plugin.analysis.processor.descriptor.DescriptorProcessor
 import org.jetbrains.reflekt.plugin.analysis.resolve.isSubtypeOf
 
-abstract class BaseDescriptorUsesProcessor<Output : Any>(override val messageCollector: MessageCollector?) :
-    DescriptorProcessor<Output>(messageCollector) {
+/**
+ * @property messageCollector
+ */
+abstract class BaseDescriptorUsesProcessor<T : Any>(override val messageCollector: MessageCollector?) :
+    DescriptorProcessor<T>(messageCollector) {
     // Store uses by file
-    abstract val uses: Output
+    abstract val uses: T
 
     protected fun processClassOrObjectUses(
         descriptor: DeclarationDescriptor,
         invokes: ClassOrObjectInvokes,
-        uses: IrClassOrObjectUses
+        uses: IrClassOrObjectUses,
     ): IrClassOrObjectUses {
         (descriptor as? ClassifierDescriptor)?.let {
-            invokes.filter { it.covers(descriptor) }.forEach {
+            invokes.filter { it.isCovering(descriptor) }.forEach {
                 uses.getOrPut(it) { mutableListOf() }.add(descriptor.fqNameSafe.asString())
             }
         }
         return uses
     }
 
-    private fun SupertypesToAnnotations.covers(descriptor: ClassifierDescriptor): Boolean =
+    private fun SupertypesToAnnotations.isCovering(descriptor: ClassifierDescriptor): Boolean =
         // annotations set is empty when withSupertypes() method is called, so we don't need to check annotations in this case
         shouldCheckAnnotations(annotations, descriptor) && descriptor.isSubtypeOf(supertypes)
 

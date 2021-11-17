@@ -7,7 +7,15 @@ import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
 import org.jetbrains.reflekt.plugin.analysis.psi.visit
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
-open class BaseAnalyzer(open val ktFiles: Set<KtFile>, open val binding: BindingContext, protected open val messageCollector: MessageCollector? = null) {
+/**
+ * @property ktFiles
+ * @property binding
+ * @property messageCollector
+ */
+open class BaseAnalyzer(
+    open val ktFiles: Set<KtFile>,
+    open val binding: BindingContext,
+    protected open val messageCollector: MessageCollector? = null) {
     protected fun KtFile.process(processors: Set<Processor<*>>) {
         messageCollector?.log("Start analyzing file ${this.name} (package ${this.packageFqName})")
         this.visit(processors)
