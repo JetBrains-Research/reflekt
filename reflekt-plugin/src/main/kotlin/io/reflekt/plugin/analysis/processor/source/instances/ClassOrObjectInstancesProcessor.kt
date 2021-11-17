@@ -10,9 +10,9 @@ import org.jetbrains.kotlin.resolve.BindingContext
  * @property binding
  */
 open class ClassOrObjectInstancesProcessor<T : KtClassOrObject>(override val binding: BindingContext) : BaseInstancesProcessor<MutableList<T>>(binding) {
-    override val fileToInstances: HashMap<FileId, MutableList<T>> = HashMap()
+    override val fileToInstances: FileToListInstances<T> = HashMap()
 
-    override fun process(element: KtElement, file: KtFile): HashMap<FileId, MutableList<T>> {
+    override fun process(element: KtElement, file: KtFile): FileToListInstances<T> {
         (element as? T)?.let {
             fileToInstances.getOrPut(file.fullName) { ArrayList() }.add(it)
         }
@@ -29,4 +29,3 @@ class ClassInstancesProcessor(override val binding: BindingContext) : ClassOrObj
 class ObjectInstancesProcessor(override val binding: BindingContext) : ClassOrObjectInstancesProcessor<KtObjectDeclaration>(binding) {
     override fun shouldRunOn(element: KtElement) = element.isPublicObject
 }
-

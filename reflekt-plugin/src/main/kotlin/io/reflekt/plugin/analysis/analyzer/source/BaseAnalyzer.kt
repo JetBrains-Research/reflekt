@@ -7,7 +7,15 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 
-open class BaseAnalyzer(open val ktFiles: Set<KtFile>, open val binding: BindingContext, protected open val messageCollector: MessageCollector? = null) {
+/**
+ * @property ktFiles
+ * @property binding
+ * @property messageCollector
+ */
+open class BaseAnalyzer(
+    open val ktFiles: Set<KtFile>,
+    open val binding: BindingContext,
+    protected open val messageCollector: MessageCollector? = null) {
     protected fun KtFile.process(processors: Set<Processor<*>>) {
         messageCollector?.log("Start analyzing file ${this.name} (package ${this.packageFqName})")
         this.visit(processors)

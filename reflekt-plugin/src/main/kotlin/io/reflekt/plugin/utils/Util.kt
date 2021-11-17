@@ -1,5 +1,6 @@
 package io.reflekt.plugin.utils
 
+import io.reflekt.plugin.analysis.analyzer.source.ReflektAnalyzer
 import io.reflekt.plugin.analysis.analyzer.source.SmartReflektAnalyzer
 import io.reflekt.plugin.analysis.models.ReflektInstances
 import io.reflekt.plugin.analysis.models.ReflektUses
@@ -13,8 +14,7 @@ import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.resolve.BindingTrace
-import org.jetbrains.kotlin.resolve.DescriptorUtils
+import org.jetbrains.kotlin.resolve.*
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.util.slicedMap.Slices
 import org.jetbrains.kotlin.util.slicedMap.WritableSlice
@@ -55,13 +55,9 @@ object Util {
         record(GET_USES, USES_STORE_NAME, uses)
     }
 
-    fun BindingContext.getUses() = get(GET_USES, USES_STORE_NAME)
-
     private fun BindingTrace.saveInstances(instances: ReflektInstances) {
         record(GET_INSTANCES, INSTANCES_STORE_NAME, instances)
     }
-
-    fun BindingContext.getInstances() = get(GET_INSTANCES, INSTANCES_STORE_NAME)
 
     fun getUses(
         files: Set<KtFile>,

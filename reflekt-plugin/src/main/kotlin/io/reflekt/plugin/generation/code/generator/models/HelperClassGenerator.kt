@@ -1,13 +1,14 @@
 package io.reflekt.plugin.generation.code.generator.models
 
-import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import io.reflekt.plugin.analysis.models.*
 import io.reflekt.plugin.generation.code.generator.*
 import io.reflekt.plugin.utils.stringRepresentation
+
+import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.jetbrains.kotlin.psi.KtNamedFunction
+
 import java.util.*
-import kotlin.reflect.KClass
 
 abstract class HelperClassGenerator : ClassGenerator() {
     abstract val typeVariable: TypeVariableName
@@ -32,7 +33,6 @@ abstract class HelperClassGenerator : ClassGenerator() {
     open val withSupertypesParameters = mapOf(
         FQ_NAMES to SET_OF_STRINGS,
     ).toParameterSpecs()
-
     open val withAnnotationsParameters = mapOf(
         ANNOTATION_FQ_NAMES to SET_OF_STRINGS,
         SUPERTYPE_FQ_NAMES to SET_OF_STRINGS,
@@ -104,7 +104,8 @@ abstract class HelperClassGenerator : ClassGenerator() {
     @Suppress(
         "LAMBDA_IS_NOT_LAST_PARAMETER",
         "IDENTIFIER_LENGTH",
-        "TYPE_ALIAS")
+        "TYPE_ALIAS",
+    )
     protected fun <K, T> generateWhenBody(
         uses: Map<K, List<T>>,
         conditionVariable: String,
@@ -113,10 +114,10 @@ abstract class HelperClassGenerator : ClassGenerator() {
         getWhenOption: (K, CodeBlock) -> CodeBlock,
     ): CodeBlock {
         val generateBranchForWhenOption = { (k, v): Map.Entry<K, List<T>> -> getWhenOption(k, listOfWhenRightPart(v, getEntityName)) }
-        return generateWhenBody(uses.asIterable(), conditionVariable, generateBranchForWhenOption, toAddReturn)
+        return generateWhenBody(uses.asIterable(), conditionVariable, toAddReturn, generateBranchForWhenOption)
     }
 
-    @Suppress("TYPE_ALIAS")
+    @Suppress("TYPE_ALIAS", "IDENTIFIER_LENGTH")
     // TODO: group by annotations (store set of signatures for the same set of annotations)
     protected fun generateNestedWhenBodyForFunctions(
         uses: FunctionUses,
@@ -130,15 +131,19 @@ abstract class HelperClassGenerator : ClassGenerator() {
                         mapOf(o.key.signature!!.stringRepresentation() to o.value),
                         SIGNATURE,
                         toAddReturn = false,
-                        getWhenOption = ::getWhenOptionForString
+                        getWhenOption = ::getWhenOptionForString,
                     ),
                 ),
             )
         }
-        return generateWhenBody(uses.mapValues { (_, v) -> v.map { getEntityName(it) } }.toMap().asIterable(), ANNOTATION_FQ_NAMES, mainFunction)
+        return generateWhenBody(
+            uses.mapValues { (_, v) -> v.map { getEntityName(it) } }.toMap().asIterable(),
+            ANNOTATION_FQ_NAMES,
+            generateBranchForWhenOption = mainFunction,
+        )
     }
 
-    @Suppress("TYPE_ALIAS")
+    @Suppress("TYPE_ALIAS", "IDENTIFIER_LENGTH")
     protected fun generateNestedWhenBodyForClassesOrObjects(uses: ClassOrObjectUses): CodeBlock {
         val mainFunction = { o: Map.Entry<SupertypesToAnnotations, List<String>> ->
             getWhenOptionForSet(
@@ -148,12 +153,16 @@ abstract class HelperClassGenerator : ClassGenerator() {
                         mapOf(o.key.supertypes to o.value),
                         SUPERTYPE_FQ_NAMES,
                         toAddReturn = false,
-                        getWhenOption = ::getWhenOptionForSet
+                        getWhenOption = ::getWhenOptionForSet,
                     ),
                 ),
             )
         }
-        return generateWhenBody(uses.mapValues { (_, v) -> v.mapNotNull { it.fqName?.toString() } }.toMap().asIterable(), ANNOTATION_FQ_NAMES, mainFunction)
+        return generateWhenBody(
+            uses.mapValues { (_, v) -> v.mapNotNull { it.fqName?.toString() } }.toMap().asIterable(),
+            ANNOTATION_FQ_NAMES,
+            generateBranchForWhenOption = mainFunction,
+        )
     }
 
     protected abstract class SelectorClassGeneratorWrapper(
@@ -164,19 +173,16 @@ abstract class HelperClassGenerator : ClassGenerator() {
     ) : SelectorClassGenerator()
 
     protected companion object {
+        const val ANNOTATION_FQ_NAMES = "annotationFqNames"
+        const val FQ_NAMES = "fqNames"
+        const val SIGNATURE = "signature"
+        const val SUPERTYPE_FQ_NAMES = "supertypeFqNames"
+        const val WITH_ANNOTATIONS_FUNCTION_NAME = "withAnnotations"
         const val WITH_SUPERTYPES_FUNCTION_NAME = "withSuperTypes"
         val WITH_SUPERTYPES_CLASS_NAME =
             WITH_SUPERTYPES_FUNCTION_NAME.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-
-        const val WITH_ANNOTATIONS_FUNCTION_NAME = "withAnnotations"
         val WITH_ANNOTATIONS_CLASS_NAME =
             WITH_ANNOTATIONS_FUNCTION_NAME.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-
-        const val FQ_NAMES = "fqNames"
-        const val ANNOTATION_FQ_NAMES = "annotationFqNames"
-        const val SUPERTYPE_FQ_NAMES = "supertypeFqNames"
-        const val SIGNATURE = "signature"
-
         val SET_OF_STRINGS = Set::class.parameterizedBy(String::class)
     }
 

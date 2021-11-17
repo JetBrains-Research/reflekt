@@ -1,12 +1,13 @@
 package io.reflekt
 
 import io.reflekt.util.stringRepresentation
-import kotlin.reflect.KClass
-import kotlin.reflect.typeOf
+
 import kotlin.Any
 import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Set
+import kotlin.reflect.KClass
+import kotlin.reflect.typeOf
 
 /**
  * The main Reflekt DSL for `multi-module` projects
@@ -210,7 +211,6 @@ object Reflekt {
              *
              */
             fun toSet(): Set<KClass<T>> = toList().toSet()
-
 
             /**
              * Filter classes with [annotationFqNames] annotations by one supertype. All classes will be cast to [T] type.

@@ -34,16 +34,13 @@ fun ModuleDescriptorImpl.getAllSubPackages(rootPackage: FqName, allSubPackages: 
 fun ModuleDescriptorImpl.getDescriptors(packages: Set<FqName>): List<PackageFragmentDescriptor> =
     packages.map { this.packageFragmentProvider.packageFragments(it) }.flatten()
 
-
 fun FunctionDescriptor.toFunctionInfo(): IrFunctionInfo =
     IrFunctionInfo(
         this.fqNameSafe.asString(),
         receiverFqName = receiverType()?.shortFqName(),
-        isObjectReceiver = receiverType()?.isObject() ?: false
+        isObjectReceiver = receiverType()?.isObject() ?: false,
     )
 
-fun ClassifierDescriptor.isSubtypeOf(klasses: Set<String>): Boolean {
-    return this.getAllSuperClassifiers().filter { it is ClassDescriptor }.any {
-        it.fqNameOrNull()?.asString() in klasses
-    }
+fun ClassifierDescriptor.isSubtypeOf(klasses: Set<String>): Boolean = this.getAllSuperClassifiers().filter { it is ClassDescriptor }.any {
+    it.fqNameOrNull()?.asString() in klasses
 }

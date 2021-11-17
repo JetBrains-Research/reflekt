@@ -7,12 +7,14 @@ import io.reflekt.plugin.analysis.psi.function.toFunctionInfo
 import io.reflekt.plugin.analysis.serialization.*
 import io.reflekt.plugin.analysis.serialization.SerializationUtils.toKotlinType
 import io.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableKotlinType
-import kotlinx.serialization.Serializable
+
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.Variance
+
+import kotlinx.serialization.Serializable
 
 typealias ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
 typealias FunctionInvokes = MutableSet<SignatureToAnnotations>
@@ -36,7 +38,7 @@ typealias BaseInvokesProcessors = Set<BaseInvokesProcessor<*>>
 @Serializable
 data class SupertypesToAnnotations(
     val supertypes: Set<String> = emptySet(),
-    val annotations: Set<String> = emptySet()
+    val annotations: Set<String> = emptySet(),
 )
 
 /**
@@ -50,7 +52,7 @@ data class SerializableKotlinType(
     val fqName: String,
     val arguments: List<SerializableTypeProjection> = emptyList(),
     val returnType: String,
-    val receiverType: SerializableKotlinType?
+    val receiverType: SerializableKotlinType?,
 )
 
 /**
@@ -67,21 +69,19 @@ data class SerializableTypeProjection(
 
 /**
  * @property signature
- * @property annotations
+ * @property annotations// kotlin.FunctionN< ... >
  */
 @Serializable
 data class SerializableSignatureToAnnotations(
-    var signature: SerializableKotlinType?, // kotlin.FunctionN< ... >
-    val annotations: Set<String> = emptySet(),
+    var signature: SerializableKotlinType?, val annotations: Set<String> = emptySet(),
 )
 
 /**
  * @property signature
- * @property annotations
+ * @property annotations// kotlin.FunctionN< ... >
  */
 data class SignatureToAnnotations(
-    var signature: KotlinType?, // kotlin.FunctionN< ... >
-    val annotations: Set<String> = emptySet(),
+    var signature: KotlinType?, val annotations: Set<String> = emptySet(),
 )
 
 /**
@@ -93,7 +93,7 @@ data class SignatureToAnnotations(
 data class SerializableReflektInvokes(
     val objects: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
     val classes: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
-    val functions: HashMap<FileId, SerializableFunctionInvokes> = HashMap()
+    val functions: HashMap<FileId, SerializableFunctionInvokes> = HashMap(),
 )
 
 /**
@@ -103,23 +103,23 @@ data class SerializableReflektInvokes(
 @Serializable
 data class SerializableReflektInvokesWithPackages(
     val invokes: SerializableReflektInvokes,
-    val packages: Set<String>
+    val packages: Set<String>,
 ) {
     fun toReflektInvokesWithPackages(module: ModuleDescriptorImpl) =
         ReflektInvokesWithPackages(
             invokes = ReflektInvokes(
                 objects = invokes.objects,
                 classes = invokes.classes,
-                functions = invokes.functions.mapValues { l ->
-                    l.value.map {
+                functions = invokes.functions.mapValues { fileToInvokes ->
+                    fileToInvokes.value.map {
                         SignatureToAnnotations(
                             annotations = it.annotations,
-                            signature = it.signature?.toKotlinType(module)
+                            signature = it.signature?.toKotlinType(module),
                         )
                     }.toMutableSet()
-                } as HashMap
+                } as HashMap,
             ),
-            packages = packages
+            packages = packages,
         )
 }
 
@@ -129,12 +129,12 @@ data class SerializableReflektInvokesWithPackages(
  */
 data class ReflektInvokesWithPackages(
     val invokes: ReflektInvokes,
-    val packages: Set<String>
+    val packages: Set<String>,
 ) {
     fun toSerializableReflektInvokesWithPackages() =
         SerializableReflektInvokesWithPackages(
             invokes = invokes.toSerializableReflektInvokes(),
-            packages = packages
+            packages = packages,
         )
 }
 
@@ -146,40 +146,42 @@ data class ReflektInvokesWithPackages(
 data class ReflektInvokes(
     val objects: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
     val classes: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
-    val functions: HashMap<FileId, FunctionInvokes> = HashMap()
+    val functions: HashMap<FileId, FunctionInvokes> = HashMap(),
 ) {
-    companion object {
-        fun createByProcessors(processors: BaseInvokesProcessors) = ReflektInvokes(
-            objects = processors.mapNotNull { it as? ObjectInvokesProcessor }.first().fileToInvokes,
-            classes = processors.mapNotNull { it as? ClassInvokesProcessor }.first().fileToInvokes,
-            functions = processors.mapNotNull { it as? FunctionInvokesProcessor }.first().fileToInvokes
-        )
-    }
-
     fun isEmpty() = objects.isEmpty() && classes.isEmpty() && functions.isEmpty()
+
+    fun isNotEmpty() = !isEmpty()
 
     fun toSerializableReflektInvokes(): SerializableReflektInvokes =
         SerializableReflektInvokes(
             objects = objects,
             classes = classes,
-            functions = functions.mapValues { l ->
-                l.value.map {
+            functions = functions.mapValues { fileToInvokes ->
+                fileToInvokes.value.map {
                     SerializableSignatureToAnnotations(
                         annotations = it.annotations,
-                        signature = it.signature?.toSerializableKotlinType()
+                        signature = it.signature?.toSerializableKotlinType(),
                     )
                 }.toMutableSet()
-            } as HashMap
+            } as HashMap,
         )
 
     fun merge(second: ReflektInvokes): ReflektInvokes = ReflektInvokes(
         objects = this.objects.merge(second.objects),
         classes = this.classes.merge(second.classes),
-        functions = this.functions.merge(second.functions)
+        functions = this.functions.merge(second.functions),
     )
 
+    @Suppress("TYPE_ALIAS", "IDENTIFIER_LENGTH")
     private fun <V> HashMap<FileId, MutableSet<V>>.merge(second: HashMap<FileId, MutableSet<V>>): HashMap<FileId, MutableSet<V>> =
         this.also { second.forEach { (k, v) -> this.getOrPut(k) { v } } }
+    companion object {
+        fun createByProcessors(processors: BaseInvokesProcessors) = ReflektInvokes(
+            objects = processors.mapNotNull { it as? ObjectInvokesProcessor }.first().fileToInvokes,
+            classes = processors.mapNotNull { it as? ClassInvokesProcessor }.first().fileToInvokes,
+            functions = processors.mapNotNull { it as? FunctionInvokesProcessor }.first().fileToInvokes,
+        )
+    }
 }
 
 /**
@@ -205,13 +207,13 @@ data class IrFunctionInfo(
 data class ReflektUses(
     val objects: HashMap<FileId, ClassOrObjectUses> = HashMap(),
     val classes: HashMap<FileId, ClassOrObjectUses> = HashMap(),
-    val functions: HashMap<FileId, FunctionUses> = HashMap()
+    val functions: HashMap<FileId, FunctionUses> = HashMap(),
 ) {
     companion object {
         fun createByProcessors(processors: Set<BaseUsesProcessor<*>>) = ReflektUses(
             objects = processors.mapNotNull { it as? ObjectUsesProcessor }.first().fileToUses,
             classes = processors.mapNotNull { it as? ClassUsesProcessor }.first().fileToUses,
-            functions = processors.mapNotNull { it as? FunctionUsesProcessor }.first().fileToUses
+            functions = processors.mapNotNull { it as? FunctionUsesProcessor }.first().fileToUses,
         )
     }
 }
@@ -224,23 +226,24 @@ data class ReflektUses(
 data class IrReflektUses(
     val objects: IrClassOrObjectUses = HashMap(),
     val classes: IrClassOrObjectUses = HashMap(),
-    val functions: IrFunctionUses = HashMap()
+    val functions: IrFunctionUses = HashMap(),
 ) {
+    fun merge(second: IrReflektUses): IrReflektUses = IrReflektUses(
+        objects = this.objects.merge(second.objects),
+        classes = this.classes.merge(second.classes),
+        functions = this.functions.merge(second.functions),
+    )
+
+    @Suppress("IDENTIFIER_LENGTH")
+    private fun <K, V> TypeUses<K, V>.merge(second: TypeUses<K, V>): TypeUses<K, V> = this.also { second.forEach { (k, v) -> this.getOrPut(k) { v } } }
     companion object {
+        @Suppress("IDENTIFIER_LENGTH")
         fun fromReflektUses(uses: ReflektUses, binding: BindingContext) = IrReflektUses(
             objects = HashMap(uses.objects.flatten().mapValues { (_, v) -> v.map { it.fqName!!.toString() }.toMutableList() }),
             classes = HashMap(uses.classes.flatten().mapValues { (_, v) -> v.map { it.fqName!!.toString() }.toMutableList() }),
             functions = HashMap(uses.functions.flatten().mapValues { (_, v) -> v.map { it.toFunctionInfo(binding) }.toMutableList() }),
         )
     }
-
-    fun merge(second: IrReflektUses): IrReflektUses = IrReflektUses(
-        objects = this.objects.merge(second.objects),
-        classes = this.classes.merge(second.classes),
-        functions = this.functions.merge(second.functions)
-    )
-
-    private fun <K, V> TypeUses<K, V>.merge(second: TypeUses<K, V>): TypeUses<K, V> = this.also { second.forEach { (k, v) -> this.getOrPut(k) { v } } }
 }
 
 fun ClassOrObjectUses.toSupertypesToFqNamesMap() = this.map { it.key.supertypes to it.value.mapNotNull { it.fqName?.toString() } }.toMap()

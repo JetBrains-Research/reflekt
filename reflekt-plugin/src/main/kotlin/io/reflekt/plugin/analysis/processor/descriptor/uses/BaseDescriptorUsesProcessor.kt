@@ -19,17 +19,17 @@ abstract class BaseDescriptorUsesProcessor<T : Any>(override val messageCollecto
     protected fun processClassOrObjectUses(
         descriptor: DeclarationDescriptor,
         invokes: ClassOrObjectInvokes,
-        uses: IrClassOrObjectUses
+        uses: IrClassOrObjectUses,
     ): IrClassOrObjectUses {
         (descriptor as? ClassifierDescriptor)?.let {
-            invokes.filter { it.covers(descriptor) }.forEach {
+            invokes.filter { it.isCovering(descriptor) }.forEach {
                 uses.getOrPut(it) { mutableListOf() }.add(descriptor.fqNameSafe.asString())
             }
         }
         return uses
     }
 
-    private fun SupertypesToAnnotations.covers(descriptor: ClassifierDescriptor): Boolean =
+    private fun SupertypesToAnnotations.isCovering(descriptor: ClassifierDescriptor): Boolean =
         // annotations set is empty when withSupertypes() method is called, so we don't need to check annotations in this case
         shouldCheckAnnotations(annotations, descriptor) && descriptor.isSubtypeOf(supertypes)
 

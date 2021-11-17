@@ -11,18 +11,15 @@ class PluginConfig(
     configuration: CompilerConfiguration?,
     // The path will be: pathToKotlin/daemon/reflekt-log.log
     logFilePath: String = "reflekt-log.log",
-    isTestConfiguration: Boolean = false
+    isTestConfiguration: Boolean = false,
 ) {
     var enabled = isTestConfiguration
     var reflektMetaFilesFromLibraries: Set<File> = emptySet()
     var outputDir: File? = null
-
     var toSaveMetadata = false
     var reflektMetaFileRelativePath: String? = null
-
     var dependencyJars: List<File> = emptyList()
     var messageCollector: MessageCollector? = null
-
 
     init {
         configuration?.let {

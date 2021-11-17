@@ -22,7 +22,7 @@ abstract class BaseUsesProcessor<T : Any>(override val binding: BindingContext, 
         element: KtElement,
         file: KtFile,
         invokes: ClassOrObjectInvokes,
-        fileToUses: HashMap<FileId, ClassOrObjectUses>
+        fileToUses: HashMap<FileId, ClassOrObjectUses>,
     ): HashMap<FileId, ClassOrObjectUses> {
         (element as? KtClassOrObject)?.let {
             invokes.filter { it.isCovering(element) }.forEach {

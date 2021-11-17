@@ -9,14 +9,20 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 
-class ReflektAnalyzer(override val ktFiles: Set<KtFile>, override val binding: BindingContext, override val messageCollector: MessageCollector? = null) :
-    BaseAnalyzer(ktFiles, binding, messageCollector) {
+class ReflektAnalyzer(
+    override val ktFiles: Set<KtFile>,
+    override val binding: BindingContext,
+    override val messageCollector: MessageCollector? = null) :
+    BaseAnalyzer(
+    ktFiles,
+    binding,
+    messageCollector) {
     fun uses(invokes: ReflektInvokes): ReflektUses {
         messageCollector?.log("Getting uses from sources....")
         val processors = setOf(
             ClassUsesProcessor(binding, invokes, messageCollector),
             ObjectUsesProcessor(binding, invokes, messageCollector),
-            FunctionUsesProcessor(binding, invokes, messageCollector)
+            FunctionUsesProcessor(binding, invokes, messageCollector),
         )
         ktFiles.forEach { file ->
             file.process(processors)
@@ -30,7 +36,7 @@ class ReflektAnalyzer(override val ktFiles: Set<KtFile>, override val binding: B
         val processors = setOf(
             ClassInvokesProcessor(binding, messageCollector),
             ObjectInvokesProcessor(binding, messageCollector),
-            FunctionInvokesProcessor(binding, messageCollector)
+            FunctionInvokesProcessor(binding, messageCollector),
         )
         ktFiles.forEach { file ->
             file.process(processors)

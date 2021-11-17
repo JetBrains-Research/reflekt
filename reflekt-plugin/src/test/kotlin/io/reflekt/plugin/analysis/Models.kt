@@ -62,4 +62,3 @@ fun <T> HashMap<FileId, T>.toPrettyString(toPrettyStringForT: (T) -> String): St
 fun ReflektUses.toPrettyString(): String = "objects: ${objects.toPrettyString(ClassOrObjectUses::toPrettyString)},\n" +
         "classes: ${classes.toPrettyString(ClassOrObjectUses::toPrettyString)},\n" +
         "functions: ${functions.toPrettyString(FunctionUses::toPrettyString)}"
-}

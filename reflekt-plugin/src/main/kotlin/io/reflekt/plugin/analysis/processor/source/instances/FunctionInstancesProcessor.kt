@@ -8,9 +8,9 @@ import org.jetbrains.kotlin.resolve.BindingContext
  * @property binding
  */
 class FunctionInstancesProcessor(override val binding: BindingContext) : BaseInstancesProcessor<MutableList<KtNamedFunction>>(binding) {
-    override val fileToInstances: HashMap<FileId, MutableList<KtNamedFunction>> = HashMap()
+    override val fileToInstances: FileToListInstances<KtNamedFunction> = HashMap()
 
-    override fun process(element: KtElement, file: KtFile): HashMap<FileId, MutableList<KtNamedFunction>> {
+    override fun process(element: KtElement, file: KtFile): FileToListInstances<KtNamedFunction> {
         (element as? KtNamedFunction)?.let {
             fileToInstances.getOrPut(file.fullName) { ArrayList() }.add(it)
         }

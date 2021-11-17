@@ -1,9 +1,7 @@
 package io.reflekt.plugin.analysis.psi.function
 
 import io.reflekt.plugin.analysis.models.IrFunctionInfo
-import io.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.builtins.*
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -31,7 +29,6 @@ fun KtNamedFunction.receiverType(binding: BindingContext): KotlinType? = getDesc
 fun FunctionDescriptor.receiverType(): KotlinType? {
     val extensionReceiver = this.extensionReceiverParameter
     val dispatchReceiver = this.dispatchReceiverParameter
-
     return if (dispatchReceiver != null && dispatchReceiver !is TransientReceiver) {
         dispatchReceiver.type
     } else if (extensionReceiver != null && extensionReceiver !is TransientReceiver) {

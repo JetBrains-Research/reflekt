@@ -24,7 +24,7 @@ class DescriptorAnalyzer(memberScope: MemberScope, private val messageCollector:
         val uses = IrReflektUses(
             classes = ClassDescriptorUsesProcessor(invokes, messageCollector).runProcessor(classDescriptors),
             objects = ObjectDescriptorUsesProcessor(invokes, messageCollector).runProcessor(objectDescriptors),
-            functions = FunctionDescriptorUsesProcessor(invokes, messageCollector).runProcessor(topLevelFunctionsDescriptors)
+            functions = FunctionDescriptorUsesProcessor(invokes, messageCollector).runProcessor(topLevelFunctionsDescriptors),
         )
         messageCollector?.log("Getting uses from descriptors has done!")
         return uses

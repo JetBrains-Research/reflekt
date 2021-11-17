@@ -16,7 +16,10 @@ import org.jetbrains.kotlin.resolve.BindingContext
  * @property binding
  * @property messageCollector
  */
-class ClassUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes, override val messageCollector: MessageCollector?) :
+class ClassUsesProcessor(
+    override val binding: BindingContext,
+    reflektInvokes: ReflektInvokes,
+    override val messageCollector: MessageCollector?) :
     BaseUsesProcessor<ClassOrObjectUses>(binding, messageCollector) {
     override val fileToUses: HashMap<FileId, ClassOrObjectUses> = HashMap()
     private val invokes = getInvokesGroupedByFiles(reflektInvokes.classes)
@@ -24,7 +27,7 @@ class ClassUsesProcessor(override val binding: BindingContext, reflektInvokes: R
     override fun process(element: KtElement, file: KtFile): HashMap<FileId, ClassOrObjectUses> =
         processClassOrObjectUses(element, file, invokes, fileToUses)
 
-    override fun shouldRunOn(element: KtElement) : Boolean {
+    override fun shouldRunOn(element: KtElement): Boolean {
         val shouldRunOn = element.isPublicNotAbstractClass
         messageCollector?.log("ClassUsesProcessor. Element: ${element.text}, should run on $shouldRunOn")
         return shouldRunOn

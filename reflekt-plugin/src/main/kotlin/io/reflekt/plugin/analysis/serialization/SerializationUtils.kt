@@ -1,8 +1,7 @@
 package io.reflekt.plugin.analysis.serialization
 
 import io.reflekt.plugin.analysis.models.*
-import kotlinx.serialization.*
-import kotlinx.serialization.protobuf.ProtoBuf
+
 import org.jetbrains.kotlin.builtins.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
@@ -13,13 +12,14 @@ import org.jetbrains.kotlin.resolve.lazy.ResolveSessionUtils.getClassDescriptors
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeProjection
 
+import kotlinx.serialization.*
+import kotlinx.serialization.protobuf.ProtoBuf
+
 @OptIn(ExperimentalSerializationApi::class)
 object SerializationUtils {
     private val protoBuf = ProtoBuf
 
-    fun encodeInvokes(invokesWithPackages: ReflektInvokesWithPackages): ByteArray {
-        return protoBuf.encodeToByteArray(invokesWithPackages.toSerializableReflektInvokesWithPackages())
-    }
+    fun encodeInvokes(invokesWithPackages: ReflektInvokesWithPackages): ByteArray = protoBuf.encodeToByteArray(invokesWithPackages.toSerializableReflektInvokesWithPackages())
 
     fun decodeInvokes(byteArray: ByteArray, module: ModuleDescriptorImpl): ReflektInvokesWithPackages {
         val decoded = protoBuf.decodeFromByteArray<SerializableReflektInvokesWithPackages>(byteArray)
@@ -43,7 +43,7 @@ object SerializationUtils {
             parameterTypes = args,
             returnType = returnType,
             suspendFunction = false,
-            parameterNames = null
+            parameterNames = null,
         )
     }
 
@@ -51,7 +51,7 @@ object SerializationUtils {
         SerializableTypeProjection(
             fqName = type.fullFqName(),
             isStarProjection = isStarProjection,
-            projectionKind = projectionKind
+            projectionKind = projectionKind,
         )
 
     fun KotlinType.toSerializableKotlinType(): SerializableKotlinType {
@@ -61,7 +61,7 @@ object SerializationUtils {
             fqName = fullFqName(),
             arguments = arguments.dropLast(1).map { it.toSerializableTypeProjection() },
             returnType = returnType,
-            receiverType = receiverType
+            receiverType = receiverType,
         )
     }
 

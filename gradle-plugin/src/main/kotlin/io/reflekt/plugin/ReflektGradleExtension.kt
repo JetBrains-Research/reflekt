@@ -37,7 +37,6 @@ open class ReflektGradleExtension {
      * This information will be used if the current project is included
      * as a library for ReflektImpl file generation. */
     var toSaveMetadata: Boolean = false
-
 }
 
 /**

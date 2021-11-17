@@ -7,8 +7,6 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
-internal inline fun <reified T : Any> Project.myExtByName(name: String): T = extensions.getByName(name) as T
-
 internal val Project.mySourceSets: SourceSetContainer
     get() = myExtByName("sourceSets")
 
@@ -18,3 +16,5 @@ val SourceSet.kotlin: SourceDirectorySet
             .convention
             .getPlugin(KotlinSourceSet::class.java)
             .kotlin
+
+internal inline fun <reified T : Any> Project.myExtByName(name: String): T = extensions.getByName(name) as T

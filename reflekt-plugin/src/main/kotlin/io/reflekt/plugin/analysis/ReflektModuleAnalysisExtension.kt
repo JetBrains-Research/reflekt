@@ -3,7 +3,6 @@ package io.reflekt.plugin.analysis
 import io.reflekt.plugin.analysis.analyzer.descriptor.DescriptorAnalyzer
 import io.reflekt.plugin.analysis.analyzer.source.ReflektAnalyzer
 import io.reflekt.plugin.analysis.models.*
-import io.reflekt.plugin.analysis.resolve.getAllSubPackages
 import io.reflekt.plugin.analysis.resolve.getDescriptors
 import io.reflekt.plugin.analysis.serialization.SerializationUtils
 import io.reflekt.plugin.generation.code.generator.ReflektImplGenerator
@@ -22,7 +21,6 @@ import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
-import kotlin.system.measureTimeMillis
 
 class ReflektModuleAnalysisExtension(
     private val reflektMetaFiles: Set<File>,
@@ -30,11 +28,14 @@ class ReflektModuleAnalysisExtension(
     private val generationPath: File?,
     private val reflektMetaFile: File?,
     private val reflektContext: ReflektContext? = null,
-    private val messageCollector: MessageCollector? = null
+    private val messageCollector: MessageCollector? = null,
 ) : AnalysisHandlerExtension {
-
     // TODO: store ReflektMetaInf by modules
-    override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
+    override fun analysisCompleted(
+        project: Project,
+        module: ModuleDescriptor,
+        bindingTrace: BindingTrace,
+        files: Collection<KtFile>): AnalysisResult? {
         messageCollector?.log("ReflektAnalysisExtension is starting...")
         (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
         val (libraryInvokes, packages) = getReflektMeta(reflektMetaFiles, module)
@@ -52,7 +53,7 @@ class ReflektModuleAnalysisExtension(
         val uses = analyzer.uses(mergedInvokes)
         bindingTrace.saveUses(uses)
 
-        if (reflektContext != null) {
+        reflektContext?.let {
             messageCollector?.log("Start analysis ${module.name} module's files")
             val sourceUses = IrReflektUses.fromReflektUses(uses, bindingTrace.bindingContext)
             val librariesUses = getUsesFromLibraries(module, packages, invokes)
@@ -64,9 +65,7 @@ class ReflektModuleAnalysisExtension(
             reflektContext.instances = IrReflektInstances.fromReflektInstances(instances, bindingTrace.bindingContext, messageCollector)
             messageCollector?.log("IrReflektInstances were created successfully")
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: ${reflektContext.uses}\nInstances: ${reflektContext.instances}")
-        } else {
-            messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses")
-        }
+        } ?: messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses")
 
         val reflektImplFile = File(generationPath, "io/reflekt/ReflektImpl.kt")
         if (toGenerateReflektImpl(libraryInvokes)) {
@@ -77,7 +76,7 @@ class ReflektModuleAnalysisExtension(
         return super.analysisCompleted(project, module, bindingTrace, files)
     }
 
-    private fun toGenerateReflektImpl(libraryInvokes: ReflektInvokes) = !libraryInvokes.isEmpty()
+    private fun toGenerateReflektImpl(libraryInvokes: ReflektInvokes) = libraryInvokes.isNotEmpty()
 
     // TODO: generate ReflektImpl by IrReflektUses
     private fun generateReflektImpl(uses: ReflektUses, reflektImplFile: File) {
@@ -87,13 +86,16 @@ class ReflektModuleAnalysisExtension(
             delete()
             parentFile.mkdirs()
             writeText(
-                ReflektImplGenerator(uses).generate()
+                ReflektImplGenerator(uses).generate(),
             )
         }
         messageCollector?.log("Finish generation ReflektImpl")
     }
 
-    private fun getUsesFromLibraries(module: ModuleDescriptorImpl, packages: Set<String>, invokes: ReflektInvokes): IrReflektUses {
+    private fun getUsesFromLibraries(
+        module: ModuleDescriptorImpl,
+        packages: Set<String>,
+        invokes: ReflektInvokes): IrReflektUses {
         var uses = IrReflektUses()
         module.getDescriptors(packages.map { FqName(it) }.toSet()).forEach {
             val ms = it.getMemberScope()
@@ -119,7 +121,7 @@ class ReflektModuleAnalysisExtension(
         messageCollector?.log("Library packages: $packages")
         return ReflektInvokesWithPackages(
             invokes = libraryInvokes,
-            packages = packages
+            packages = packages,
         )
     }
 
@@ -130,9 +132,9 @@ class ReflektModuleAnalysisExtension(
             SerializationUtils.encodeInvokes(
                 ReflektInvokesWithPackages(
                     invokes = invokes,
-                    packages = files.map { it.packageFqName.asString() }.toSet()
-                )
-            )
+                    packages = files.map { it.packageFqName.asString() }.toSet(),
+                ),
+            ),
         )
     }
 }

@@ -16,14 +16,16 @@ import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
  * @property binding
  * @property messageCollector
  */
-class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes: ReflektInvokes, override val messageCollector: MessageCollector?)
-    : BaseUsesProcessor<FunctionUses>(binding, messageCollector) {
+class FunctionUsesProcessor(
+    override val binding: BindingContext,
+    reflektInvokes: ReflektInvokes,
+    override val messageCollector: MessageCollector?) : BaseUsesProcessor<FunctionUses>(binding, messageCollector) {
     override val fileToUses: HashMap<FileId, FunctionUses> = HashMap()
     private val invokes = getInvokesGroupedByFiles(reflektInvokes.functions)
 
     override fun process(element: KtElement, file: KtFile): HashMap<FileId, FunctionUses> {
         (element as? KtNamedFunction)?.let {
-            invokes.filter { it.covers(element) }.forEach {
+            invokes.filter { it.isCovering(element) }.forEach {
                 fileToUses.getOrPut(file.fullName) { HashMap() }.getOrPut(it) { mutableListOf() }.add(element)
             }
         }
@@ -31,14 +33,13 @@ class FunctionUsesProcessor(override val binding: BindingContext, reflektInvokes
     }
 
     // TODO: how can we return the member functions??
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     override fun shouldRunOn(element: KtElement): Boolean {
         val shouldRunOn = element.isTopLevelPublicFunction && !element.isMainFunction
         messageCollector?.log("FunctionUsesProcessor. Element: $element with text ${element.text}, should run on $shouldRunOn")
         return shouldRunOn
     }
 
-    private fun SignatureToAnnotations.covers(function: KtNamedFunction): Boolean {
-        return (annotations.isEmpty() || function.getAnnotations(binding, annotations).isNotEmpty()) &&
-            function.toParameterizedType(binding)?.isSubtypeOf(signature!!) ?: false
-    }
+    private fun SignatureToAnnotations.isCovering(function: KtNamedFunction): Boolean = (annotations.isEmpty() || function.getAnnotations(binding, annotations).isNotEmpty()) &&
+        function.toParameterizedType(binding)?.isSubtypeOf(signature!!) ?: false
 }

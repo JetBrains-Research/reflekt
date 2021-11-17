@@ -91,15 +91,17 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         require(itemType is IrSimpleType)
 
         messageCollector?.log("RES ARGS: ${itemType.arguments.map { (it as IrSimpleType).classFqName }}")
-        val items = resultValues.map {
-            val functionSymbol = context.referenceFunctions(FqName(it.fqName)).firstOrNull { symbol ->
+        val items = resultValues.map { irFunctionInfo ->
+            val functionSymbol = context.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
                 symbol.owner.toParameterizedType(context.bindingContext)?.isSubtypeOf(itemType.toParameterizedType()) ?: false
-            } ?: throw ReflektGenerationException("Failed to find function ${it.fqName} with signature ${itemType.toParameterizedType()}")
+            } ?: throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
             irKFunction(itemType, functionSymbol).also { call ->
-                if (it.receiverFqName != null && it.isObjectReceiver) {
-                    val dispatchSymbol = context.referenceClass(FqName(it.receiverFqName))
-                        ?: throw ReflektGenerationException("Failed to find receiver class ${it.receiverFqName}")
-                    call.dispatchReceiver = irGetObject(dispatchSymbol)
+                irFunctionInfo.receiverFqName?.let {
+                    if (irFunctionInfo.isObjectReceiver) {
+                        val dispatchSymbol = context.referenceClass(FqName(irFunctionInfo.receiverFqName))
+                            ?: throw ReflektGenerationException("Failed to find receiver class ${irFunctionInfo.receiverFqName}")
+                        call.dispatchReceiver = irGetObject(dispatchSymbol)
+                    }
                 }
             }
         }

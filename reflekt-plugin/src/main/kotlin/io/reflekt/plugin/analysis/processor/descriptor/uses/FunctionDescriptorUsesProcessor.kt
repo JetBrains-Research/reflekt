@@ -21,7 +21,7 @@ class FunctionDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override v
 
     override fun process(descriptor: DeclarationDescriptor): IrFunctionUses {
         (descriptor as? FunctionDescriptor)?.let {
-            invokes.filter { it.covers(descriptor) }.forEach {
+            invokes.filter { it.isCovering(descriptor) }.forEach {
                 uses.getOrPut(it) { mutableListOf() }.add(descriptor.toFunctionInfo())
             }
         }
@@ -30,7 +30,6 @@ class FunctionDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override v
 
     override fun shouldRunOn(descriptor: DeclarationDescriptor): Boolean = descriptor.isPublicTopLevelFunction && !descriptor.isMainFunction
 
-    private fun SignatureToAnnotations.covers(function: FunctionDescriptor): Boolean =
+    private fun SignatureToAnnotations.isCovering(function: FunctionDescriptor): Boolean =
         shouldCheckAnnotations(annotations, function) && function.toParameterizedType()?.isSubtypeOf(signature!!) ?: false
-
 }

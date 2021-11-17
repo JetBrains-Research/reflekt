@@ -1,7 +1,7 @@
 package io.reflekt.plugin.analysis.parameterizedtype
 
 import io.reflekt.plugin.analysis.parameterizedtype.util.getFunctionsToTestFromResources
-import io.reflekt.plugin.analysis.parameterizedtype.util.parseKDocLinks
+import io.reflekt.plugin.analysis.parameterizedtype.util.parseKdocLinks
 import io.reflekt.plugin.analysis.psi.function.toParameterizedType
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType

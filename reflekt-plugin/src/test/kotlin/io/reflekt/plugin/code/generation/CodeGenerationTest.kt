@@ -3,7 +3,7 @@ package io.reflekt.plugin.code.generation
 import io.reflekt.plugin.analysis.*
 import io.reflekt.plugin.generation.code.generator.ReflektImplGenerator
 import io.reflekt.plugin.util.Util
-import io.reflekt.util.FileUtil
+import io.reflekt.util.file.getAllNestedFiles
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest

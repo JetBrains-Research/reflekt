@@ -61,7 +61,10 @@ data class IrReflektInstances(
     val functions: List<IrFunctionInstance> = ArrayList(),
 ) {
     companion object {
-        fun fromReflektInstances(instances: ReflektInstances, binding: BindingContext, messageCollector: MessageCollector? = null) = IrReflektInstances(
+        fun fromReflektInstances(
+            instances: ReflektInstances,
+            binding: BindingContext,
+            messageCollector: MessageCollector? = null) = IrReflektInstances(
             objects = instances.objects.values.flatten().map { IrObjectInstance(it, it.fqName.toString()) },
             classes = instances.classes.values.flatten().map { IrClassInstance(it, it.fqName.toString()) },
             functions = instances.functions.values.flatten().map {
@@ -122,4 +125,3 @@ data class TypeArgumentToFilters(
     val filters: List<Lambda> = emptyList(),
     val imports: List<Import> = emptyList(),
 )
-

@@ -21,13 +21,6 @@ internal val KtElement.isMainFunction: Boolean
 internal val KtElement.isPublicNotAbstractClass: Boolean
     get() = this is KtClass && this.isPublic && !this.isAbstract()
 
-typealias FileId = String
-
-internal fun getFullName(packageFqName: FqName, name: String? = null) : FileId {
-    val postfix = name?.let{ ".${name}" } ?: ""
-    return "${packageFqName.asString()}$postfix"
-}
-
 // TODO: is it enough to identify a file?
 internal val KtFile.fullName: FileId
     get() = getFullName(this.packageFqName, this.name)
@@ -62,13 +55,21 @@ internal val ClassDescriptor.isClass: Boolean
 internal val ClassDescriptor.isObject: Boolean
     get() = this.kind == ClassKind.OBJECT
 
+typealias FileId = String
+
+internal fun getFullName(packageFqName: FqName, name: String? = null): FileId {
+    val postfix = name?.let { ".$name" } ?: ""
+    return "${packageFqName.asString()}$postfix"
+}
+
 internal fun <K, V : MutableSet<K>> getInvokesGroupedByFiles(fileToInvokes: HashMap<FileId, V>) =
     groupFilesByInvokes(fileToInvokes).keys.flatten().toMutableSet()
 
 // To avoid repeated checks for belonging invokes in different files,
 // we will group files by invokes and process each of them once
 // MutableSet<*> here is ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
-//   or FunctionInvokes = MutableSet<SignatureToAnnotations> MutableSet<*>
+// or FunctionInvokes = MutableSet<SignatureToAnnotations> MutableSet<*>
+@Suppress("TYPE_ALIAS")
 private fun <T> groupFilesByInvokes(fileToInvokes: HashMap<FileId, T>): HashMap<T, MutableSet<String>> {
     val filesByInvokes = HashMap<T, MutableSet<FileId>>()
     fileToInvokes.forEach { (file, invoke) ->

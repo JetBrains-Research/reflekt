@@ -21,5 +21,4 @@ class ObjectDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override val
         processClassOrObjectUses(descriptor, invokes, uses)
 
     override fun shouldRunOn(descriptor: DeclarationDescriptor): Boolean = descriptor.isPublicObject
-
 }

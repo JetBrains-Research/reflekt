@@ -9,8 +9,14 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 
-class SmartReflektAnalyzer(override val ktFiles: Set<KtFile>, override val binding: BindingContext, override val messageCollector: MessageCollector? = null) :
-    BaseAnalyzer(ktFiles, binding, messageCollector) {
+class SmartReflektAnalyzer(
+    override val ktFiles: Set<KtFile>,
+    override val binding: BindingContext,
+    override val messageCollector: MessageCollector? = null) :
+    BaseAnalyzer(
+    ktFiles,
+    binding,
+    messageCollector) {
     fun instances(): ReflektInstances {
         messageCollector?.log("Getting instances....")
         val processors = setOf(ClassInstancesProcessor(binding), ObjectInstancesProcessor(binding), FunctionInstancesProcessor(binding))
