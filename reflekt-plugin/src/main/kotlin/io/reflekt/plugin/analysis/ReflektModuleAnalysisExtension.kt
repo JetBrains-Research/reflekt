@@ -30,6 +30,8 @@ class ReflektModuleAnalysisExtension(
     private val reflektContext: ReflektContext? = null,
     private val messageCollector: MessageCollector? = null,
 ) : AnalysisHandlerExtension {
+    private val reflektPackage = "io.reflekt"
+
     // TODO: store ReflektMetaInf by modules
     override fun analysisCompleted(
         project: Project,
@@ -40,8 +42,7 @@ class ReflektModuleAnalysisExtension(
         (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
         val (libraryInvokes, packages) = getReflektMeta(reflektMetaFiles, module)
 
-        // TODO: use a const
-        val setOfFiles = files.filter { it.packageFqName.asString() != "io.reflekt" }.toSet()
+        val setOfFiles = files.filter { it.packageFqName.asString() != reflektPackage }.toSet()
         val analyzer = ReflektAnalyzer(setOfFiles, bindingTrace.bindingContext, messageCollector)
         val invokes = analyzer.invokes()
         messageCollector?.log("Project's invokes: $invokes")
@@ -62,7 +63,7 @@ class ReflektModuleAnalysisExtension(
 
             // Need only for SmartReflekt
             val instances = getInstances(setOfFiles, bindingTrace, messageCollector = messageCollector)
-            reflektContext.instances = IrReflektInstances.fromReflektInstances(instances, bindingTrace.bindingContext, messageCollector)
+            reflektContext.instances = IrReflektInstances.fromReflektInstances(instances, bindingTrace.bindingContext)
             messageCollector?.log("IrReflektInstances were created successfully")
             messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: ${reflektContext.uses}\nInstances: ${reflektContext.instances}")
         } ?: messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses")

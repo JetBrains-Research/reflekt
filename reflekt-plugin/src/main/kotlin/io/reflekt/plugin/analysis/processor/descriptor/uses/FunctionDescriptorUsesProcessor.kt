@@ -28,6 +28,7 @@ class FunctionDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override v
         return uses
     }
 
+    // TODO: how can we return the member functions??
     override fun shouldRunOn(descriptor: DeclarationDescriptor): Boolean = descriptor.isPublicTopLevelFunction && !descriptor.isMainFunction
 
     private fun SignatureToAnnotations.isCovering(function: FunctionDescriptor): Boolean =

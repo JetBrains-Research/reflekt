@@ -63,9 +63,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
 
     private fun createReflektMeta(resourcesDir: String): File {
         val metaInfDir = File("$resourcesDir/$metaInfDir")
-        if (!metaInfDir.exists()) {
-            metaInfDir.mkdirs()
-        }
+        metaInfDir.mkdirs()
         return File("${metaInfDir.path}/$reflektMetaFile")
     }
 
@@ -92,18 +90,19 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
     private fun getReflektMetaFiles(jarFiles: Set<File>): List<File> {
         val files: MutableList<File> = ArrayList()
         jarFiles.forEach { jar ->
-            getSourceJar(jar)?.let {
+            getLibJarWithoutSources(jar)?.let {
                 files.add(getReflektMetaFile(it))
             }
         }
         return files
     }
 
-    private fun getSourceJar(jarFile: File): File? {
-        val sourceName = "${jarFile.name.substringBeforeLast('.', "")}.jar"
+    private fun getLibJarWithoutSources(jarFile: File): File? {
+        val jarName = "${jarFile.name.substringBeforeLast('.', "")}.jar"
         jarFile.parentFile.parentFile.listFiles()?.filter { it.isDirectory }?.forEach { folder ->
-            val sources = folder.listFiles()?.find { it.name == sourceName }
-            sources ?: return sources
+            folder.listFiles()?.find { it.name == jarName }.let {
+                return it
+            }
         }
         return null
     }

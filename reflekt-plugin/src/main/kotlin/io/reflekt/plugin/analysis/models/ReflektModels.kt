@@ -73,7 +73,7 @@ data class SerializableTypeProjection(
  */
 @Serializable
 data class SerializableSignatureToAnnotations(
-    var signature: SerializableKotlinType?, val annotations: Set<String> = emptySet(),
+    val signature: SerializableKotlinType?, val annotations: Set<String> = emptySet(),
 )
 
 /**
@@ -81,7 +81,7 @@ data class SerializableSignatureToAnnotations(
  * @property annotations// kotlin.FunctionN< ... >
  */
 data class SignatureToAnnotations(
-    var signature: KotlinType?, val annotations: Set<String> = emptySet(),
+    val signature: KotlinType?, val annotations: Set<String> = emptySet(),
 )
 
 /**
@@ -174,7 +174,7 @@ data class ReflektInvokes(
 
     @Suppress("TYPE_ALIAS", "IDENTIFIER_LENGTH")
     private fun <V> HashMap<FileId, MutableSet<V>>.merge(second: HashMap<FileId, MutableSet<V>>): HashMap<FileId, MutableSet<V>> =
-        this.also { second.forEach { (k, v) -> this.getOrPut(k) { v } } }
+        this.also { second.forEach { (k, v) -> this.getOrPut(k) { mutableSetOf() }.addAll(v) } }
     companion object {
         fun createByProcessors(processors: BaseInvokesProcessors) = ReflektInvokes(
             objects = processors.mapNotNull { it as? ObjectInvokesProcessor }.first().fileToInvokes,
