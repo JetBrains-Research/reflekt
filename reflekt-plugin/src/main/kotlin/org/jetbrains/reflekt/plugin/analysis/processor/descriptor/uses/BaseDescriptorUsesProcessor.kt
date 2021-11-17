@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.descriptors.ClassifierDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrClassOrObjectUses
 import org.jetbrains.reflekt.plugin.analysis.processor.descriptor.DescriptorProcessor
 import org.jetbrains.reflekt.plugin.analysis.resolve.isSubtypeOf
 

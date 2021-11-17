@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.ir.util.fqNameForIrSerialization
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.ir.ReflektFunctionInvokeArgumentsCollector
 import org.jetbrains.reflekt.plugin.analysis.ir.ReflektInvokeArgumentsCollector
-import org.jetbrains.reflekt.plugin.analysis.models.IrReflektUses
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektUses
 import org.jetbrains.reflekt.plugin.generation.common.ReflektInvokeParts
 import org.jetbrains.reflekt.plugin.utils.Util.log
 

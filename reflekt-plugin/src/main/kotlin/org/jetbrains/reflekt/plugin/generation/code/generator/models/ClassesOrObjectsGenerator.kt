@@ -3,7 +3,7 @@ package org.jetbrains.reflekt.plugin.generation.code.generator.models
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.jetbrains.reflekt.plugin.analysis.models.ClassOrObjectUses
-import org.jetbrains.reflekt.plugin.analysis.models.toSupertypesToFqNamesMap
+import org.jetbrains.reflekt.plugin.analysis.models.ir.toSupertypesToFqNamesMap
 import org.jetbrains.reflekt.plugin.generation.code.generator.emptyListCode
 import kotlin.reflect.KClass
 
