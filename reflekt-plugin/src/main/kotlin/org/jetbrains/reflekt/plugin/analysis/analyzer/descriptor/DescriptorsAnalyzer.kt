@@ -3,8 +3,8 @@ package org.jetbrains.reflekt.plugin.analysis.analyzer.descriptor
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
-import org.jetbrains.reflekt.plugin.analysis.models.IrReflektUses
-import org.jetbrains.reflekt.plugin.analysis.models.ReflektInvokes
+import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektUses
 import org.jetbrains.reflekt.plugin.analysis.processor.descriptor.uses.BaseDescriptorUsesProcessor
 import org.jetbrains.reflekt.plugin.analysis.processor.descriptor.uses.ClassDescriptorUsesProcessor
 import org.jetbrains.reflekt.plugin.analysis.processor.descriptor.uses.FunctionDescriptorUsesProcessor
@@ -25,6 +25,11 @@ class DescriptorAnalyzer(memberScope: MemberScope, private val messageCollector:
     }
 
     fun uses(invokes: ReflektInvokes): IrReflektUses {
+        // Try to find uses only if some Reflekt calls were found
+        if (invokes.isEmpty()) {
+            messageCollector?.log("Got empty invokes")
+            return IrReflektUses()
+        }
         messageCollector?.log("Getting uses from descriptors....")
         val uses = IrReflektUses(
             classes = ClassDescriptorUsesProcessor(invokes, messageCollector).runProcessor(classDescriptors),

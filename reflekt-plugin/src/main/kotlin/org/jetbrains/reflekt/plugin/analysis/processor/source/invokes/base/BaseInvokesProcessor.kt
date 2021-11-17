@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.plugin.analysis.processor.source.invokes
+package org.jetbrains.reflekt.plugin.analysis.processor.source.invokes.base
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.KtElement

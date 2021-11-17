@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionUses
 import org.jetbrains.reflekt.plugin.analysis.processor.*
 import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 import org.jetbrains.reflekt.plugin.analysis.resolve.toFunctionInfo

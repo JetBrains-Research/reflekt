@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 import org.jetbrains.reflekt.plugin.analysis.common.*
 import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
-import org.jetbrains.reflekt.plugin.analysis.models.IrFunctionInfo
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
 import org.jetbrains.reflekt.plugin.generation.common.*
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.Util.log

@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
-import org.jetbrains.reflekt.plugin.analysis.models.ReflektContext
+import org.jetbrains.reflekt.plugin.analysis.models.ir.ReflektContext
 
 class ReflektIrGenerationExtension(
     private val reflektContext: ReflektContext,
@@ -13,7 +13,7 @@ class ReflektIrGenerationExtension(
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         if (!toReplaceIr) return
-        val uses = reflektContext.uses ?: error("Uses must be saved to reflektContext before running ReflektIrGenerationExtension")
+        val uses = reflektContext.uses ?: return
         moduleFragment.transform(ReflektIrTransformer(pluginContext, uses, messageCollector), null)
     }
 }

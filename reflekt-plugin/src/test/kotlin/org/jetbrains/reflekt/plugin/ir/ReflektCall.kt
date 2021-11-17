@@ -37,7 +37,6 @@ object ResultCall {
         .map { SourceFile.fromPath(it) }
 
     fun <T> ResultFile<T>.call(useIR: Boolean = true): T {
-        // TODO: KotlinCompilation does not generate IR (does not call IR extensions)
         val compilationResult = KotlinCompilation().apply {
             sources = commonTestFiles.plus(file)
             jvmTarget = "11"
@@ -47,7 +46,6 @@ object ResultCall {
             this.useIR = useIR
         }.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, compilationResult.exitCode)
-        // TODO: the output directory is empty
         val testResults = compilationResult.classLoader.loadClass(classPath)
         val resultMethod = testResults.getMethod(resultMethod)
         return resultMethod.invoke(null) as T

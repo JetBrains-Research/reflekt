@@ -11,11 +11,6 @@ object AnalysisUtil {
         return ReflektAnalyzer(baseAnalyzer.ktFiles, baseAnalyzer.binding)
     }
 
-    fun getSmartReflektAnalyzer(classPath: Set<File>, sources: Set<File>): SmartReflektAnalyzer {
-        val baseAnalyzer = getBaseAnalyzer(classPath, sources)
-        return SmartReflektAnalyzer(baseAnalyzer.ktFiles, baseAnalyzer.binding)
-    }
-
     fun getBaseAnalyzer(classPath: Set<File>, sources: Set<File>): BaseAnalyzer {
         val environment = EnvironmentManager.create(classPath)
         val ktFiles = ParseUtil.analyze(sources, environment)
