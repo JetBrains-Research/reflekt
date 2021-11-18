@@ -56,7 +56,7 @@ allprojects {
     }
 
     configureDiktat()
-    // Incomment Detekt checks after code refactoring
+    // Uncomment Detekt checks after code refactoring
     // configureDetekt()
 }
 

@@ -69,7 +69,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
 
     @Suppress("ForbiddenComment")
     // TODO: can we do it better?
-    //  take a look at project.mySourceSets.getAt("main").resources.first().absolutePath
+    // take a look at project.mySourceSets.getAt("main").resources.first().absolutePath
     private fun Project.getResourcesPath(): String = "${project.rootDir}${project.path.replace(":", "/")}/src/main/resources"
 
     override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean = kotlinCompilation.platformType == KotlinPlatformType.jvm
