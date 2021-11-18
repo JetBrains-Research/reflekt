@@ -1,26 +1,26 @@
-import io.reflekt.buildutils.*
+import org.jetbrains.reflekt.buildutils.*
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
-group = "io.reflekt"
+group = "org.jetbrains.reflekt"
 /*
 * To change version you should change the version in the following places:
 *  - here (the main build.gradle.kts file)
 *  - VERSION const in the Util.kt in the reflekt-core module
-*  - version argument in the getReflektProjectJars function in AnalysisSetupTest
+*  - VERSION const in the MavenLocalUtil object
 *    class in tests in the reflekt-plugin module
 *  - two places in the main README.md file (after realising)
 *
 * Also, you should change the version in two places in the build.gradle.kts file in the example project
 * */
-version = "1.5.30"
+version = "1.5.31"
 
 plugins {
     id("tanvd.kosogor") version "1.0.12" apply true
-    kotlin("jvm") version "1.5.30" apply true
+    kotlin("jvm") version "1.5.31" apply true
     id("com.github.gmazzo.buildconfig") version "3.0.3" apply false
     `maven-publish`
-    kotlin("kapt") version "1.5.30" apply true
+    kotlin("kapt") version "1.5.31" apply true
 }
 
 allprojects {
@@ -56,11 +56,12 @@ allprojects {
     }
 
     configureDiktat()
-    configureDetekt()
+    // Uncomment Detekt checks after code refactoring
+    // configureDetekt()
 }
 
 createDiktatTask()
-createDetektTask()
+// createDetektTask()
 
 subprojects {
     apply {

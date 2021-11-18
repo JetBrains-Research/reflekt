@@ -5,6 +5,7 @@ version = rootProject.version
 
 plugins {
     kotlin("kapt")
+    kotlin("plugin.serialization") version "1.5.31" apply true
 }
 
 dependencies {
@@ -22,19 +23,20 @@ dependencies {
     testImplementation(gradleTestKit())
 
     implementation("com.squareup", "kotlinpoet", "1.9.0")
-
     implementation("org.reflections", "reflections", "0.9.12")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.2.0")
 
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.0")
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
     testImplementation("com.google.code.gson", "gson", "2.8.8")
-    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.4")
+    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.5")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform {
-        includeTags = setOf("analysis", "scripting", "ir", "parametrizedType", "codegen")
+        includeTags = setOf("analysis", "scripting", "ir", "parametrizedType", "codegen", "ic")
     }
 
     testLogging {

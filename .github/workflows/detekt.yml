@@ -3,7 +3,8 @@ name: Run deteKT
 on:
   push:
     branches: [ master ]
-  pull_request:
+  # TODO: Run always after code refactoring
+  pull_request: [ master ]
 
 jobs:
   detekt_check:

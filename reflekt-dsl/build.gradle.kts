@@ -7,5 +7,4 @@ dependencies {
     api(kotlin("compiler-embeddable"))
 }
 
-
 publishJar {}

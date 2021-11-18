@@ -1,0 +1,23 @@
+objects: {},
+classes: {},
+functions: {
+	file: org.jetbrains.reflekt.test.FunctionSignatures.kt: {
+		signatureToAnnotations: [
+			signature: Function0<Any?> (kotlin.Function0),
+			annotations: [
+				org.jetbrains.reflekt.test.FunctionsTestAnnotation
+			]
+		],
+		namedFunctions: [
+			org.jetbrains.reflekt.test.fun1,
+			org.jetbrains.reflekt.test.fun2,
+			org.jetbrains.reflekt.test.fun3,
+			org.jetbrains.reflekt.test.fun4,
+			org.jetbrains.reflekt.test.fun5,
+			org.jetbrains.reflekt.test.fun6,
+			org.jetbrains.reflekt.test.fun7,
+			org.jetbrains.reflekt.test.fun8,
+			org.jetbrains.reflekt.test.fun9
+		]
+	}
+}

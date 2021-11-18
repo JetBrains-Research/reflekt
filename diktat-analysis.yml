@@ -1,7 +1,7 @@
 - name: DIKTAT_COMMON
   enabled: true
   configuration:
-    domainName: io.reflekt
+    domainName: org.jetbrains.reflekt
     kotlinVersion: 1.5
     srcDirectories: "main"
     testDirs: "test,nativeTest,commonTest"

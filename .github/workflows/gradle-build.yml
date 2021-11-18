@@ -17,7 +17,7 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Build with Gradle
-        run: ./gradlew build --console=plain -x detekt
+        run: ./gradlew build --console=plain
 
       - name: Upload Test Report
         uses: actions/upload-artifact@v2
