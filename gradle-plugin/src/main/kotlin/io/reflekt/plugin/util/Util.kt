@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 internal val Project.mySourceSets: SourceSetContainer
     get() = myExtByName("sourceSets")
 
+// TODO: fix deprecated
 val SourceSet.kotlin: SourceDirectorySet
     get() =
         (this as HasConvention)

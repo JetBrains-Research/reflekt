@@ -69,6 +69,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
 
     @Suppress("ForbiddenComment")
     // TODO: can we do it better?
+    //  take a look at project.mySourceSets.getAt("main").resources.first().absolutePath
     private fun Project.getResourcesPath(): String = "${project.rootDir}${project.path.replace(":", "/")}/src/main/resources"
 
     override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean = kotlinCompilation.platformType == KotlinPlatformType.jvm
@@ -99,6 +100,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
 
     private fun getLibJarWithoutSources(jarFile: File): File? {
         val jarName = "${jarFile.name.substringBeforeLast('.', "")}.jar"
+        // TODO: make sure each jar has the same file structure and it's safe to call jarFile.parentFile.parentFile.listFiles()
         jarFile.parentFile.parentFile.listFiles()?.filter { it.isDirectory }?.forEach { folder ->
             folder.listFiles()?.find { it.name == jarName }.let {
                 return it
@@ -116,6 +118,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
             require(configuration.isCanBeResolved) { "The parameter canBeResolve must be true!" }
             @Suppress("SpreadOperator")
             jarsToIntrospect.addAll(configuration.files(*filtered.toTypedArray()).toSet().filter { f ->
+                // TODO: check if it's okay to add files based on libraries' names in their paths
                 librariesNames.any { it in f.path }
             })
         }
