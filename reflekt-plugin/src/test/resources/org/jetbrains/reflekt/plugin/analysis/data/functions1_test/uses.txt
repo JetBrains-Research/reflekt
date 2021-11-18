@@ -1,0 +1,33 @@
+objects: {},
+classes: {},
+functions: {
+	file: org.jetbrains.reflekt.test.FunctionSignatures.kt: {
+		signatureToAnnotations: [
+			signature: Function0<Unit> (kotlin.Function0),
+			annotations: []
+		],
+		namedFunctions: [
+			org.jetbrains.reflekt.test.fun1,
+			org.jetbrains.reflekt.test.fun2
+		]
+	},
+	file: org.jetbrains.reflekt.test.Functions.kt: {
+		signatureToAnnotations: [
+			signature: Function0<Unit> (kotlin.Function0),
+			annotations: []
+		],
+		namedFunctions: [
+			org.jetbrains.reflekt.test.bar,
+			org.jetbrains.reflekt.test.foo
+		]
+	},
+	file: org.jetbrains.reflekt.test.nested.Functions.kt: {
+		signatureToAnnotations: [
+			signature: Function0<Unit> (kotlin.Function0),
+			annotations: []
+		],
+		namedFunctions: [
+			org.jetbrains.reflekt.test.nested.foo
+		]
+	}
+}

@@ -1,0 +1,9 @@
+[
+	supertype: AInterface1Test (org.jetbrains.reflekt.test.AInterface1Test),
+	filters: [
+		Lambda(body=klass.isInterface(), parameters=[klass])
+	],
+	imports: [
+		Import(fqName=org.jetbrains.reflekt.SmartReflekt, text=import org.jetbrains.reflekt.SmartReflekt)
+	]
+]
