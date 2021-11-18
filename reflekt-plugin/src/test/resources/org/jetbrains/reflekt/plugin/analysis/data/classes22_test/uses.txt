@@ -1,0 +1,15 @@
+objects: {},
+classes: {
+	file: org.jetbrains.reflekt.test.B.kt: {
+		supertypesToAnnotations: [
+			supertypes: [
+				org.jetbrains.reflekt.test.B1
+			],
+			annotations: []
+		],
+		objectsOrClasses: [
+			org.jetbrains.reflekt.test.B1
+		]
+	}
+},
+functions: {}

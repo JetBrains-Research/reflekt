@@ -52,7 +52,7 @@ plugins {
     kotlin("jvm") version "1.5.30" apply true
 
     // Please, use the same version with the Kotlin version in your project
-    id("io.reflekt") version "1.5.30" apply true
+    id("org.jetbrains.reflekt") version "1.5.30" apply true
 
     // Necessary only for this example, for Kotless library
     id("io.kotless") version "0.1.6" apply true
@@ -66,14 +66,13 @@ pluginManagement {
     resolutionStrategy {
         this.eachPlugin {
             
-            if (requested.id.id == "io.reflekt") {
-                useModule("io.reflekt:gradle-plugin:${this.requested.version}")
+            if (requested.id.id == "org.jetbrains.reflekt") {
+                useModule("org.jetbrains.reflekt:gradle-plugin:${this.requested.version}")
             }
         }
     }
 
     repositories {
-        gradlePluginPortal()
         //add the dependency to Reflekt Maven repository
         maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
 
@@ -89,7 +88,7 @@ the following lines in the `dependencies` section:
 ```kotlin
 dependencies {
     // The version here and the version in the plugins sections should be equal
-    implementation("io.reflekt", "reflekt-dsl", "1.5.30")
+    implementation("org.jetbrains.reflekt", "reflekt-dsl", "1.5.30")
 
     // Necessary for this example
     compileOnly("io.kotless", "kotless-lang", "0.1.6")
@@ -134,9 +133,14 @@ tasks.withType<KotlinCompile> {
         languageVersion = "1.5"
         apiVersion = "1.5"
         jvmTarget = "11"
+        // Current Reflekt version does not support incremental compilation process
+        incremental = false
     }
 }
 ```
+
+**Note**: Please note that the current version of Reflekt and SmartReflekt does not support incremental
+compilation process
 
 This gives you access to [the limited  Reflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/Reflekt.kt)
 interfaces.
@@ -144,14 +148,6 @@ interfaces.
 This gives you access
 to [the extended SmartReflekt DSL](./reflekt-dsl/src/main/kotlin/io/reflekt/SmartReflekt.kt), which allow
 filtering classes/objects\functions by user condition.
-
-Please note that the current version of Reflekt and SmartReflekt does not support incremental
-compilation process. Please disable incremental compilation in your project by changing
-the `gradle.properties` file:
-
-```kotlin
-kotlin.incremental = false
-```
 
 Now you can use the Reflekt plugin to find objects, classes, and functions in your project:
 

@@ -5,7 +5,7 @@ version = rootProject.version
 
 plugins {
     kotlin("kapt")
-    kotlin("plugin.serialization") version "1.5.30" apply true
+    kotlin("plugin.serialization") version "1.5.31" apply true
 }
 
 dependencies {
@@ -36,7 +36,7 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform {
-        includeTags = setOf("analysis", "scripting", "ir", "parametrizedType", "codegen")
+        includeTags = setOf("analysis", "scripting", "ir", "parametrizedType", "codegen", "ic")
     }
 
     testLogging {
