@@ -21,6 +21,7 @@ class PluginConfig(
     var toSaveMetadata = false
     var reflektMetaFileRelativePath: String? = null
     var dependencyJars: List<File> = emptyList()
+    // TODO: make [messageCollector] available from any part of code
     var messageCollector: MessageCollector? = null
 
     init {
