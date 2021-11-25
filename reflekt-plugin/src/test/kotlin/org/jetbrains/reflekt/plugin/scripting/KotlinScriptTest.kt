@@ -1,5 +1,6 @@
 package org.jetbrains.reflekt.plugin.scripting
 
+import org.jetbrains.reflekt.plugin.analysis.AnalysisSetupTest
 import org.jetbrains.reflekt.plugin.analysis.models.Import
 import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import org.junit.jupiter.api.*
@@ -20,20 +21,21 @@ class KotlinScriptTest {
             code = "a.size.toString() + b",
         )
         assertEquals("42",
-            script.eval(listOf(arrayOf(1, 2, 3, 4), "2"))
+            script.eval(listOf(arrayOf(1, 2, 3, 4), "2")),
         )
     }
 
     @Test
     fun scriptWithExtendedClasspath() {
+        val code = "import org.jetbrains.reflekt.Reflekt\nval a = Reflekt.objects()"
         assertThrows<RuntimeException> {
-            KotlinScript("import org.jetbrains.reflekt.Reflekt").run()
+            KotlinScript(code).run()
         }
 
         assertDoesNotThrow {
             KotlinScript(
-                code = "import org.jetbrains.reflekt.Reflekt",
-                classpath = getReflektProjectJars().toList()
+                code = code,
+                classpath = getReflektProjectJars().toList(),
             ).run()
         }
     }
@@ -48,16 +50,16 @@ class KotlinScriptTest {
                     clazz.qualifiedName
                 """.trimIndent(),
                 imports = listOf(Import("kotlin.reflect.KClass", "import kotlin.reflect.KClass")),
-                properties = listOf("t" to String::class)
-            ).eval(listOf("hello"))
+                properties = listOf("t" to String::class),
+            ).eval(listOf("hello")),
         )
     }
 
     companion object {
         // Equals private val with same name from org.jetbrains.kotlin.scripting.compiler.plugin.impl
         private const val SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY = "script.compilation.disable.plugins"
-
-        @BeforeAll @JvmStatic
+        @BeforeAll
+        @JvmStatic
         fun disableCompilerTestingPlugin() {
             System.setProperty(SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY, "com.tschuchort.compiletesting.MainComponentRegistrar")
         }

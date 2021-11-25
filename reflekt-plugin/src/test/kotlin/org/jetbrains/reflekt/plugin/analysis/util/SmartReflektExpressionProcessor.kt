@@ -1,17 +1,19 @@
 package org.jetbrains.reflekt.plugin.analysis.util
 
-import org.jetbrains.reflekt.SmartReflekt
-import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
-import org.jetbrains.reflekt.plugin.analysis.processor.*
-import org.jetbrains.reflekt.plugin.analysis.psi.getFqName
-import org.jetbrains.reflekt.plugin.utils.enumToRegexOptions
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.reflekt.SmartReflekt
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
+import org.jetbrains.reflekt.plugin.analysis.processor.FileId
+import org.jetbrains.reflekt.plugin.analysis.processor.fullName
+import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
+import org.jetbrains.reflekt.plugin.analysis.psi.getFqName
+import org.jetbrains.reflekt.plugin.utils.enumToRegexOptions
 
 class SmartReflektExpressionProcessor(override val binding: BindingContext) : Processor<MutableList<KtNameReferenceExpression>>(binding) {
-    val fileToExpressions: HashMap<FileID, MutableList<KtNameReferenceExpression>> = HashMap()
+    val fileToExpressions: HashMap<FileId, MutableList<KtNameReferenceExpression>> = HashMap()
 
-    override fun process(element: KtElement, file: KtFile): HashMap<FileID, MutableList<KtNameReferenceExpression>> {
+    override fun process(element: KtElement, file: KtFile): HashMap<FileId, MutableList<KtNameReferenceExpression>> {
         (element as? KtNameReferenceExpression)?.let {
             fileToExpressions.getOrPut(file.fullName) { ArrayList() }.add(it)
         }

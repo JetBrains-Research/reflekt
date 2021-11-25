@@ -1,6 +1,7 @@
 package org.jetbrains.reflekt.plugin.analysis.ir
 
 import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
+
 import org.jetbrains.kotlin.backend.jvm.codegen.psiElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.declarations.IrFunction
@@ -25,12 +26,7 @@ fun IrCall.getFqNamesOfClassReferenceValueArguments(): List<String> =
         (it as IrClassReference).classType.classFqName.toString()
     } ?: emptyList()
 
-
 @ObsoleteDescriptorBasedAPI
-fun IrType.toParameterizedType(): KotlinType {
-    return toKotlinType()
-}
+fun IrType.toParameterizedType() = toKotlinType()
 
-fun IrFunction.toParameterizedType(binding: BindingContext): KotlinType? {
-    return (psiElement as? KtNamedFunction)?.toParameterizedType(binding)
-}
+fun IrFunction.toParameterizedType(binding: BindingContext): KotlinType? = (psiElement as? KtNamedFunction)?.toParameterizedType(binding)

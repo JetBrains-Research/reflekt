@@ -1,12 +1,9 @@
 package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.*
 
 abstract class TypeGenerator : Generator<TypeSpec>() {
     abstract val typeName: ClassName
-
     protected lateinit var builder: TypeSpec.Builder
 
     final override fun generate(): TypeSpec {

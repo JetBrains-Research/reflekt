@@ -9,7 +9,6 @@ functions: {
 			]
 		],
 		namedFunctions: [
-			org.jetbrains.reflekt.test.TestFunctions.Companion.foo,
 			org.jetbrains.reflekt.test.bar,
 			org.jetbrains.reflekt.test.foo
 		]

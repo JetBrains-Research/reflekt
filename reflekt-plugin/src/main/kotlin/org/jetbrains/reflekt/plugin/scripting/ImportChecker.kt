@@ -6,9 +6,7 @@ import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import org.reflections.util.ConfigurationBuilder
 import java.io.File
-import java.lang.reflect.Field
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
+import java.lang.reflect.*
 import java.net.URLClassLoader
 
 /* Checks if specified imports can be found in classpath. */
@@ -18,7 +16,9 @@ class ImportChecker {
     private val allNames = HashSet<String>()
 
     constructor(classpath: List<File>) {
-        if (classpath.isEmpty()) return
+        if (classpath.isEmpty()) {
+            return
+        }
 
         val urls = classpath.map { it.toURI().toURL() }
         val classLoader = URLClassLoader(urls.toTypedArray())
@@ -27,7 +27,7 @@ class ImportChecker {
             ConfigurationBuilder()
                 .addClassLoader(classLoader)
                 .setUrls(urls)
-                .setScanners(SubTypesScanner(false))
+                .setScanners(SubTypesScanner(false)),
         )
 
         // Get all classes (each class is subtype of java.lang.Object)

@@ -1,9 +1,9 @@
 package org.jetbrains.reflekt.plugin.ic
 
-import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
-import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getStdLibJar
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.incremental.makeIncrementally
+import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
+import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getStdLibJar
 import java.io.File
 
 internal fun createCompilerArguments(destinationDir: File, testDir: File, pathToDownloadKotlinSources: File): K2JVMCompilerArguments {
@@ -15,7 +15,6 @@ internal fun createCompilerArguments(destinationDir: File, testDir: File, pathTo
         destination = destinationDir.path
         pluginClasspaths = reflektJars.toTypedArray()
         pluginOptions = arrayOf("plugin:org.jetbrains.reflekt:enabled=true")
-        // TODO: should we really add reflekt jars into classpath?
         classpath = compilerClasspath.joinToString(File.pathSeparator)
     }
 }

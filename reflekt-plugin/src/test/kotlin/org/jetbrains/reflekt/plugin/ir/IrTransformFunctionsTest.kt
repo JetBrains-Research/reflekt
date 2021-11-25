@@ -13,36 +13,28 @@ class IrTransformFunctionsTest {
         fun getReflektFunctionsTestData(): List<Arguments> = listOf(
             Arguments.of(
                 setOf(
-                    "fun fun1(): kotlin.Unit",
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestClass.Companion.fun1(): kotlin.Unit",
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestObject.fun1(): kotlin.Unit"
+                    "fun fun1(): kotlin.Unit"
                 ),
                 Signature("() -> Unit", "IrTestAnnotation::class"),
                 "",
             ),
             Arguments.of(
                 setOf(
-                    "fun fun2(): kotlin.Int",
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestClass.Companion.fun2(): kotlin.Int",
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestObject.fun2(): kotlin.Int"
+                    "fun fun2(): kotlin.Int"
                 ),
                 Signature("() -> Int", "IrTestAnnotation::class"),
                 ""
             ),
             Arguments.of(
                 setOf(
-                    "fun fun3(): kotlin.collections.List<kotlin.Int>",
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestClass.Companion.fun3(): kotlin.collections.List<kotlin.Int>",
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestObject.fun3(): kotlin.collections.List<kotlin.Int>"
+                    "fun fun3(): kotlin.collections.List<kotlin.Int>"
                 ),
                 Signature("() -> List<Int>", "IrTestAnnotation::class"),
                 ""
             ),
             Arguments.of(
                 setOf(
-                    "fun fun4(kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>): kotlin.collections.List<kotlin.String>",
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestClass.Companion.fun4(kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>): kotlin.collections.List<kotlin.String>",
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestObject.fun4(kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>): kotlin.collections.List<kotlin.String>"
+                    "fun fun4(kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>): kotlin.collections.List<kotlin.String>"
                 ),
                 Signature("(a: Int, b: Float?, c: Set<Boolean>) -> List<String>", "IrTestAnnotation::class"),
                 "1, null, emptySet()"
@@ -53,28 +45,28 @@ class IrTransformFunctionsTest {
         fun getReflektMemberFunctionsTestData(): List<Arguments> = listOf(
             Arguments.of(
                 setOf(
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestClass.fun1(): kotlin.Unit"
+                    "fun org.jetbrains.test.ir.FunctionTestClass.fun1(): kotlin.Unit"
                 ),
-                Signature("(FunctionTestClass) -> Unit",  "IrTestAnnotation::class"),
+                Signature("(FunctionTestClass) -> Unit", "IrTestAnnotation::class"),
                 "FunctionTestClass()"
             ),
             Arguments.of(
                 setOf(
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestClass.fun2(): kotlin.Int"
+                    "fun org.jetbrains.test.ir.FunctionTestClass.fun2(): kotlin.Int"
                 ),
                 Signature("(FunctionTestClass) -> Int", "IrTestAnnotation::class"),
                 "FunctionTestClass()"
             ),
             Arguments.of(
                 setOf(
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestClass.fun3(): kotlin.collections.List<kotlin.Int>"
+                    "fun org.jetbrains.test.ir.FunctionTestClass.fun3(): kotlin.collections.List<kotlin.Int>"
                 ),
                 Signature("(FunctionTestClass) -> List<Int>", "IrTestAnnotation::class"),
                 "FunctionTestClass()"
             ),
             Arguments.of(
                 setOf(
-                    "fun org.jetbrains.reflekt.test.ir.FunctionTestClass.fun4(kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>): kotlin.collections.List<kotlin.String>"
+                    "fun org.jetbrains.test.ir.FunctionTestClass.fun4(kotlin.Int, kotlin.Float?, kotlin.collections.Set<kotlin.Boolean>): kotlin.collections.List<kotlin.String>"
                 ),
                 Signature("(FunctionTestClass, Int, Float?, Set<Boolean>) -> List<String>", "IrTestAnnotation::class"),
                 "FunctionTestClass(), 1, null, emptySet()"
@@ -83,7 +75,8 @@ class IrTransformFunctionsTest {
 
         @JvmStatic
         fun getSmartReflektFunctionsTestData(): List<Arguments> = listOf(
-            Arguments.of(setOf(""),
+            Arguments.of(
+                setOf(""),
                 Signature("() -> Boolean", "it.name == \"fooBoolean\""),
                 ""
             )
@@ -94,14 +87,15 @@ class IrTransformFunctionsTest {
     @ParameterizedTest(name = "Function test#{index} with [{arguments}]")
     @MethodSource("getReflektFunctionsTestData")
     fun testReflektFunctions(expectedFunctions: Set<String>, functionsSignature: Signature, functionsArguments: String) {
-        Assertions.assertEquals(expectedFunctions, ReflektType.REFLEKT.functionsInvokeCall(functionsSignature, functionsArguments).call(false))
+        Assertions.assertEquals(expectedFunctions, ReflektType.REFLEKT.functionsInvokeCall(functionsSignature, functionsArguments).call())
     }
 
-    @ParameterizedTest(name = "Member function test#{index} with [{arguments}]")
-    @MethodSource("getReflektMemberFunctionsTestData")
-    fun testReflektMemberFunctions(expectedFunctions: Set<String>, functionsSignature: Signature, functionsArguments: String, ) {
-        Assertions.assertEquals(expectedFunctions, ReflektType.REFLEKT.functionsInvokeCall(functionsSignature, functionsArguments).call(false))
-    }
+    // TODO: We don't support member functions yet
+//    @ParameterizedTest(name = "Member function test#{index} with [{arguments}]")
+//    @MethodSource("getReflektMemberFunctionsTestData")
+//    fun testReflektMemberFunctions(expectedFunctions: Set<String>, functionsSignature: Signature, functionsArguments: String, ) {
+//        Assertions.assertEquals(expectedFunctions, ReflektType.REFLEKT.functionsInvokeCall(functionsSignature, functionsArguments).call(false))
+//    }
 
     @ParameterizedTest(name = "Function test#{index} with [{arguments}]")
     @Disabled("Failed with IllegalStateException, but in examples everything works fine")

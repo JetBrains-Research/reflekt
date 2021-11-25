@@ -8,11 +8,13 @@ import org.jetbrains.kotlin.psi.KtVisitorVoid
  *
  * [shouldVisitElement] can be used to control elements that are visited
  */
-abstract class KtDefaultVisitor : KtVisitorVoid() {
+open class KtDefaultVisitor : KtVisitorVoid() {
     protected open fun shouldVisitElement(element: PsiElement) = true
 
     override fun visitElement(element: PsiElement) {
-        if (!shouldVisitElement(element)) return
+        if (!shouldVisitElement(element)) {
+            return
+        }
 
         element.acceptChildren(this)
     }
