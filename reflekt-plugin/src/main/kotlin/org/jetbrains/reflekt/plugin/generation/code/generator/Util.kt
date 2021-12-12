@@ -17,8 +17,6 @@ private fun FunSpec.Builder.generateBody(
     return build()
 }
 
-fun statement(format: String, args: List<Any>): CodeBlock = statement(format, *args.toTypedArray())
-
 fun statement(format: String, vararg args: Any?): CodeBlock = CodeBlock.builder().addStatement(format, *args).build()
 
 fun controlFlow(

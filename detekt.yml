@@ -12,6 +12,9 @@ style:
   MaxLineLength:
     active: true
     maxLineLength: 180
+  # wildcards are used all over the project
   WildcardImport:
-    # covered by ktlint and diktat
+    active: false
+  # code is not stable yet, TODOs are still needed
+  ForbiddenComment:
     active: false

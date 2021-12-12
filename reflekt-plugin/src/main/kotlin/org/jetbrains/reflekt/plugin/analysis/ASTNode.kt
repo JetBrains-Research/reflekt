@@ -3,7 +3,7 @@
  * Code style requires the name AstNodeUtils, but such notation is used all over the code.
  */
 
-@file:Suppress("FILE_NAME_INCORRECT")
+@file:Suppress("FILE_NAME_INCORRECT", "TooManyFunctions")
 
 package org.jetbrains.reflekt.plugin.analysis
 

@@ -20,6 +20,7 @@ class SmartReflektExpressionProcessor(override val binding: BindingContext) : Pr
         return fileToExpressions
     }
 
+    @Suppress("ReturnCount")
     private fun isValidExpression(expression: KtNameReferenceExpression): Boolean {
         val names = enumToRegexOptions(ReflektEntity.values(), ReflektEntity::entityType)
         val fqName = expression.getFqName(binding) ?: return false

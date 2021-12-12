@@ -60,8 +60,10 @@ abstract class HelperClassGenerator : ClassGenerator() {
         )
     }
 
+    @Suppress("SpreadOperator")
     private fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String) =
-        statement("listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)}$typeSuffix as %T" }})", List(uses.size) { returnParameter })
+        statement("listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)}$typeSuffix as %T" }})",
+            *List(uses.size) { returnParameter }.toTypedArray())
 
     /*
      * Get something like this: setOf("invokes[0]", "invokes[1]" ...) -> listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)

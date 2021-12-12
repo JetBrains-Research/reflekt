@@ -23,17 +23,19 @@ object MavenLocalUtil {
         val jarName = "kotlin-stdlib-$VERSION.jar"
         val suffix = "org/jetbrains/kotlin/kotlin-stdlib/$VERSION/$jarName"
         val fileToDownload = File(pathToDownload, jarName)
-        if (fileToDownload.exists()) {
-            return fileToDownload
-        }
         val localJar = File("$mavenLocalPath/$suffix")
-        if (localJar.exists()) {
-            return localJar
+
+        return when {
+            fileToDownload.exists() -> fileToDownload
+            localJar.exists() -> localJar
+            else -> {
+                val remoteUrl = "https://repo1.maven.org/maven2/$suffix"
+                val remoteUrlStream = URL(remoteUrl).openStream()
+                Files.copy(remoteUrlStream, Paths.get(fileToDownload.absolutePath), StandardCopyOption.REPLACE_EXISTING)
+
+                fileToDownload
+            }
         }
-        val remoteUrl = "https://repo1.maven.org/maven2/$suffix"
-        val remoteUrlStream = URL(remoteUrl).openStream()
-        Files.copy(remoteUrlStream, Paths.get(fileToDownload.absolutePath), StandardCopyOption.REPLACE_EXISTING)
-        return fileToDownload
     }
 
     private fun getMavenLocalPath(): String = "${getHomeFolder()}/.m2/repository"

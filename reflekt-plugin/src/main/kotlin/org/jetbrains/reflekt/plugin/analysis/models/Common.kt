@@ -105,12 +105,10 @@ fun <K : Any, V : Any, T : MutableCollection<V>> HashMap<K, T>.merge(second: Has
 fun <T : Sizeable> merge(
     first: T,
     second: T,
-    mergeFunction: (T, T) -> T): T {
-    if (first.isEmpty()) {
-        return second
+    mergeFunction: (T, T) -> T,
+): T =
+    when {
+        first.isEmpty() -> second
+        second.isEmpty() -> first
+        else -> mergeFunction(first, second)
     }
-    if (second.isEmpty()) {
-        return first
-    }
-    return mergeFunction(first, second)
-}

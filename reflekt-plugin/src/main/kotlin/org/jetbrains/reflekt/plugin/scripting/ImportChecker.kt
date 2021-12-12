@@ -31,17 +31,14 @@ class ImportChecker {
         )
 
         // Get all classes (each class is subtype of java.lang.Object)
+        // FIXME: logic should be revised here, as caught exception is too generic (what kind of exception was intended to catch?)
+        @Suppress("SwallowedException", "TooGenericExceptionCaught")
         reflections.getSubTypesOf(Object::class.java)
             // Only public classes can be imported
             .filter { Modifier.isPublic(it.modifiers) }
             .filter {
-                try {
-                    // Skip if no canonical name
-                    it.canonicalName != null
-                } catch (e: Throwable) {
-                    // Skip if canonical name cannot be resolved
-                    false
-                }
+                @Suppress("AVOID_NULL_CHECKS")
+                if (it == null) false else it.canonicalName != null
             }
             .forEach { clazz ->
                 // All public methods of class
@@ -50,6 +47,7 @@ class ImportChecker {
                 } catch (e: Throwable) {
                     emptySet<Method>()
                 }
+
                 // All public fields of class
                 val fields = try {
                     ReflectionUtils.getAllFields(clazz, ReflectionUtils.withModifier(Modifier.PUBLIC))
