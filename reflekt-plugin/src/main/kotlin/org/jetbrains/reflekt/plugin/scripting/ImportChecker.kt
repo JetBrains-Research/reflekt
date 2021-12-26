@@ -30,15 +30,22 @@ class ImportChecker {
                 .setScanners(SubTypesScanner(false)),
         )
 
-        // Get all classes (each class is subtype of java.lang.Object)
-        // FIXME: logic should be revised here, as caught exception is too generic (what kind of exception was intended to catch?)
+        // Reflection  is used at the compile-time with the compileClasspath configuration imports and we can catch some unexpected errors like
+        // SecurityException or NoClassDefFoundError since some classes can not be loaded at the compile time for an unexpected reason.
+        // This can happen if, for example, the included libraries use other libraries that may not be available at compile time.
         @Suppress("SwallowedException", "TooGenericExceptionCaught")
+        // Get all classes (each class is subtype of java.lang.Object)
         reflections.getSubTypesOf(Object::class.java)
             // Only public classes can be imported
             .filter { Modifier.isPublic(it.modifiers) }
             .filter {
-                @Suppress("AVOID_NULL_CHECKS")
-                if (it == null) false else it.canonicalName != null
+                try {
+                    // Skip if no canonical name
+                    it.canonicalName != null
+                } catch (e: Throwable) {
+                    // Skip if canonical name cannot be resolved
+                    false
+                }
             }
             .forEach { clazz ->
                 // All public methods of class

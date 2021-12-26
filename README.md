@@ -1,5 +1,7 @@
 [![JetBrains Research](https://jb.gg/badges/research.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 ![Gradle Build](https://github.com/nbirillo/reflekt/workflows/Gradle%20Build/badge.svg?branch=master)
+[![Run deteKT](https://github.com/JetBrains-Research/reflekt/actions/workflows/detekt.yml/badge.svg)](https://github.com/JetBrains-Research/reflekt/actions/workflows/detekt.yml)
+[![Run diKTat](https://github.com/JetBrains-Research/reflekt/actions/workflows/diktat.yml/badge.svg)](https://github.com/JetBrains-Research/reflekt/actions/workflows/diktat.yml)
 
 # Reflekt
 
