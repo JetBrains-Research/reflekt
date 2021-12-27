@@ -79,7 +79,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
      * @throws ReflektGenerationException
      */
     @ObsoleteDescriptorBasedAPI
-    @Suppress("TOO_MANY_LINES_IN_LAMBDA")
+    @Suppress("TOO_MANY_LINES_IN_LAMBDA", "ThrowsCount")
     protected fun IrBuilderWithScope.functionResultIrCall(
         invokeParts: BaseReflektInvokeParts,
         resultValues: List<IrFunctionInfo>,
