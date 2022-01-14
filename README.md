@@ -233,3 +233,8 @@ know Reflekt better.
 
 You may ask questions and participate in discussions on
 repository [issues](https://github.com/JetBrains-Research/reflekt/issues).
+
+## Contribution
+
+Please be sure to review project's [contributing guidelines](./docs/contributing.md) to learn how to help the project.
+
