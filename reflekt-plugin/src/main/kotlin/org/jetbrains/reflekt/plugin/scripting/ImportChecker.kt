@@ -30,6 +30,10 @@ class ImportChecker {
                 .setScanners(SubTypesScanner(false)),
         )
 
+        // Reflection  is used at the compile-time with the compileClasspath configuration imports and we can catch some unexpected errors like
+        // SecurityException or NoClassDefFoundError since some classes can not be loaded at the compile time for an unexpected reason.
+        // This can happen if, for example, the included libraries use other libraries that may not be available at compile time.
+        @Suppress("SwallowedException", "TooGenericExceptionCaught")
         // Get all classes (each class is subtype of java.lang.Object)
         reflections.getSubTypesOf(Object::class.java)
             // Only public classes can be imported
@@ -50,6 +54,7 @@ class ImportChecker {
                 } catch (e: Throwable) {
                     emptySet<Method>()
                 }
+
                 // All public fields of class
                 val fields = try {
                     ReflectionUtils.getAllFields(clazz, ReflectionUtils.withModifier(Modifier.PUBLIC))

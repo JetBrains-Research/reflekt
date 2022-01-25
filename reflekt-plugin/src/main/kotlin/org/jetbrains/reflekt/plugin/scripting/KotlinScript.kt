@@ -25,6 +25,8 @@ class KotlinScript(
         jvm {
             updateClasspath(classpath)
         }
+        // Spread operator here and `toTypedArray` causes a full copy of the `properties` list twice, but the performance impact is not significant
+        @Suppress("SpreadOperator")
         providedProperties(*properties.toTypedArray())
     }
 
@@ -37,14 +39,18 @@ class KotlinScript(
 
     private fun execute(arguments: List<*>): ResultWithDiagnostics.Success<EvaluationResult> {
         val evaluationConfiguration = ScriptEvaluationConfiguration {
+            // Spread operator here and `toTypedArray` causes a full copy of the `argumentNames` list twice, but the performance impact is not significant
+            @Suppress("SpreadOperator")
             providedProperties(*argumentNames.zip(arguments).toTypedArray())
         }
         val result = BasicJvmScriptingHost().eval(
             source, compilationConfiguration, evaluationConfiguration,
         )
         if (result !is ResultWithDiagnostics.Success) {
-            throw RuntimeException("Failed to evaluate script:\n${result.reports.map { it.render(withStackTrace = true) } }}")
+            throw ReflektKotlinScriptException(result.reports.map { it.render(withStackTrace = true) })
         }
         return result
     }
 }
+
+private class ReflektKotlinScriptException(msg: List<String>) : RuntimeException("Failed to evaluate script:\n$msg")

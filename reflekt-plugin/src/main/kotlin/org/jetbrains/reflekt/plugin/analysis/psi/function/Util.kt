@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package org.jetbrains.reflekt.plugin.analysis.psi.function
 
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo

@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package org.jetbrains.reflekt.plugin.analysis
 
 /**

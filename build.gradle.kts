@@ -56,12 +56,11 @@ allprojects {
     }
 
     configureDiktat()
-    // Uncomment Detekt checks after code refactoring
-    // configureDetekt()
+    configureDetekt()
 }
 
 createDiktatTask()
-// createDetektTask()
+createDetektTask()
 
 subprojects {
     apply {
