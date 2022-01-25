@@ -9,7 +9,7 @@ group = "org.jetbrains.reflekt"
 *  - VERSION const in the Util.kt in the reflekt-core module
 *  - VERSION const in the MavenLocalUtil object
 *    class in tests in the reflekt-plugin module
-*  - two places in the main README.md file (after realising)
+*  - two places in the main README.md file (after releasing)
 *
 * Also, you should change the version in two places in the build.gradle.kts file in the example project
 * */
