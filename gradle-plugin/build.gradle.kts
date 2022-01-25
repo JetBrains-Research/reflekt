@@ -1,5 +1,3 @@
-import tanvd.kosogor.proxy.publishPlugin
-
 group = rootProject.group
 version = rootProject.version
 
@@ -44,7 +42,6 @@ pluginBundle {
             tags = listOf("kotlin", "reflection", "reflekt")
             version = project.version as String
             description = "Compile-time reflection library"
-
         }
     }
 }

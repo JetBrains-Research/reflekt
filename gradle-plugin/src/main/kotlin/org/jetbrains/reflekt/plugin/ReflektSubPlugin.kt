@@ -34,7 +34,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
             configure<KotlinJvmProjectExtension> {
                 sourceSets["main"].apply {
                     dependencies {
-                        implementation("org.jetbrains.reflekt:reflekt-dsl:1.5.30")
+                        implementation("org.jetbrains.reflekt:reflekt-dsl:${VERSION}")
                     }
                 }
             }
