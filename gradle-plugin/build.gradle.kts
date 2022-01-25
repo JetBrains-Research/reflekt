@@ -24,46 +24,28 @@ dependencies {
     implementation(kotlin("compiler-embeddable"))
 }
 
-pluginBundle {
-    website = "https://github.com/JetBrains-Research/reflekt"
-    vcsUrl = "https://github.com/JetBrains-Research/reflekt"
-    tags = listOf("kotlin", "reflection", "reflekt")
-
-    mavenCoordinates {
-        groupId = project.group as String
-        artifactId = "gradle-plugin"
-        version = project.version as String
-    }
-}
-
 gradlePlugin {
     plugins {
         create("Reflekt") {
             id = "org.jetbrains.reflekt"
-            displayName = "Reflekt"
             implementationClass = "org.jetbrains.reflekt.plugin.ReflektSubPlugin"
-            description = "Compile-time reflection library"
         }
     }
 }
 
-publishPlugin {
-    id = "org.jetbrains.reflekt"
-    displayName = "Reflekt"
-    implementationClass = "org.jetbrains.reflekt.plugin.ReflektSubPlugin"
-    version = project.version.toString()
+pluginBundle {
+    website = "https://github.com/JetBrains-Research/reflekt"
+    vcsUrl = "https://github.com/JetBrains-Research/reflekt"
 
-    info {
-        description = "Compile-time reflection library"
-        website = "https://github.com/JetBrains-Research/reflekt"
-        vcsUrl = "https://github.com/JetBrains-Research/reflekt"
-        tags.addAll(listOf("kotlin", "reflection", "reflekt"))
+
+    (plugins) {
+        "Reflekt" {
+            displayName = "Reflekt"
+            tags = listOf("kotlin", "reflection", "reflekt")
+            version = project.version as String
+            description = "Compile-time reflection library"
+
+        }
     }
 }
-
-
-
-
-
-
 

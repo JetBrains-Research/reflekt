@@ -1,14 +1,16 @@
 package org.jetbrains.reflekt.plugin
-
+import org.gradle.api.Project
 import org.jetbrains.reflekt.plugin.util.kotlin
 import org.jetbrains.reflekt.plugin.util.mySourceSets
-import org.jetbrains.reflekt.util.Util.DEPENDENCY_JAR_OPTION_INFO
-import org.jetbrains.reflekt.util.FileUtil.extractAllFiles
-import org.gradle.api.artifacts.Configuration
 import org.jetbrains.kotlin.gradle.plugin.*
 import java.io.File
-import org.gradle.api.Project
-import org.jetbrains.reflekt.util.Util.GRADLE_ARTIFACT_ID
+import org.jetbrains.reflekt.util.file.extractAllFiles
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.*
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.reflekt.util.Util.DEPENDENCY_JAR_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.ENABLED_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.GRADLE_ARTIFACT_ID
 import org.jetbrains.reflekt.util.Util.GRADLE_GROUP_ID
@@ -19,16 +21,7 @@ import org.jetbrains.reflekt.util.Util.REFLEKT_META_FILE_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.REFLEKT_META_FILE_PATH
 import org.jetbrains.reflekt.util.Util.SAVE_METADATA_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.VERSION
-import org.jetbrains.reflekt.util.file.extractAllFiles
-import org.gradle.api.Project
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.*
-import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-import java.io.File
 
 @Suppress("unused")
 class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
