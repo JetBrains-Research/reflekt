@@ -14,19 +14,19 @@ import org.jetbrains.kotlin.utils.PathUtil
 import java.io.File
 
 /**
- * EnvironmentManager objects wraps complex logic of creating KotlinCoreEnvironment
+ * EnvironmentManager objects wraps complex logic of creating [KotlinCoreEnvironment]
  * with custom classpath.
  *
  * Note: under classpath assumed set of libraries in context of which Kotlin code
  * should be interpreted. It is NOT the classpath of compiler itself.
  *
- * Resulting KotlinCoreEnvironment is used to parse Kotlin code into Kotlin AST.
+ * Resulting [KotlinCoreEnvironment] is used to parse Kotlin code into Kotlin AST.
  */
 object EnvironmentManager {
     /**
      * Create KotlinCoreEnvironment with specified classpath
      *
-     * @param libraries
+     * @param libraries set of libraries from the classpath
      * @return Kotlin core environment generated from a set of libraries
      */
     fun create(libraries: Set<File>): KotlinCoreEnvironment {

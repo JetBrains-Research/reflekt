@@ -63,7 +63,7 @@
 - name: WRONG_NEWLINES
   enabled: true
   configuration:
-    maxParametersInOneLine: 2
+    maxParametersInOneLine: 3
 - name: TOO_MANY_CONSECUTIVE_SPACES
   enabled: true
   configuration:

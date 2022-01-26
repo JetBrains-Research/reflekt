@@ -9,9 +9,27 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 
 import java.io.File
 
+@Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
+/**
+ * A class to parse and store the command line arguments from the plugin
+ *
+ * @param configuration the current Kotlin compiler configuration or null
+ * @param logFilePath path to the file with logs. By default is pathToKotlin/daemon/reflekt-log.log
+ * @param isTestConfiguration indicates if the plugin is used in tests
+ *
+ * @property enabled indicates if the plugin is enabled
+ * @property reflektMetaFilesFromLibraries stores the relative path to the ReflektMeta file
+ *  in the resources directory in the src folder in the project
+ * @property outputDir stores a relative path for generated files (e.g. ReflektImpl.kt)
+ * @property toSaveMetadata indicates whether to save Reflekt usages into META-INF
+ * @property reflektMetaFileRelativePath stores the relative path to the ReflektMeta file
+ *  in the resources directory in the src folder in the project
+ * @property dependencyJars stores the libraries jars absolute
+ *  path that included in the current project as a compileClasspath configuration
+ * @property messageCollector [MessageCollector] for logs or null
+ */
 class PluginConfig(
     configuration: CompilerConfiguration?,
-    // The path will be: pathToKotlin/daemon/reflekt-log.log
     logFilePath: String = "reflekt-log.log",
     isTestConfiguration: Boolean = false,
 ) {
@@ -45,17 +63,24 @@ class PluginConfig(
         }
     }
 
-    private fun MessageCollector.logConfiguration() {
-        val log = buildString {
-            append("REFLEKT CONFIGURATION:\n")
-            append("ENABLED: $enabled\n")
-            append("REFLEKT META FILES FROM LIBRARIES: ${reflektMetaFilesFromLibraries.map { it.absolutePath }}\n")
-            append("OUTPUT DIRECTORY: $outputDir\n")
-            append("TO SAVE METADATA: $toSaveMetadata\n")
-            append("REFLEKT METADATA RELATIVE PATH: $reflektMetaFileRelativePath\n")
-            append("DEPENDENCY JARS: ${dependencyJars.map { it.absolutePath }}\n")
-            append("_____________________________________________\n")
-        }
-        this.log(log)
+    /**
+     * Build the pretty string of the current configuration
+     *
+     * @return [StringBuilder]
+     */
+    fun prettyString() = buildString {
+        append("REFLEKT CONFIGURATION:\n")
+        append("ENABLED: $enabled\n")
+        append("REFLEKT META FILES FROM LIBRARIES: ${reflektMetaFilesFromLibraries.map { it.absolutePath }}\n")
+        append("OUTPUT DIRECTORY: $outputDir\n")
+        append("TO SAVE METADATA: $toSaveMetadata\n")
+        append("REFLEKT METADATA RELATIVE PATH: $reflektMetaFileRelativePath\n")
+        append("DEPENDENCY JARS: ${dependencyJars.map { it.absolutePath }}\n")
+        append("_____________________________________________\n")
     }
+
+    /**
+     * Build and log pretty string for the current configuration
+     */
+    private fun MessageCollector.logConfiguration() = this.log(prettyString())
 }
