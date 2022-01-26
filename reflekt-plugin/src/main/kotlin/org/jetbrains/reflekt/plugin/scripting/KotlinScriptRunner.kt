@@ -13,7 +13,6 @@ import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 
 typealias KotlinScriptProperties = List<Pair<String, KClass<*>>>
 
-@Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 /**
  * The class allows running the KotlinScript interpreter at the compile-time
  *
@@ -29,6 +28,7 @@ typealias KotlinScriptProperties = List<Pair<String, KClass<*>>>
  * @property source the full Kotlin source file that should be ran (imports + code fragment)
  * @property compilationConfiguration configuration that works with extended classpath and KotlinScript properties
  */
+@Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 class KotlinScriptRunner(
     code: String,
     imports: List<Import> = emptyList(),

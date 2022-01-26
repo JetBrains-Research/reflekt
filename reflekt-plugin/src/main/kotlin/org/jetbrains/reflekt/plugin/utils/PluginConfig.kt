@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 
 import java.io.File
 
-@Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 /**
  * A class to parse and store the command line arguments from the plugin
  *
@@ -28,6 +27,7 @@ import java.io.File
  *  path that included in the current project as a compileClasspath configuration
  * @property messageCollector [MessageCollector] for logs or null
  */
+@Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 class PluginConfig(
     configuration: CompilerConfiguration?,
     logFilePath: String = "reflekt-log.log",
