@@ -8,20 +8,21 @@ import java.nio.file.*
 
 object MavenLocalUtil {
     // We should use a const here since we can not get it from the project
-    private const val VERSION = "1.5.31"
+    private const val KOTLIN_VERSION = "1.5.31"
+    private const val REFLEKT_VERSION = "$KOTLIN_VERSION-1"
     private val mavenLocalPath = getMavenLocalPath()
 
     fun getReflektProjectJars(): Set<File> {
         val baseReflektPath = "$mavenLocalPath/org/jetbrains/reflekt"
         val reflektNames = listOf("gradle-plugin", "reflekt-core", "reflekt-dsl")
         return reflektNames.map {
-            File("$baseReflektPath/$it/$VERSION/$it-$VERSION.jar")
+            File("$baseReflektPath/$it/$REFLEKT_VERSION/$it-$REFLEKT_VERSION.jar")
         }.toSet()
     }
 
     fun getStdLibJar(pathToDownload: File): File {
-        val jarName = "kotlin-stdlib-$VERSION.jar"
-        val suffix = "org/jetbrains/kotlin/kotlin-stdlib/$VERSION/$jarName"
+        val jarName = "kotlin-stdlib-$KOTLIN_VERSION.jar"
+        val suffix = "org/jetbrains/kotlin/kotlin-stdlib/$KOTLIN_VERSION/$jarName"
         val fileToDownload = File(pathToDownload, jarName)
         val localJar = File("$mavenLocalPath/$suffix")
 

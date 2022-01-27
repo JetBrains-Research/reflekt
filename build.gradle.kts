@@ -7,13 +7,14 @@ group = "org.jetbrains.reflekt"
 * To change version you should change the version in the following places:
 *  - here (the main build.gradle.kts file)
 *  - VERSION const in the Util.kt in the reflekt-core module
-*  - VERSION const in the MavenLocalUtil object
+*  - REFLEKT_VERSION const in the MavenLocalUtil object
 *    class in tests in the reflekt-plugin module
+*  - examples, build.gradle.kts file
 *  - two places in the main README.md file (after releasing)
 *
 * Also, you should change the version in two places in the build.gradle.kts file in the example project
 * */
-version = "1.5.31"
+version = "1.5.31-1"
 
 plugins {
     id("tanvd.kosogor") version "1.0.12" apply true

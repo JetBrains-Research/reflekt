@@ -9,7 +9,7 @@ object Util {
      * Just needs to be consistent with the artifactId in gradle-plugin build.gradle.kts#pluginBundle
      */
     const val GRADLE_ARTIFACT_ID = "reflekt-plugin"
-    const val VERSION = "1.5.31"
+    const val VERSION = "1.5.31-1"
     val ENABLED_OPTION_INFO = MyCliOption(
         name = "enabled",
         valueDescription = "<true|false>",
