@@ -1,19 +1,21 @@
 package org.jetbrains.reflekt.plugin
 
+import org.jetbrains.reflekt.util.file.extractAllFiles
+
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
-import org.jetbrains.reflekt.util.file.extractAllFiles
+
 import java.io.File
 
 object ReflektFilesProvider {
-    private const val reflektMetaFile = "ReflektMeta"
-    private const val metaInfDir = "META-INF"
+    private const val REFLEKT_META_FILE = "ReflektMeta"
+    private const val META_INF_DIR = "META-INF"
 
     fun createMetaFile(project: Project): File {
         val resourcesDir = project.getResourcesPath()
-        val metaInfDir = File("$resourcesDir/$metaInfDir")
+        val metaInfDir = File("$resourcesDir/$META_INF_DIR")
         metaInfDir.mkdirs()
-        return File("${metaInfDir.path}/$reflektMetaFile")
+        return File("${metaInfDir.path}/$REFLEKT_META_FILE")
     }
 
     @Suppress("ForbiddenComment")
@@ -27,8 +29,7 @@ object ReflektFilesProvider {
     }
 
     private fun extractReflektMetaFile(jarFile: File) =
-        jarFile.extractAllFiles().find { it.name == reflektMetaFile } ?: error("Jar file ${jarFile.absolutePath} does not have $reflektMetaFile file!")
-
+        jarFile.extractAllFiles().find { it.name == REFLEKT_META_FILE } ?: error("Jar file ${jarFile.absolutePath} does not have $REFLEKT_META_FILE file!")
 
     private fun getLibJarWithoutSources(jarFile: File): File? {
         val jarName = "${jarFile.name.substringBeforeLast('.', "")}.jar"
@@ -57,4 +58,3 @@ object ReflektFilesProvider {
         return jarsToIntrospect
     }
 }
-

@@ -1,10 +1,5 @@
 package org.jetbrains.reflekt.plugin
-import org.gradle.api.Project
-import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.*
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.*
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 import org.jetbrains.reflekt.plugin.ReflektFilesProvider.createMetaFile
 import org.jetbrains.reflekt.plugin.ReflektFilesProvider.getLibrariesMetaFiles
 import org.jetbrains.reflekt.plugin.util.kotlin
@@ -20,18 +15,24 @@ import org.jetbrains.reflekt.util.Util.REFLEKT_META_FILE_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.REFLEKT_META_FILE_PATH
 import org.jetbrains.reflekt.util.Util.SAVE_METADATA_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.VERSION
-import java.io.File
 
+import org.gradle.api.Project
+import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.*
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.*
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+import java.io.File
 
 @Suppress("unused")
 class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
-
     override fun apply(target: Project): Unit = target.run {
         pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
             configure<KotlinJvmProjectExtension> {
                 sourceSets["main"].apply {
                     dependencies {
-                        implementation("org.jetbrains.reflekt:reflekt-dsl:${VERSION}")
+                        implementation("org.jetbrains.reflekt:reflekt-dsl:$VERSION")
                     }
                 }
             }
@@ -46,7 +47,6 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
                     incremental = false
                 }
             }
-
         }
     }
 
