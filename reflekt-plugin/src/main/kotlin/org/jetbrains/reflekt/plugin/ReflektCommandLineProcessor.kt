@@ -18,13 +18,13 @@ import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import java.io.File
 
 /**
- * A class for handling command line arguments and transfer them into the kotlin compiler plugin
+ * Handles command line arguments and transfers them into the kotlin compiler plugin.
  *
  * @property pluginId the compiler plugin id. Just needs to be consistent
- *  with the key for ReflektSubPlugin#getCompilerPluginId from the gradle plugin.
+ *  with the key for ReflektSubPlugin.getCompilerPluginId from the gradle-plugin module.
  * @property pluginOptions the collection of the command line options for the kotlin compiler plugin.
- *  Should match up with the options we return from the ReflektSubPlugin in the gradle plugin.
- *  Should also have matching when branches for each name in the [processOption] function
+ *  Should match up with the options returned from the ReflektSubPlugin.applyToCompilation in the gradle-plugin module.
+ *  Should also have matching 'when'-branches for each option in the [processOption] function
  */
 @AutoService(CommandLineProcessor::class)
 class ReflektCommandLineProcessor : CommandLineProcessor {
@@ -41,12 +41,12 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
         )
 
     /**
-     * Process the compiler plugin command line options and put them to the CompilerConfiguration
+     * Processes the compiler plugin command line options and puts them to the [CompilerConfiguration].
      *
      * @param option the current command line option that should be handled
-     * @param value of the current option, should be converted into necessary type
+     * @param value of the current option, that will be converted into the right type required by [configuration]
      * @param configuration the kotlin compiler configuration that should be updated,
-     *  the options should be added into the configuration
+     *  the option will be added to the configuration
      */
     override fun processOption(
         option: AbstractCliOption,
@@ -64,11 +64,11 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
     }
 
     /**
-     * Add a new [value] into a list of values with the [configurationKey] into the kotlin compiler configuration.
-     * If the configuration does not have this key, create an empty list and put the [value]
+     * Updates [CompilerConfiguration] by adding a new [value] to a list of values with [configurationKey].
+     * If [CompilerConfiguration] does not have this key, creates an empty list and puts the [value].
      *
      * @param configurationKey the key of the command line option (should be a list)
-     * @param value new value that should be added
+     * @param value new value to add
      */
     @Suppress("TYPE_ALIAS")
     private fun <T> CompilerConfiguration.addToList(configurationKey: CompilerConfigurationKey<List<T>>, value: T) {
@@ -77,19 +77,19 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
     }
 
     /**
-     * The possible kotlin compiler command line options
+     * Possible kotlin compiler command line options.
      *
      * @property ENABLED_OPTION indicates if the plugin is enabled
-     * @property DEPENDENCY_JAR_OPTION stores the libraries jars absolute
-     *  path that included in the current project as a compileClasspath configuration
+     * @property DEPENDENCY_JAR_OPTION stores the absolute
+     *  path of libraries jars included in the current project as a compileClasspath configuration
      * @property REFLEKT_META_FILE_OPTION stores the absolute file's path from the library with Reflekt meta information
      * @property OUTPUT_DIR_OPTION stores a relative path for generated files (e.g. ReflektImpl.kt)
      * @property SAVE_METADATA_OPTION indicates whether to save Reflekt usages into META-INF
      * @property REFLEKT_META_FILE_PATH_OPTION stores the relative path to the ReflektMeta file
-     *  in the resources directory in the src folder in the project
+     *  in the resources' directory of the projects' src folder
      * @property LIBRARY_TO_INTROSPECT_OPTION stores names of the libraries' for introspection
      *  (each library should be included in the project by a configuration that can be resolved in the compile-time)
-     *  TODO: delete this option since we can indicate these libraries by check if the ReflektMeta file exist
+     *  TODO: delete this option since we can indicate these libraries by checking if the ReflektMeta file exists
      */
     companion object {
         val ENABLED_OPTION =

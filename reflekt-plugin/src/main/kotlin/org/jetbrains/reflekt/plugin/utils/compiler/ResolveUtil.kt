@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingTrace
 
 /**
- * Imitate of the analysis stage of the Kotlin compiler to resolve files (e.g. type inference)
+ * Imitates the analysis stage of the Kotlin compiler to resolve files (e.g. type inference).
  *
  * @param files collection of [KtFile]
  * @param environment Kotlin environment that can be used for resolving

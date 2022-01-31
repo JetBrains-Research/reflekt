@@ -18,14 +18,14 @@ import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.io.File
 
 /**
- * A class for registering the plugin and apply it to the project
+ * Registers the plugin and applies it to the project.
  *
  * @property isTestConfiguration indicates if the plugin is used in tests
  */
 @AutoService(ComponentRegistrar::class)
 class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false) : ComponentRegistrar {
     /**
-     * Tne main plugin's function which parses all compiler arguments and runs all Kotlin compiler's extensions
+     * Tne main plugin's function that parses all compiler arguments and runs all Kotlin compiler's extensions.
      *
      * @param project current project
      * @param configuration current compiler configuration, also stores all parsed options form the [ReflektCommandLineProcessor]

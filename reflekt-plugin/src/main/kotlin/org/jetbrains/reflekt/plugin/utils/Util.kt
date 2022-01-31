@@ -24,12 +24,12 @@ import java.io.File
 import java.io.PrintStream
 
 /**
- * Common functions and constants for the plugin
+ * Common functions and constants for the plugin.
  *
  * @property USES_STORE_NAME the name for [ReflektUses] to store in the [BindingContext].
- *  ReflektUses store arguments from the Reflekt queries in this case
+ *  [ReflektUses] store arguments from the Reflekt queries in this case
  * @property INSTANCES_STORE_NAME the name for [ReflektInstances] to store in the [BindingContext].
- *  ReflektInstances store all instances (entities) of classes/objects/functions in the project in this case
+ *  [ReflektInstances] store all instances (entities) of classes/objects/functions in the project in this case
  * @property GET_USES new [WritableSlice] to store [ReflektUses] in the [BindingContext]
  * @property GET_INSTANCES new [WritableSlice] to store [ReflektInstances] in the [BindingContext]
  * @property messageCollector get [MessageCollector] from the [CompilerConfiguration]
@@ -47,7 +47,7 @@ object Util {
         )
 
     /**
-     * Create new empty file for the new instance of [MessageCollector]
+     * Creates new empty file for the new instance of [MessageCollector].
      *
      * @param filePath
      */
@@ -61,7 +61,7 @@ object Util {
     }
 
     /**
-     * Log new message by [MessageCollector]
+     * Logs new message by [MessageCollector].
      *
      * @param message
      */
@@ -74,19 +74,19 @@ object Util {
     }
 
     /**
-     * Save [ReflektUses] into the [BindingContext]
+     * Saves [ReflektUses] into the [BindingContext].
      *
      * @param uses
      */
     internal fun BindingTrace.saveUses(uses: ReflektUses) = record(GET_USES, USES_STORE_NAME, uses)
 
     /**
-     * Save [ReflektInstances] into the [BindingContext]
+     * Saves [ReflektInstances] into the [BindingContext].
      */
     private fun BindingTrace.saveInstances(instances: ReflektInstances) = record(GET_INSTANCES, INSTANCES_STORE_NAME, instances)
 
     /**
-     * Analyze all [files] and extract all instances (entities) of classes/objects/functions
+     * Analyzes all [files] and extracts all instances (entities) of classes/objects/functions.
      *
      * @param files set of [KtFile]
      * @param bindingTrace current [BindingTrace] with the [BindingContext]
@@ -109,7 +109,7 @@ object Util {
 }
 
 /**
- * Convert string enum value into an instance of this enum class by the [transform] function
+ * Converts string enum value into an instance of this enum class using [transform] function.
  *
  * @param values possible enum values
  * @param transform
@@ -119,8 +119,8 @@ fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T 
     values.first { it.transform() == this }
 
 /**
- * String representation for [KotlinType]
- * Should be the same as the string representation for KType
+ * String representation for [KotlinType].
+ * Should be the same as the string representation for KType.
  *
  * @return [String]
  */
@@ -140,7 +140,7 @@ fun KotlinType.stringRepresentation(): String {
 }
 
 /**
- * Convert string enum value into regex options by the [transform] function
+ * Converts string enum value into regex options using [transform] function.
  *
  * @param values possible enum values
  * @param transform

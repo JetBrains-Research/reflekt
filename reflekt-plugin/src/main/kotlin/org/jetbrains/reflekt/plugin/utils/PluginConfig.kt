@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import java.io.File
 
 /**
- * A class to parse and store the command line arguments from the plugin
+ * Parses and stores the command line arguments from the plugin.
  *
  * @param configuration the current Kotlin compiler configuration or null
  * @param logFilePath path to the file with logs. By default is pathToKotlin/daemon/reflekt-log.log
@@ -18,13 +18,13 @@ import java.io.File
  *
  * @property enabled indicates if the plugin is enabled
  * @property reflektMetaFilesFromLibraries stores the relative path to the ReflektMeta file
- *  in the resources directory in the src folder in the project
+ *  in the resources' directory of the projects' src folder
  * @property outputDir stores a relative path for generated files (e.g. ReflektImpl.kt)
  * @property toSaveMetadata indicates whether to save Reflekt usages into META-INF
  * @property reflektMetaFileRelativePath stores the relative path to the ReflektMeta file
- *  in the resources directory in the src folder in the project
- * @property dependencyJars stores the libraries jars absolute
- *  path that included in the current project as a compileClasspath configuration
+ *  in the resources' directory of the projects' src folder
+ * @property dependencyJars stores the absolute
+ *  path of libraries jars included in the current project as a compileClasspath configuration
  * @property messageCollector [MessageCollector] for logs or null
  */
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
@@ -64,7 +64,7 @@ class PluginConfig(
     }
 
     /**
-     * Build the pretty string of the current configuration
+     * Builds the pretty string of the current configuration.
      *
      * @return [StringBuilder]
      */
@@ -80,7 +80,7 @@ class PluginConfig(
     }
 
     /**
-     * Build and log pretty string for the current configuration
+     * Builds and logs pretty string of the current configuration.
      */
     private fun MessageCollector.logConfiguration() = this.log(prettyString())
 }

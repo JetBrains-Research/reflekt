@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
 
 /**
- * Get KtFile representation for set of files in specified environment
+ * Gets [KtFile] representations for set of files in specified environment.
  *
  * @param files
  * @param environment
