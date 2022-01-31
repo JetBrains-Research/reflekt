@@ -17,8 +17,7 @@ import java.io.File
  * @param isTestConfiguration indicates if the plugin is used in tests
  *
  * @property enabled indicates if the plugin is enabled
- * @property reflektMetaFilesFromLibraries stores the relative path to the ReflektMeta file
- *  in the resources' directory of the projects' src folder
+ * @property reflektMetaFilesFromLibraries stores the absolute file's path from the library with Reflekt meta information
  * @property outputDir stores a relative path for generated files (e.g. ReflektImpl.kt)
  * @property toSaveMetadata indicates whether to save Reflekt usages into META-INF
  * @property reflektMetaFileRelativePath stores the relative path to the ReflektMeta file

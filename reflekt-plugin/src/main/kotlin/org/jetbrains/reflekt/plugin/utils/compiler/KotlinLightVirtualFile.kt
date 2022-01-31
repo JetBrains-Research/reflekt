@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.idea.KotlinLanguage
 import java.io.File
 
 /**
- * Wrapper for [LightVirtualFile] that retains path on machine
+ * Wrapper for [LightVirtualFile] that retains absolute file path on the current machine
  *
  * @param file a [File] that can be wrapped
  * @param text text that should be stored in the file
