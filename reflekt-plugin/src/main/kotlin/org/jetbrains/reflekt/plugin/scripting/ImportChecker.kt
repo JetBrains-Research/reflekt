@@ -65,7 +65,7 @@ class ImportChecker {
         val fields = this.publicFields()
 
         // Save method and field names with specified prefix
-        fun addMembers(prefix: String) {
+        val addMembers: (prefix: String) -> Unit = { prefix ->
             allNames.addWithPrefix(methods, prefix)
             allNames.addWithPrefix(fields, prefix)
         }
