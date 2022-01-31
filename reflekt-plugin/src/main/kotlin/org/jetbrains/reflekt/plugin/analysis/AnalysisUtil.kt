@@ -13,8 +13,8 @@ object AnalysisUtil {
 
     fun getBaseAnalyzer(classPath: Set<File>, sources: Set<File>): BaseAnalyzer {
         val environment = EnvironmentManager.create(classPath)
-        val ktFiles = ParseUtil.analyze(sources, environment)
-        val resolved = ResolveUtil.analyze(ktFiles, environment)
+        val ktFiles = parseKtFiles(sources, environment)
+        val resolved = analyze(ktFiles, environment)
         return BaseAnalyzer(ktFiles, resolved.bindingContext)
     }
 }

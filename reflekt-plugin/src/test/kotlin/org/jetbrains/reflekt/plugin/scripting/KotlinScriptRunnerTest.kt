@@ -1,22 +1,21 @@
 package org.jetbrains.reflekt.plugin.scripting
 
-import org.jetbrains.reflekt.plugin.analysis.AnalysisSetupTest
 import org.jetbrains.reflekt.plugin.analysis.models.Import
 import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @Tag("scripting")
-class KotlinScriptTest {
+class KotlinScriptRunnerTest {
     @Test
     fun simpleEval() {
-        val script = KotlinScript("30 + 12")
+        val script = KotlinScriptRunner("30 + 12")
         assertEquals(42, script.eval())
     }
 
     @Test
     fun scriptWithProperties() {
-        val script = KotlinScript(
+        val script = KotlinScriptRunner(
             properties = listOf("a" to Array::class, "b" to String::class),
             code = "a.size.toString() + b",
         )
@@ -29,11 +28,11 @@ class KotlinScriptTest {
     fun scriptWithExtendedClasspath() {
         val code = "import org.jetbrains.reflekt.Reflekt\nval a = Reflekt.objects()"
         assertThrows<RuntimeException> {
-            KotlinScript(code).run()
+            KotlinScriptRunner(code).run()
         }
 
         assertDoesNotThrow {
-            KotlinScript(
+            KotlinScriptRunner(
                 code = code,
                 classpath = getReflektProjectJars().toList(),
             ).run()
@@ -44,7 +43,7 @@ class KotlinScriptTest {
     fun scriptWithImports() {
         assertEquals(
             "kotlin.String",
-            KotlinScript(
+            KotlinScriptRunner(
                 code = """
                     val clazz: KClass<*> = t::class
                     clazz.qualifiedName

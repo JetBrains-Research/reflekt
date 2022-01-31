@@ -21,6 +21,7 @@ plugins {
     id("com.github.gmazzo.buildconfig") version "3.0.3" apply false
     `maven-publish`
     kotlin("kapt") version "1.5.31" apply true
+    id("org.jetbrains.dokka") version "1.6.10"
 }
 
 allprojects {
@@ -37,7 +38,7 @@ allprojects {
     }
 
     repositories {
-        jcenter()
+        mavenCentral()
         google()
         // Uncomment it for using the last kotlin compiler version
         // The full list of the build can be found here:

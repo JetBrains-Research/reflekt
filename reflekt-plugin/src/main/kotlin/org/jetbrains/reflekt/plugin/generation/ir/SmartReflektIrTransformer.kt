@@ -9,7 +9,7 @@ import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 import org.jetbrains.reflekt.plugin.analysis.psi.isSubtypeOf
 import org.jetbrains.reflekt.plugin.generation.common.SmartReflektInvokeParts
 import org.jetbrains.reflekt.plugin.scripting.ImportChecker
-import org.jetbrains.reflekt.plugin.scripting.KotlinScript
+import org.jetbrains.reflekt.plugin.scripting.KotlinScriptRunner
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -109,7 +109,7 @@ class SmartReflektIrTransformer(
         instance: IrTypeInstance<T, I>,
     ): Boolean {
         for (filter in filters) {
-            val result = KotlinScript(
+            val result = KotlinScriptRunner(
                 classpath = classpath,
                 imports = imports,
                 properties = filter.parameters.zip(listOf(T::class)),

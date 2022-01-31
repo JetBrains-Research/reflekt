@@ -31,6 +31,12 @@ git config --global pull.rebase true
 This will avoid your local repo having too many merge commits
 which will help keep your pull request simple and easy to apply.
 
+## Search and fix formatting issues
+0. Run building without running detekt: ./gradlew build
+1. To run detekt static analysis checks use: `./gradlew detektCheckAll` (associated with gitHub Action)
+2. To run diktat static analysis checks use: `./gradlew diktatCheckAll` (associated with gitHub Action)
+3. For an automated try to fix issues detected by diktat use: `./gradlew diktatFixAll`
+
 ## Checklist
 
 Before submitting the pull request, make sure that you can say "YES" to each point in this short checklist:
