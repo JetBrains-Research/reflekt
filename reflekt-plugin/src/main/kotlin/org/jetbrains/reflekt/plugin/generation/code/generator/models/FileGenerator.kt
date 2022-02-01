@@ -6,12 +6,12 @@ import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.TypeSpec
 
 /**
- * A generator for generating a new kt file with
+ * An abstract class to generate a new .kt file with given properties.
  *
  * @property packageName the file's package name
  * @property fileName name of the generated file
- * @property aliases unique aliases counte, e.g. for imported functions
- * @property builder a builder to build a new kt file
+ * @property aliases unique aliases counter, e.g. for imported functions
+ * @property builder a builder to build a new .kt file
  */
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 abstract class FileGenerator : Generator<String>() {
@@ -21,14 +21,14 @@ abstract class FileGenerator : Generator<String>() {
     private lateinit var builder: FileSpec.Builder
 
     /**
-     * Initialization of the main file builder
+     * Initializes the main file builder.
      */
     final override fun initBuilder() {
         builder = FileSpec.builder(packageName, fileName).indent(indent)
     }
 
     /**
-     * The main function to generate new kt file
+     * The main function to generate a new .kt file.
      */
     final override fun generate(): String {
         initBuilder()
@@ -37,7 +37,7 @@ abstract class FileGenerator : Generator<String>() {
     }
 
     /**
-     * Add generated classes, interfaces, or enum declarations
+     * Adds generated classes, interfaces, or enum declarations.
      *
      * @param types generated classes, interfaces, or enum declarations
      */
@@ -48,7 +48,7 @@ abstract class FileGenerator : Generator<String>() {
     }
 
     /**
-     * Add generated function declarations
+     * Adds generated function declarations.
      *
      * @param functions generated function declarations
      */
@@ -59,7 +59,7 @@ abstract class FileGenerator : Generator<String>() {
     }
 
     /**
-     * Add new unique aliased import for members such as a function or a property
+     * Adds new unique aliased import for members such as a function or a property.
      *
      * @param memberName
      * @return string representation of the unique aliased import
@@ -73,7 +73,7 @@ abstract class FileGenerator : Generator<String>() {
     }
 
     /**
-     * Add new [alias] to the [builder] for the [memberName]
+     * Adds new [alias] to the [builder] for the [memberName].
      *
      * @param memberName
      * @param alias

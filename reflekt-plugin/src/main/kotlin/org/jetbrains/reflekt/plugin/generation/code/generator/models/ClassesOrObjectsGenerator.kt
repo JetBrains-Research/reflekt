@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
  */
 abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) : HelperClassGenerator() {
     /**
-     * The main function to generate Classes or Objects class in the ReflektImpl.kt
+     * The main function to generate Classes or Objects class in the ReflektImpl.kt.
      */
     override fun generateImpl() {
         generateWithSupertypesFunction()
@@ -48,14 +48,14 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectUses) 
 }
 
 /**
- * Class to generate a top level class Classes in the ReflektImpl.kt
+ * Generates a top level class Classes in the ReflektImpl.kt.
  *
  * @param enclosingClassName
  * @param uses stores entities that satisfy all Reflekt queries arguments (invokes)
  *
  * @property typeName a fully-qualified class name
- * @property typeVariable a generic variable to parametrize used functions in the generated class
- * @property returnParameter a type for casting the results (all found entities)
+ * @property typeVariable a generic variable to parametrize functions in the generated class
+ * @property returnParameter a type for casting the results (all found entities) to
  */
 class ClassesGenerator(enclosingClassName: ClassName, uses: ClassOrObjectUses) : ClassesOrObjectsGenerator(uses) {
     override val typeName: ClassName = enclosingClassName.nestedClass("Classes")
@@ -65,14 +65,14 @@ class ClassesGenerator(enclosingClassName: ClassName, uses: ClassOrObjectUses) :
 }
 
 /**
- * Class to generate a top level class Objects in the ReflektImpl.kt
+ * Generates a top level class Objects in the ReflektImpl.kt.
  *
  * @param enclosingClassName
  * @param uses stores entities that satisfy all Reflekt queries arguments (invokes)
  *
  * @property typeName a fully-qualified class name
- * @property typeVariable a generic variable to parametrize used functions in the generated class
- * @property returnParameter a type for casting the results (all found entities)
+ * @property typeVariable a generic variable to parametrize functions in the generated class
+ * @property returnParameter a type for casting the results (all found entities) to
  */
 class ObjectsGenerator(enclosingClassName: ClassName, uses: ClassOrObjectUses) : ClassesOrObjectsGenerator(uses) {
     override val typeName: ClassName = enclosingClassName.nestedClass("Objects")

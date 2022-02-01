@@ -3,17 +3,17 @@ package org.jetbrains.reflekt.plugin.generation.code.generator
 import com.squareup.kotlinpoet.*
 
 /**
- * Convert a map with variables with their [types](TypeName) into a list of parameter declarations
+ * Converts a map with variables with their [types](TypeName) into a list of parameter declarations.
  *
  * @return a list of [ParameterSpec]
  */
 fun Map<String, TypeName>.toParameterSpecs(): List<ParameterSpec> = entries.map { ParameterSpec(it.key, it.value) }
 
 /**
- * Generate function's body
+ * Generates function's body.
  *
  * @param body function's body
- * @param typeVariables if the function has generic variables,specify all of them with their names and bounds
+ * @param typeVariables list of function's generic variables with names and bounds, if it has any
  * @param arguments function's arguments
  * @param returnType function's return type
  */
@@ -31,7 +31,7 @@ private fun FunSpec.Builder.generateBody(
 }
 
 /**
- * Create a [CodeBlock] statement by it's template and a list of arguments
+ * Creates a [CodeBlock] statement by its template and a list of arguments.
  *
  * @param template template of the statement
  * @param args arguments for the [template]
@@ -40,8 +40,8 @@ private fun FunSpec.Builder.generateBody(
 fun statement(template: String, vararg args: Any?): CodeBlock = CodeBlock.builder().addStatement(template, *args).build()
 
 /**
- * Create new [CodeBlock] inside of the [template]. If the template has an opening brace,
- *  an closing brace will be added automatically
+ * Creates a new [CodeBlock] inside of the [template]. If the template has an opening brace,
+ *  a closing brace will be added automatically.
  *
  * @param code [CodeBlock] that should be wrapped
  * @param template
@@ -56,7 +56,7 @@ fun controlFlow(
         .endControlFlow().build()
 
 /**
- * Wrap [CodeBlock] into brackets
+ * Wraps a [CodeBlock] in brackets.
  *
  * @param code [CodeBlock] that should be wrapped
  * @return a wrapped [CodeBlock]
@@ -64,18 +64,18 @@ fun controlFlow(
 fun wrappedCode(code: CodeBlock): CodeBlock = controlFlow(code, "{")
 
 /**
- * Create [CodeBlock] with empty list
+ * Creates a [CodeBlock] with an empty list.
  *
  * @return a [CodeBlock] with {@code return emptyList()} statement
  */
 fun emptyListCode(): CodeBlock = statement("return emptyList()")
 
 /**
- * The functions for the generating a Kotlin function with its [name], [body], [arguments] and [returnType]
+ * Generates a Kotlin function with its [name], [body], [arguments], and [returnType].
  *
  * @param name name of the function
  * @param body function's body
- * @param typeVariables if the function has generic variables,specify all of them with their names and bounds
+ * @param typeVariables list of function's generic variables with names and bounds, if it has any
  * @param arguments function's arguments
  * @param returnType function's return type
  * @return a generated function declaration

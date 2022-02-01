@@ -3,7 +3,7 @@ package org.jetbrains.reflekt.plugin.generation.code.generator.models
 import com.squareup.kotlinpoet.*
 
 /**
- * A base class to generate class, object, interface, or enum declaration
+ * A base class to generate class, object, interface, or enum declaration.
  *
  * @property typeName a fully-qualified class name
  * @property builder a special builder to build the class, object, interface, or enum declaration
@@ -14,7 +14,7 @@ abstract class TypeGenerator : Generator<TypeSpec>() {
     protected lateinit var builder: TypeSpec.Builder
 
     /**
-     * Generate class, object, interface, or enum declaration
+     * Generates class, object, interface, or enum declaration.
      *
      * @return a generated class, interface, or enum declaration
      */
@@ -25,7 +25,7 @@ abstract class TypeGenerator : Generator<TypeSpec>() {
     }
 
     /**
-     * Add nested class, object, interface, or enum declaration
+     * Adds nested class, object, interface, or enum declaration.
      *
      * @param nestedTypes
      */
@@ -34,7 +34,7 @@ abstract class TypeGenerator : Generator<TypeSpec>() {
     }
 
     /**
-     * Add nested class, object, interface, or enum declaration
+     * Adds nested class, object, interface, or enum declaration.
      *
      * @param nestedTypes
      */
@@ -43,7 +43,7 @@ abstract class TypeGenerator : Generator<TypeSpec>() {
     }
 
     /**
-     * Add functions to the generated class, object, interface, or enum declaration
+     * Adds functions to the generated class, object, interface, or enum declaration.
      *
      * @param functions
      */
@@ -52,7 +52,7 @@ abstract class TypeGenerator : Generator<TypeSpec>() {
     }
 
     /**
-     * Add functions to the generated class, object, interface, or enum declaration
+     * Adds functions to the generated class, object, interface, or enum declaration.
      *
      * @param functions
      */
@@ -62,11 +62,11 @@ abstract class TypeGenerator : Generator<TypeSpec>() {
 }
 
 /**
- * An abstract to generate a new class
+ * An abstract to generate a new class.
  */
 abstract class ClassGenerator : TypeGenerator() {
     /**
-     * Specify the builder to generate the class
+     * Specifies the builder to generate the class.
      */
     override fun initBuilder() {
         builder = TypeSpec.classBuilder(typeName)
@@ -74,11 +74,11 @@ abstract class ClassGenerator : TypeGenerator() {
 }
 
 /**
- * An abstract to generate a new object
+ * An abstract class to generate a new object.
  */
 abstract class ObjectGenerator : TypeGenerator() {
     /**
-     * Specify the builder to generate the object
+     * Specifies the builder to generate the object.
      */
     override fun initBuilder() {
         builder = TypeSpec.objectBuilder(typeName)

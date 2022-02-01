@@ -11,11 +11,11 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import java.util.*
 
 /**
- * A class for common functionality for top level classes in the DSL,
- *  e.g. class Objects, class Classes, and class Functions
+ * An abstract class for common functionality for top-level classes in the DSL,
+ *  e.g. class Objects, class Classes, and class Functions.
  *
- *  @property typeVariable a generic variable to parametrize used functions in the generated class
- *  @property returnParameter a type for casting the results (all found entities)
+ *  @property typeVariable a generic variable to parametrize functions in the generated class
+ *  @property returnParameter a type for casting the results (all found entities) to
  *  @property typeSuffix optional suffix to get a type of the entity, e.g. ::class
  *  @property withSupertypesFunctionBody the body of the withSupertypes function
  *  @property withAnnotationsFunctionBody the body of the withAnnotations function
@@ -58,7 +58,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
     ).toParameterSpecs()
 
     /**
-     * Function to generate withSupertypes function from the ReflektImpl.kt file
+     * Generates withSupertypes function from the ReflektImpl.kt file.
      */
     fun generateWithSupertypesFunction() {
         builder.addFunction(
@@ -72,7 +72,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     /**
-     * Function to generate withAnnotations function from the ReflektImpl.kt file
+     * Generates withAnnotations function from the ReflektImpl.kt file.
      */
     fun generateWithAnnotationsFunction() {
         builder.addFunction(
@@ -86,10 +86,10 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     /**
-     * Generate a list of entities for the right part of the when operator
+     * Generates a list of entities for the right part of the 'when' operator.
      *
      * @param uses found entities
-     * @param getEntityName get name of the entity from the uses
+     * @param getEntityName gets name of the entity from the uses
      * @return generated [CodeBlock]:
      *  listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
      */
@@ -99,11 +99,11 @@ abstract class HelperClassGenerator : ClassGenerator() {
             *List(uses.size) { returnParameter }.toTypedArray())
 
     /**
-     * Generate when option for a set of entities as a left part
+     * Generates 'when' option for a set of entities as a left part.
      *
      *  @param invokes set of invokes (arguments from the Reflekt query,
      *   e.g. fully qualified names of the annotations that should be found)
-     *  @param rightPart [CodeBlock] for the right part of this when option
+     *  @param rightPart [CodeBlock] of already generated right part of this 'when' option
      *  @return generated [CodeBlock]:
      *   setOf("invokes[0]", "invokes[1]" ...) -> listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
      *   the right part of this option should be generated earlier and passed into this function as [rightPart]
@@ -118,11 +118,11 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     /**
-     * Generate when option for a string as a left part
+     * Generates 'when' option for a string as a left part.
      *
      * @param invoke an invoke string representation (an argument from the Reflekt query,
      *   e.g. fully qualified name of the annotation that should be found)
-     * @param rightPart [CodeBlock] for the right part of this when option
+     * @param rightPart [CodeBlock] of already generated right part of this 'when' option
      * @return generated [CodeBlock]:
      *  [invoke] -> listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
      *  the right part of this option should be generated earlier and passed into this function as [rightPart]
@@ -130,10 +130,10 @@ abstract class HelperClassGenerator : ClassGenerator() {
     private fun getWhenOptionForString(invoke: String, rightPart: CodeBlock) = getWhenOption("\"$invoke\"", rightPart)
 
     /**
-     * Generate when option by [leftPart] and [rightPart] parts
+     * Generates 'when' option by adding [leftPart] and [rightPart] parts.
      *
-     * @param leftPart [String] for a left part of the when option
-     * @param rightPart [CodeBlock] for a right part of the when option
+     * @param leftPart [String] for a left part of the 'when' option
+     * @param rightPart [CodeBlock] for a right part of the 'when' option
      * @return generated [CodeBlock]: [leftPart] -> [rightPart]
      */
     private fun getWhenOption(leftPart: String, rightPart: CodeBlock) = CodeBlock.builder()
@@ -142,13 +142,13 @@ abstract class HelperClassGenerator : ClassGenerator() {
         .build()
 
     /**
-     * Internal function to generate the full when body
+     * An internal function to generate the full 'when' body.
      *
      * @param invokesWithUses collection of invokes (arguments from the Reflekt queries)
      *  and uses (found entities) that satisfy these invokes
-     * @param conditionVariable the when condition variable
-     * @param toAddReturn if {@code true} add the {@code return} statement before the when operator
-     * @param generateBranchForWhenOption a function to generate one branch for one when option
+     * @param conditionVariable the 'when' condition variable
+     * @param toAddReturn if {@code true}, adds the {@code return} statement before the 'when' operator
+     * @param generateBranchForWhenOption a function to generate one branch for one 'when' option
      * @return generated [CodeBlock]:
      *   <optional return> when ([conditionVariable]) {
      *       ...
@@ -177,14 +177,14 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     /**
-     * Function to generate the full when body
+     * Generates the full 'when' body.
      *
      * @param invokesWithUses collection of invokes (arguments from the Reflekt queries)
      *  and uses (found entities) that satisfy these invokes
-     * @param conditionVariable the when condition variable
-     * @param getEntityName
-     * @param toAddReturn if {@code true} add the {@code return} statement before the when operator
-     * @param getWhenOption a function to generate one when option, e.g. [getWhenOptionForString] or [getWhenOptionForSet]
+     * @param conditionVariable the 'when' condition variable
+     * @param getEntityName gets name of the entity from the uses
+     * @param toAddReturn if {@code true}, adds the {@code return} statement before the 'when' operator
+     * @param getWhenOption a function to generate one 'when' option, e.g. [getWhenOptionForString] or [getWhenOptionForSet]
      *  To make from this function a function for the [generateWhenBody] arguments, it is necessary to
      *  apply any function to uses for each invokes (from [invokesWithUses]), e.g. [listOfWhenRightPart]
      * @return generated [CodeBlock]:
@@ -211,7 +211,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     /**
-     * Function to generate the full when with a nested one for functions
+     * Generate the full 'when' with a nested one for functions.
      *
      * @param invokesWithUses collection of invokes (arguments from the Reflekt queries)
      *  and uses (found entities) that satisfy these invokes.
@@ -258,7 +258,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     /**
-     * Function to generate the full when with a nested one for classes and objects
+     * Generates the full 'when' with a nested one for classes and objects.
      *
      * @param invokesWithUses collection of invokes (arguments from the Reflekt queries)
      *  and uses (found entities) that satisfy these invokes.
@@ -302,12 +302,12 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     /**
-     * A wrapper to specify selector classes, e.g. WithSuperTypes or WithAnnotations
+     * A wrapper to specify selector classes, e.g. WithSuperTypes or WithAnnotations.
      *
      * @property typeName a fully-qualified class name
-     * @property typeVariable a generic variable to parametrize used functions in the generated class
+     * @property typeVariable a generic variable to parametrize functions in the generated class
      * @property parameters class parameters (from its constructor)
-     * @property returnParameter a type for casting the results (all found entities)
+     * @property returnParameter a type for casting the results (all found entities) to
      */
     protected abstract class SelectorClassGeneratorWrapper(
         override val typeName: ClassName,
@@ -331,12 +331,12 @@ abstract class HelperClassGenerator : ClassGenerator() {
     }
 
     /**
-     * Generator for the WithAnnotations class
+     * Generator for the WithAnnotations class.
      *
      * @property typeName a fully-qualified class name
      * @property typeVariable a generic variable to parametrize used functions in the generated class
      * @property parameters class parameters (from its constructor)
-     * @property returnParameter a type for casting the results (all found entities)
+     * @property returnParameter a type for casting the results (all found entities) to
      */
     protected abstract inner class WithSupertypesGenerator : SelectorClassGeneratorWrapper(
         typeName = this.typeName.nestedClass(WITH_SUPERTYPES_CLASS_NAME),
@@ -349,7 +349,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
      * Generator for the WithSuperTypes class
      *
      * @property typeName a fully-qualified class name
-     * @property typeVariable a generic variable to parametrize used functions in the generated class
+     * @property typeVariable a generic variable to parametrize functions in the generated class
      * @property parameters class parameters (from its constructor)
      * @property returnParameter a type for casting the results (all found entities)
      */

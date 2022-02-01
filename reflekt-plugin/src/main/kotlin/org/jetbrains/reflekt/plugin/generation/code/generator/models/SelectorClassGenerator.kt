@@ -8,13 +8,13 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import kotlin.reflect.KClass
 
 /**
- * An abstract class to generate a new internal class from the DSL, e.g. WithSuperTypes or WithAnnotations
+ * An abstract class to generate a new internal class from the DSL, e.g. WithSuperTypes or WithAnnotations.
  *
- * @property typeVariable a generic variable to parametrize used functions in the generated class
- * @property returnParameter a type for  casting the results (all found entities)
+ * @property typeVariable a generic variable to parametrize functions in the generated class
+ * @property returnParameter a type for casting the results (all found entities) to
  * @property parameters class parameters (from its constructor)
- * @property [CodeBlock] for toList() function
- * @property [CodeBlock] for toSet() function
+ * @property toListFunctionBody [CodeBlock] for toList() function
+ * @property toSetFunctionBody [CodeBlock] for toSet() function
  */
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 abstract class SelectorClassGenerator : ClassGenerator() {
@@ -25,7 +25,7 @@ abstract class SelectorClassGenerator : ClassGenerator() {
     protected open val toSetFunctionBody = statement("return toList().toSet()")
 
     /**
-     * Specify the builder to generate the class
+     * Specifies the builder to generate the class.
      */
     final override fun initBuilder() {
         super.initBuilder()
@@ -37,7 +37,7 @@ abstract class SelectorClassGenerator : ClassGenerator() {
     }
 
     /**
-     * Generate two function in the class: toList() and toSet()
+     * Generates two functions in the class: toList() and toSet().
      */
     override fun generateImpl() {
         generateToListFunction()
@@ -45,19 +45,19 @@ abstract class SelectorClassGenerator : ClassGenerator() {
     }
 
     /**
-     * Generate toList() function
+     * Generates toList() function.
      */
     private fun generateToListFunction() = generateConversionFunction(List::class, toListFunctionBody)
 
     /**
-     * Generate toSet() function
+     * Generates toSet() function.
      */
     private fun generateToSetFunction() = generateConversionFunction(Set::class, toSetFunctionBody)
 
     /**
-     * The common function to generate toList() or toSet() function
+     * A common function to generate toList() or toSet() functions.
      *
-     * @param klass specify the returned collection
+     * @param klass specifies the returned collection
      * @param body the function's body
      */
     private fun generateConversionFunction(

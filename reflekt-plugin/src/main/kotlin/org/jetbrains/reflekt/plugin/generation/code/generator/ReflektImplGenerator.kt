@@ -11,8 +11,8 @@ import com.squareup.kotlinpoet.ClassName
 import java.util.*
 
 /**
- * The class for generation of ReflektImpl.kt file
- * An example of the ReflektImpl.kt file can be found in the reflekt-dsl module
+ * Generates ReflektImpl.kt file.
+ * An example of ReflektImpl.kt file can be found in the reflekt-dsl module.
  *
  * @property uses [ReflektUses] that were found in the project
  *  (arguments from all Reflekt queries with entities that satisfy them)
@@ -25,14 +25,14 @@ class ReflektImplGenerator(private val uses: ReflektUses) : FileGenerator() {
     override val fileName = "ReflektImpl"
 
     /**
-     * The main function to generate the ReflektImpl.kt file content
+     * The main function to generate the ReflektImpl.kt file content.
      */
     override fun generateImpl() {
         addTypes(ReflektImplClassGenerator().generate())
     }
 
     /**
-     * Generate main ReflektImpl object (see ReflektImpl.kt file in the reflekt-dsl module)
+     * Generates main ReflektImpl object (see ReflektImpl.kt file in the reflekt-dsl module).
      *
      * @property typeName a fully-qualified class name: org.jetbrains.reflekt.ReflektImpl
      * */
@@ -40,7 +40,7 @@ class ReflektImplGenerator(private val uses: ReflektUses) : FileGenerator() {
         override val typeName = ClassName(packageName, fileName)
 
         /**
-         * The main function to generate the ReflektImpl.kt
+         * The main function to generate ReflektImpl.kt file.
          */
         override fun generateImpl() {
             val innerGenerators = listOf(
