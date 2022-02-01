@@ -5,6 +5,8 @@ package org.jetbrains.reflekt.plugin.generation.common
  *
  * @param message
  * @param cause
+ * @property message
+ * @property cause
  */
 class ReflektGenerationException(
     override val message: String? = null,
