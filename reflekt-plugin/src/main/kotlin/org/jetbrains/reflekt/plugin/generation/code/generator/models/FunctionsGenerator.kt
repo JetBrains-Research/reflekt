@@ -10,6 +10,20 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 
 import kotlin.reflect.KFunction
 
+/**
+ * Generates a top level class Functions in the ReflektImpl.kt.
+ *
+ * @param enclosingClassName
+ * @param uses stores entities that satisfy all Reflekt queries arguments (invokes)
+ * @param fileGenerator a generator that can generate new unique aliased imports for functions
+ *
+ * @property typeName a fully-qualified class name
+ * @property typeVariable a generic variable to parametrize functions in the generated class
+ * @property returnParameter a type for casting the results (all found entities) to
+ * @property withAnnotationsFunctionBody the body of the withAnnotations function
+ * @property withAnnotationsParameters parameters for the WithAnnotations class (from its constructor)
+ */
+@Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 class FunctionsGenerator(
     enclosingClassName: ClassName,
     private val uses: FunctionUses,
@@ -31,6 +45,9 @@ class FunctionsGenerator(
         SIGNATURE to String::class.asClassName(),
     ).toParameterSpecs()
 
+    /**
+     * The main function to generate the Functions class in the ReflektImpl.kt.
+     */
     override fun generateImpl() {
         generateWithAnnotationsFunction()
 
@@ -41,6 +58,12 @@ class FunctionsGenerator(
         }.generate())
     }
 
+    /**
+     * Generates a function reference for the generated file.
+     *
+     * @param function
+     * @return a string representation of the function reference
+     */
     private fun functionReference(function: KtNamedFunction): String =
         if (function.isTopLevel) {
             val packageName = function.fqName!!.parent().toString()
