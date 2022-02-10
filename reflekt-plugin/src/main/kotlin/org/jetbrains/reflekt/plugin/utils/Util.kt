@@ -2,19 +2,14 @@
 
 package org.jetbrains.reflekt.plugin.utils
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.source.SmartReflektAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektInstances
 import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektUses
+import org.jetbrains.reflekt.plugin.utils.Util.GET_USES
+import org.jetbrains.reflekt.plugin.utils.Util.USES_STORE_NAME
 import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
 
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageLocation
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
-import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
+import org.jetbrains.kotlin.cli.common.messages.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.*
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.util.slicedMap.Slices
@@ -31,14 +26,12 @@ import java.io.PrintStream
  * @property INSTANCES_STORE_NAME the name for [ReflektInstances] to store in the [BindingContext].
  *  [ReflektInstances] store all instances (entities) of classes/objects/functions in the project in this case
  * @property GET_USES new [WritableSlice] to store [ReflektUses] in the [BindingContext]
- * @property GET_INSTANCES new [WritableSlice] to store [ReflektInstances] in the [BindingContext]
  * @property messageCollector get [MessageCollector] from the [CompilerConfiguration]
  */
 object Util {
     private const val USES_STORE_NAME = "ReflektUses"
     private const val INSTANCES_STORE_NAME = "ReflektInstances"
     private val GET_USES: WritableSlice<String, ReflektUses> = Slices.createSimpleSlice()
-    private val GET_INSTANCES: WritableSlice<String, ReflektInstances> = Slices.createSimpleSlice()
 
     val CompilerConfiguration.messageCollector: MessageCollector
         get() = this.get(
@@ -79,33 +72,6 @@ object Util {
      * @param uses
      */
     internal fun BindingTrace.saveUses(uses: ReflektUses) = record(GET_USES, USES_STORE_NAME, uses)
-
-    /**
-     * Saves [ReflektInstances] into the [BindingContext].
-     */
-    private fun BindingTrace.saveInstances(instances: ReflektInstances) = record(GET_INSTANCES, INSTANCES_STORE_NAME, instances)
-
-    /**
-     * Analyzes all [files] and extracts all instances (entities) of classes/objects/functions.
-     *
-     * @param files set of [KtFile]
-     * @param bindingTrace current [BindingTrace] with the [BindingContext]
-     * @param toSave indicates if instances (entities) should be stored into [BindingContext]
-     * @param messageCollector
-     * @return [ReflektInstances]
-     */
-    fun getInstances(
-        files: Set<KtFile>,
-        bindingTrace: BindingTrace,
-        toSave: Boolean = true,
-        messageCollector: MessageCollector? = null): ReflektInstances {
-        val analyzer = SmartReflektAnalyzer(files, bindingTrace.bindingContext, messageCollector)
-        val instances = analyzer.instances()
-        if (toSave) {
-            bindingTrace.saveInstances(instances)
-        }
-        return instances
-    }
 }
 
 /**

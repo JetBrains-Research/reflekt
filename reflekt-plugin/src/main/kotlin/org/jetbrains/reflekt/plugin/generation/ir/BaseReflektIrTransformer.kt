@@ -1,7 +1,7 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
 import org.jetbrains.reflekt.plugin.analysis.common.*
-import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
+import org.jetbrains.reflekt.plugin.analysis.ir.*
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
 import org.jetbrains.reflekt.plugin.generation.common.*
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
 /**
  * Generate IR representation for the Reflekt terminal function (toList/toSet/etc)
@@ -101,7 +100,8 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         messageCollector?.log("RES ARGS: ${itemType.arguments.map { (it as IrSimpleType).classFqName }}")
         val items = resultValues.map { irFunctionInfo ->
             val functionSymbol = context.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
-                symbol.owner.toParameterizedType(context.bindingContext)?.isSubtypeOf(itemType.toParameterizedType()) ?: false
+                // symbol.owner.toParameterizedType(context.bindingContext)?.isSubtypeOf(itemType.toParameterizedType()) ?: false
+                symbol.owner.isSubTypeOf(itemType, context)
             } ?: throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
             irKFunction(itemType, functionSymbol).also { call ->
                 irFunctionInfo.receiverFqName?.let {
@@ -129,7 +129,8 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
             pluginContext,
             currentScope!!.scope,
             UNDEFINED_OFFSET,
-            UNDEFINED_OFFSET) {
+            UNDEFINED_OFFSET,
+        ) {
             // no need to pass a body to this object
         }
 }

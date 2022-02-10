@@ -6,8 +6,7 @@ import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
 import org.jetbrains.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtReferenceExpression
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.utils.addIfNotNull
 
@@ -16,7 +15,7 @@ import org.jetbrains.kotlin.utils.addIfNotNull
  * @property messageCollector
  */
 abstract class BaseInvokesProcessor<T : Any>(override val binding: BindingContext, override val messageCollector: MessageCollector?) :
-    Processor<T>(binding, messageCollector) {
+    Processor<T, KtElement, KtFile>(binding, messageCollector) {
     // Store invokes by file
     abstract val fileToInvokes: HashMap<FileId, T>
 

@@ -6,13 +6,18 @@ import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 
+typealias KtElementProcessor = Processor<*, KtElement, KtFile>
+
 /**
+ * A base class for elements processors, e.g. process IrElement or KtElement
+ *
  * @property binding
  * @property messageCollector
  */
-abstract class Processor<T : Any>(protected open val binding: BindingContext, protected open val messageCollector: MessageCollector? = null) {
+// TODO: delete BindingContext
+abstract class Processor<T : Any, E : Any, F : Any>(protected open val binding: BindingContext? = null, protected open val messageCollector: MessageCollector? = null) {
     // Return processed elements by file
-    abstract fun process(element: KtElement, file: KtFile): HashMap<FileId, T>
+    abstract fun process(element: E, file: F): HashMap<FileId, T>
 
-    abstract fun shouldRunOn(element: KtElement): Boolean
+    abstract fun shouldRunOn(element: E): Boolean
 }

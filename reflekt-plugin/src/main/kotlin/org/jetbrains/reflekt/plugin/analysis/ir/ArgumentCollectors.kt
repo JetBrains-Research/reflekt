@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrFunctionExpression
-import org.jetbrains.kotlin.ir.types.classFqName
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.types.KotlinType
 
@@ -88,9 +88,8 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
  * Traverses subtree of expression and collects arguments of filter calls to construct [TypeArgumentToFilters].
  */
 class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) : IrRecursiveVisitor() {
-    private var typeArgument: KotlinType? = null
-    private var typeArgumentFqName: String? = null
     private val filters = ArrayList<Lambda>()
+    private var irTypeArgument: IrType? = null
 
     @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall, data: Nothing?) {
@@ -98,8 +97,7 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
         val function = expression.symbol.owner
         if (function.name.asString() in ReflektEntity.values().map { it.entityType }) {
             val typeArgument = expression.getTypeArgument(0)
-            this.typeArgument = typeArgument?.toParameterizedType()
-            typeArgumentFqName = typeArgument?.classFqName?.asString()
+            irTypeArgument = typeArgument
         }
     }
 
@@ -122,10 +120,9 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
             val visitor = SmartReflektInvokeArgumentsCollector(sourceFile)
             expression.accept(visitor, null)
             return TypeArgumentToFilters(
-                typeArgument = visitor.typeArgument,
-                typeArgumentFqName = visitor.typeArgumentFqName,
                 filters = visitor.filters,
                 imports = sourceFile.imports,
+                irTypeArgument = visitor.irTypeArgument,
             )
         }
     }

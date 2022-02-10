@@ -1,10 +1,10 @@
 package org.jetbrains.reflekt.plugin.analysis.psi
 
-import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
+import org.jetbrains.reflekt.plugin.analysis.processor.source.KtElementProcessor
 
 import org.jetbrains.kotlin.psi.*
 
-fun KtFile.visit(processors: Set<Processor<*>>) {
+fun KtFile.visit(processors: Set<KtElementProcessor>) {
     acceptChildren(object : KtDefaultVisitor() {
         override fun visitObjectDeclaration(declaration: KtObjectDeclaration) {
             processors.filter { it.shouldRunOn(declaration) }.forEach { it.process(declaration, this@visit) }

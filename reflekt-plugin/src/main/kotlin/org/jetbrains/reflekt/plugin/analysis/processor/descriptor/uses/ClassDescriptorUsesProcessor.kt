@@ -2,8 +2,8 @@ package org.jetbrains.reflekt.plugin.analysis.processor.descriptor.uses
 
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrClassOrObjectUses
 import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektInvokes
+import org.jetbrains.reflekt.plugin.analysis.processor.common.isPublicNotAbstractClass
 import org.jetbrains.reflekt.plugin.analysis.processor.getInvokesGroupedByFiles
-import org.jetbrains.reflekt.plugin.analysis.processor.isPublicNotAbstractClass
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor

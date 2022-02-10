@@ -1,30 +1,24 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
-import org.jetbrains.reflekt.plugin.analysis.ir.SmartReflektInvokeArgumentsCollector
+import org.jetbrains.reflekt.plugin.analysis.ir.*
 import org.jetbrains.reflekt.plugin.analysis.models.*
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektInstances
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrTypeInstance
-import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
-import org.jetbrains.reflekt.plugin.analysis.psi.isSubtypeOf
+import org.jetbrains.reflekt.plugin.analysis.models.ir.*
 import org.jetbrains.reflekt.plugin.generation.common.SmartReflektInvokeParts
 import org.jetbrains.reflekt.plugin.scripting.ImportChecker
 import org.jetbrains.reflekt.plugin.scripting.KotlinScriptRunner
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.backend.common.push
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
-import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.util.dump
-import org.jetbrains.kotlin.ir.util.fqNameForIrSerialization
+import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
 
 import java.io.File
@@ -32,8 +26,8 @@ import java.io.File
 /**
  * Replaces SmartReflekt invoke calls with their results
  *
+ * @property irInstances
  * @property pluginContext
- * @property instances stores all public instances (classes, objects, and top-level functions) in the project
  * @property classpath project dependencies that can be resolved at the compile time
  * @property messageCollector
  * @property importChecker [ImportChecker] for filtering classpath for correct running the KotlinScript interpreter
@@ -42,8 +36,8 @@ import java.io.File
  */
 @Suppress("KDOC_EXTRA_PROPERTY", "KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER")
 class SmartReflektIrTransformer(
+    private val irInstances: IrInstances,
     private val pluginContext: IrPluginContext,
-    private val instances: IrReflektInstances,
     private val classpath: List<File>,
     private val messageCollector: MessageCollector? = null,
 ) : BaseReflektIrTransformer(messageCollector) {
@@ -63,19 +57,28 @@ class SmartReflektIrTransformer(
         messageCollector?.log("[IR] SMART REFLEKT CALL: $expressionFqName;")
 
         val invokeArguments = SmartReflektInvokeArgumentsCollector.collectInvokeArguments(expression, getSourceFile(currentFile))
-
         val call = when (invokeParts.entityType) {
             ReflektEntity.OBJECTS, ReflektEntity.CLASSES -> {
                 val filteredInstances = if (invokeParts.entityType == ReflektEntity.OBJECTS) {
-                    filterInstances(instances.objects, invokeArguments, pluginContext.bindingContext)
+                    filterInstances(irInstances.objects, invokeArguments)
                 } else {
-                    filterInstances(instances.classes, invokeArguments, pluginContext.bindingContext)
+                    filterInstances(irInstances.classes, invokeArguments)
                 }
-                newIrBuilder(pluginContext).resultIrCall(invokeParts, filteredInstances.map { it.info }, expression.type, pluginContext)
+                newIrBuilder(pluginContext).resultIrCall(
+                    invokeParts,
+                    filteredInstances.mapNotNull { (it as? IrClass)?.fqNameWhenAvailable?.asString() },
+                    expression.type,
+                    pluginContext,
+                )
             }
             ReflektEntity.FUNCTIONS -> {
-                val filteredInstances = filterInstances(instances.functions, invokeArguments, pluginContext.bindingContext)
-                newIrBuilder(pluginContext).functionResultIrCall(invokeParts, filteredInstances.map { it.info }, expression.type, pluginContext)
+                val filteredInstances = filterInstances(irInstances.functions, invokeArguments)
+                newIrBuilder(pluginContext).functionResultIrCall(
+                    invokeParts,
+                    filteredInstances.mapNotNull { (it as? IrFunction)?.toFunctionInfo() },
+                    expression.type,
+                    pluginContext,
+                )
             }
         }
         messageCollector?.log("GENERATE CALL:\n${call.dump()}")
@@ -83,82 +86,44 @@ class SmartReflektIrTransformer(
     }
 
     /**
-     * Check if the [typeArgumentFqName]  is subtype of [classOrObject]
+     * Check if [IrElement] is subtype of [type] (only for [IrClass] and [IrFunction], in other cases are [false])
      *
-     * @param classOrObject
-     * @param typeArgumentFqName
-     * @param binding
-     * @return {@code true} if the [typeArgumentFqName]  is subtype of [classOrObject]
+     * @param type
+     * @return {@code true} if [IrElement] is subtype of [type]
      */
-    // TODO: replace to IrTypes, we should not use BindingContext since in the new compiler versions with new frontend it will be deleted
-    private fun <T : KtClassOrObject> isSubtypeOfForClassOrObject(
-        classOrObject: T,
-        typeArgumentFqName: String?,
-        binding: BindingContext) = typeArgumentFqName?.let {
-        classOrObject.isSubtypeOf(setOf(typeArgumentFqName), binding)
-    } ?: error("Fq name of a type argument for class or object is null")
+    private fun IrElement.isSubTypeOrFalse(type: IrType?) = type?.let {
+        when (this) {
+            is IrClass -> this.isSubTypeOf(type, pluginContext)
+            is IrFunction -> this.isSubTypeOf(type, pluginContext)
+            else -> false
+        }
+    } ?: false
 
     /**
-     * Check if the [typeArgument] is subtype of [function]
-     *
-     * @param function
-     * @param typeArgument
-     * @param binding
-     * @return {@code true} if the [typeArgument]  is subtype of [function]
-     */
-    // TODO: replace to IrTypes, we should not use BindingContext since in the new compiler versions with new frontend it will be deleted
-    private fun isSubtypeOfForFunctions(
-        function: KtNamedFunction,
-        typeArgument: KotlinType?,
-        binding: BindingContext) = typeArgument?.let {
-        function.toParameterizedType(binding)?.isSubtypeOf(typeArgument) ?: false
-    } ?: error("A type argument for a function is null")
-
-    /**
-     * Filter [instances] that satisfy [invokeArguments]
+     * Check if the list of [instances] satisfy SmartReflekt conditions from [invokeArguments]
      *
      * @param instances
      * @param invokeArguments
-     * @param binding
-     * @return list of [IrTypeInstance] that satisfy [invokeArguments]
      */
-    // TODO: replace to IrTypes, we should not use BindingContext since in the new compiler versions with new frontend it will be deleted
-    @Suppress("TYPE_ALIAS")
-    private inline fun <reified T, reified I> filterInstances(
-        instances: List<IrTypeInstance<T, I>>,
+    private fun filterInstances(
+        instances: List<IrElement>,
         invokeArguments: TypeArgumentToFilters,
-        binding: BindingContext,
-    ): List<IrTypeInstance<T, I>> {
+    ): List<IrElement> {
         val imports = importChecker.filterImports(invokeArguments.imports)
-
-        val resultInstances = ArrayList<IrTypeInstance<T, I>>()
-        for (instance in instances) {
-            val isSubtype = when (instance.instance) {
-                is KtObjectDeclaration -> isSubtypeOfForClassOrObject(instance.instance, invokeArguments.typeArgumentFqName, binding)
-                is KtClass -> isSubtypeOfForClassOrObject(instance.instance, invokeArguments.typeArgumentFqName, binding)
-                is KtNamedFunction -> isSubtypeOfForFunctions(instance.instance, invokeArguments.typeArgument, binding)
-                else -> error("Unknown type of instance")
-            }
-            if (isSubtype && isEvaluatedFilterBody(imports, invokeArguments.filters, instance)) {
-                resultInstances.push(instance)
-            }
-        }
-        return resultInstances
+        return instances.filter { it.isSubTypeOrFalse(invokeArguments.irTypeArgument) && it.isEvaluatedFilterBody(imports, invokeArguments.filters) }
     }
 
     /**
-     * Check if [instance] satisfies list of [filters]
+     * Check if instance [T] satisfies list of [filters]
      *
      * @param imports for KotlinScript running
      * @param filters
-     * @param instance
-     * @return {@code true} if [instance] satisfies list of [filters]
+     * @return {@code true} if instance [T] satisfies list of [filters]
      */
-    // TODO: run KotlinScript on a list of instances
-    private inline fun <reified T, reified I> isEvaluatedFilterBody(
+    // TODO: union filters and run KotlinScript one time
+    private inline fun <reified T : IrElement> T.isEvaluatedFilterBody(
         imports: List<Import>,
         filters: List<Lambda>,
-        instance: IrTypeInstance<T, I>,
     ): Boolean {
         for (filter in filters) {
             val result = KotlinScriptRunner(
@@ -166,7 +131,7 @@ class SmartReflektIrTransformer(
                 imports = imports,
                 properties = filter.parameters.zip(listOf(T::class)),
                 code = filter.body,
-            ).eval(listOf(instance.instance)) as Boolean
+            ).eval(listOf(this)) as Boolean
             if (!result) {
                 return false
             }

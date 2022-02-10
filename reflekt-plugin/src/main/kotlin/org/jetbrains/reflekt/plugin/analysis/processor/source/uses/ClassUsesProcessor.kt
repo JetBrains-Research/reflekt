@@ -3,6 +3,7 @@ package org.jetbrains.reflekt.plugin.analysis.processor.source.uses
 import org.jetbrains.reflekt.plugin.analysis.models.psi.ClassOrObjectUses
 import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektInvokes
 import org.jetbrains.reflekt.plugin.analysis.processor.*
+import org.jetbrains.reflekt.plugin.analysis.processor.common.isPublicNotAbstractClass
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector

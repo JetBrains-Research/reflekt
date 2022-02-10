@@ -5,7 +5,6 @@ import org.jetbrains.reflekt.plugin.analysis.models.ir.*
 import org.jetbrains.reflekt.plugin.analysis.models.psi.*
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
 import org.jetbrains.reflekt.plugin.generation.code.generator.ReflektImplGenerator
-import org.jetbrains.reflekt.plugin.utils.Util.getInstances
 import org.jetbrains.reflekt.plugin.utils.Util.log
 import org.jetbrains.reflekt.plugin.utils.Util.saveUses
 
@@ -57,12 +56,7 @@ class ReflektModuleAnalysisExtension(
                 uses,
                 bindingTrace.bindingContext,
             )
-            // TODO: collect instances only if SmartReflekt calls exist
-            // Need only for SmartReflekt
-            val instances = getInstances(setOfFiles, bindingTrace, messageCollector = messageCollector)
-            reflektContext.instances = IrReflektInstances.fromReflektInstances(instances, bindingTrace.bindingContext, messageCollector)
-            messageCollector?.log("IrReflektInstances were created successfully")
-            messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: ${reflektContext.uses}\nInstances: ${reflektContext.instances}")
+            messageCollector?.log("Finish analysis ${module.name} module's files;")
         }
             ?: run {
                 messageCollector?.log("Finish analysis ${module.name} module's files;\nUses: $uses")

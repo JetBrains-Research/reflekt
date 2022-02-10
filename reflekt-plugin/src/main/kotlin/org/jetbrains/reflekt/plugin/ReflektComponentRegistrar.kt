@@ -1,6 +1,8 @@
 package org.jetbrains.reflekt.plugin
 
 import org.jetbrains.reflekt.plugin.analysis.ReflektModuleAnalysisExtension
+import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.collector.ir.InstancesCollectorExtension
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektContext
 import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
@@ -23,6 +25,8 @@ import java.io.File
  * @property isTestConfiguration indicates if the plugin is used in tests
  */
 @AutoService(ComponentRegistrar::class)
+@Suppress("TOO_LONG_FUNCTION")
+// TODO: delete unnecessary extensions
 class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false) : ComponentRegistrar {
     /**
      * Tne main plugin's function that parses all compiler arguments and runs all Kotlin compiler's extensions.
@@ -52,6 +56,18 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
                 reflektMetaFile = config.reflektMetaFileRelativePath?.let { File(it) },
             ),
         )
+
+        // Collect IR instances for classes, objects, and functions
+        val instancesAnalyzer = IrInstancesAnalyzer()
+        IrGenerationExtension.registerExtension(
+            project,
+            InstancesCollectorExtension(
+                irInstancesAnalyzer = instancesAnalyzer,
+                messageCollector = config.messageCollector,
+            ),
+        )
+        val irInstances = instancesAnalyzer.getIrInstances()
+
         IrGenerationExtension.registerExtension(
             project,
             ReflektIrGenerationExtension(
@@ -63,8 +79,8 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         IrGenerationExtension.registerExtension(
             project,
             SmartReflektIrGenerationExtension(
+                irInstances = irInstances,
                 classpath = config.dependencyJars,
-                reflektContext = reflektContext,
                 messageCollector = config.messageCollector,
             ),
         )

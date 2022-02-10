@@ -2,9 +2,8 @@ package org.jetbrains.reflekt.plugin.analysis.models.ir
 
 /**
  * @property uses
- * @property instances
  */
+// TODO: delete it
 data class IrReflektContext(
     var uses: IrReflektUses? = null,
-    var instances: IrReflektInstances? = null,
 )

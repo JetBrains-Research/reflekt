@@ -4,6 +4,8 @@ import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionUses
 import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektInvokes
 import org.jetbrains.reflekt.plugin.analysis.models.psi.SignatureToAnnotations
 import org.jetbrains.reflekt.plugin.analysis.processor.*
+import org.jetbrains.reflekt.plugin.analysis.processor.common.*
+import org.jetbrains.reflekt.plugin.analysis.processor.common.isPublicTopLevelFunction
 import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 import org.jetbrains.reflekt.plugin.analysis.resolve.toFunctionInfo
 

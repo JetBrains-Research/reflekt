@@ -2,6 +2,8 @@ package org.jetbrains.reflekt.plugin.analysis.processor.source.uses
 
 import org.jetbrains.reflekt.plugin.analysis.models.psi.*
 import org.jetbrains.reflekt.plugin.analysis.processor.*
+import org.jetbrains.reflekt.plugin.analysis.processor.common.isMainFunction
+import org.jetbrains.reflekt.plugin.analysis.processor.common.isTopLevelPublicFunction
 import org.jetbrains.reflekt.plugin.analysis.psi.annotation.getAnnotations
 import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 import org.jetbrains.reflekt.plugin.utils.Util.log
