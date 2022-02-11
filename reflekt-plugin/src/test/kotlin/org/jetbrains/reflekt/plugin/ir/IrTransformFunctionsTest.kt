@@ -3,8 +3,7 @@ package org.jetbrains.reflekt.plugin.ir
 import org.jetbrains.reflekt.plugin.ir.ResultCall.call
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.*
 
 @Tag("ir")
 class IrTransformFunctionsTest {
@@ -77,7 +76,7 @@ class IrTransformFunctionsTest {
         fun getSmartReflektFunctionsTestData(): List<Arguments> = listOf(
             Arguments.of(
                 setOf(""),
-                Signature("() -> Boolean", "it.name == \"fooBoolean\""),
+                Signature("() -> Boolean", "it.nameForIrSerialization.asString() == \"fooBoolean\""),
                 ""
             )
         )

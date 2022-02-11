@@ -13,7 +13,7 @@ abstract class IrAnalyzer {
     abstract val processors: List<IrElementProcessor>
 
     fun process(element: IrElement, file: IrFile) {
-        processors.forEach { it.process(element, file) }
+        processors.filter { it.shouldRunOn(element) }.forEach { it.process(element, file) }
     }
 }
 
