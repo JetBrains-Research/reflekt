@@ -11,24 +11,19 @@ class MyClassReceiver : MyInterface {
 
     /**
      * @kotlinType [@kotlin.ExtensionFunctionType] Function2<MyClassReceiver, Number, Unit> (kotlin.Function2)
-     * @subtypes:
-     *   [MyClassReceiver.foo2_Any_Any_Unit],
-     *   [MyClassReceiver.foo2_MyClassReceiver_NumberExt_Unit]
+     * @subtypes: no subtypes
      */
     fun foo2_MyClassReceiver_Number_Unit(n: Number) {}
 
     /**
      * @kotlinType [@kotlin.ExtensionFunctionType] Function2<MyClassReceiver, CharSequence, Unit> (kotlin.Function2)
-     * @subtypes:
-     *   [MyClassReceiver.foo2_Any_Any_Unit]
+     * @subtypes: no subtypes
      */
     fun foo2_MyClassReceiver_CharSequence_Unit(charSequence: CharSequence) {}
 
     /**
      * @kotlinType [@kotlin.ExtensionFunctionType] Function2<MyClassReceiver, Number, Unit> (kotlin.Function2)
-     * @subtypes:
-     *   [MyClassReceiver.foo2_Any_Any_Unit],
-     *   [MyClassReceiver.foo2_MyClassReceiver_Number_Unit]
+     * @subtypes: no subtypes
      */
     fun Number.foo2_MyClassReceiver_NumberExt_Unit() {}
 
@@ -37,17 +32,13 @@ class MyClassReceiver : MyInterface {
 
         /**
          * @kotlinType Function0<Number> (kotlin.Function0)
-         * @subtypes:
-         *   [MyObjectReceiver.foo0_Double],
-         *   [foo0_Int],
-         *   [foo0_MyAlias],
-         *   [foo0_Number]
+         * @subtypes: no subtypes
          */
         fun foo0_Number(): Number = 0
 
         /**
          * @kotlinType [@kotlin.ExtensionFunctionType] Function1<Function0<Number>, Unit> (kotlin.Function1)
-         * @subtypes [foo1_Any_Unit]
+         * @subtypes no subtypes
          */
         fun (() -> Number).foo1_Functional_Unit() {}
 
@@ -59,8 +50,7 @@ class MyClassReceiver : MyInterface {
 
         /**
          * @kotlinType [@kotlin.ExtensionFunctionType] Function2<MyInterface, Int, Any> (kotlin.Function2)
-         * @subtypes:
-         *   [MyClassReceiver.foo2_Any_Any_Unit]
+         * @subtypes: no subtypes
          */
         fun MyInterface.foo2_MyInterface_Int_Any(i: Int): Any = 0
     }
@@ -71,9 +61,7 @@ object MyObjectReceiver {
 
     /**
      * @kotlinType Function0<Unit> (kotlin.Function0)
-     * @subtypes:
-     *   [foo0_Unit],
-     *   [fun0_Unit_generic]
+     * @subtypes: no subtypes
      */
     fun foo0_Unit() {}
 
@@ -85,29 +73,19 @@ object MyObjectReceiver {
 
     /**
      * @kotlinType Function1<MyClassReceiver, Any> (kotlin.Function1)
-     * @subtypes:
-     *   [MyClassReceiver.foo1_MyClassReceiver_String],
-     *   [foo1_Any_Any],
-     *   [foo1_Any_Any_nested],
-     *   [foo1_Any_Any_nested_nested],
-     *   [foo1_Any_Unit],
-     *   [foo1_MyClass_CharSequence]
+     * @subtypes: no subtypes
      */
     fun foo1_MyClassReceiver_Any(myClass: MyClassReceiver): Any = 0
 
     /**
      * @kotlinType [@kotlin.ExtensionFunctionType] Function1<Int, Number> (kotlin.Function1)
-     * @subtypes:
-     *   [foo1_Int_Number],
-     *   [foo1_MyAlias_Number]
+     * @subtypes: no subtypes
      */
     fun Int.foo1_Int_Number(): Number = 0
 
     /**
      * @kotlinType Function1<Function0<Int>, Unit> (kotlin.Function1)
-     * @subtypes:
-     *   [MyClassReceiver.foo1_Functional_Unit],
-     *   [foo1_Any_Unit]
+     * @subtypes: no subtypes
      */
     fun foo1_Functional_Unit(f: () -> Int) {}
 }

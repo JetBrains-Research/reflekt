@@ -2,14 +2,11 @@
 
 package org.jetbrains.reflekt.plugin.analysis.ir
 
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
-import org.jetbrains.reflekt.plugin.analysis.psi.function.isObject
-import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
-
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.serialization.signature.IdSignatureDescriptor
 import org.jetbrains.kotlin.backend.jvm.codegen.psiElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
+import org.jetbrains.kotlin.ir.backend.js.utils.asString
 import org.jetbrains.kotlin.ir.backend.jvm.serialization.JvmManglerDesc
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.descriptors.IrBuiltIns
@@ -25,6 +22,8 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.scopes.receivers.TransientReceiver
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.Variance
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
+import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 
 fun IrCall.getFqNamesOfTypeArguments(): List<String> {
     val result = ArrayList<String>()
@@ -54,79 +53,90 @@ fun IrDeclaration.createIrBuiltIns(pluginContext: IrPluginContext): IrBuiltIns {
     return IrBuiltIns(this.module.builtIns, typeTranslator, symbolTable)
 }
 
+// TODO: Move into other util?
+private fun IrTypeArgument.asString(): String = when (this) {
+    is IrStarProjection -> "*"
+    is IrTypeProjection -> variance.label + (if (variance != Variance.INVARIANT) " " else "") + type.asString()
+    else -> error("Unexpected kind of IrTypeArgument: " + javaClass.simpleName)
+}
+
+fun IrTypeArgument.isSubtypeOf(superType: IrTypeArgument, irBuiltIns: IrBuiltIns): Boolean {
+    this.typeOrNull ?: error("Can not get type from IrTypeArgument: ${this.asString()}")
+    superType.typeOrNull ?: error("Can not get type from IrTypeArgument: ${superType.asString()}")
+    return this.typeOrNull!!.isSubtypeOf(superType.typeOrNull!!, irBuiltIns)
+}
+
+fun IrFunction.isSubTypeOf(other: IrFunction, builtIns: IrBuiltIns) = this.wrappedIrType().isSubTypeOf(other.wrappedIrType(), builtIns)
+
 fun IrFunction.isSubTypeOf(type: IrType, pluginContext: IrPluginContext) = this.irType().isSubtypeOf(type, this.createIrBuiltIns(pluginContext))
 
-/**
- * We need to create IrType for IrFunction from function descriptor, but we want to take into account
- * its dispatch receiver, since the existing implementation only cares about extension receiver.
- *
- *  extension receiver
- *        v
- * fun String.fooString() { ... }               --->    Function1<String, Unit>
- *
- *
- *** Note: the function above has the same IrType as the one below ***
- * TODO: do we want to distinguish them?
- *
- * fun foo(s: String): Unit { ... }             --->    Function1<String, Unit>
- *
- *
- *    dispatch receiver
- *          v
- * class MyClass {
- *     fun fooClass() { ... }                   --->    Function1<MyClass, Unit>
- *
- *     fun String.fooStringClass() { ... }      --->    Function2<MyClass, String, Unit>
- *           ^
- *     extension receiver
- * }
- *
- * In case of having both dispatch and extension receiver, we give priority to the dispatch receiver, since such functions
- * can only be called in the scope of dispatch receiver (i.e. inside MyClass or scope functions)
- *
- * However, if function's dispatch receiver is an object (or a companion object), we ignore it,
- * since we can call the function without it:
- *
- *    dispatch receiver (ignore)
- *            v
- * object MyObject {
- *     fun fooObject() { ... }                  --->    Function0<Unit>
- *
- *
- *     fun String.fooStringObject() { ... }     --->    Function1<String, Unit>
- *          ^
- *     extension receiver
- *
- * @param shouldUseVarargType
- * @return created IR type
- */
-// TODO: delete duplicate from function/Util.kt
-fun IrFunction.irType(shouldUseVarargType: Boolean = false): IrType {
-    // If function is inside an object (or companion object), we don't want to consider its dispatch receiver
-    val dispatchReceiver = if (this.dispatchReceiverParameter?.descriptor.isObject()) {
-        null
-    } else {
-        this.dispatchReceiverParameter
+data class WrappedIrType(
+    val irType: IrSimpleType,
+    val dispatchReceiver: IrTypeProjection?,
+    val extensionReceiver: IrTypeProjection?,
+    val returnType: IrTypeProjection,
+) {
+    fun isSubTypeOf(other: WrappedIrType, builtIns: IrBuiltIns): Boolean {
+        // TODO: compare classifiers types
+        // TODO: check if returnType != other.returnType works correctly for all cases
+        if (irType.hasDifferentArgumentsWith(other.irType) || !hasIncompatibleRecievers(other, builtIns) || returnType != other.returnType) {
+            return false
+        }
+        return irType.arguments.zip(other.irType.arguments).all { (thisArgument, otherArgument) ->
+            thisArgument.isSubtypeOf(otherArgument, builtIns)
+        }
     }
-    val extensionReceiver = this.extensionReceiverParameter
 
-    val parameters = if (shouldUseVarargType) {
-        valueParameters.map { it.varargElementType ?: it.type }.toMutableList()
+    private fun IrSimpleType.hasDifferentArgumentsWith(other: IrSimpleType) = this.arguments.size != other.arguments.size
+
+    // TODO: add KDoc
+    private fun hasIncompatibleRecievers(other: WrappedIrType, builtIns: IrBuiltIns): Boolean {
+        if (!this.dispatchReceiver.isReceiverSubtypeOf(other.dispatchReceiver, builtIns)) {
+            return false
+        }
+        if (!this.extensionReceiver.isReceiverSubtypeOf(other.extensionReceiver, builtIns)) {
+            return false
+        }
+        return true
+    }
+
+    // TODO: add KDoc
+    // If two receivers are null return true.  If two receivers are NOT null check subtyping. Otherwise return false
+    private fun IrTypeProjection?.isReceiverSubtypeOf(other: IrTypeProjection?, builtIns: IrBuiltIns): Boolean {
+        return this?.let { thisReciever ->
+            other?.let { otherReciever ->
+                thisReciever.type.isSubtypeOf(otherReciever.type, builtIns)
+            } ?: false
+        } ?: other?.let { false } ?: true
+    }
+}
+
+fun IrFunction.wrappedIrType(shouldUseVarargType: Boolean = false): WrappedIrType {
+    val dispatchReceiver = this.dispatchReceiverParameter?.type?.makeTypeProjection()
+    val extensionReceiver = this.extensionReceiverParameter?.type?.makeTypeProjection()
+    val returnType = this.returnType.makeTypeProjection()
+    return WrappedIrType(this.irType(shouldUseVarargType) as IrSimpleType, dispatchReceiver, extensionReceiver, returnType)
+}
+
+// TODO: KDoc
+// Currently we store only arguments here
+fun IrFunction.irType(shouldUseVarargType: Boolean = false): IrType {
+    val arguments = if (shouldUseVarargType) {
+        valueParameters.map { it.varargElementType ?: it.type }
     } else {
-        valueParameters.map { it.type }.toMutableList()
+        valueParameters.map { it.type }
     }
-    // If function has both receivers, we need to add its extension receiver to its parameters
-    if (dispatchReceiver != null && extensionReceiver != null) {
-        parameters.add(0, extensionReceiver.type)
-    }
-    returnType is IrTypeProjection
+    val projections = arguments.map { it.makeTypeProjection() }
     return IrSimpleTypeImpl(
-        this.returnType.classifierOrFail,
-        hasQuestionMark = this.returnType.isNullable(),
-        arguments = parameters.map { makeTypeProjection(it, if (it is IrTypeProjection) it.variance else Variance.INVARIANT) },
-        annotations = this.returnType.annotations,
+        // TODO: get the right classifier of the function, but currently we don't take into account this field
+        this.parentAsClass.symbol,
+        hasQuestionMark = false,
+        arguments = projections,
+        annotations = emptyList(),
     )
 }
+
+fun IrType.makeTypeProjection() = makeTypeProjection(this, if (this is IrTypeProjection) this.variance else Variance.INVARIANT)
 
 fun IrFunction.toFunctionInfo(): IrFunctionInfo =
     IrFunctionInfo(

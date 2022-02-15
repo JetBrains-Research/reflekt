@@ -6,15 +6,13 @@ class MyGenericClass <T: Number> : MyInterface {
 
     /**
      * @kotlinType [@kotlin.ExtensionFunctionType] Function2<MyGenericClass<T>, T, Unit> (kotlin.Function2)
-     * @subtypes:
-     *   [MyClassReceiver.foo2_Any_Any_Unit]
+     * @subtypes: no subtypes
      */
     fun foo2_MyGenericClass_TNumber_Unit(t: T) {}
 
     /**
      * @kotlinType [@kotlin.ExtensionFunctionType] Function2<MyGenericClass<T>, S, Unit> (kotlin.Function2)
-     * @subtypes:
-     *   [MyClassReceiver.foo2_Any_Any_Unit]
+     * @subtypes: no subtypes
      */
     fun <S : CharSequence> foo2_MyGenericClass_SCharSequence_Unit(s: S) {}
 
@@ -39,7 +37,6 @@ object MyObject {
 /**
  * @kotlinType Function0<Unit> (kotlin.Function0)
  * @subtypes:
- *   [MyObjectReceiver.foo0_Unit],
  *   [foo0_Unit]
  */
 fun <T> fun0_Unit_generic() {}

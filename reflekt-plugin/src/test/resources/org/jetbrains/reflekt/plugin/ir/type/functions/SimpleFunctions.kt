@@ -10,7 +10,6 @@ enum class MyEnum : MyInterface { MY_ENUM }
  * test #11
  * @kotlinType Function0<Unit> (kotlin.Function0)
  * @subtypes:
- *   [MyObjectReceiver.foo0_Unit]
  *   [fun0_Unit_generic]
  */
 fun foo0_Unit() {}
@@ -18,11 +17,6 @@ fun foo0_Unit() {}
 /**
  * @kotlinType Function0<Any> (kotlin.Function0)
  * @subtypes:
- *   [MyObjectReceiver.foo0_Unit]
- *   [MyObjectReceiver.foo0_Double],
- *   [MyClassReceiver.foo0_Number],
- *   [MyGenericClass.foo0_MyGenericClass],
- *   [foo0_Functional],
  *   [foo0_Int],
  *   [foo0_List],
  *   [foo0_MyAlias],
@@ -59,9 +53,7 @@ fun foo0_Int(): Int = 0
 /**
  * @kotlinType Function0<Number> (kotlin.Function0)
  * @subtypes:
- *   [MyClassReceiver.foo0_Number],
- *   [MyObjectReceiver.foo0_Double],
- *   [foo0_Int],
+ *   [foo0_Int]
  *   [foo0_MyAlias]
  */
 fun foo0_Number(): Number = 0
@@ -76,7 +68,6 @@ fun foo0_MyAlias(): MyAlias = 0
 /**
  * @kotlinType Function0<MyInterface> (kotlin.Function0)
  * @subtypes:
- *   [MyGenericClass.foo0_MyGenericClass],
  *   [foo0_MyClass],
  *   [foo0_MyEnum]
  *   [foo0_T]
@@ -111,7 +102,6 @@ fun foo1_CharSequence_Unit(charSequence: CharSequence) {}
 /**
  * @kotlinType Function1<Int, Number> (kotlin.Function1)
  * @subtypes:
- *   [MyObjectReceiver.foo1_Int_Number],
  *   [foo1_MyAlias_Number]
  */
 fun foo1_Int_Number(int: Int): Number = 0
@@ -119,7 +109,6 @@ fun foo1_Int_Number(int: Int): Number = 0
 /**
  * @kotlinType Function1<Int, Number> (kotlin.Function1)
  * @subtypes:
- *   [MyObjectReceiver.foo1_Int_Number],
  *   [foo1_Int_Number]
  */
 fun foo1_MyAlias_Number(alias: MyAlias): Number = 0

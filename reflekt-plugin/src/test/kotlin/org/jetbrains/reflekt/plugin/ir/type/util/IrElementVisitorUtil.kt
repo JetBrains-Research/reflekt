@@ -1,7 +1,5 @@
 package org.jetbrains.reflekt.plugin.ir.type.util
 
-import org.jetbrains.reflekt.plugin.analysis.toPrettyString
-
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
@@ -18,11 +16,13 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
+import org.jetbrains.kotlin.ir.util.isFakeOverride
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.reflekt.plugin.analysis.ir.*
-
+import org.jetbrains.reflekt.plugin.analysis.toPrettyString
 import java.io.File
 
 /**
@@ -94,6 +94,7 @@ class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, IrPluginContext> {
     @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall, data: IrPluginContext) {
         val typeArgument = expression.getTypeArgument(0) ?: error("No arguments found in expression $expression")
+        val a = (typeArgument as IrSimpleTypeImpl).arguments
         val type = typeArgument.toParameterizedType()
         val valueArgument = expression.getValueArgument(0) ?: error("No value passed as expected KotlinType in expression $expression")
         val expectedType = (valueArgument as IrConstImpl<*>).value.toString()
@@ -121,12 +122,18 @@ class IrFunctionSubtypesVisitor(filterByName: (String) -> Boolean) : FilteredIrF
     val functionSubtypesList: MutableList<FunctionSubtypes> = mutableListOf()
 
     override fun visitFilteredFunction(declaration: IrFunction, data: IrPluginContext) {
+        // We should miss have overridden functions since they can have supertypes,
+        // but the tests files don't contain these functions and then have empty KDoc block
+        if (declaration.isFakeOverride) {
+            return
+        }
         val declarationSubtypes = FunctionSubtypes(declaration)
         for (functionSubtypes in functionSubtypesList) {
-            if (declaration.isSubTypeOf(functionSubtypes.irType, data)) {
+            val builtIns = declaration.createIrBuiltIns(data)
+            if (declarationSubtypes.function.isSubTypeOf(functionSubtypes.function, builtIns)) {
                 functionSubtypes.actualSubtypes.add(declaration)
             }
-            if (functionSubtypes.function.isSubTypeOf(declarationSubtypes.irType, data)) {
+            if (functionSubtypes.function.isSubTypeOf(declarationSubtypes.function, builtIns)) {
                 declarationSubtypes.actualSubtypes.add(functionSubtypes.function)
             }
         }
@@ -136,7 +143,6 @@ class IrFunctionSubtypesVisitor(filterByName: (String) -> Boolean) : FilteredIrF
 
 
     data class FunctionSubtypes(val function: IrFunction, val actualSubtypes: MutableList<IrFunction> = mutableListOf()) {
-        val irType = function.irType()
         val expectedSubtypes = (function.psiElement as? KtNamedFunction)?.parseKdocLinks("subtypes") ?: emptyList()
     }
 }
