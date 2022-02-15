@@ -1,6 +1,7 @@
 package org.jetbrains.reflekt.plugin.ir.type
 
 import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.parentAsClass
 import org.jetbrains.reflekt.plugin.ir.type.util.*
 import org.jetbrains.reflekt.plugin.util.Util
@@ -25,6 +26,17 @@ class FunctionSubtypesTest {
         )
     }
 
+    @Tag("ir")
+    @MethodSource("getFunctionIrTypes")
+    @ParameterizedTest(name = "test {index}")
+    fun testFunctionIrType(
+        irType: IrCallArgumentTypeVisitor.TypeArgument
+    ) {
+        Assertions.assertTrue(true)
+    }
+
+
+
     companion object {
         private const val TEST_DIR_NAME = "functions"
         private const val FUNCTION_PREFIX = "foo"
@@ -35,6 +47,14 @@ class FunctionSubtypesTest {
             val visitor = IrFunctionSubtypesVisitor { FUNCTION_PREFIX in it }
             visitIrElements(files, listOf(visitor))
             return visitor.functionSubtypesList.map { Arguments.of(it) }
+        }
+
+        @JvmStatic
+        fun getFunctionIrTypes(): List<Arguments> {
+            val files = Util.getResourcesRootPath(FunctionSubtypesTest::class, "types").getAllNestedFiles()
+            val visitor = IrCallArgumentTypeVisitor()
+            visitIrElements(files, listOf(visitor))
+            return visitor.typeArguments.map { Arguments.of(it) }
         }
     }
 }

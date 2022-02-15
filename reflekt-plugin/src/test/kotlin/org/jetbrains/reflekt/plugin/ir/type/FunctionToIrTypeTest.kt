@@ -19,15 +19,6 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
 
 class FunctionToIrTypeTest {
-    @Tag("ir")
-    @MethodSource("getKtNamedFunctionsWithTypes")
-    @ParameterizedTest(name = "test {index}")
-    fun testKtNamedFunctions(
-        binding: BindingContext,
-        function: KtNamedFunction,
-        expectedKotlinType: String) {
-        Assertions.assertEquals(expectedKotlinType, function.toParameterizedType(binding).toPrettyString(), "Incorrect type for function ${function.name}")
-    }
 
     @Tag("ir")
     @MethodSource("getIrFunctionsWithTypes")
@@ -55,6 +46,7 @@ class FunctionToIrTypeTest {
     }
 
     companion object {
+        // We need to filter out all default functions like "equals", "toString", etc, so every function in tests has a special prefix in its name
         private const val FUNCTION_PREFIX = "foo"
         private const val TEST_DIR_NAME = "functions"
 
@@ -67,15 +59,6 @@ class FunctionToIrTypeTest {
         private val failedIrFiles = listOf("AbstractAndOverrideFunctions.kt")
 
         @JvmStatic
-        fun getKtNamedFunctionsWithTypes(): List<Arguments> {
-            val (functions, binding) = org.jetbrains.reflekt.plugin.ir.type.util.getFunctionsToTestFromResources(
-                FunctionToIrTypeTest::class,
-                TEST_DIR_NAME
-            )
-            return functions.map { Arguments.of(binding, it, it.getTagContent("kotlinType")) }
-        }
-
-        @JvmStatic
         fun getIrFunctionsWithTypes(): List<Arguments> = visitIrFunctionsWithTypes { it.name !in failedIrFiles }
 
         @JvmStatic
@@ -83,7 +66,6 @@ class FunctionToIrTypeTest {
 
         private fun visitIrFunctionsWithTypes(filterFiles: (File) -> Boolean): List<Arguments> {
             val functionFiles = Util.getResourcesRootPath(FunctionToIrTypeTest::class, TEST_DIR_NAME).getAllNestedFiles().filter { filterFiles(it) }
-            // We need to filter out all default functions like "equals", "toString", etc, so every function in tests has a special prefix in its name
             val visitor = IrFunctionTypeVisitor { FUNCTION_PREFIX in it }
             val exitCode = visitIrElements(functionFiles, listOf(visitor)).exitCode
             return visitor.functions.map { f -> Arguments.of(f.name, f.actualType, f.expectedType, exitCode) }

@@ -1,13 +1,13 @@
 package org.jetbrains.reflekt.plugin.util.type.representation
 
 import org.jetbrains.reflekt.util.file.getAllNestedFiles
-import org.jetbrains.reflekt.plugin.ir.type.util.KtCallExpressionVisitor
-import org.jetbrains.reflekt.plugin.ir.type.util.visitKtElements
 import org.jetbrains.reflekt.plugin.analysis.toParameterizedType
 import org.jetbrains.reflekt.plugin.util.Util.getResourcesRootPath
 import org.jetbrains.reflekt.plugin.utils.stringRepresentation
 import org.jetbrains.reflekt.util.stringRepresentation
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.reflekt.plugin.ir.type.util.KtCallExpressionVisitor
+import org.jetbrains.reflekt.plugin.ir.type.util.visitKtElements
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest

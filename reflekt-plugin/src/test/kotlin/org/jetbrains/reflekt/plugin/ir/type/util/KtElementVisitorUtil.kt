@@ -1,40 +1,15 @@
 package org.jetbrains.reflekt.plugin.ir.type.util
 
-import org.jetbrains.reflekt.plugin.analysis.*
-import org.jetbrains.reflekt.plugin.util.Util
-import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocLink
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.reflekt.plugin.analysis.*
 import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import java.io.File
-import kotlin.reflect.KClass
 
-/**
- * @property functions
- * @property binding
- */
-data class FunctionsToTest(val functions: List<KtNamedFunction>, val binding: BindingContext)
-
-/**
- * Collects KtNamedFunctions
- */
-class KtNamedFunctionVisitor : KtVisitor<Void, BindingContext>() {
-    val functions = mutableListOf<KtNamedFunction>()
-
-    override fun visitNamedFunction(function: KtNamedFunction, data: BindingContext): Void? {
-        functions.add(function)
-        return super.visitNamedFunction(function, data)
-    }
-
-    override fun visitKtElement(element: KtElement, data: BindingContext): Void? {
-        element.acceptChildren(this, data)
-        return super.visitKtElement(element, data)
-    }
-}
 
 /**
  * Collects argument types as ASTNodes in CallExpressions together with the expected Kotlin Type written in expression value arguments (see test files),
@@ -80,11 +55,4 @@ fun visitKtElements(sourceFiles: List<File>, visitors: List<KtVisitor<Void, Bind
     val analyzer = AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sourceFiles.toSet())
     visitors.forEach { v -> analyzer.ktFiles.forEach { it.acceptChildren(v, analyzer.binding) } }
     return analyzer.binding
-}
-
-fun getFunctionsToTestFromResources(cls: KClass<*>, testDirName: String): FunctionsToTest {
-    val functionFiles = Util.getResourcesRootPath(cls, testDirName).getAllNestedFiles()
-    val visitor = KtNamedFunctionVisitor()
-    val binding = visitKtElements(functionFiles, listOf(visitor))
-    return FunctionsToTest(visitor.functions, binding)
 }

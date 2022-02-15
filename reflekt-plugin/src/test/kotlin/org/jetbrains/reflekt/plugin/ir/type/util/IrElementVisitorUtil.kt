@@ -1,5 +1,7 @@
 package org.jetbrains.reflekt.plugin.ir.type.util
 
+import org.jetbrains.reflekt.plugin.analysis.toPrettyString
+
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
@@ -16,16 +18,19 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
-import org.jetbrains.kotlin.ir.util.isFakeOverride
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocLink
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.reflekt.plugin.analysis.ir.*
-import org.jetbrains.reflekt.plugin.analysis.toPrettyString
+
 import java.io.File
 
 /**
+ * Registers plugin extension with given visitors to iterate through IR elements of code and perform tests.
+ *
  * @property visitors
  */
 class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, IrPluginContext>>) : ComponentRegistrar {
@@ -38,6 +43,27 @@ class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, IrPlugi
             }
         })
     }
+}
+
+/**
+ * We cannot access IR level when compilation is done, so to test it properly we can pass any visitor to it
+ * and do any checks during compilation when IR code is generated.
+ * After that, we can check the result by getting info from visitors.
+ *
+ * @param sourceFiles
+ * @param visitors
+ * @return
+ */
+fun visitIrElements(sourceFiles: List<File>, visitors: List<IrElementVisitor<Unit, IrPluginContext>>): KotlinCompilation.Result {
+    val plugin = IrTestComponentRegistrar(visitors)
+    return KotlinCompilation().apply {
+        sources = sourceFiles.map { SourceFile.fromPath(it) }
+        jvmTarget = "11"
+        compilerPlugins = listOf(plugin)
+        inheritClassPath = true
+        messageOutputStream
+        useIR = true
+    }.compile()
 }
 
 /**
@@ -59,7 +85,7 @@ abstract class FilteredIrFunctionVisitor(val filterByName: (String) -> Boolean) 
 }
 
 /**
- * Checks IrFunctions transforming to IrType, stores the result and expected IrType which is written in functions' docs in their implementation.
+ * Checks IrFunctions transforming to IrType, stores the result and expected IrType, which is written in functions' docs in their implementation.
  */
 class IrFunctionTypeVisitor(filterByName: (String) -> Boolean) : FilteredIrFunctionVisitor(filterByName) {
     val functions = mutableListOf<Function>()
@@ -94,12 +120,10 @@ class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, IrPluginContext> {
     @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall, data: IrPluginContext) {
         val typeArgument = expression.getTypeArgument(0) ?: error("No arguments found in expression $expression")
-        val a = (typeArgument as IrSimpleTypeImpl).arguments
         val type = typeArgument.toParameterizedType()
         val valueArgument = expression.getValueArgument(0) ?: error("No value passed as expected KotlinType in expression $expression")
         val expectedType = (valueArgument as IrConstImpl<*>).value.toString()
         typeArguments.add(TypeArgument(typeArgument.asString(), type, expectedType))
-        println(type.toPrettyString())
         super.visitCall(expression, data)
     }
 
@@ -117,53 +141,32 @@ class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, IrPluginContext> {
     )
 }
 
-
+/**
+ * Visits all functions one by one and checks already visited ones for being a subtype (and vice versa), therefore collecting all the
+ * subtype functions among other functions.
+ * We have to check subtypes *during* visiting since [IrPluginContext] is unavailable after compilation is done.
+ */
 class IrFunctionSubtypesVisitor(filterByName: (String) -> Boolean) : FilteredIrFunctionVisitor(filterByName) {
     val functionSubtypesList: MutableList<FunctionSubtypes> = mutableListOf()
 
     override fun visitFilteredFunction(declaration: IrFunction, data: IrPluginContext) {
-        // We should miss have overridden functions since they can have supertypes,
-        // but the tests files don't contain these functions and then have empty KDoc block
-        if (declaration.isFakeOverride) {
-            return
-        }
         val declarationSubtypes = FunctionSubtypes(declaration)
         for (functionSubtypes in functionSubtypesList) {
-            val builtIns = declaration.createIrBuiltIns(data)
-            if (declarationSubtypes.function.isSubTypeOf(functionSubtypes.function, builtIns)) {
+            if (declaration.isSubTypeOf(functionSubtypes.irType, data)) {
                 functionSubtypes.actualSubtypes.add(declaration)
             }
-            if (functionSubtypes.function.isSubTypeOf(declarationSubtypes.function, builtIns)) {
+            if (functionSubtypes.function.isSubTypeOf(declarationSubtypes.irType, data)) {
                 declarationSubtypes.actualSubtypes.add(functionSubtypes.function)
             }
         }
         functionSubtypesList.add(declarationSubtypes)
-
     }
 
 
     data class FunctionSubtypes(val function: IrFunction, val actualSubtypes: MutableList<IrFunction> = mutableListOf()) {
+        val irType = function.irType()
         val expectedSubtypes = (function.psiElement as? KtNamedFunction)?.parseKdocLinks("subtypes") ?: emptyList()
     }
 }
 
-/**
- * We cannot access IR level when compilation is done, so to test it properly we can pass any visitor to it
- * and do any checks during compilation when IR code is generated.
- * After that, we can check the result by getting info from visitors.
- *
- * @param sourceFiles
- * @param visitors
- * @return
- */
-fun visitIrElements(sourceFiles: List<File>, visitors: List<IrElementVisitor<Unit, IrPluginContext>>): KotlinCompilation.Result {
-    val plugin = IrTestComponentRegistrar(visitors)
-    return KotlinCompilation().apply {
-        sources = sourceFiles.map { SourceFile.fromPath(it) }
-        jvmTarget = "11"
-        compilerPlugins = listOf(plugin)
-        inheritClassPath = true
-        messageOutputStream
-        useIR = true
-    }.compile()
-}
+

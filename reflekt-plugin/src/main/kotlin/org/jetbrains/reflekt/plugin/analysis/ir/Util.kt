@@ -53,7 +53,7 @@ fun IrDeclaration.createIrBuiltIns(pluginContext: IrPluginContext): IrBuiltIns {
     return IrBuiltIns(this.module.builtIns, typeTranslator, symbolTable)
 }
 
-// TODO: Move into other util?
+// TODO: Move to other util?
 private fun IrTypeArgument.asString(): String = when (this) {
     is IrStarProjection -> "*"
     is IrTypeProjection -> variance.label + (if (variance != Variance.INVARIANT) " " else "") + type.asString()
@@ -108,6 +108,10 @@ data class WrappedIrType(
                 thisReciever.type.isSubtypeOf(otherReciever.type, builtIns)
             } ?: false
         } ?: other?.let { false } ?: true
+
+        return if (this != null && other != null) {
+            this.type.isSubtypeOf(other.type, builtIns)
+        } else this == null && other == null
     }
 }
 

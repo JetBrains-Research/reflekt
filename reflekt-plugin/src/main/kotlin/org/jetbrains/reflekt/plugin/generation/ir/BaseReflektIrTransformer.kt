@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
+import org.jetbrains.kotlin.ir.util.isFunctionOrKFunction
 import org.jetbrains.kotlin.name.FqName
 
 /**
@@ -64,7 +65,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         }.map {
             when (invokeParts.entityType) {
                 ReflektEntity.OBJECTS -> irGetObject(it)
-                ReflektEntity.CLASSES -> irTypeCast(itemType, irKClass(it))
+                ReflektEntity.CLASSES -> itemType.castTo(irKClass(it))
                 ReflektEntity.FUNCTIONS -> error("Use functionResultIrCall")
             }
         }
@@ -94,7 +95,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
     ): IrExpression {
         require(resultType is IrSimpleType)
         val itemType = resultType.arguments[0].typeOrNull
-            ?: throw ReflektGenerationException("Return type must have at one type argument (e. g. List<T>, Set<T>)")
+            ?: throw ReflektGenerationException("Return type must have at least one type argument (e. g. List<T>, Set<T>)")
         require(itemType is IrSimpleType)
 
         messageCollector?.log("RES ARGS: ${itemType.arguments.map { (it as IrSimpleType).classFqName }}")
@@ -102,6 +103,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         val items = resultValues.map { irFunctionInfo ->
             messageCollector?.log("${context.referenceFunctions(FqName(irFunctionInfo.fqName)).size}")
             val functionSymbol = context.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
+                itemType.isFunctionOrKFunction()
 
                 // symbol.owner.toParameterizedType(context.bindingContext)?.isSubtypeOf(itemType.toParameterizedType()) ?: false
                 symbol.owner.isSubTypeOf(itemType, context).also { messageCollector?.log("${symbol.owner.isSubTypeOf(itemType, context)}") }
