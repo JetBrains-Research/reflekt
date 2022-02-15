@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.plugin.analysis.parameterizedtype.functions
+package org.jetbrains.reflekt.plugin.ir.type.functions
 
 typealias MyAlias = Int
 interface MyInterface

@@ -49,13 +49,14 @@ fun main() {
 //    val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList()
 //    println(functions)
 
+
     val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData }.resolve()
     println(smartClasses)
 
     val smartObjects = SmartReflekt.objects<BInterface>().filter { it.isCompanion }.resolve()
     println(smartObjects)
 
-    val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.nameForIrSerialization.asString() == "foo" }.resolve()
+    val smartFunctions = SmartReflekt.functions<A.() -> Unit>().filter { it.isTopLevel && it.nameForIrSerialization.asString() == "foo" }.resolve()
     println(smartFunctions)
     smartFunctions.forEach { it() }
 

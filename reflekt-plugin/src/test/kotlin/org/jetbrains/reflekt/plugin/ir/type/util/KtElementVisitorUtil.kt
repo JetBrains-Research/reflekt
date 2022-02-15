@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util
+package org.jetbrains.reflekt.plugin.ir.type.util
 
 import org.jetbrains.reflekt.plugin.analysis.*
 import org.jetbrains.reflekt.plugin.util.Util

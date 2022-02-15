@@ -1,8 +1,8 @@
 package org.jetbrains.reflekt.plugin.util.type.representation
 
 import org.jetbrains.reflekt.util.file.getAllNestedFiles
-import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.KtCallExpressionVisitor
-import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.visitKtElements
+import org.jetbrains.reflekt.plugin.ir.type.util.KtCallExpressionVisitor
+import org.jetbrains.reflekt.plugin.ir.type.util.visitKtElements
 import org.jetbrains.reflekt.plugin.analysis.toParameterizedType
 import org.jetbrains.reflekt.plugin.util.Util.getResourcesRootPath
 import org.jetbrains.reflekt.plugin.utils.stringRepresentation

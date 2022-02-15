@@ -1,4 +1,5 @@
-package org.jetbrains.reflekt.plugin.analysis.parameterizedtype.functions
+package org.jetbrains.reflekt.plugin.ir.type.functions
+
 
 
 class MyGenericClass <T: Number> : MyInterface {

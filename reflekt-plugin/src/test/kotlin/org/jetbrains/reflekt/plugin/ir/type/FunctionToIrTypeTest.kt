@@ -1,15 +1,16 @@
-package org.jetbrains.reflekt.plugin.analysis.parameterizedtype
+package org.jetbrains.reflekt.plugin.ir.type
 
 import org.jetbrains.reflekt.plugin.analysis.*
-import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.*
 import org.jetbrains.reflekt.plugin.analysis.psi.function.*
 import org.jetbrains.reflekt.plugin.util.Util
 
 import com.tschuchort.compiletesting.KotlinCompilation
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.reflekt.plugin.ir.type.util.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -17,8 +18,8 @@ import org.junit.jupiter.params.provider.MethodSource
 
 import java.io.File
 
-class FunctionToParameterizedTypeTest {
-    @Tag("parametrizedType")
+class FunctionToIrTypeTest {
+    @Tag("ir")
     @MethodSource("getKtNamedFunctionsWithTypes")
     @ParameterizedTest(name = "test {index}")
     fun testKtNamedFunctions(
@@ -28,19 +29,19 @@ class FunctionToParameterizedTypeTest {
         Assertions.assertEquals(expectedKotlinType, function.toParameterizedType(binding).toPrettyString(), "Incorrect type for function ${function.name}")
     }
 
-    @Tag("parametrizedType")
+    @Tag("ir")
     @MethodSource("getIrFunctionsWithTypes")
     @ParameterizedTest(name = "test {index}")
     fun testIrFunctions(
         name: String,
-        actualType: KotlinType,
-        expectedKotlinType: String?,
+        actualType: IrType,
+        expectedIrType: String?,
         exitCode: KotlinCompilation.ExitCode) {
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, exitCode)
-        Assertions.assertEquals(expectedKotlinType, actualType.toPrettyString(), "Incorrect type for function $name")
+        Assertions.assertEquals(expectedIrType, actualType.toPrettyString(), "Incorrect type for function $name")
     }
 
-    @Tag("parametrizedType")
+    @Tag("ir")
     @Disabled("Kotlin type of overridden IrFunction is null, see detailed explanation in comments above")
     @MethodSource("getIrFunctionsWithTypesFailed")
     @ParameterizedTest(name = "test {index}")
@@ -67,7 +68,10 @@ class FunctionToParameterizedTypeTest {
 
         @JvmStatic
         fun getKtNamedFunctionsWithTypes(): List<Arguments> {
-            val (functions, binding) = getFunctionsToTestFromResources(FunctionToParameterizedTypeTest::class, TEST_DIR_NAME)
+            val (functions, binding) = org.jetbrains.reflekt.plugin.ir.type.util.getFunctionsToTestFromResources(
+                FunctionToIrTypeTest::class,
+                TEST_DIR_NAME
+            )
             return functions.map { Arguments.of(binding, it, it.getTagContent("kotlinType")) }
         }
 
@@ -78,7 +82,7 @@ class FunctionToParameterizedTypeTest {
         fun getIrFunctionsWithTypesFailed(): List<Arguments> = visitIrFunctionsWithTypes { it.name in failedIrFiles }
 
         private fun visitIrFunctionsWithTypes(filterFiles: (File) -> Boolean): List<Arguments> {
-            val functionFiles = Util.getResourcesRootPath(FunctionToParameterizedTypeTest::class, TEST_DIR_NAME).getAllNestedFiles().filter { filterFiles(it) }
+            val functionFiles = Util.getResourcesRootPath(FunctionToIrTypeTest::class, TEST_DIR_NAME).getAllNestedFiles().filter { filterFiles(it) }
             // We need to filter out all default functions like "equals", "toString", etc, so every function in tests has a special prefix in its name
             val visitor = IrFunctionTypeVisitor { FUNCTION_PREFIX in it }
             val exitCode = visitIrElements(functionFiles, listOf(visitor)).exitCode

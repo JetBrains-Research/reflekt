@@ -98,11 +98,20 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         require(itemType is IrSimpleType)
 
         messageCollector?.log("RES ARGS: ${itemType.arguments.map { (it as IrSimpleType).classFqName }}")
+        messageCollector?.log("size of result values ${resultValues.size}")
         val items = resultValues.map { irFunctionInfo ->
+            messageCollector?.log("${context.referenceFunctions(FqName(irFunctionInfo.fqName)).size}")
             val functionSymbol = context.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
+
                 // symbol.owner.toParameterizedType(context.bindingContext)?.isSubtypeOf(itemType.toParameterizedType()) ?: false
-                symbol.owner.isSubTypeOf(itemType, context)
-            } ?: throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
+                symbol.owner.isSubTypeOf(itemType, context).also { messageCollector?.log("${symbol.owner.isSubTypeOf(itemType, context)}") }
+            }
+            messageCollector?.log("fs ${functionSymbol}")
+//                ?: throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
+            if (functionSymbol == null) {
+                messageCollector?.log("function symbol is null")
+                throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
+            }
             irKFunction(itemType, functionSymbol).also { call ->
                 irFunctionInfo.receiverFqName?.let {
                     if (irFunctionInfo.isObjectReceiver) {

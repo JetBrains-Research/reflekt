@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.plugin.analysis.parameterizedtype.types
+package org.jetbrains.reflekt.plugin.ir.type.types
 
 fun main() {
     fooWithType<() -> Unit>("Function0<Unit> (kotlin.Function0)")

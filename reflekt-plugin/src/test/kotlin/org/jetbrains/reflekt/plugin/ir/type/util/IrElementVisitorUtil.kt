@@ -1,6 +1,5 @@
-package org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util
+package org.jetbrains.reflekt.plugin.ir.type.util
 
-import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
 import org.jetbrains.reflekt.plugin.analysis.toPrettyString
 
 import com.tschuchort.compiletesting.KotlinCompilation
@@ -18,47 +17,60 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.reflekt.plugin.analysis.ir.*
 
 import java.io.File
 
 /**
  * @property visitors
  */
-class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, BindingContext>>) : ComponentRegistrar {
+class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, IrPluginContext>>) : ComponentRegistrar {
     @ObsoleteDescriptorBasedAPI
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
         IrGenerationExtension.registerExtension(project, object : IrGenerationExtension {
             override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
                 println("$moduleFragment module fragment")
-                visitors.forEach { moduleFragment.accept(it, pluginContext.bindingContext) }
+                visitors.forEach { moduleFragment.accept(it, pluginContext) }
             }
         })
     }
 }
 
 /**
- * Checks IrFunctions transforming to ParameterizedType, stores the result and expected Kotlin Type which is written in docs.
- * [filterByName] is used to avoid visiting special methods like equals() or toString()
- * @property filterByName
+ * Visits IrFunctions, filtered by name via [filterByName], for example, to avoid special methods like equals() or toString().
  */
-class IrFunctionTypeVisitor(val filterByName: (String) -> Boolean) : IrElementVisitor<Unit, BindingContext> {
-    val functions = mutableListOf<Function>()
+abstract class FilteredIrFunctionVisitor(val filterByName: (String) -> Boolean) : IrElementVisitor<Unit, IrPluginContext> {
 
-    override fun visitFunction(declaration: IrFunction, data: BindingContext) {
+    abstract fun visitFilteredFunction(declaration: IrFunction, data: IrPluginContext)
+
+    override fun visitFunction(declaration: IrFunction, data: IrPluginContext) {
         val name = declaration.name.asString()
         if (filterByName(name)) {
-            val type = declaration.toParameterizedType(data) ?: error("Kotlin type of function $name is null")
-            val expectedType = (declaration.psiElement as? KtNamedFunction)?.getTagContent("kotlinType") ?: ("Expected kotlin type of function $name is null")
-            functions.add(Function(name, type, expectedType))
+            visitFilteredFunction(declaration, data)
         }
         super.visitFunction(declaration, data)
     }
 
-    override fun visitElement(element: IrElement, data: BindingContext) = element.acceptChildren(this, data)
+    override fun visitElement(element: IrElement, data: IrPluginContext) = element.acceptChildren(this, data)
+}
+
+/**
+ * Checks IrFunctions transforming to IrType, stores the result and expected IrType which is written in functions' docs in their implementation.
+ */
+class IrFunctionTypeVisitor(filterByName: (String) -> Boolean) : FilteredIrFunctionVisitor(filterByName) {
+    val functions = mutableListOf<Function>()
+
+    override fun visitFilteredFunction(declaration: IrFunction, data: IrPluginContext) {
+        val name = declaration.name.asString()
+        val type = declaration.irType()
+//          Todo: rename tag from kotlinType to irType once we delete obsolete tests
+        val expectedType = (declaration.psiElement as? KtNamedFunction)?.getTagContent("kotlinType") ?: ("Expected ir type of function $name is null")
+        functions.add(Function(name, type, expectedType))
+    }
 
     /**
      * @property name
@@ -67,19 +79,20 @@ class IrFunctionTypeVisitor(val filterByName: (String) -> Boolean) : IrElementVi
      */
     data class Function(
         val name: String,
-        val actualType: KotlinType,
-        val expectedType: String)
+        val actualType: IrType,
+        val expectedType: String
+    )
 }
 
 /**
  * Checks IrType (from expression type arguments) transforming to ParametrizedType, simulating the behaviour of [ReflektFunctionInvokeArgumentsCollector].
  * The expected Kotlin Type is written in expression value arguments.
  */
-class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, BindingContext> {
+class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, IrPluginContext> {
     val typeArguments = mutableListOf<TypeArgument>()
 
     @ObsoleteDescriptorBasedAPI
-    override fun visitCall(expression: IrCall, data: BindingContext) {
+    override fun visitCall(expression: IrCall, data: IrPluginContext) {
         val typeArgument = expression.getTypeArgument(0) ?: error("No arguments found in expression $expression")
         val type = typeArgument.toParameterizedType()
         val valueArgument = expression.getValueArgument(0) ?: error("No value passed as expected KotlinType in expression $expression")
@@ -89,7 +102,7 @@ class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, BindingContext> {
         super.visitCall(expression, data)
     }
 
-    override fun visitElement(element: IrElement, data: BindingContext) = element.acceptChildren(this, data)
+    override fun visitElement(element: IrElement, data: IrPluginContext) = element.acceptChildren(this, data)
 
     /**
      * @property name
@@ -99,7 +112,33 @@ class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, BindingContext> {
     data class TypeArgument(
         val name: String,
         val actualType: KotlinType,
-        val expectedType: String)
+        val expectedType: String,
+    )
+}
+
+
+class IrFunctionSubtypesVisitor(filterByName: (String) -> Boolean) : FilteredIrFunctionVisitor(filterByName) {
+    val functionSubtypesList: MutableList<FunctionSubtypes> = mutableListOf()
+
+    override fun visitFilteredFunction(declaration: IrFunction, data: IrPluginContext) {
+        val declarationSubtypes = FunctionSubtypes(declaration)
+        for (functionSubtypes in functionSubtypesList) {
+            if (declaration.isSubTypeOf(functionSubtypes.irType, data)) {
+                functionSubtypes.actualSubtypes.add(declaration)
+            }
+            if (functionSubtypes.function.isSubTypeOf(declarationSubtypes.irType, data)) {
+                declarationSubtypes.actualSubtypes.add(functionSubtypes.function)
+            }
+        }
+        functionSubtypesList.add(declarationSubtypes)
+
+    }
+
+
+    data class FunctionSubtypes(val function: IrFunction, val actualSubtypes: MutableList<IrFunction> = mutableListOf()) {
+        val irType = function.irType()
+        val expectedSubtypes = (function.psiElement as? KtNamedFunction)?.parseKdocLinks("subtypes") ?: emptyList()
+    }
 }
 
 /**
@@ -111,7 +150,7 @@ class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, BindingContext> {
  * @param visitors
  * @return
  */
-fun visitIrElements(sourceFiles: List<File>, visitors: List<IrElementVisitor<Unit, BindingContext>>): KotlinCompilation.Result {
+fun visitIrElements(sourceFiles: List<File>, visitors: List<IrElementVisitor<Unit, IrPluginContext>>): KotlinCompilation.Result {
     val plugin = IrTestComponentRegistrar(visitors)
     return KotlinCompilation().apply {
         sources = sourceFiles.map { SourceFile.fromPath(it) }
