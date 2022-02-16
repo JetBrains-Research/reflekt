@@ -103,8 +103,6 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         val items = resultValues.map { irFunctionInfo ->
             messageCollector?.log("${context.referenceFunctions(FqName(irFunctionInfo.fqName)).size}")
             val functionSymbol = context.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
-                itemType.isFunctionOrKFunction()
-
                 // symbol.owner.toParameterizedType(context.bindingContext)?.isSubtypeOf(itemType.toParameterizedType()) ?: false
                 symbol.owner.isSubTypeOf(itemType, context).also { messageCollector?.log("${symbol.owner.isSubTypeOf(itemType, context)}") }
             }

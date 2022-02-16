@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.util.isFakeOverride
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocLink
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
@@ -150,21 +151,27 @@ class IrFunctionSubtypesVisitor(filterByName: (String) -> Boolean) : FilteredIrF
     val functionSubtypesList: MutableList<FunctionSubtypes> = mutableListOf()
 
     override fun visitFilteredFunction(declaration: IrFunction, data: IrPluginContext) {
+        // We should miss have overridden functions since they can have supertypes,
+        // but the tests files don't contain these functions and then have empty KDoc block
+        if (declaration.isFakeOverride) {
+            return
+        }
         val declarationSubtypes = FunctionSubtypes(declaration)
         for (functionSubtypes in functionSubtypesList) {
-            if (declaration.isSubTypeOf(functionSubtypes.irType, data)) {
+            val builtIns = declaration.createIrBuiltIns(data)
+            if (declarationSubtypes.function.isSubTypeOf(functionSubtypes.function, builtIns)) {
                 functionSubtypes.actualSubtypes.add(declaration)
             }
-            if (functionSubtypes.function.isSubTypeOf(declarationSubtypes.irType, data)) {
+            if (functionSubtypes.function.isSubTypeOf(declarationSubtypes.function, builtIns)) {
                 declarationSubtypes.actualSubtypes.add(functionSubtypes.function)
             }
         }
         functionSubtypesList.add(declarationSubtypes)
+
     }
 
 
     data class FunctionSubtypes(val function: IrFunction, val actualSubtypes: MutableList<IrFunction> = mutableListOf()) {
-        val irType = function.irType()
         val expectedSubtypes = (function.psiElement as? KtNamedFunction)?.parseKdocLinks("subtypes") ?: emptyList()
     }
 }

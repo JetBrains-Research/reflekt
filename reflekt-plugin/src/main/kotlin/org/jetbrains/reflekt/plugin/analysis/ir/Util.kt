@@ -4,6 +4,7 @@ package org.jetbrains.reflekt.plugin.analysis.ir
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.serialization.signature.IdSignatureDescriptor
+import org.jetbrains.kotlin.backend.jvm.codegen.isExtensionFunctionType
 import org.jetbrains.kotlin.backend.jvm.codegen.psiElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.backend.js.utils.asString
@@ -22,6 +23,7 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.scopes.receivers.TransientReceiver
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.Variance
+import org.jetbrains.reflekt.plugin.analysis.ir.IrFunctionWrapper.Companion.wrap
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
 import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 
@@ -66,9 +68,77 @@ fun IrTypeArgument.isSubtypeOf(superType: IrTypeArgument, irBuiltIns: IrBuiltIns
     return this.typeOrNull!!.isSubtypeOf(superType.typeOrNull!!, irBuiltIns)
 }
 
-fun IrFunction.isSubTypeOf(other: IrFunction, builtIns: IrBuiltIns) = this.wrappedIrType().isSubTypeOf(other.wrappedIrType(), builtIns)
+fun IrFunction.isSubTypeOf(other: IrFunction, builtIns: IrBuiltIns) = this.wrap().isSubtypeOf(other.wrap(), builtIns)
 
-fun IrFunction.isSubTypeOf(type: IrType, pluginContext: IrPluginContext) = this.irType().isSubtypeOf(type, this.createIrBuiltIns(pluginContext))
+fun IrFunction.isSubTypeOf(other: IrType, pluginContext: IrPluginContext): Boolean {
+    return (other as? IrSimpleType)?.wrap()?.let {
+        this.wrap().isSubtypeOf(it, pluginContext.irBuiltIns)
+    } ?: false
+}
+
+data class IrFunctionWrapper(
+    val receiver: IrType?,
+    var arguments: List<IrTypeArgument>,
+    var returnType: IrType
+) {
+
+    /**
+     * Checks whether [other] function is a subtype of this function by separately checking their receivers, return types, and arguments.
+     */
+    fun isSubtypeOf(other: IrFunctionWrapper, builtIns: IrBuiltIns): Boolean {
+        return checkReceivers(other, builtIns) && checkReturnTypes(other, builtIns) && checkArguments(other, builtIns)
+    }
+
+    /**
+     * Checks whether return types of both functions match.
+     * TODO: do the need to be exactly the same or subtyping is enough?
+     */
+    private fun checkReturnTypes(other: IrFunctionWrapper, builtIns: IrBuiltIns): Boolean {
+        return returnType == other.returnType
+    }
+
+    /**
+     * Checks whether arguments of both functions have the same size and satisfy subtyping condition.
+     * TODO: what will happen if there are default values and therefore the number of arguments might nit be constant?
+     */
+    private fun checkArguments(other: IrFunctionWrapper, builtIns: IrBuiltIns): Boolean {
+        return arguments.size == other.arguments.size &&
+            arguments.zip(other.arguments).all { (thisArgument, otherArgument) ->
+                thisArgument.isSubtypeOf(otherArgument, builtIns)
+            }
+    }
+
+    /**
+     * Checks whether a receiver of this is a subtype of receiver of [other].
+     * If both receivers are NOT null, checks subtyping; if both receivers are null, returns true; otherwise return false.
+     */
+    private fun checkReceivers(other: IrFunctionWrapper, builtIns: IrBuiltIns): Boolean {
+        return if (this.receiver != null && other.receiver != null) {
+            this.receiver.isSubtypeOf(other.receiver, builtIns)
+        } else this.receiver == null && other.receiver == null
+    }
+
+    companion object {
+        fun IrFunction.wrap(shouldUseVarargType: Boolean = false): IrFunctionWrapper {
+            return IrFunctionWrapper(
+                receiverType(),
+                valueParameters.map { it.type.makeTypeProjection() },
+                returnType
+            )
+        }
+
+        fun IrSimpleType.wrap(): IrFunctionWrapper? {
+            if (!isFunctionOrKFunction()) return null
+            val arguments = this.arguments.toMutableList()
+            val returnType = arguments.removeLastOrNull()?.typeOrNull ?: return null
+            val receiver = if (isExtensionFunctionType) {
+                arguments.removeAt(0).typeOrNull
+            } else null
+            return IrFunctionWrapper(receiver, arguments, returnType)
+        }
+    }
+}
+
 
 data class WrappedIrType(
     val irType: IrSimpleType,
@@ -100,15 +170,11 @@ data class WrappedIrType(
         return true
     }
 
-    // TODO: add KDoc
-    // If two receivers are null return true.  If two receivers are NOT null check subtyping. Otherwise return false
+    /**
+     * Checks whether [this], being a receiver, is a subtype of another receiver [other].
+     * If both receivers are NOT null, checks subtyping; if both receivers are null, returns true;  otherwise return false
+     */
     private fun IrTypeProjection?.isReceiverSubtypeOf(other: IrTypeProjection?, builtIns: IrBuiltIns): Boolean {
-        return this?.let { thisReciever ->
-            other?.let { otherReciever ->
-                thisReciever.type.isSubtypeOf(otherReciever.type, builtIns)
-            } ?: false
-        } ?: other?.let { false } ?: true
-
         return if (this != null && other != null) {
             this.type.isSubtypeOf(other.type, builtIns)
         } else this == null && other == null
