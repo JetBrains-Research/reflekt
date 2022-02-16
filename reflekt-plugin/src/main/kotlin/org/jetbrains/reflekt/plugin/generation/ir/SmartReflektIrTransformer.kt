@@ -30,7 +30,7 @@ import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import java.io.File
 
 /**
- * Replaces SmartReflekt invoke calls with their results
+ * Replaces SmartReflekt invoke calls with their results.
  *
  * @property pluginContext
  * @property instances stores all public instances (classes, objects, and top-level functions) in the project
@@ -51,7 +51,7 @@ class SmartReflektIrTransformer(
     private val sources = HashMap<String, SourceFile>()
 
     /**
-     * Visit [IrCall] and replace IR to found entities if it is a SmartReflekt query
+     * Visits [IrCall] and replaces IR to found entities if it is a SmartReflekt query.
      *
      * @param expression [IrCall]
      */
@@ -83,7 +83,7 @@ class SmartReflektIrTransformer(
     }
 
     /**
-     * Check if the [typeArgumentFqName]  is subtype of [classOrObject]
+     * Checks if the [typeArgumentFqName] is subtype of [classOrObject].
      *
      * @param classOrObject
      * @param typeArgumentFqName
@@ -99,7 +99,7 @@ class SmartReflektIrTransformer(
     } ?: error("Fq name of a type argument for class or object is null")
 
     /**
-     * Check if the [typeArgument] is subtype of [function]
+     * Checks if the [typeArgument] is subtype of [function].
      *
      * @param function
      * @param typeArgument
@@ -115,7 +115,7 @@ class SmartReflektIrTransformer(
     } ?: error("A type argument for a function is null")
 
     /**
-     * Filter [instances] that satisfy [invokeArguments]
+     * Filters [instances] that satisfy [invokeArguments].
      *
      * @param instances
      * @param invokeArguments
@@ -147,7 +147,7 @@ class SmartReflektIrTransformer(
     }
 
     /**
-     * Check if [instance] satisfies list of [filters]
+     * Checks if [instance] satisfies list of [filters].
      *
      * @param imports for KotlinScript running
      * @param filters
@@ -175,7 +175,7 @@ class SmartReflektIrTransformer(
     }
 
     /**
-     * Get [SourceFile] by [IrFile]
+     * Gets [SourceFile] by [IrFile].
      *
      * @param irFile
      * @return [SourceFile]
@@ -188,7 +188,7 @@ class SmartReflektIrTransformer(
     }
 
     /**
-     * Construct [SourceFile] manually from [String] (extract imports and its content)
+     * Constructs [SourceFile] manually from [String] (extracts imports and its content).
      *
      * @return [SourceFile]
      */

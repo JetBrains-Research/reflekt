@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
 /**
- * Generate IR representation for the Reflekt terminal function (toList/toSet/etc)
+ * Generates IR representation for the Reflekt terminal function (toList/toSet/etc).
  */
 private val BaseReflektInvokeParts.irTerminalFunction: (IrPluginContext) -> IrFunctionSymbol
     get() = when (this) {
@@ -34,7 +34,7 @@ private val BaseReflektInvokeParts.irTerminalFunction: (IrPluginContext) -> IrFu
     }
 
 /**
- * Base class for Reflekt IR transformers
+ * A base class for the Reflekt IR transformers.
  *
  * @property messageCollector
  */
@@ -120,7 +120,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
     }
 
     /**
-     * Create a new [IrBuilderWithScope] to generate IR
+     * Creates a new [IrBuilderWithScope] to generate IR.
      *
      * @param pluginContext
      */

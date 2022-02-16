@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektContext
 
 /**
- * Replaces Reflekt invoke calls with their results
+ * Replaces Reflekt invoke calls with their results.
  *
  * @param reflektContext [IrReflektContext] to extract Reflekt uses
  * @param toReplaceIr if should enable this extension
@@ -21,7 +21,7 @@ class ReflektIrGenerationExtension(
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     /**
-     * Replace IR in the Reflekt queries to the list of the found entities
+     * Replaces IR in the Reflekt queries to the list of the found entities.
      */
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         if (!toReplaceIr) {

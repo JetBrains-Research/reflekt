@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.ir.util.dump
 import org.jetbrains.kotlin.ir.util.fqNameForIrSerialization
 
 /**
- * Replaces Reflekt invoke calls with their results
+ * Replaces Reflekt invoke calls with their results.
  *
  * @property pluginContext
  * @property uses stores [IrReflektUses] to replace Reflekt calls
@@ -28,7 +28,7 @@ class ReflektIrTransformer(
     private val messageCollector: MessageCollector? = null,
 ) : BaseReflektIrTransformer(messageCollector) {
     /**
-     * Visit [IrCall] and replace IR to found entities if it is a Reflekt query
+     * Visits [IrCall] and replaces IR to found entities if it is a Reflekt query.
      *
      * @param expression [IrCall]
      */

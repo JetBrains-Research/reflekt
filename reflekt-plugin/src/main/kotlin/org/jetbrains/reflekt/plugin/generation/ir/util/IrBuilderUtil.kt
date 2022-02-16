@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.types.Variance
 
 /**
- * Generate IR representation for varargs based on the list of [elements]
+ * Generates IR representation for varargs based on the list of [elements].
  *
  * @param elementType type of varargs in [elements] (consider <out> projection)
  * @param elements
@@ -32,7 +32,7 @@ fun IrBuilderWithScope.irVarargOut(elementType: IrType, elements: List<IrExpress
     )
 
 /**
- * Generate IR representation for KClass
+ * Generates IR representation for KClass.
  *
  * @param symbol [IrFunctionSymbol]
  */
@@ -47,7 +47,7 @@ fun IrBuilderWithScope.irKClass(symbol: IrClassSymbol) =
     )
 
 /**
- * Generate IR representation for FunctionN
+ * Generates IR representation for FunctionN.
  *
  * @param type function types (e.g. return type, arguments type, etc)
  * @param symbol [IrFunctionSymbol]
@@ -75,7 +75,7 @@ fun IrBuilderWithScope.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFu
 }
 
 /**
- * Cast [type] to the [castTo] type, e.g. to KClass
+ * Casts [type] to the [castTo] type, e.g. to KClass.
  *
  * @param type
  * @param castTo [IrExpression]
@@ -91,7 +91,7 @@ fun irTypeCast(type: IrType, castTo: IrExpression) =
     )
 
 /**
- * Generate IR representation for <collection_name>Of function, e.g. listOf or setOf
+ * Generates IR representation for <collection_name>Of function, e.g. listOf or setOf.
  *
  * @param collectionFqName e.g. kotlin.collections.listOf
  * @param pluginContext
@@ -104,14 +104,14 @@ fun funCollectionOf(collectionFqName: String, pluginContext: IrPluginContext) =
         }
 
 /**
- * Generate IR representation for listOf function
+ * Generates IR representation for listOf function.
  *
  * @param pluginContext
  */
 fun funListOf(pluginContext: IrPluginContext) = funCollectionOf("kotlin.collections.listOf", pluginContext)
 
 /**
- * Generate IR representation for setOf function
+ * Generates IR representation for setOf function.
  *
  * @param pluginContext
  */
