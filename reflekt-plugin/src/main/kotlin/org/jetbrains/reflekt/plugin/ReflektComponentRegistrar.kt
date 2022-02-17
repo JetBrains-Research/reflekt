@@ -1,11 +1,5 @@
 package org.jetbrains.reflekt.plugin
 
-import com.google.auto.service.AutoService
-import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
-import org.jetbrains.kotlin.com.intellij.mock.MockProject
-import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
-import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import org.jetbrains.reflekt.plugin.analysis.ReflektModuleAnalysisExtension
 import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.collector.ir.InstancesCollectorExtension
@@ -14,6 +8,14 @@ import org.jetbrains.reflekt.plugin.generation.ir.*
 import org.jetbrains.reflekt.plugin.utils.PluginConfig
 import org.jetbrains.reflekt.plugin.utils.Util.log
 import org.jetbrains.reflekt.plugin.utils.Util.messageCollector
+
+import com.google.auto.service.AutoService
+import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
+import org.jetbrains.kotlin.com.intellij.mock.MockProject
+import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
+import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
+
 import java.io.File
 
 /**

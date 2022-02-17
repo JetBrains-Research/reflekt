@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt.plugin.ir.type.functions
 
-typealias MyAlias = Int
+typealias MyAlias = Number
 interface MyInterface
 class MyClass : MyInterface
 enum class MyEnum : MyInterface { MY_ENUM }
@@ -10,9 +10,9 @@ enum class MyEnum : MyInterface { MY_ENUM }
  * test #11
  * @kotlinType Function0<Unit> (kotlin.Function0)
  * @subtypes:
- *   [fun0_Unit_generic]
  */
 fun foo0_Unit() {}
+
 
 /**
  * @kotlinType Function0<Any> (kotlin.Function0)
@@ -27,9 +27,10 @@ fun foo0_Unit() {}
  *   [foo0_String],
  *   [foo0_T],
  *   [foo0_Unit],
- *   [fun0_Unit_generic]
+ *   [foo0_Functional]
  */
 fun foo0_Any(): Any = 0
+
 
 /**
  * @kotlinType Function0<String> (kotlin.Function0)
@@ -46,7 +47,6 @@ fun foo0_List(): List<Any> = listOf()
 /**
  * @kotlinType Function0<Int> (kotlin.Function0)
  * @subtypes:
- *   [foo0_MyAlias]
  */
 fun foo0_Int(): Int = 0
 
@@ -62,6 +62,7 @@ fun foo0_Number(): Number = 0
  * @kotlinType Function0<Int> (kotlin.Function0)
  * @subtypes:
  *   [foo0_Int]
+ *   [foo0_Number]
  */
 fun foo0_MyAlias(): MyAlias = 0
 
@@ -73,6 +74,7 @@ fun foo0_MyAlias(): MyAlias = 0
  *   [foo0_T]
  */
 fun foo0_MyInterface(): MyInterface = object : MyInterface {}
+
 
 /**
  * @kotlinType Function0<MyClass> (kotlin.Function0)
@@ -100,14 +102,14 @@ fun foo0_Functional(): () -> Unit = { }
 fun foo1_CharSequence_Unit(charSequence: CharSequence) {}
 
 /**
- * @kotlinType Function1<Int, Number> (kotlin.Function1)
+ * @kotlinType Function1<Number, Number> (kotlin.Function1)
  * @subtypes:
  *   [foo1_MyAlias_Number]
  */
-fun foo1_Int_Number(int: Int): Number = 0
+fun foo1_Int_Number(n: Number): Number = 0
 
 /**
- * @kotlinType Function1<Int, Number> (kotlin.Function1)
+ * @kotlinType Function1<Number, Number> (kotlin.Function1)
  * @subtypes:
  *   [foo1_Int_Number]
  */
@@ -128,6 +130,7 @@ fun foo1_ListAny_Unit(list: List<Any?>) {}
  */
 fun foo1_ListListAny_Unit(list: List<List<Any>>) {}
 
+
 /**
  * @kotlinType Function1<Any, Unit> (kotlin.Function1)
  * @subtypes: no subtypes
@@ -137,6 +140,7 @@ fun foo1_Any_Unit(any: Any) {}
 /**
  * @kotlinType Function2<Int, Int, Int> (kotlin.Function2)
  * @subtypes:
- *   [foo2_Number_Int_Int]
+ *
  */
 fun foo2_Int_Int_Int(i1: Int, i2: Int): Int = 0
+

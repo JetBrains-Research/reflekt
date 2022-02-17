@@ -1,3 +1,4 @@
+@file:Suppress("MatchingDeclarationName")
 package org.jetbrains.reflekt.plugin.ir.type.util
 
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode

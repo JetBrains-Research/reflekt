@@ -1,9 +1,11 @@
 package org.jetbrains.reflekt.plugin.analysis
 
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationWithName
+import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.reflekt.plugin.analysis.ir.receiverType
 import org.jetbrains.reflekt.plugin.analysis.models.*
 import org.jetbrains.reflekt.plugin.analysis.models.psi.*
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
@@ -13,8 +15,12 @@ import org.jetbrains.reflekt.plugin.analysis.psi.function.shortFqName
 //  We also want to check fqName of supertype, which is not included in its toString(), so we added it separately.
 fun KotlinType?.toPrettyString() = "$this (${this?.shortFqName()})"
 
-// todo: check it works
 fun IrType?.toPrettyString() = (this?.classifierOrNull?.owner as IrDeclarationWithName).name.asString()
+
+fun IrFunction.toPrettyString(): String {
+    val receiver = receiverType()?.let { "${it.toPrettyString()}." } ?: ""
+    return "$receiver$name"
+}
 
 fun KtNamedDeclaration.toPrettyString() = fqName.toString()
 

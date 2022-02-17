@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
-import org.jetbrains.kotlin.ir.util.isFunctionOrKFunction
 import org.jetbrains.kotlin.name.FqName
 
 /**
@@ -104,11 +103,11 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
             messageCollector?.log("${context.referenceFunctions(FqName(irFunctionInfo.fqName)).size}")
             val functionSymbol = context.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
                 // symbol.owner.toParameterizedType(context.bindingContext)?.isSubtypeOf(itemType.toParameterizedType()) ?: false
-                symbol.owner.isSubTypeOf(itemType, context).also { messageCollector?.log("${symbol.owner.isSubTypeOf(itemType, context)}") }
+                symbol.owner.isSubtypeOf(itemType, context).also { messageCollector?.log("${symbol.owner.isSubtypeOf(itemType, context)}") }
             }
-            messageCollector?.log("fs ${functionSymbol}")
-//                ?: throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
-            if (functionSymbol == null) {
+            messageCollector?.log("fs $functionSymbol")
+            // ?: throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
+            functionSymbol ?: run {
                 messageCollector?.log("function symbol is null")
                 throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
             }

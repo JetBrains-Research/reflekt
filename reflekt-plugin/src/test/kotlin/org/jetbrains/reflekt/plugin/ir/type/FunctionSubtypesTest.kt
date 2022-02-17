@@ -1,18 +1,17 @@
 package org.jetbrains.reflekt.plugin.ir.type
 
-import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.util.parentAsClass
-import org.jetbrains.reflekt.plugin.ir.type.util.*
+import org.jetbrains.reflekt.plugin.analysis.toPrettyString
+import org.jetbrains.reflekt.plugin.ir.type.util.IrFunctionSubtypesVisitor
+import org.jetbrains.reflekt.plugin.ir.type.util.visitIrElements
 import org.jetbrains.reflekt.plugin.util.Util
 import org.jetbrains.reflekt.util.file.getAllNestedFiles
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.*
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 
 class FunctionSubtypesTest {
-    private fun IrFunction.getNameWithClass() = "${this.parentAsClass.name}.${this.name}"
-
     @Tag("ir")
     @MethodSource("getIrFunctionsWithSubtypes")
     @ParameterizedTest(name = "test {index}")
@@ -21,20 +20,10 @@ class FunctionSubtypesTest {
     ) {
         Assertions.assertEquals(
             functionSubtypes.expectedSubtypes.sorted(),
-            functionSubtypes.actualSubtypes.map { it.getNameWithClass() }.sorted(),
-            "Incorrect subtypes for function ${functionSubtypes.function.getNameWithClass()}",
+            functionSubtypes.actualSubtypes.map { it.toPrettyString() }.sorted(),
+            "Incorrect subtypes for function ${functionSubtypes.function.toPrettyString()}",
         )
     }
-
-    @Tag("ir")
-    @MethodSource("getFunctionIrTypes")
-    @ParameterizedTest(name = "test {index}")
-    fun testFunctionIrType(
-        irType: IrCallArgumentTypeVisitor.TypeArgument
-    ) {
-        Assertions.assertTrue(true)
-    }
-
 
 
     companion object {
@@ -44,17 +33,9 @@ class FunctionSubtypesTest {
         @JvmStatic
         fun getIrFunctionsWithSubtypes(): List<Arguments> {
             val files = Util.getResourcesRootPath(FunctionSubtypesTest::class, TEST_DIR_NAME).getAllNestedFiles()
-            val visitor = IrFunctionSubtypesVisitor { FUNCTION_PREFIX in it }
+            val visitor = IrFunctionSubtypesVisitor(FUNCTION_PREFIX)
             visitIrElements(files, listOf(visitor))
             return visitor.functionSubtypesList.map { Arguments.of(it) }
-        }
-
-        @JvmStatic
-        fun getFunctionIrTypes(): List<Arguments> {
-            val files = Util.getResourcesRootPath(FunctionSubtypesTest::class, "types").getAllNestedFiles()
-            val visitor = IrCallArgumentTypeVisitor()
-            visitIrElements(files, listOf(visitor))
-            return visitor.typeArguments.map { Arguments.of(it) }
         }
     }
 }

@@ -1,7 +1,5 @@
 package org.jetbrains.reflekt.plugin.ir.type.util
 
-import org.jetbrains.reflekt.plugin.analysis.toPrettyString
-
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
@@ -17,13 +15,9 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
-import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.isFakeOverride
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
-import org.jetbrains.kotlin.kdoc.psi.impl.KDocLink
-import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.reflekt.plugin.analysis.ir.*
 
@@ -68,15 +62,14 @@ fun visitIrElements(sourceFiles: List<File>, visitors: List<IrElementVisitor<Uni
 }
 
 /**
- * Visits IrFunctions, filtered by name via [filterByName], for example, to avoid special methods like equals() or toString().
+ * Visits IrFunctions, filtered by [filter], for example, to avoid special methods like equals() or toString().
  */
-abstract class FilteredIrFunctionVisitor(val filterByName: (String) -> Boolean) : IrElementVisitor<Unit, IrPluginContext> {
+abstract class FilteredIrFunctionVisitor(val filter: (IrFunction) -> Boolean) : IrElementVisitor<Unit, IrPluginContext> {
 
     abstract fun visitFilteredFunction(declaration: IrFunction, data: IrPluginContext)
 
     override fun visitFunction(declaration: IrFunction, data: IrPluginContext) {
-        val name = declaration.name.asString()
-        if (filterByName(name)) {
+        if (filter(declaration)) {
             visitFilteredFunction(declaration, data)
         }
         super.visitFunction(declaration, data)
@@ -85,31 +78,6 @@ abstract class FilteredIrFunctionVisitor(val filterByName: (String) -> Boolean) 
     override fun visitElement(element: IrElement, data: IrPluginContext) = element.acceptChildren(this, data)
 }
 
-/**
- * Checks IrFunctions transforming to IrType, stores the result and expected IrType, which is written in functions' docs in their implementation.
- */
-class IrFunctionTypeVisitor(filterByName: (String) -> Boolean) : FilteredIrFunctionVisitor(filterByName) {
-    val functions = mutableListOf<Function>()
-
-    override fun visitFilteredFunction(declaration: IrFunction, data: IrPluginContext) {
-        val name = declaration.name.asString()
-        val type = declaration.irType()
-//          Todo: rename tag from kotlinType to irType once we delete obsolete tests
-        val expectedType = (declaration.psiElement as? KtNamedFunction)?.getTagContent("kotlinType") ?: ("Expected ir type of function $name is null")
-        functions.add(Function(name, type, expectedType))
-    }
-
-    /**
-     * @property name
-     * @property actualType
-     * @property expectedType
-     */
-    data class Function(
-        val name: String,
-        val actualType: IrType,
-        val expectedType: String
-    )
-}
 
 /**
  * Checks IrType (from expression type arguments) transforming to ParametrizedType, simulating the behaviour of [ReflektFunctionInvokeArgumentsCollector].
@@ -145,24 +113,20 @@ class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, IrPluginContext> {
 /**
  * Visits all functions one by one and checks already visited ones for being a subtype (and vice versa), therefore collecting all the
  * subtype functions among other functions.
- * We have to check subtypes *during* visiting since [IrPluginContext] is unavailable after compilation is done.
+ * We filter out fake override functions since they are not implemented in source files and therefore don't have KDoc
+ * We have to check subtypes *during* visiting, since [IrPluginContext] is unavailable after compilation is done.
  */
-class IrFunctionSubtypesVisitor(filterByName: (String) -> Boolean) : FilteredIrFunctionVisitor(filterByName) {
+class IrFunctionSubtypesVisitor(namePrefix: String) : FilteredIrFunctionVisitor({ namePrefix in it.name.asString() && !it.isFakeOverride }) {
     val functionSubtypesList: MutableList<FunctionSubtypes> = mutableListOf()
 
     override fun visitFilteredFunction(declaration: IrFunction, data: IrPluginContext) {
-        // We should miss have overridden functions since they can have supertypes,
-        // but the tests files don't contain these functions and then have empty KDoc block
-        if (declaration.isFakeOverride) {
-            return
-        }
         val declarationSubtypes = FunctionSubtypes(declaration)
+        val builtIns = declaration.createIrBuiltIns(data)
         for (functionSubtypes in functionSubtypesList) {
-            val builtIns = declaration.createIrBuiltIns(data)
-            if (declarationSubtypes.function.isSubTypeOf(functionSubtypes.function, builtIns)) {
+            if (declarationSubtypes.function.isSubtypeOf(functionSubtypes.function, builtIns)) {
                 functionSubtypes.actualSubtypes.add(declaration)
             }
-            if (functionSubtypes.function.isSubTypeOf(declarationSubtypes.function, builtIns)) {
+            if (functionSubtypes.function.isSubtypeOf(declarationSubtypes.function, builtIns)) {
                 declarationSubtypes.actualSubtypes.add(functionSubtypes.function)
             }
         }
