@@ -61,6 +61,7 @@ class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
 class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
     private var signature: KotlinType? = null
     private val annotations = HashSet<String>()
+    private var irSignature: IrType? = null
 
     @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall, data: Nothing?) {
@@ -70,6 +71,7 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 annotations.addAll(expression.getFqNamesOfClassReferenceValueArguments())
                 signature = expression.getTypeArgument(0)?.toParameterizedType()
+                irSignature = expression.getTypeArgument(0)
             }
         }
     }
@@ -78,7 +80,7 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
         fun collectInvokeArguments(expression: IrCall): SignatureToAnnotations? {
             val visitor = ReflektFunctionInvokeArgumentsCollector()
             expression.accept(visitor, null)
-            return visitor.signature?.let { SignatureToAnnotations(it, visitor.annotations) }
+            return visitor.signature?.let { SignatureToAnnotations(it, visitor.annotations, visitor.irSignature) }
         }
     }
 }

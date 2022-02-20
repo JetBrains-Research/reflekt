@@ -10,7 +10,7 @@ import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
 import org.jetbrains.reflekt.plugin.analysis.psi.getFqName
 import org.jetbrains.reflekt.plugin.utils.enumToRegexOptions
 
-class SmartReflektExpressionProcessor(override val binding: BindingContext) : Processor<MutableList<KtNameReferenceExpression>, KtElement, KtFile>(binding) {
+class SmartReflektExpressionProcessor(override val binding: BindingContext) : Processor<HashMap<FileId, MutableList<KtNameReferenceExpression>>, KtElement, KtFile>(binding) {
     val fileToExpressions: HashMap<FileId, MutableList<KtNameReferenceExpression>> = HashMap()
 
     override fun process(element: KtElement, file: KtFile): HashMap<FileId, MutableList<KtNameReferenceExpression>> {

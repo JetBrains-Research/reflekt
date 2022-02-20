@@ -1,50 +1,53 @@
 package org.jetbrains.reflekt.example
 
+import com.github.gumtreediff.actions.model.Action
 import org.jetbrains.kotlin.backend.common.ir.isTopLevel
+import org.jetbrains.reflekt.Reflekt
 import org.jetbrains.reflekt.SmartReflekt
 
 class Test(var a: List<Any>, b: List<Any>)
 
 fun main() {
-//    val tmp = Test(emptyList(), emptyList())
-//    tmp.a = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class).toList()
-//    println(tmp.a)
-//
-//    val objects = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
-//    println(objects)
-//    val objects1 = Reflekt.objects().withSuperType<AInterface>()
-//        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
-//    println(objects1)
-//
-//    val objects2 = Reflekt.objects().withSuperTypes(AInterface::class, A1::class)
-//        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
-//    println(objects2)
-//
-//    val objects3 = Reflekt.objects().withSuperTypes(AInterface::class, A1::class)
-//        .withAnnotations<AInterface>(FirstAnnotation::class).toList()
-//    println(objects3)
-//
-//    val objects4 = Reflekt.objects().withAnnotations<AInterface>(FirstAnnotation::class).toList()
-//    println(objects4)
-//    val objects5 = Reflekt.objects().withAnnotations<AInterface>(FirstAnnotation::class).toList()
-//    println(objects5)
-//    val objects6 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSupertype<AInterface>().toList()
-//    println(objects6)
-//    val objects7 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSupertypes(AInterface::class).toList()
-//    println(objects7)
-//    val objects8 = Reflekt.objects().withSuperType<AInterface>().toList()
-//    println(objects8)
-//
-//    val classes1 = Reflekt.classes().withSuperType<AInterface>().toList()
-//    println(classes1)
-//    val classes2 = Reflekt.classes().withSuperType<BInterface>().toSet()
-//    println(classes2)
-//    val classes3 = Reflekt.classes().withAnnotations<B2>(FirstAnnotation::class, SecondAnnotation::class).toList()
-//    println(classes3)
-//
-//    val classes4 = Reflekt.classes().withSuperType<Action>().toList()
-//    println(classes4)
-//
+    val tmp = Test(emptyList(), emptyList())
+    tmp.a = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class).toList()
+    println(tmp.a)
+
+    val objects = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+    println(objects)
+    val objects1 = Reflekt.objects().withSuperType<AInterface>()
+        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+    println(objects1)
+
+    val objects2 = Reflekt.objects().withSuperTypes(AInterface::class, A1::class)
+        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+    println(objects2)
+
+    val objects3 = Reflekt.objects().withSuperTypes(AInterface::class, A1::class)
+        .withAnnotations<AInterface>(FirstAnnotation::class).toList()
+    println(objects3)
+
+    val objects4 = Reflekt.objects().withAnnotations<AInterface>(FirstAnnotation::class).toList()
+    println(objects4)
+    val objects5 = Reflekt.objects().withAnnotations<AInterface>(FirstAnnotation::class).toList()
+    println(objects5)
+    val objects6 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSupertype<AInterface>().toList()
+    println(objects6)
+    val objects7 = Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSupertypes(AInterface::class).toList()
+    println(objects7)
+    val objects8 = Reflekt.objects().withSuperType<AInterface>().toList()
+    println(objects8)
+
+    val classes1 = Reflekt.classes().withSuperType<AInterface>().toList()
+    println(classes1)
+    val classes2 = Reflekt.classes().withSuperType<BInterface>().toSet()
+    println(classes2)
+    val classes3 = Reflekt.classes().withAnnotations<B2>(FirstAnnotation::class, SecondAnnotation::class).toList()
+    println(classes3)
+
+    val classes4 = Reflekt.classes().withSuperType<Action>().toList()
+    println(classes4)
+
+    // TODO: fix functions
 //    val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList()
 //    println(functions)
 

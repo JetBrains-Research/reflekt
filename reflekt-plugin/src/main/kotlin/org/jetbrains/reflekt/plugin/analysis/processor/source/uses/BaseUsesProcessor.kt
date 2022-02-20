@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.resolve.BindingContext
  * @property messageCollector
  */
 abstract class BaseUsesProcessor<T : Any>(override val binding: BindingContext, override val messageCollector: MessageCollector?) :
-    Processor<T, KtElement, KtFile>(binding, messageCollector) {
+    Processor<HashMap<FileId, T>, KtElement, KtFile>(binding, messageCollector) {
     // Store uses by file
     abstract val fileToUses: HashMap<FileId, T>
 

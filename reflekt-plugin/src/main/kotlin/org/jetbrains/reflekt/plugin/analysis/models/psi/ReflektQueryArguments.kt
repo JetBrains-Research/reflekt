@@ -8,6 +8,7 @@ import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.to
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableKotlinType
 
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.types.KotlinType
 
 import kotlinx.serialization.Serializable
@@ -19,8 +20,9 @@ typealias SerializableFunctionInvokes = MutableSet<SerializableSignatureToAnnota
 typealias BaseInvokeProcessors = Set<BaseInvokesProcessor<*>>
 
 /**
- * If the function [withAnnotations] is called without supertypes then [supertypes] is setOf(Any::class::qualifiedName)
- * If the function [withSupertypes] is called without annotations then [annotations] is empty
+ * If the Reflekt function <withAnnotations> is called without supertypes then [supertypes] is setOf(Any::class::qualifiedName)
+ * If the Reflekt function <withSupertypes> is called without annotations then [annotations] is empty
+ *
  * @property supertypes
  * @property annotations
  */
@@ -33,9 +35,13 @@ data class SupertypesToAnnotations(
 /**
  * @property signature
  * @property annotations// kotlin.FunctionN< ... > // kotlin.FunctionN< ... >
+ * @property irSignature
  */
+// TODO: use IrType
 data class SignatureToAnnotations(
-    var signature: KotlinType?, val annotations: Set<String> = emptySet(),
+    var signature: KotlinType?,
+    val annotations: Set<String> = emptySet(),
+    val irSignature: IrType? = null,
 )
 
 /**

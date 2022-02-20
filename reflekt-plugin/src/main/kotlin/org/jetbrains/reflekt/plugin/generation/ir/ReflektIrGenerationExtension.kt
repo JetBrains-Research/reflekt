@@ -6,18 +6,18 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektContext
+import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
 
 /**
  * Replaces Reflekt invoke calls with their results
  *
- * @param reflektContext [IrReflektContext] to extract Reflekt uses
  * @param toReplaceIr if should enable this extension
+ * @param irInstancesAnalyzer to get project instances
  * @param messageCollector
  */
 class ReflektIrGenerationExtension(
-    private val reflektContext: IrReflektContext,
     private val toReplaceIr: Boolean,
+    private val irInstancesAnalyzer: IrInstancesAnalyzer,
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     /**
@@ -27,7 +27,10 @@ class ReflektIrGenerationExtension(
         if (!toReplaceIr) {
             return
         }
-        val uses = reflektContext.uses ?: return
-        moduleFragment.transform(ReflektIrTransformer(pluginContext, uses, messageCollector), null)
+        val irInstances = irInstancesAnalyzer.getIrInstances()
+        if (irInstances.isEmpty()) {
+            return
+        }
+        moduleFragment.transform(ReflektIrTransformer(pluginContext, irInstances, messageCollector), null)
     }
 }

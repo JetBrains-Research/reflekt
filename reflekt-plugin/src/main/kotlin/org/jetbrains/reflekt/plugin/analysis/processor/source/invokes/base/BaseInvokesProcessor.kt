@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.utils.addIfNotNull
  * @property messageCollector
  */
 abstract class BaseInvokesProcessor<T : Any>(override val binding: BindingContext, override val messageCollector: MessageCollector?) :
-    Processor<T, KtElement, KtFile>(binding, messageCollector) {
+    Processor<HashMap<FileId, T>, KtElement, KtFile>(binding, messageCollector) {
     // Store invokes by file
     abstract val fileToInvokes: HashMap<FileId, T>
 

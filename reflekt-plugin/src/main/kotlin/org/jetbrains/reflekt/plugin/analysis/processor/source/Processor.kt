@@ -1,6 +1,5 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.source
 
-import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
@@ -17,7 +16,7 @@ typealias KtElementProcessor = Processor<*, KtElement, KtFile>
 // TODO: delete BindingContext
 abstract class Processor<T : Any, E : Any, F : Any>(protected open val binding: BindingContext? = null, protected open val messageCollector: MessageCollector? = null) {
     // Return processed elements by file
-    abstract fun process(element: E, file: F): HashMap<FileId, T>
+    abstract fun process(element: E, file: F): T
 
     abstract fun shouldRunOn(element: E): Boolean
 }
