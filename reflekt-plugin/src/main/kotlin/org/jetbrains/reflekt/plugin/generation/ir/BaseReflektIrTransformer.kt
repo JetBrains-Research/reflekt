@@ -1,5 +1,13 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
+import org.jetbrains.reflekt.plugin.analysis.common.*
+import org.jetbrains.reflekt.plugin.analysis.ir.isSubtypeOf
+import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
+import org.jetbrains.reflekt.plugin.generation.common.*
+import org.jetbrains.reflekt.plugin.generation.ir.util.*
+import org.jetbrains.reflekt.plugin.utils.Util.log
+
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -10,13 +18,6 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.reflekt.plugin.analysis.common.*
-import org.jetbrains.reflekt.plugin.analysis.ir.isSubtypeOf
-import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
-import org.jetbrains.reflekt.plugin.generation.common.*
-import org.jetbrains.reflekt.plugin.generation.ir.util.*
-import org.jetbrains.reflekt.plugin.utils.Util.log
 
 /**
  * Generate IR representation for the Reflekt terminal function (toList/toSet/etc)
