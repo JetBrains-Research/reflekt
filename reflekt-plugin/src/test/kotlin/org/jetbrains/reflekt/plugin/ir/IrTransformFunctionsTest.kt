@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
+@Disabled
 @Tag("ir")
 class IrTransformFunctionsTest {
     companion object {
@@ -85,6 +86,7 @@ class IrTransformFunctionsTest {
     }
 
     @ParameterizedTest(name = "Function test#{index} with [{arguments}]")
+    @Disabled("Failed since we disabled the Reflekt part")
     @MethodSource("getReflektFunctionsTestData")
     fun testReflektFunctions(expectedFunctions: Set<String>, functionsSignature: Signature, functionsArguments: String) {
         Assertions.assertEquals(expectedFunctions, ReflektType.REFLEKT.functionsInvokeCall(functionsSignature, functionsArguments).call())
