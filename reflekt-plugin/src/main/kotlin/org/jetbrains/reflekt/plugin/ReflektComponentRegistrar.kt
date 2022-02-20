@@ -44,17 +44,18 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
 
         // This will be called multiple times (for each project module),
         // since compilation process runs module by module
-        AnalysisHandlerExtension.registerExtension(
-            project,
-            ReflektModuleAnalysisExtension(
-                reflektMetaFilesFromLibraries = config.reflektMetaFilesFromLibraries,
-                toSaveMetadata = config.toSaveMetadata,
-                generationPath = config.outputDir,
-                reflektContext = reflektContext,
-                messageCollector = config.messageCollector,
-                reflektMetaFile = config.reflektMetaFileRelativePath?.let { File(it) },
-            ),
-        )
+        // TODO: Move all Reflekt parts to backend
+//        AnalysisHandlerExtension.registerExtension(
+//            project,
+//            ReflektModuleAnalysisExtension(
+//                reflektMetaFilesFromLibraries = config.reflektMetaFilesFromLibraries,
+//                toSaveMetadata = config.toSaveMetadata,
+//                generationPath = config.outputDir,
+//                reflektContext = reflektContext,
+//                messageCollector = config.messageCollector,
+//                reflektMetaFile = config.reflektMetaFileRelativePath?.let { File(it) },
+//            ),
+//        )
 
         // Collect IR instances for classes, objects, and functions
         val instancesAnalyzer = IrInstancesAnalyzer()
@@ -66,14 +67,15 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
             ),
         )
 
-        IrGenerationExtension.registerExtension(
-            project,
-            ReflektIrGenerationExtension(
-                reflektContext = reflektContext,
-                messageCollector = config.messageCollector,
-                toReplaceIr = !config.toSaveMetadata,
-            ),
-        )
+        // TODO: Move all Reflekt parts to backend
+//        IrGenerationExtension.registerExtension(
+//            project,
+//            ReflektIrGenerationExtension(
+//                reflektContext = reflektContext,
+//                messageCollector = config.messageCollector,
+//                toReplaceIr = !config.toSaveMetadata,
+//            ),
+//        )
 
         IrGenerationExtension.registerExtension(
             project,

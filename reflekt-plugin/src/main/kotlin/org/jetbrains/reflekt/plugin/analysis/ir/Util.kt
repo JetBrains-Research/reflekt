@@ -54,12 +54,14 @@ fun IrDeclaration.createIrBuiltIns(pluginContext: IrPluginContext): IrBuiltIns {
 
 fun IrType.makeTypeProjection() = makeTypeProjection(this, if (this is IrTypeProjection) this.variance else Variance.INVARIANT)
 
-fun IrFunction.toFunctionInfo(): IrFunctionInfo =
-    IrFunctionInfo(
-        fqName.toString(),
+fun IrFunction.toFunctionInfo(): IrFunctionInfo {
+    fqNameWhenAvailable ?: error("Can not get fqname for function ${this}")
+    return IrFunctionInfo(
+        fqNameWhenAvailable.toString(),
         receiverFqName = receiverType()?.classFqName?.asString(),
         isObjectReceiver = receiverType()?.getClass()?.isObject ?: false,
     )
+}
 
 fun IrFunction.receiverType(): IrType? {
     val extensionReceiver = this.extensionReceiverParameter

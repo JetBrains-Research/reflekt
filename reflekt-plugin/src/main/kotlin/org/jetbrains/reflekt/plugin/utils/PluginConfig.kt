@@ -29,7 +29,7 @@ import java.io.File
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 class PluginConfig(
     configuration: CompilerConfiguration?,
-    logFilePath: String = "reflekt-log.log",
+    logFilePath: String = "/Users/Anastasiia.Birillo/IdeaProjects/reflekt/reflekt-plugin/reflekt-log.log",
     isTestConfiguration: Boolean = false,
 ) {
     var enabled = isTestConfiguration

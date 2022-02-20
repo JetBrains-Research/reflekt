@@ -1,14 +1,5 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
-import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
-import org.jetbrains.reflekt.plugin.analysis.ir.*
-import org.jetbrains.reflekt.plugin.analysis.models.*
-import org.jetbrains.reflekt.plugin.analysis.models.ir.*
-import org.jetbrains.reflekt.plugin.generation.common.SmartReflektInvokeParts
-import org.jetbrains.reflekt.plugin.scripting.ImportChecker
-import org.jetbrains.reflekt.plugin.scripting.KotlinScriptRunner
-import org.jetbrains.reflekt.plugin.utils.Util.log
-
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.IrElement
@@ -20,9 +11,15 @@ import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
-
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
+import org.jetbrains.reflekt.plugin.analysis.ir.*
+import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.models.ir.*
+import org.jetbrains.reflekt.plugin.generation.common.SmartReflektInvokeParts
+import org.jetbrains.reflekt.plugin.scripting.ImportChecker
+import org.jetbrains.reflekt.plugin.scripting.KotlinScriptRunner
+import org.jetbrains.reflekt.plugin.utils.Util.log
 import java.io.File
-
 import kotlin.reflect.KClass
 
 /**

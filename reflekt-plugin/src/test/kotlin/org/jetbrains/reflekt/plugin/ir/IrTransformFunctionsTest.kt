@@ -3,7 +3,8 @@ package org.jetbrains.reflekt.plugin.ir
 import org.jetbrains.reflekt.plugin.ir.ResultCall.call
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.*
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 
 @Tag("ir")
 class IrTransformFunctionsTest {
@@ -76,7 +77,7 @@ class IrTransformFunctionsTest {
         fun getSmartReflektFunctionsTestData(): List<Arguments> = listOf(
             Arguments.of(
                 setOf(""),
-                Signature("() -> Boolean", "it.nameForIrSerialization.asString() == \"fooBoolean\""),
+                Signature("() -> Boolean", "it.name.asString() == \"fooBoolean\""),
                 ""
             )
         )
@@ -97,7 +98,7 @@ class IrTransformFunctionsTest {
 //    }
 
     @ParameterizedTest(name = "Function test#{index} with [{arguments}]")
-    @Disabled("Failed with IllegalStateException, but in examples everything works fine")
+    @Disabled("Failed with IllegalStateException (an internal KotlinScript interpreter error), but in examples everything works fine")
     @MethodSource("getSmartReflektFunctionsTestData")
     fun testSmartReflektFunctions(expectedFunctions: Set<String>, functionsSignature: Signature, functionsArguments: String) {
         Assertions.assertEquals(expectedFunctions, ReflektType.SMART_REFLEKT.functionsInvokeCall(functionsSignature, functionsArguments).call())
