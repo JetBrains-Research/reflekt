@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 // TODO: use IR properties instead of descriptors
 
 internal val IrElement.isTopLevelPublicFunction: Boolean
-    get() = this is IrFunction && this.descriptor.isTopLevelFunction
+    get() = this is IrFunction && this.descriptor.isTopLevelFunction && this.descriptor.isPublic
 
 internal val IrElement.isPublicNotAbstractClass: Boolean
     get() = this is IrClass && this.descriptor.isPublicNotAbstractClass

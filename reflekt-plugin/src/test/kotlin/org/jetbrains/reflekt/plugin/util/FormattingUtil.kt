@@ -1,6 +1,6 @@
 @file:Suppress("MatchingDeclarationName")
 
-package org.jetbrains.reflekt.plugin.analysis
+package org.jetbrains.reflekt.plugin.util
 
 /**
  * @property left

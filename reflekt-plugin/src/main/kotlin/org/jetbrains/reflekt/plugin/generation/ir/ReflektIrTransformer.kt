@@ -42,8 +42,11 @@ class ReflektIrTransformer(
     @ObsoleteDescriptorBasedAPI
     @Suppress("ReturnCount")
     override fun visitCall(expression: IrCall): IrExpression {
+        messageCollector?.log("[IR] CURRENT EXPRESSION:\n${expression.dump()}")
         val filteredInstances = expression.filterInstances()
+        messageCollector?.log("[IR] FILTERED INSTANCES: $filteredInstances")
         val invokeParts = expression.getReflektInvokeParts() ?: return super.visitCall(expression)
+        messageCollector?.log("[IR] INVOKE PARTS: $invokeParts")
         // TODO: delete duplicate with SmartReflektIrTransformer
         val call = when (invokeParts.entityType) {
             ReflektEntity.OBJECTS, ReflektEntity.CLASSES -> newIrBuilder(pluginContext).resultIrCall(

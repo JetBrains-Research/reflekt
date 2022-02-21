@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
 
+// TODO: use new IR analyzers
 class CodeGenerationTest {
     @Tag("codegen")
     @MethodSource("data")

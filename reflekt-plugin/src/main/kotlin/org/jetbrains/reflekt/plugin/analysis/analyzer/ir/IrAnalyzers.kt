@@ -57,9 +57,9 @@ class IrInstancesAnalyzer : IrAnalyzer() {
  *  and filters [IrInstances] according these arguments.
  */
 class IrReflektQueriesAnalyzer(irInstances: IrInstances, context: IrPluginContext) : IrAnalyzer() {
-    private val classProcessor = IrClassArgumentProcessor(irInstances.classes, context)
-    private val objectProcessor = IrObjectArgumentProcessor(irInstances.objects, context)
-    private val functionProcessor = IrFunctionArgumentProcessor(irInstances.functions, context)
+    val classProcessor = IrClassArgumentProcessor(irInstances.classes, context)
+    val objectProcessor = IrObjectArgumentProcessor(irInstances.objects, context)
+    val functionProcessor = IrFunctionArgumentProcessor(irInstances.functions, context)
     override val processors: List<IrElementProcessor> =
         listOf(classProcessor, objectProcessor, functionProcessor)
 

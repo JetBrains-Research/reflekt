@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.ir.util.nameForIrSerialization
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 
 /**
- * A collector for searching and collecting all classes, objects, and functions in the project
+ * A collector for searching and collecting all classes, objects, and functions in the project.
  *
  * @param irInstancesAnalyzer analyzer that check if the current IR element satisfy a condition,
  *  e.g. is a top level function
@@ -31,7 +31,7 @@ class InstancesCollector(
 }
 
 /**
- * An compiler plugin extension for searching and collection all classes, objects, and functions
+ * A compiler plugin extension for searching and collection all classes, objects, and functions.
  */
 class InstancesCollectorExtension(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,

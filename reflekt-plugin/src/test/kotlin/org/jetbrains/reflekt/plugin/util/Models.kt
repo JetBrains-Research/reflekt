@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.plugin.analysis
+package org.jetbrains.reflekt.plugin.util
 
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationWithName
 import org.jetbrains.kotlin.ir.declarations.IrFunction

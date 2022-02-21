@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt.plugin.ir.type
 
-import org.jetbrains.reflekt.plugin.analysis.toPrettyString
+import org.jetbrains.reflekt.plugin.util.toPrettyString
 import org.jetbrains.reflekt.plugin.ir.type.util.IrFunctionSubtypesVisitor
 import org.jetbrains.reflekt.plugin.ir.type.util.visitIrElements
 import org.jetbrains.reflekt.plugin.util.Util
