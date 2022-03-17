@@ -2,8 +2,6 @@ package org.jetbrains.reflekt
 
 import kotlin.reflect.KClass
 
-fun f() = TODO()
-
 @Suppress("unused")
 object ReflektImpl {
     fun objects() = Objects()

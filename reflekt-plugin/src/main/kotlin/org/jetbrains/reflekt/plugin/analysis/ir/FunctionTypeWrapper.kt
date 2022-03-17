@@ -23,12 +23,12 @@ import org.jetbrains.kotlin.types.Variance
  * If a function has no receiver, i.e. (Any, Boolean) -> Unit, it sets to null.
  * Also, it might be suspend (see [specification](https://kotlinlang.org/spec/type-system.html#suspending-function-types))
  *
- * @param isSuspend denotes whether this function is a suspend one
- * @param receiver extension receiver of function, might be null if it's not an extension
- * @param arguments list of function arguments, might be empty
- * @param returnType
- *
  * ToDo: we're not supporting vararg functions and member functions (i.e. with dispatch receiver)
+ *
+ * @property isSuspend denotes whether this function is a suspend one
+ * @property receiver extension receiver of function, might be null if it's not an extension
+ * @property arguments list of function arguments, might be empty
+ * @property returnType
  */
 data class FunctionTypeWrapper(
     val isSuspend: Boolean,
@@ -114,6 +114,8 @@ data class FunctionTypeWrapper(
     companion object {
         /**
          * Wraps an [IrFunction] and fills every required property.
+         *
+         * @return a wrapper of the [IrFunction]
          */
         fun IrFunction.wrap(): FunctionTypeWrapper = FunctionTypeWrapper(
             isSuspend,
@@ -124,6 +126,8 @@ data class FunctionTypeWrapper(
 
         /**
          * Wraps an [IrSimpleType], checking that it is a function (otherwise, returning a null) and filling every required property.
+         *
+         * @return a wrapper of the [IrSimpleType]
          */
         fun IrSimpleType.wrap(): FunctionTypeWrapper? {
             if (!isFunction()) {
