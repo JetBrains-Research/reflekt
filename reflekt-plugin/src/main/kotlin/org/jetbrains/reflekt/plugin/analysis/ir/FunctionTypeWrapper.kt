@@ -29,10 +29,6 @@ import org.jetbrains.kotlin.types.Variance
  * @param returnType
  *
  * ToDo: we're not supporting vararg functions and member functions (i.e. with dispatch receiver)
- * @property isSuspend
- * @property receiver
- * @property arguments
- * @property returnType
  */
 data class FunctionTypeWrapper(
     val isSuspend: Boolean,
@@ -116,6 +112,9 @@ data class FunctionTypeWrapper(
     }
 
     companion object {
+        /**
+         * Wraps an [IrFunction] and fills every required property.
+         */
         fun IrFunction.wrap(): FunctionTypeWrapper = FunctionTypeWrapper(
             isSuspend,
             extensionReceiverParameter?.type,
@@ -123,6 +122,9 @@ data class FunctionTypeWrapper(
             returnType,
         )
 
+        /**
+         * Wraps an [IrSimpleType], checking that it is a function (otherwise, returning a null) and filling every required property.
+         */
         fun IrSimpleType.wrap(): FunctionTypeWrapper? {
             if (!isFunction()) {
                 return null
