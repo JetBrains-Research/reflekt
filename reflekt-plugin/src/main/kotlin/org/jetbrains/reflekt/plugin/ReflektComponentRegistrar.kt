@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
+import org.jetbrains.kotlin.resolve.extensions.AnalysisHandlerExtension
 
 import java.io.File
 
@@ -66,6 +66,7 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
             ),
         )
 
+        // TODO: Move all Reflekt parts to backend
         IrGenerationExtension.registerExtension(
             project,
             ReflektIrGenerationExtension(

@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.*
-import org.jetbrains.kotlin.library.metadata.KlibMetadataProtoBuf.fqName
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi2ir.generators.TypeTranslatorImpl
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -54,12 +53,14 @@ fun IrDeclaration.createIrBuiltIns(pluginContext: IrPluginContext): IrBuiltIns {
 
 fun IrType.makeTypeProjection() = makeTypeProjection(this, if (this is IrTypeProjection) this.variance else Variance.INVARIANT)
 
-fun IrFunction.toFunctionInfo(): IrFunctionInfo =
-    IrFunctionInfo(
-        fqName.toString(),
+fun IrFunction.toFunctionInfo(): IrFunctionInfo {
+    fqNameWhenAvailable ?: error("Can not get fqname for function ${this}")
+    return IrFunctionInfo(
+        fqNameWhenAvailable.toString(),
         receiverFqName = receiverType()?.classFqName?.asString(),
         isObjectReceiver = receiverType()?.getClass()?.isObject ?: false,
     )
+}
 
 fun IrFunction.receiverType(): IrType? {
     val extensionReceiver = this.extensionReceiverParameter

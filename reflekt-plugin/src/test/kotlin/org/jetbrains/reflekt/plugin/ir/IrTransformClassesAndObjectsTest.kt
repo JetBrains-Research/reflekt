@@ -2,9 +2,8 @@ package org.jetbrains.reflekt.plugin.ir
 
 import org.jetbrains.reflekt.plugin.ir.ResultCall.call
 import org.gradle.internal.impldep.org.junit.Ignore
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.Test
 
 @Tag("ir")
 class IrTransformClassesAndObjectsTest {
