@@ -29,7 +29,18 @@ import org.jetbrains.kotlin.util.removeSuffixIfPresent
 
 import java.io.File
 
-/* Replaces SmartReflekt invoke calls with their results */
+/**
+ * Replaces SmartReflekt invoke calls with their results.
+ *
+ * @property pluginContext
+ * @property instances stores all public instances (classes, objects, and top-level functions) in the project
+ * @property classpath project dependencies that can be resolved at the compile time
+ * @property messageCollector
+ * @property importChecker [ImportChecker] for filtering classpath for correct running the KotlinScript interpreter
+ * @property sources map of absolute paths of [IrFile.fileEntry] to its content and imports.
+ *  It is used for collecting arguments for the SmartRefelkt queries
+ */
+@Suppress("KDOC_EXTRA_PROPERTY", "KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER")
 class SmartReflektIrTransformer(
     private val pluginContext: IrPluginContext,
     private val instances: IrReflektInstances,
@@ -39,6 +50,11 @@ class SmartReflektIrTransformer(
     private val importChecker = ImportChecker(classpath)
     private val sources = HashMap<String, SourceFile>()
 
+    /**
+     * Visits [IrCall] and replaces IR to found entities if it is a SmartReflekt query.
+     *
+     * @param expression [IrCall]
+     */
     @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall): IrExpression {
         val function = expression.symbol.owner
@@ -66,6 +82,15 @@ class SmartReflektIrTransformer(
         return call
     }
 
+    /**
+     * Checks if the [typeArgumentFqName] is subtype of [classOrObject].
+     *
+     * @param classOrObject
+     * @param typeArgumentFqName
+     * @param binding
+     * @return {@code true} if the [typeArgumentFqName]  is subtype of [classOrObject]
+     */
+    // TODO: replace to IrTypes, we should not use BindingContext since in the new compiler versions with new frontend it will be deleted
     private fun <T : KtClassOrObject> isSubtypeOfForClassOrObject(
         classOrObject: T,
         typeArgumentFqName: String?,
@@ -73,6 +98,15 @@ class SmartReflektIrTransformer(
         classOrObject.isSubtypeOf(setOf(typeArgumentFqName), binding)
     } ?: error("Fq name of a type argument for class or object is null")
 
+    /**
+     * Checks if the [typeArgument] is subtype of [function].
+     *
+     * @param function
+     * @param typeArgument
+     * @param binding
+     * @return {@code true} if the [typeArgument]  is subtype of [function]
+     */
+    // TODO: replace to IrTypes, we should not use BindingContext since in the new compiler versions with new frontend it will be deleted
     private fun isSubtypeOfForFunctions(
         function: KtNamedFunction,
         typeArgument: KotlinType?,
@@ -80,6 +114,15 @@ class SmartReflektIrTransformer(
         function.toParameterizedType(binding)?.isSubtypeOf(typeArgument) ?: false
     } ?: error("A type argument for a function is null")
 
+    /**
+     * Filters [instances] that satisfy [invokeArguments].
+     *
+     * @param instances
+     * @param invokeArguments
+     * @param binding
+     * @return list of [IrTypeInstance] that satisfy [invokeArguments]
+     */
+    // TODO: replace to IrTypes, we should not use BindingContext since in the new compiler versions with new frontend it will be deleted
     @Suppress("TYPE_ALIAS")
     private inline fun <reified T, reified I> filterInstances(
         instances: List<IrTypeInstance<T, I>>,
@@ -103,6 +146,15 @@ class SmartReflektIrTransformer(
         return resultInstances
     }
 
+    /**
+     * Checks if [instance] satisfies list of [filters].
+     *
+     * @param imports for KotlinScript running
+     * @param filters
+     * @param instance
+     * @return {@code true} if [instance] satisfies list of [filters]
+     */
+    // TODO: run KotlinScript on a list of instances
     private inline fun <reified T, reified I> isEvaluatedFilterBody(
         imports: List<Import>,
         filters: List<Lambda>,
@@ -122,6 +174,12 @@ class SmartReflektIrTransformer(
         return true
     }
 
+    /**
+     * Gets [SourceFile] by [IrFile].
+     *
+     * @param irFile
+     * @return [SourceFile]
+     */
     private fun getSourceFile(irFile: IrFile): SourceFile {
         val file = File(irFile.fileEntry.name)
         return sources[file.absolutePath] ?: file.readText().toSourceFile().also {
@@ -129,6 +187,11 @@ class SmartReflektIrTransformer(
         }
     }
 
+    /**
+     * Constructs [SourceFile] manually from [String] (extracts imports and its content).
+     *
+     * @return [SourceFile]
+     */
     private fun String.toSourceFile() = SourceFile(
         imports = lines()
             .filter { it.startsWith("import ") }
