@@ -62,7 +62,7 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
     private var signature: KotlinType? = null
     private val annotations = HashSet<String>()
 
-    @ObsoleteDescriptorBasedAPI
+    @OptIn(ObsoleteDescriptorBasedAPI::class)
     override fun visitCall(expression: IrCall, data: Nothing?) {
         super.visitCall(expression, data)
         val function = expression.symbol.owner
@@ -92,7 +92,7 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
     private var typeArgumentFqName: String? = null
     private val filters = ArrayList<Lambda>()
 
-    @ObsoleteDescriptorBasedAPI
+    @OptIn(ObsoleteDescriptorBasedAPI::class)
     override fun visitCall(expression: IrCall, data: Nothing?) {
         super.visitCall(expression, data)
         val function = expression.symbol.owner

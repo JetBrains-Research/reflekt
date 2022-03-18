@@ -18,7 +18,7 @@ fun KtAnnotationEntry.getDescriptor(context: BindingContext) = context[BindingCo
  *
  * @return resolved content
  */
-fun <T> T.forced(): T = ForceResolveUtil.forceResolveAllContents(this)
+fun <T : Any> T.forced(): T = ForceResolveUtil.forceResolveAllContents(this)
 
 fun KtAnnotated.getAnnotations(context: BindingContext, annotations: Set<String>) = annotationEntries.filter {
     it.fqName(context) in annotations

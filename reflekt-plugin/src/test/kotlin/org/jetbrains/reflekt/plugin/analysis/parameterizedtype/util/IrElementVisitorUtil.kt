@@ -29,7 +29,7 @@ import java.io.File
  * @property visitors
  */
 class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, BindingContext>>) : ComponentRegistrar {
-    @ObsoleteDescriptorBasedAPI
+    @OptIn(ObsoleteDescriptorBasedAPI::class)
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
         IrGenerationExtension.registerExtension(project, object : IrGenerationExtension {
             override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
@@ -78,7 +78,7 @@ class IrFunctionTypeVisitor(val filterByName: (String) -> Boolean) : IrElementVi
 class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, BindingContext> {
     val typeArguments = mutableListOf<TypeArgument>()
 
-    @ObsoleteDescriptorBasedAPI
+    @OptIn(ObsoleteDescriptorBasedAPI::class)
     override fun visitCall(expression: IrCall, data: BindingContext) {
         val typeArgument = expression.getTypeArgument(0) ?: error("No arguments found in expression $expression")
         val type = typeArgument.toParameterizedType()
