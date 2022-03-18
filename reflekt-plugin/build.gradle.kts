@@ -27,11 +27,13 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.2.0")
 
-    testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
-    testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.0")
-    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
-    testImplementation("com.google.code.gson", "gson", "2.8.8")
-    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.5")
+    testImplementation(platform("org.junit:junit-bom:5.8.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher") {
+        because("Only needed to run tests in a version of IntelliJ IDEA that bundles older versions")
+    }
+//    testImplementation("com.google.code.gson", "gson", "2.8.8")
+    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.7")
 }
 
 tasks.withType<Test> {
