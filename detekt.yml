@@ -18,3 +18,5 @@ style:
   # code is not stable yet, TODOs are still needed
   ForbiddenComment:
     active: false
+  ReturnCount:
+    max: 3

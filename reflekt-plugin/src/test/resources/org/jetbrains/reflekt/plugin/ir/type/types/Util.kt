@@ -1,8 +1,8 @@
-package org.jetbrains.reflekt.plugin.analysis.parameterizedtype.types
+package org.jetbrains.reflekt.plugin.ir.type.types
 
 
 /**
- * Function to test IrType or AstNode -> KotlinType, expected KotlinType is passed as argument
+ * Function to test IrType or AstNode -> KotlinType, expected KotlinType is passed as an argument
  */
 fun <T> fooWithType(kotlinType: String) { }
 

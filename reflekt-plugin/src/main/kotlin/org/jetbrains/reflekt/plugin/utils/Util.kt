@@ -23,14 +23,12 @@ import java.io.PrintStream
  *
  * @property USES_STORE_NAME the name for [ReflektUses] to store in the [BindingContext].
  *  [ReflektUses] store arguments from the Reflekt queries in this case
- * @property INSTANCES_STORE_NAME the name for [ReflektInstances] to store in the [BindingContext].
  *  [ReflektInstances] store all instances (entities) of classes/objects/functions in the project in this case
  * @property GET_USES new [WritableSlice] to store [ReflektUses] in the [BindingContext]
  * @property messageCollector get [MessageCollector] from the [CompilerConfiguration]
  */
 object Util {
     private const val USES_STORE_NAME = "ReflektUses"
-    private const val INSTANCES_STORE_NAME = "ReflektInstances"
     private val GET_USES: WritableSlice<String, ReflektUses> = Slices.createSimpleSlice()
 
     val CompilerConfiguration.messageCollector: MessageCollector

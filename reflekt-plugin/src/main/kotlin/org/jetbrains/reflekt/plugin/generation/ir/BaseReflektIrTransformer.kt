@@ -1,7 +1,8 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
 import org.jetbrains.reflekt.plugin.analysis.common.*
-import org.jetbrains.reflekt.plugin.analysis.ir.*
+import org.jetbrains.reflekt.plugin.analysis.ir.isSubtypeOf
+import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
 import org.jetbrains.reflekt.plugin.generation.common.*
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
@@ -57,14 +58,14 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         require(resultType is IrSimpleType)
 
         val itemType = resultType.arguments[0].typeOrNull
-            ?: throw ReflektGenerationException("Return type must have at one type argument (e. g. List<T>, Set<T>)")
+            ?: throw ReflektGenerationException("Return type must have one type argument (e. g. List<T>, Set<T>)")
 
         val items = resultValues.map {
             context.referenceClass(FqName(it)) ?: throw ReflektGenerationException("Failed to find class $it")
         }.map {
             when (invokeParts.entityType) {
                 ReflektEntity.OBJECTS -> irGetObject(it)
-                ReflektEntity.CLASSES -> irTypeCast(itemType, irKClass(it))
+                ReflektEntity.CLASSES -> itemType.castTo(irKClass(it))
                 ReflektEntity.FUNCTIONS -> error("Use functionResultIrCall")
             }
         }
@@ -94,15 +95,20 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
     ): IrExpression {
         require(resultType is IrSimpleType)
         val itemType = resultType.arguments[0].typeOrNull
-            ?: throw ReflektGenerationException("Return type must have at one type argument (e. g. List<T>, Set<T>)")
+            ?: throw ReflektGenerationException("Return type must have one type argument (e. g. List<T>, Set<T>)")
         require(itemType is IrSimpleType)
 
         messageCollector?.log("RES ARGS: ${itemType.arguments.map { (it as IrSimpleType).classFqName }}")
+        messageCollector?.log("size of result values ${resultValues.size}")
         val items = resultValues.map { irFunctionInfo ->
             val functionSymbol = context.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
-                // symbol.owner.toParameterizedType(context.bindingContext)?.isSubtypeOf(itemType.toParameterizedType()) ?: false
-                symbol.owner.isSubTypeOf(itemType, context)
-            } ?: throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
+                symbol.owner.isSubtypeOf(itemType, context).also { messageCollector?.log("${symbol.owner.isSubtypeOf(itemType, context)}") }
+            }
+            messageCollector?.log("function symbol is $functionSymbol")
+            functionSymbol ?: run {
+                messageCollector?.log("function symbol is null")
+                throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
+            }
             irKFunction(itemType, functionSymbol).also { call ->
                 irFunctionInfo.receiverFqName?.let {
                     if (irFunctionInfo.isObjectReceiver) {

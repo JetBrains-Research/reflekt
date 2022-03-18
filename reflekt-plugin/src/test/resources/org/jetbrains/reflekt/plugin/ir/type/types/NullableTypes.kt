@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.plugin.analysis.parameterizedtype.types
+package org.jetbrains.reflekt.plugin.ir.type.types
 
 import java.util.ArrayList
 
@@ -14,5 +14,5 @@ fun main() {
 
     fooWithType<ArrayList<() -> Unit>?>("ArrayList<Function0<Unit>>? (java.util.ArrayList)")
 
-    fooWithType<MyObject?>("MyObject? (org.jetbrains.reflekt.plugin.analysis.parameterizedtype.types.MyObject)")
+    fooWithType<MyObject?>("MyObject? (org.jetbrains.reflekt.plugin.ir.type.types.MyObject)")
 }

@@ -9,7 +9,8 @@ import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.junit.jupiter.api.Assertions
 
 /**
- * Represents source file with result method [resultMethod] that returns [T]
+ * Represents source file with result method [resultMethod] that returns [T].
+ *
  * @property name
  * @property path
  * @property import
