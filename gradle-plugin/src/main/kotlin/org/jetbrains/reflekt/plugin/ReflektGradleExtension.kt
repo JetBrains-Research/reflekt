@@ -19,7 +19,7 @@ internal val Project.reflekt: ReflektGradleExtension
  * Gradle extension class containing the configuration information for the plugin
  */
 open class ReflektGradleExtension {
-    /** If [false], this plugin won't actually be applied */
+    /** If `false`, this plugin won't actually be applied */
     var enabled: Boolean = true
 
     /** Libraries to introspect, which are in the project dependencies in the format: "$group:$name:$version" */
