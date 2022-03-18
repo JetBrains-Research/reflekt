@@ -17,8 +17,8 @@ dependencies {
     implementation("com.google.auto.service", "auto-service-annotations", "1.0")
     kapt("com.google.auto.service", "auto-service", "1.0")
 
-    implementation(project(":reflekt-core"))
-    implementation(project(":reflekt-dsl"))
+    implementation(projects.reflektCore)
+    implementation(projects.reflektDsl)
 
     testImplementation(gradleTestKit())
 
