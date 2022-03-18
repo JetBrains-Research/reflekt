@@ -1,6 +1,5 @@
-import org.jetbrains.reflekt.buildutils.*
-
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
+//import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
+//import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 
 group = "org.jetbrains.reflekt"
 /*
@@ -16,68 +15,28 @@ group = "org.jetbrains.reflekt"
 version = "1.5.31"
 
 plugins {
-    id("tanvd.kosogor") version "1.0.12" apply true
-    kotlin("jvm") version "1.5.31" apply true
-    id("com.github.gmazzo.buildconfig") version "3.0.3" apply false
-    `maven-publish`
-    kotlin("kapt") version "1.5.31" apply true
-    id("org.jetbrains.dokka") version "1.6.10"
+//    id("tanvd.kosogor") //version "1.0.12" apply true
+//    kotlin("jvm") version "1.5.31" apply true
+//    id("com.github.gmazzo.buildconfig") version "3.0.3" apply false
+    org.jetbrains.reflekt.buildutils.`maven-publish-convention`
+//    kotlin("kapt") version "1.5.31" apply true
+    id("org.jetbrains.dokka")
+    idea
 }
 
-allprojects {
-    apply {
-        plugin("kotlin")
-    }
 
-    tasks.withType<KotlinJvmCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-            languageVersion = "1.5"
-            apiVersion = "1.5"
-        }
-    }
+//createDiktatTask()
+//createDetektTask()
 
-    repositories {
-        mavenCentral()
-        google()
-        // Uncomment it for using the last kotlin compiler version
-        // The full list of the build can be found here:
-        // https://teamcity.jetbrains.com/buildConfiguration/Kotlin_KotlinPublic_BuildNumber?mode=builds&tag=bootstrap
-        // (see builds with <boostrap> tag)
-        // Note: uncomment it also in the settings.gradle.kts
-        // maven {
-        // url = uri("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
-        // }
-    }
 
-    // We should publish the project in the local maven repository before the tests running
-    @kotlin.Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-    tasks.withType<Test> {
-        dependsOn(tasks.withType<PublishToMavenLocal> {})
-    }
-
-    configureDiktat()
-    configureDetekt()
+tasks.wrapper {
+    gradleVersion = "7.4.1"
+    distributionType = Wrapper.DistributionType.ALL
 }
 
-createDiktatTask()
-createDetektTask()
-
-subprojects {
-    apply {
-        plugin("maven-publish")
-    }
-
-    publishing {
-        repositories {
-            maven {
-                name = "SpacePackages"
-                url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt")
-                credentials {
-                    username = System.getenv("JB_SPACE_CLIENT_ID")?.takeIf { it.isNotBlank() } ?: ""
-                    password = System.getenv("JB_SPACE_CLIENT_SECRET")?.takeIf { it.isNotBlank() } ?: ""
-                }
-            }
-        }
+idea {
+    module {
+        isDownloadSources = true
+        isDownloadJavadoc = true
     }
 }

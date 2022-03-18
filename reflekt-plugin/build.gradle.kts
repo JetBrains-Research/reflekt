@@ -1,11 +1,11 @@
-import tanvd.kosogor.proxy.publishJar
+//import tanvd.kosogor.proxy.publishJar
 
-group = rootProject.group
-version = rootProject.version
 
 plugins {
+    org.jetbrains.reflekt.buildutils.`kotlin-jvm-convention`
+
     kotlin("kapt")
-    kotlin("plugin.serialization") version "1.5.31" apply true
+    kotlin("plugin.serialization")// version "1.5.31" apply true
 }
 
 dependencies {
@@ -54,4 +54,4 @@ tasks.create("analysis", Test::class.java) {
     }
 }
 
-publishJar {}
+//publishJar {}
