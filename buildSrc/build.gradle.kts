@@ -18,8 +18,6 @@ dependencies {
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
 
     implementation("org.jetbrains.kotlinx:kover:0.5.0")
-    // implementation("tanvd.kosogor:kosogor:1.0.12")
-    // implementation("gradle.plugin.tanvd.kosogor:kosogor:1.0.13")
 
     implementation("org.cqfn.diktat:diktat-gradle-plugin:1.0.0-rc.4")
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.19.0-RC1")

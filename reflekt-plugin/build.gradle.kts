@@ -1,5 +1,3 @@
-// import tanvd.kosogor.proxy.publishJar
-
 plugins {
     org.jetbrains.reflekt.buildutils.`kotlin-jvm-convention`
 
@@ -83,5 +81,3 @@ listOf("analysis", "ir").forEach { tag ->
         useJUnitPlatform { includeTags = setOf(tag) }
     }
 }
-
-// publishJar {}

@@ -1,5 +1,3 @@
-// import tanvd.kosogor.proxy.publishJar
-
 plugins {
     org.jetbrains.reflekt.buildutils.`kotlin-jvm-convention`
 }
@@ -7,5 +5,3 @@ plugins {
 dependencies {
     api(kotlin("compiler-embeddable"))
 }
-
-// publishJar {}

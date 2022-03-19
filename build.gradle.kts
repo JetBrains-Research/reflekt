@@ -1,5 +1,4 @@
 plugins {
-    // id("tanvd.kosogor") //version "1.0.12" apply true
     org.jetbrains.reflekt.buildutils.`maven-publish-convention`
     org.jetbrains.reflekt.buildutils.`diktat-convention`
     id("org.jetbrains.dokka")
