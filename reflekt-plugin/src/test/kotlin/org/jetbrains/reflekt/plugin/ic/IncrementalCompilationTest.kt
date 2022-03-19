@@ -1,19 +1,19 @@
 package org.jetbrains.reflekt.plugin.ic
 
-import org.jetbrains.reflekt.util.file.getAllNestedFiles
+import java.io.File
+import kotlin.io.path.createTempDirectory
 import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
 import org.jetbrains.reflekt.plugin.analysis.getTestsDirectories
 import org.jetbrains.reflekt.plugin.ic.modification.Modification
 import org.jetbrains.reflekt.plugin.ic.modification.applyModifications
 import org.jetbrains.reflekt.plugin.util.Util
 import org.jetbrains.reflekt.plugin.util.Util.clear
-import org.jetbrains.reflekt.plugin.util.Util.getTempPath
+import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import java.io.File
 
 class IncrementalCompilationTest {
     // File with compiler arguments (see K2JVMCompilerArguments)
@@ -83,12 +83,8 @@ class IncrementalCompilationTest {
     }
 
     // If we had failed tests the previous results were not deleted and it can throw some compiler errors
-    private fun initTestRoot(): File {
-        val testRoot = File(getTempPath(), IncrementalCompilationTest::class.java.simpleName)
-        if (testRoot.exists()) {
-            testRoot.deleteRecursively()
-        }
-        testRoot.apply { mkdirs() }
-        return testRoot
-    }
+    private fun initTestRoot(): File =
+        createTempDirectory(IncrementalCompilationTest::class.java.simpleName)
+            .toFile()
+            .also { it.deleteOnExit() }
 }
