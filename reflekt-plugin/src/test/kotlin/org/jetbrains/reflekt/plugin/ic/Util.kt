@@ -6,10 +6,9 @@ import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getStdLibJar
 import java.io.File
 
-internal fun createCompilerArguments(destinationDir: File, testDir: File, pathToDownloadKotlinSources: File): K2JVMCompilerArguments {
+internal fun createCompilerArguments(destinationDir: File, testDir: File): K2JVMCompilerArguments {
     val reflektJars = getReflektProjectJars().map { it.absolutePath }
-    val compilerClasspath = reflektJars.toMutableList()
-    compilerClasspath.add(getStdLibJar(pathToDownloadKotlinSources).absolutePath)
+    val compilerClasspath = reflektJars + getStdLibJar().absolutePath
     return K2JVMCompilerArguments().apply {
         moduleName = testDir.name
         destination = destinationDir.path

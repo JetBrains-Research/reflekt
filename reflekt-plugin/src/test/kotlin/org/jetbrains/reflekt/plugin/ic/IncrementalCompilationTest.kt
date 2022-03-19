@@ -1,7 +1,9 @@
 package org.jetbrains.reflekt.plugin.ic
 
 import java.io.File
+import java.io.IOException
 import kotlin.io.path.createTempDirectory
+import org.gradle.internal.impldep.org.apache.commons.lang.SystemUtils
 import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
 import org.jetbrains.reflekt.plugin.analysis.getTestsDirectories
 import org.jetbrains.reflekt.plugin.ic.modification.Modification
@@ -45,9 +47,8 @@ class IncrementalCompilationTest {
         val srcRoots = listOf(srcDir)
 
         sourcesPath.copyRecursively(srcDir, overwrite = true)
-        val testDataPath = File(Util.getResourcesRootPath(IncrementalCompilationTest::class))
-        val pathToDownloadKotlinSources = File(testDataPath.parent, "kotlinSources").apply { mkdirs() }
-        val compilerArgs = createCompilerArguments(outDir, srcDir, pathToDownloadKotlinSources).apply {
+
+        val compilerArgs = createCompilerArguments(outDir, srcDir).apply {
             parseCommandLineArguments(parseAdditionalCompilerArgs(srcDir, argumentsFileName), this)
         }
         compileSources(cacheDir, srcRoots, compilerArgs, "Initial")

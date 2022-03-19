@@ -1,49 +1,33 @@
 package org.jetbrains.reflekt.plugin.util
 
-import org.gradle.internal.impldep.org.apache.commons.lang.SystemUtils
 import java.io.File
-import java.net.URL
-import java.nio.file.*
-
 
 object MavenLocalUtil {
-    // We should use a const here since we can not get it from the project
-    private const val VERSION = "1.5.31"
-    private val mavenLocalPath = getMavenLocalPath()
 
-    fun getReflektProjectJars(): Set<File> {
-        val baseReflektPath = "$mavenLocalPath/org/jetbrains/reflekt"
-        val reflektNames = listOf("gradle-plugin", "reflekt-core", "reflekt-dsl")
-        return reflektNames.map {
-            File("$baseReflektPath/$it/$VERSION/$it-$VERSION.jar")
-        }.toSet()
-    }
+    /**
+     * The directory that stores Reflekt jars.
+     *
+     * A task in `build.gradle.kts` fetches the jars built by other projects and stores them a directory.
+     * The name of that directory is passed as a System Property, `reflektTestLibDir`, during test execution.
+     */
+    private val reflektTestLibDir: File = File(System.getProperty("reflektTestLibDir"))
 
-    fun getStdLibJar(pathToDownload: File): File {
-        val jarName = "kotlin-stdlib-$VERSION.jar"
-        val suffix = "org/jetbrains/kotlin/kotlin-stdlib/$VERSION/$jarName"
-        val fileToDownload = File(pathToDownload, jarName)
-        val localJar = File("$mavenLocalPath/$suffix")
+    fun getReflektProjectJars(): Set<File> = getTestLibJars("gradle-plugin", "reflekt-core", "reflekt-dsl")
 
-        return when {
-            fileToDownload.exists() -> fileToDownload
-            localJar.exists() -> localJar
-            else -> {
-                val remoteUrl = "https://repo1.maven.org/maven2/$suffix"
-                val remoteUrlStream = URL(remoteUrl).openStream()
-                Files.copy(remoteUrlStream, Paths.get(fileToDownload.absolutePath), StandardCopyOption.REPLACE_EXISTING)
+    fun getStdLibJar(): File = getTestLibJars("kotlin-stdlib").first()
 
-                fileToDownload
+    private fun getTestLibJars(vararg jarNames: String): Set<File> {
+        val jars = reflektTestLibDir
+            .walkTopDown()
+            .filter { file ->
+                file.extension == "jar" && jarNames.any { file.name.startsWith(it) }
             }
-        }
-    }
+            .toSet()
 
-    private fun getMavenLocalPath(): String = "${getHomeFolder()}/.m2/repository"
-
-    private fun getHomeFolder(windowsUserProfile: String = "USERPROFILE"): String {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return System.getenv(windowsUserProfile).removeSuffix("/")
+        require(jars.size == jarNames.size) {
+            "couldn't find all jars. Requested: ${jarNames.joinToString()}, actual: ${jars.joinToString { it.name }}"
         }
-        return Util.runProcessBuilder(Util.Command(listOf("/bin/bash", "-c", "echo \$HOME"))).removeSuffix("/")
+
+        return jars
     }
 }

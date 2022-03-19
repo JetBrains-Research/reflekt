@@ -7,6 +7,13 @@ plugins {
     kotlin("plugin.serialization")
 }
 
+val reflektTestLibs: Configuration by configurations.creating {
+    description = "Dependencies that Reflekt will analyse during testing"
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isTransitive = false
+}
+
 dependencies {
     implementation(kotlin("compiler-embeddable"))
     implementation(kotlin("scripting-common"))
@@ -18,6 +25,14 @@ dependencies {
 
     implementation(projects.reflektCore)
     implementation(projects.reflektDsl)
+    implementation(projects.gradlePlugin)
+    implementation(kotlin("stdlib"))
+
+    // explicit dependencies on libs that are used by Reflekt tests
+    reflektTestLibs(projects.reflektCore)
+    reflektTestLibs(projects.reflektDsl)
+    reflektTestLibs(projects.gradlePlugin)
+    reflektTestLibs(kotlin("stdlib"))
 
     testImplementation(gradleTestKit())
 
@@ -34,7 +49,24 @@ dependencies {
     testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.5")
 }
 
+val reflektPrepareTestDependencies by tasks.registering(Sync::class) {
+    description = "Fetch libs from `reflektTestLibs` config and store them in `./build/reflekt-test-libs`"
+    from(reflektTestLibs)
+    into(project.layout.buildDirectory.dir("reflekt-test-libs"))
+    doLast {
+        logger.lifecycle("Fetched ${source.count()} Reflekt libs into $destinationDir")
+    }
+}
+
 tasks.withType<Test> {
+    dependsOn(reflektPrepareTestDependencies)
+
+    doFirst("provideReflektTestLibsPath") {
+        systemProperties(
+            "reflektTestLibDir" to reflektPrepareTestDependencies.get().destinationDir.canonicalPath
+        )
+    }
+
     useJUnitPlatform {
         includeTags = setOf("analysis", "scripting", "ir", "parametrizedType", "codegen", "ic")
     }
@@ -44,11 +76,11 @@ tasks.withType<Test> {
     }
 }
 
-val analysis by tasks.registering(Test::class) {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-
-    useJUnitPlatform {
-        includeTags = setOf("analysis")
+listOf("analysis", "ir").forEach { tag ->
+    tasks.register("test-$tag", Test::class) {
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+        description = "run tests tagged with '$tag'"
+        useJUnitPlatform { includeTags = setOf(tag) }
     }
 }
 
