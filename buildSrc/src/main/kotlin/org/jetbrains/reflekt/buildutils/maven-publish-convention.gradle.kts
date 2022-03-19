@@ -1,9 +1,6 @@
 package org.jetbrains.reflekt.buildutils
 
-import org.gradle.kotlin.dsl.*
-
 plugins {
-    base
     `maven-publish`
 }
 
@@ -27,6 +24,11 @@ publishing {
     }
 }
 
-tasks.publishToMavenLocal {
-    dependsOn(tasks.check)
+plugins.withType(JavaPlugin::class) {
+    publishing.publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+    // TODO add project description, URL, etc to pom
 }
