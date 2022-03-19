@@ -31,7 +31,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher") {
         because("Only needed to run tests in a version of IntelliJ IDEA that bundles older versions")
     }
-    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.7")
+    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.5")
 }
 
 tasks.withType<Test> {
