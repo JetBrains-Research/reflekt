@@ -14,6 +14,7 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
+    // Must be platform, not enforcedPlatform, else versions in consuming libraries will be overridden.
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:${getKotlinPluginVersion()}"))
 }
 

@@ -7,7 +7,8 @@ plugins {
 }
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:${getKotlinPluginVersion()}"))
+    // 'enforcedPlatform' is required to prevent conflicting jars - probably caused by not using the latest plugins
+    implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:${getKotlinPluginVersion()}"))
 
     // Define the Maven coordinates (not Gradle plugin ID!) of gradle plugins here.
 
