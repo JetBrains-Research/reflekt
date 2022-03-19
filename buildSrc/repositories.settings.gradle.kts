@@ -1,29 +1,52 @@
 @Suppress("UnstableApiUsage") // centralised repository definitions are incubating
 dependencyResolutionManagement {
-
     repositories {
         mavenCentral()
         google()
         gradlePluginPortal()
-        jetbrains()
+        jetbrainsSpace()
     }
 
     pluginManagement {
         repositories {
             gradlePluginPortal()
             mavenCentral()
-            jetbrains()
+            jetbrainsSpace()
         }
     }
 }
 
-
 /**
- * [enable] this to use latest Kotlin compiler version.
- * The full list of builds can be found here:
- * https://teamcity.jetbrains.com/buildConfiguration/Kotlin_KotlinPublic_BuildNumber?mode=builds&tag=bootstrap
- * (see builds with <boostrap> tag).
+ * The Jetbrains Space Maven repository.
+ *
+ * This is disabled by default. To enable it, enable [enableJetbrainsSpaceRepo] by...
+ *
+ * * Command line property:
+ *     ```shell
+ *     ./gradlew build -PenableJetbrainsSpaceRepo=true
+ *     ````
+ * * Environment variable:
+ *     ```env
+ *     ORG_GRADLE_PROJECT_enableJetbrainsSpaceRepo=true
+ *     ````
+ * * or in `$GRADLE_HOME/gradle.properties`, or `<project-root>/gradle.properties`
+ *     ```properties
+ *     enableJetbrainsSpaceRepo=true
+ *     ```
+ *
+ * [The full list of builds can be found here](https://teamcity.jetbrains.com/buildConfiguration/Kotlin_KotlinPublic_BuildNumber?mode=builds&tag=bootstrap).
+ * (see builds with `<boostrap>` tag).
+ *
+ * @see [enableJetbrainsSpaceRepo]
  */
-fun RepositoryHandler.jetbrains(enable: Boolean = false) {
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
+fun RepositoryHandler.jetbrainsSpace() {
+    if (enableJetbrainsSpaceRepo().get()) {
+        maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
+    }
 }
+
+/** @see [jetbrainsSpace] */
+fun enableJetbrainsSpaceRepo(): Provider<Boolean> =
+    providers.gradleProperty("enableJetbrainsSpaceRepo")
+        .map { it.toBoolean() }
+        .orElse(false)
