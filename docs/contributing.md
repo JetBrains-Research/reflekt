@@ -34,8 +34,8 @@ which will help keep your pull request simple and easy to apply.
 ## Search and fix formatting issues
 0. Run building without running detekt: `./gradlew build`
 1. To run detekt static analysis checks, use: `./gradlew detektCheckAll` (associated with gitHub Action)
-2. To run diktat static analysis checks, use: `./gradlew diktatCheckAll` (associated with gitHub Action)
-3. To try to automatically fix issues detected by diktat, use: `./gradlew diktatFixAll`
+2. To run diktat static analysis checks, use: `./gradlew diktatCheck` (associated with gitHub Action)
+3. To try to automatically fix issues detected by diktat, use: `./gradlew diktatFix`
 4. Make sure you're following our Kotlin docs formatting rules.
     <details>
         <summary>Click to see them</summary>

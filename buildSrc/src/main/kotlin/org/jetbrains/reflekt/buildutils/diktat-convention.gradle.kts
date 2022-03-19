@@ -18,5 +18,4 @@ diktat {
     // include("src/**/*.kt")
     // exclude("src/test/resources/**/*.kt")
     // }
-    debug = true
 }
