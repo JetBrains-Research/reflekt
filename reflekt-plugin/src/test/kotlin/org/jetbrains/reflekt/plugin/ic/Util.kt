@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.incremental.makeIncrementally
 import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getStdLibJar
 import java.io.File
-import org.jetbrains.reflekt.plugin.analysis.readTextNormalized
 
 internal fun createCompilerArguments(destinationDir: File, testDir: File, pathToDownloadKotlinSources: File): K2JVMCompilerArguments {
     val reflektJars = getReflektProjectJars().map { it.absolutePath }
@@ -31,7 +30,7 @@ internal fun compile(cacheDir: File, sourceRoots: Iterable<File>, args: K2JVMCom
 internal fun parseAdditionalCompilerArgs(testDir: File, argumentsFileName: String): List<String> {
     return File(testDir, argumentsFileName)
         .takeIf { it.exists() }
-        ?.readTextNormalized()
+        ?.readText()
         ?.split(" ", "\n")
         ?.filter { it.isNotBlank() }
         ?: emptyList()

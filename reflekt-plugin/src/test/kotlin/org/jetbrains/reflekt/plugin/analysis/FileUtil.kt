@@ -28,10 +28,3 @@ fun getProjectFilesInDirectory(directory: File): Set<File> =
 
 fun getTestsDirectories(cls: KClass<*>): List<File> = Util.getResourcesRootPath(cls).getNestedDirectories().sorted()
     .filter { "test" in it.name }
-
-/**
- * Read all lines in a file, with line-endings normalized to `\n`. The result is [trim]-ed.
- *
- * This helps ensure consistent test results across Windows and Unix platforms.
- */
-fun File.readTextNormalized() = useLines(Charsets.UTF_8) { it.joinToString("\n").trim() }

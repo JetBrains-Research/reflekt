@@ -16,7 +16,6 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
-import org.jetbrains.reflekt.plugin.analysis.readTextNormalized
 
 class TypeStringRepresentationTest {
     @Tag("codegen")
@@ -78,7 +77,7 @@ class TypeStringRepresentationTest {
 
         private fun getResultForTest(files: Set<File>, testKey: String): String {
             val resFile = files.find { it.nameWithoutExtension.endsWith(testKey) } ?: error("File with results for the test $testKey was not found")
-            return resFile.readTextNormalized()
+            return resFile.readText().trim()
         }
 
         @OptIn(ExperimentalStdlibApi::class)

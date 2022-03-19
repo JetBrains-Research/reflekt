@@ -35,7 +35,7 @@ class CodeGenerationTest {
                 val project = getProjectFilesInDirectory(directory)
                 // We use txt format instead of kt files since each of generatedCode file has the same package name
                 // and Idea highlights it as en error
-                val generatedCode = directory.findInDirectory("generatedCode.txt").readTextNormalized()
+                val generatedCode = directory.findInDirectory("generatedCode.txt").readText().trim()
                 Arguments.of(commonTestFiles.union(project), generatedCode, directory.name)
             }
         }

@@ -36,8 +36,8 @@ class AnalysisTest {
             val commonTestFiles = getResourcesRootPath(AnalysisTest::class, "commonTestFiles").getAllNestedFiles().toSet()
             return getTestsDirectories(AnalysisTest::class).map { directory ->
                 val project = getProjectFilesInDirectory(directory)
-                val invokes = directory.findInDirectory("invokes.txt").readTextNormalized()
-                val uses = directory.findInDirectory("uses.txt").readTextNormalized()
+                val invokes = directory.findInDirectory("invokes.txt").readText().trim()
+                val uses = directory.findInDirectory("uses.txt").readText().trim()
                 Arguments.of(commonTestFiles.union(project), invokes, uses, directory.name)
             }
         }
