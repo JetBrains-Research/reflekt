@@ -1,11 +1,10 @@
-//import tanvd.kosogor.proxy.publishJar
-
+// import tanvd.kosogor.proxy.publishJar
 
 plugins {
     org.jetbrains.reflekt.buildutils.`kotlin-jvm-convention`
 
     kotlin("kapt")
-    kotlin("plugin.serialization")// version "1.5.31" apply true
+    kotlin("plugin.serialization")
 }
 
 dependencies {
@@ -32,7 +31,6 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher") {
         because("Only needed to run tests in a version of IntelliJ IDEA that bundles older versions")
     }
-//    testImplementation("com.google.code.gson", "gson", "2.8.8")
     testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.7")
 }
 
@@ -56,4 +54,4 @@ tasks.create("analysis", Test::class.java) {
     }
 }
 
-//publishJar {}
+// publishJar {}

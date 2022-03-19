@@ -46,5 +46,4 @@ object MavenLocalUtil {
         }
         return Util.runProcessBuilder(Util.Command(listOf("/bin/bash", "-c", "echo \$HOME"))).removeSuffix("/")
     }
-
 }
