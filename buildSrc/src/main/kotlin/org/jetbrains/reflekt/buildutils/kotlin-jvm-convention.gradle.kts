@@ -14,7 +14,7 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
-    implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:${getKotlinPluginVersion()}"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:${getKotlinPluginVersion()}"))
 }
 
 tasks.withType<KotlinCompile> {

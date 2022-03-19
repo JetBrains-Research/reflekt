@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:${getKotlinPluginVersion()}"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:${getKotlinPluginVersion()}"))
 
     // Define the Maven coordinates (not Gradle plugin ID!) of gradle plugins here.
 
