@@ -22,6 +22,7 @@ plugins {
 //    kotlin("kapt") version "1.5.31" apply true
     id("org.jetbrains.dokka")
     idea
+    id("org.jetbrains.kotlinx.kover")
 }
 
 
