@@ -25,7 +25,7 @@ object Util {
         MyCliOption(
             name = "reflektMetaFile",
             valueDescription = "<file's path>",
-            description = "File's path from the library with Reflekt meta infromation",
+            description = "File's path from the library with Reflekt meta information",
         )
     val OUTPUT_DIR_OPTION_INFO =
         MyCliOption(
