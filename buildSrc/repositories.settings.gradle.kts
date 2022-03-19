@@ -1,5 +1,10 @@
+// Repositories definitions that will be applied to both the buildSrc and main Gradle builds.
+
 @Suppress("UnstableApiUsage") // centralised repository definitions are incubating
 dependencyResolutionManagement {
+
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+
     repositories {
         mavenCentral()
         google()

@@ -32,6 +32,7 @@ This will avoid your local repo having too many merge commits
 which will help keep your pull request simple and easy to apply.
 
 ## Search and fix formatting issues
+
 0. Run building without running detekt: `./gradlew build`
 1. To run detekt static analysis checks, use: `./gradlew detekt` (associated with gitHub Action)
 2. To run diktat static analysis checks, use: `./gradlew diktatCheck` (associated with gitHub Action)
@@ -42,10 +43,47 @@ which will help keep your pull request simple and easy to apply.
    
    1. Keep docs concise but complete
    2. Sum up the idea in a first sentence.
-Avoid meaningless constructions as `This function allows users to get the foo`, just shortening to `Gets the foo`.
-Choose the third-person form over the second-person (`Gets the foo` over `Get the foo`)
-   4. Start sentences with a capital letter and end with a period
+      Avoid meaningless constructions as `This function allows users to get the foo`, just shortening to `Gets the foo`.
+      Choose the third-person form over the second-person (`Gets the foo` over `Get the foo`)
+   3. Start sentences with a capital letter and end with a period
    </details>
+
+## Dependency management
+
+##### Plugins
+
+To set the version of Gradle plugins, define the **Maven** coordinates (not the Gradle plugin ID!)
+in [`buildSrc/build.gradle.kts`](../buildSrc/build.gradle.kts). The plugin can then be applied to 
+any subproject without specifying a version.
+
+###### Example
+
+To apply the [Dokka](https://plugins.gradle.org/plugin/org.jetbrains.dokka) plugin, check the Gradle 
+Plugin Portal and find the Maven coordinates, and plugin ID.
+
+```kotlin
+// buildSrc/build.gradle.kts
+dependencies {
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10") // maven coordinates
+}
+```
+
+```kotlin
+// <root>/build.gradle.kts
+plugins {
+    id("org.jetbrains.dokka") // Gradle plugin ID - no version is required!
+}
+```
+
+##### Repositories
+
+Repositories are defined in 
+[`buildSrc/repositories.settings.gradle.kts`](../buildSrc/repositories.settings.gradle.kts) 
+and use Gradle's centralized repository definitions. There's no need to define re
+
+By default, the Jetbrains Space repository is disabled. 
+See the `repositories.settings.gradle.kts` for instructions on enabling it.
+
 
 ## Checklist
 
