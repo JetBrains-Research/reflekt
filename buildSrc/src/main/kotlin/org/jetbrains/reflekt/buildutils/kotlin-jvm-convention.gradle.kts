@@ -20,7 +20,6 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        useIR = true
         languageVersion = "1.5"
         apiVersion = "1.5"
         jvmTarget = "11"
