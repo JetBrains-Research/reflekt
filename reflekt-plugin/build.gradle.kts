@@ -44,13 +44,11 @@ tasks.withType<Test> {
     }
 }
 
-tasks.create("analysis", Test::class.java) {
+val analysis by tasks.registering(Test::class) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+
     useJUnitPlatform {
         includeTags = setOf("analysis")
-    }
-
-    testLogging {
-        events("passed", "skipped", "failed")
     }
 }
 
