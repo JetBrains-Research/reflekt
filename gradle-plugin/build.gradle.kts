@@ -1,11 +1,7 @@
-/*
-import tanvd.kosogor.proxy.publishJar
-import tanvd.kosogor.proxy.publishPlugin
-*/
-
 plugins {
     org.jetbrains.reflekt.buildutils.`kotlin-jvm-convention`
     `java-gradle-plugin`
+    id("com.gradle.plugin-publish")
     kotlin("kapt")
 }
 
@@ -16,29 +12,20 @@ dependencies {
     implementation(kotlin("compiler-embeddable"))
 }
 
+pluginBundle {
+    description = "Compile-time reflection library"
+    website ="https://github.com/JetBrains-Research/reflekt"
+    vcsUrl ="https://github.com/JetBrains-Research/reflekt"
+    tags = listOf("kotlin", "reflection", "reflekt")
+}
+
 gradlePlugin {
     plugins {
         create("Reflekt") {
             id = "org.jetbrains.reflekt"
+            displayName = "Reflekt"
+            description = "Reflekt is a compile-time reflection library"
             implementationClass = "org.jetbrains.reflekt.plugin.ReflektSubPlugin"
         }
     }
 }
-
-/*
-publishPlugin {
-id = "org.jetbrains.reflekt"
-displayName = "Reflekt"
-implementationClass = "org.jetbrains.reflekt.plugin.ReflektSubPlugin"
-version = project.version.toString()
-
-info {
-description = "Compile-time reflection library"
-website = "https://github.com/JetBrains-Research/reflekt"
-vcsUrl = "https://github.com/JetBrains-Research/reflekt"
-tags.addAll(listOf("kotlin", "reflection", "reflekt"))
-}
-}
-
-publishJar {}
-*/
