@@ -7,6 +7,7 @@ plugins {
     kotlin("jvm")
     id("org.jetbrains.reflekt.buildutils.maven-publish-convention")
     id("org.jetbrains.reflekt.buildutils.diktat-convention")
+    id("org.jetbrains.reflekt.buildutils.detekt-convention")
 }
 
 group = rootProject.group
