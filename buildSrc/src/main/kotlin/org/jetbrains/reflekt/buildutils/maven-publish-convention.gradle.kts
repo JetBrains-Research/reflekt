@@ -28,7 +28,22 @@ plugins.withType(JavaPlugin::class) {
     publishing.publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            reflektPom()
         }
     }
-    // TODO add project description, URL, etc to pom
+}
+
+fun MavenPublication.reflektPom() = pom {
+    description.set(ProjectMetadata.description)
+    url.set(ProjectMetadata.homepage)
+    licenses {
+        license {
+            name.set(ProjectMetadata.licenseName)
+            url.set(ProjectMetadata.licenseUrl)
+        }
+    }
+    scm {
+        connection.set(ProjectMetadata.scmConnection)
+        url.set(ProjectMetadata.scmHomepage)
+    }
 }

@@ -1,3 +1,5 @@
+import org.jetbrains.reflekt.buildutils.ProjectMetadata
+
 plugins {
     org.jetbrains.reflekt.buildutils.`kotlin-jvm-convention`
     `java-gradle-plugin`
@@ -13,9 +15,9 @@ dependencies {
 }
 
 pluginBundle {
-    description = "Compile-time reflection library"
-    website ="https://github.com/JetBrains-Research/reflekt"
-    vcsUrl ="https://github.com/JetBrains-Research/reflekt"
+    description = ProjectMetadata.description
+    website = ProjectMetadata.homepage
+    vcsUrl = ProjectMetadata.scmHomepage
     tags = listOf("kotlin", "reflection", "reflekt")
 }
 
@@ -24,7 +26,7 @@ gradlePlugin {
         create("Reflekt") {
             id = "org.jetbrains.reflekt"
             displayName = "Reflekt"
-            description = "Reflekt is a compile-time reflection library"
+            description = "Apply Reflekt compile-time reflection to a Gradle project"
             implementationClass = "org.jetbrains.reflekt.plugin.ReflektSubPlugin"
         }
     }
