@@ -24,12 +24,15 @@ data class ResultFile<T>(
     val resultMethodBody: String = "TODO()",
 ) {
     val classPath = "$path.${name.split('.').joinToString("") { it.replaceFirstChar(Char::titlecase) }}"
-    val file = SourceFile.kotlin(name, """
-package $path
-${import?.let { "import $it" }}
-
-fun $resultMethod() = $resultMethodBody
-""")
+    val file = SourceFile.kotlin(
+        name,
+        """
+            |package $path
+            |${import?.let { "import $it" }}
+            |
+            |fun $resultMethod() = $resultMethodBody
+        """.trimMargin()
+    )
 }
 
 /**

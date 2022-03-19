@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 
 @Tag("ir")
 class IrTransformClassesAndObjectsTest {
+
     @Test
     fun testClasses() {
         assertEquals(
@@ -15,7 +16,6 @@ class IrTransformClassesAndObjectsTest {
             ReflektType.REFLEKT.classesFqNamesCall(Signature("CInterface")).call()
         )
     }
-
 
     @Test
     fun testObjects() {
