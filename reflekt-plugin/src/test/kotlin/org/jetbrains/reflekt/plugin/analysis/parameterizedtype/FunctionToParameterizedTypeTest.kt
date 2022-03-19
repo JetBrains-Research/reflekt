@@ -1,41 +1,42 @@
 package org.jetbrains.reflekt.plugin.analysis.parameterizedtype
 
-import org.jetbrains.reflekt.plugin.analysis.*
-import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.*
-import org.jetbrains.reflekt.plugin.analysis.psi.function.*
-import org.jetbrains.reflekt.plugin.util.Util
-
 import com.tschuchort.compiletesting.KotlinCompilation
-import org.jetbrains.reflekt.util.file.getAllNestedFiles
+import java.io.File
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.reflekt.plugin.analysis.parameterizedtype.util.*
+import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
+import org.jetbrains.reflekt.plugin.analysis.toPrettyString
+import org.jetbrains.reflekt.plugin.util.Util
+import org.jetbrains.reflekt.util.file.getAllNestedFiles
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
-import java.io.File
-
 class FunctionToParameterizedTypeTest {
     @Tag("parametrizedType")
     @MethodSource("getKtNamedFunctionsWithTypes")
-    @ParameterizedTest(name = "test {index}")
+    @ParameterizedTest(name = "[{index}] {0}")
     fun testKtNamedFunctions(
+        functionName: String,
         binding: BindingContext,
         function: KtNamedFunction,
-        expectedKotlinType: String) {
-        Assertions.assertEquals(expectedKotlinType, function.toParameterizedType(binding).toPrettyString(), "Incorrect type for function ${function.name}")
+        expectedKotlinType: String
+    ) {
+        Assertions.assertEquals(expectedKotlinType, function.toParameterizedType(binding).toPrettyString(), "Incorrect type for function $functionName")
     }
 
     @Tag("parametrizedType")
     @MethodSource("getIrFunctionsWithTypes")
-    @ParameterizedTest(name = "test {index}")
+    @ParameterizedTest(name = "[{index}] {0}")
     fun testIrFunctions(
         name: String,
         actualType: KotlinType,
         expectedKotlinType: String?,
-        exitCode: KotlinCompilation.ExitCode) {
+        exitCode: KotlinCompilation.ExitCode
+    ) {
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, exitCode)
         Assertions.assertEquals(expectedKotlinType, actualType.toPrettyString(), "Incorrect type for function $name")
     }
@@ -43,12 +44,13 @@ class FunctionToParameterizedTypeTest {
     @Tag("parametrizedType")
     @Disabled("Kotlin type of overridden IrFunction is null, see detailed explanation in comments above")
     @MethodSource("getIrFunctionsWithTypesFailed")
-    @ParameterizedTest(name = "test {index}")
+    @ParameterizedTest(name = "[{index}] {0} -> expect {2}")
     fun testIrFunctionsFailed(
         name: String,
         actualType: KotlinType,
         expectedKotlinType: String?,
-        exitCode: KotlinCompilation.ExitCode) {
+        exitCode: KotlinCompilation.ExitCode
+    ) {
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, exitCode)
         Assertions.assertEquals(expectedKotlinType, actualType.toPrettyString(), "Incorrect type for function $name")
     }
@@ -68,7 +70,7 @@ class FunctionToParameterizedTypeTest {
         @JvmStatic
         fun getKtNamedFunctionsWithTypes(): List<Arguments> {
             val (functions, binding) = getFunctionsToTestFromResources(FunctionToParameterizedTypeTest::class, TEST_DIR_NAME)
-            return functions.map { Arguments.of(binding, it, it.getTagContent("kotlinType")) }
+            return functions.map { Arguments.of(it.name, binding, it, it.getTagContent("kotlinType")) }
         }
 
         @JvmStatic

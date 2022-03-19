@@ -36,7 +36,7 @@ class IncrementalCompilationTest {
 
     @Tag("ic")
     @MethodSource("data")
-    @ParameterizedTest(name = "test {index}")
+    @ParameterizedTest(name = "[{index}] expected: {2}")
     fun incrementalCompilationBaseTest(sourcesPath: File, modifications: List<Modification>, expectedResult: String?) {
         val testRoot = initTestRoot()
         val srcDir = File(testRoot, "src").apply { mkdirs() }

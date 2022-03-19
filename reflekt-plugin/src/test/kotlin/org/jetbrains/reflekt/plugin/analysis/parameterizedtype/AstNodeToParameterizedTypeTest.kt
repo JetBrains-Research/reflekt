@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource
 class AstNodeToParameterizedTypeTest {
     @Tag("parametrizedType")
     @MethodSource("getAstNodeKotlinTypes")
-    @ParameterizedTest(name = "test {index}")
+    @ParameterizedTest(name = "[{index}] {2}")
     fun testAstNodeToParameterizedType(
         binding: BindingContext,
         astNode: ASTNode,

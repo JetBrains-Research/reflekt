@@ -15,7 +15,7 @@ import java.io.File
 class CodeGenerationTest {
     @Tag("codegen")
     @MethodSource("data")
-    @ParameterizedTest(name = "test {index}")
+    @ParameterizedTest(name = "[{index}] {2}")
     fun `code generation test`(
         sources: Set<File>,
         expectedCode: String,

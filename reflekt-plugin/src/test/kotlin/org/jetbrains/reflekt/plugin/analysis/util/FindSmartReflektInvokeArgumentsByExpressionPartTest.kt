@@ -12,9 +12,10 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
 
 class FindSmartReflektInvokeArgumentsByExpressionPartTest {
+
     @Tag("analysis")
     @MethodSource("data")
-    @ParameterizedTest(name = "test {index}")
+    @ParameterizedTest(name = "[{index}] {2}")
     fun `findSmartReflektInvokeArgumentsByExpressionPart function test`(
         sources: Set<File>,
         expectedResult: String,

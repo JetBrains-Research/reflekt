@@ -25,7 +25,7 @@ class FunctionSubtypesTest {
 
     @Tag("parametrizedType")
     @MethodSource("getKtNamedFunctionsWithSubtypes")
-    @ParameterizedTest(name = "test {index}")
+    @ParameterizedTest(name = "[{index}] expect subtypes {3}")
     fun testFunctionSubtypes(
         binding: BindingContext,
         function: KtNamedFunction,
