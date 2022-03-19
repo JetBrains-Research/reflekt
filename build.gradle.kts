@@ -1,9 +1,7 @@
 plugins {
     // id("tanvd.kosogor") //version "1.0.12" apply true
-    // id("com.github.gmazzo.buildconfig") version "3.0.3" apply false
     org.jetbrains.reflekt.buildutils.`maven-publish-convention`
     org.jetbrains.reflekt.buildutils.`diktat-convention`
-    // kotlin("kapt") version "1.5.31" apply true
     id("org.jetbrains.dokka")
     idea
     id("org.jetbrains.kotlinx.kover")
