@@ -58,7 +58,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         require(resultType is IrSimpleType)
 
         val itemType = resultType.arguments[0].typeOrNull
-            ?: throw ReflektGenerationException("Return type must have at one type argument (e. g. List<T>, Set<T>)")
+            ?: throw ReflektGenerationException("Return type must have one type argument (e. g. List<T>, Set<T>)")
 
         val items = resultValues.map {
             context.referenceClass(FqName(it)) ?: throw ReflektGenerationException("Failed to find class $it")

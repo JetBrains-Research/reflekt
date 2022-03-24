@@ -36,6 +36,7 @@ import java.io.File
  */
 @AutoService(ComponentRegistrar::class)
 @Suppress("TOO_LONG_FUNCTION")
+// TODO: delete unnecessary extensions
 class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false) : ComponentRegistrar {
     /**
      * Tne main plugin's function that parses all compiler arguments and runs all Kotlin compiler's extensions.
