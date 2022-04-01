@@ -19,6 +19,8 @@ typealias SerializableFunctionInvokes = MutableSet<SerializableSignatureToAnnota
 
 typealias BaseInvokeProcessors = Set<BaseInvokesProcessor<*>>
 
+interface ReflektQueryArguments
+
 /**
  * If the Reflekt function <withAnnotations> is called without supertypes then [supertypes] is setOf(Any::class::qualifiedName)
  * If the Reflekt function <withSupertypes> is called without annotations then [annotations] is empty
@@ -30,7 +32,7 @@ typealias BaseInvokeProcessors = Set<BaseInvokesProcessor<*>>
 data class SupertypesToAnnotations(
     val supertypes: Set<String> = emptySet(),
     val annotations: Set<String> = emptySet(),
-)
+) : ReflektQueryArguments
 
 /**
  * @property signature
@@ -42,7 +44,7 @@ data class SignatureToAnnotations(
     var signature: KotlinType?,
     val annotations: Set<String> = emptySet(),
     val irSignature: IrType? = null,
-)
+) : ReflektQueryArguments
 
 /**
  * @property signature

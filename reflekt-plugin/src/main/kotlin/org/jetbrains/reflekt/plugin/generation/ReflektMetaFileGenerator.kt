@@ -1,7 +1,6 @@
 package org.jetbrains.reflekt.plugin.generation
 
 import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.collector.ir.ReflektArgumentsCollectorExtension
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstancesFqNames
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
 import org.jetbrains.reflekt.plugin.utils.Util.log
@@ -13,14 +12,17 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 
 import java.io.File
 
-class ReflektMetaFileGeneratorExtension(
+/*
+ * A class to generate the ReflektMeta file.
+ * We use IrGenerationExtension here to register it after collecting all Reflekt arguments.
+ */
+class ReflektMetaFileGenerator(
     private val instancesAnalyzer: IrInstancesAnalyzer,
-    private val argumentsCollector: ReflektArgumentsCollectorExtension,
+    private val reflektQueriesArguments: LibraryArguments,
     private val reflektMetaFile: File,
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        val reflektQueriesArguments = argumentsCollector.getArguments()
         val instancesFqNames = instancesAnalyzer.getInstancesFqNames()
         saveMetaData(reflektQueriesArguments, instancesFqNames)
     }

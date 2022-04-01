@@ -45,6 +45,7 @@ allprojects {
         enabled = true
         // Use DependencyHandlers which have canBeResolve = True
         librariesToIntrospect = listOf()
+//        toSaveMetadata = true
     }
 
 }

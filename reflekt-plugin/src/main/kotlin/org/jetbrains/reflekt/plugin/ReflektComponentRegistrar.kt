@@ -3,8 +3,10 @@ package org.jetbrains.reflekt.plugin
 import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.collector.ir.InstancesCollectorExtension
 import org.jetbrains.reflekt.plugin.analysis.collector.ir.ReflektArgumentsCollectorExtension
-import org.jetbrains.reflekt.plugin.generation.ReflektMetaFileGeneratorExtension
-import org.jetbrains.reflekt.plugin.generation.ir.*
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
+import org.jetbrains.reflekt.plugin.generation.ReflektMetaFileGenerator
+import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
+import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.utils.PluginConfig
 import org.jetbrains.reflekt.plugin.utils.Util.log
 import org.jetbrains.reflekt.plugin.utils.Util.messageCollector
@@ -75,14 +77,21 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
     }
 
     private fun MockProject.registerLibraryExtensions(config: PluginConfig, instancesAnalyzer: IrInstancesAnalyzer) {
-        val argumentsCollector = ReflektArgumentsCollectorExtension(messageCollector = config.messageCollector)
-        IrGenerationExtension.registerExtension(this, argumentsCollector)
+        val reflektQueriesArguments = LibraryArguments()
+        IrGenerationExtension.registerExtension(
+            this,
+            ReflektArgumentsCollectorExtension(
+                irInstancesAnalyzer = instancesAnalyzer,
+                reflektQueriesArguments = reflektQueriesArguments,
+                messageCollector = config.messageCollector,
+            ),
+        )
         val reflektMetaFile = config.reflektMetaFileRelativePath?.let { File(it) } ?: error("reflektMetaFileRelativePath is null for the project")
         IrGenerationExtension.registerExtension(
             this,
-            ReflektMetaFileGeneratorExtension(
+            ReflektMetaFileGenerator(
                 instancesAnalyzer,
-                argumentsCollector,
+                reflektQueriesArguments,
                 reflektMetaFile,
                 config.messageCollector,
             ),
@@ -96,7 +105,6 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
             ReflektIrGenerationExtension(
                 irInstancesAnalyzer = instancesAnalyzer,
                 messageCollector = config.messageCollector,
-                toReplaceIr = !config.toSaveMetadata,
             ),
         )
 

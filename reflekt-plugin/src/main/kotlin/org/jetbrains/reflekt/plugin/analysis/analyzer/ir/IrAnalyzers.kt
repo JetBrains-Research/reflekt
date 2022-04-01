@@ -3,6 +3,7 @@
 package org.jetbrains.reflekt.plugin.analysis.analyzer.ir
 
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
+import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektQueryArguments
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.instances.*
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.*
 import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
@@ -77,5 +78,19 @@ class IrReflektQueriesAnalyzer(irInstances: IrInstances, context: IrPluginContex
         return processors.filter { it.shouldRunOn(element) }.mapNotNull {
             (it as? IrReflektArgumentProcessor<*, *>)?.processWithCurrentResult(element, file)
         }.flatten()
+    }
+
+    fun parseReflektQueriesArguments(element: IrElement): ReflektQueryArguments? {
+        if (element !is IrCall) {
+            return null
+        }
+        val arguments = processors.filter { it.shouldRunOn(element) }.mapNotNull {
+            (it as? IrReflektArgumentProcessor<*, *>)?.processQueryArguments(element)
+        }
+        require(arguments.size <= 1) { "Collect several types of reflekt query arguments from one call!" }
+        if (arguments.isEmpty()) {
+            return null
+        }
+        return arguments.first()
     }
 }

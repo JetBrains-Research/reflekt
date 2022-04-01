@@ -16,7 +16,6 @@ import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
  * @param messageCollector
  */
 class ReflektIrGenerationExtension(
-    private val toReplaceIr: Boolean,
     private val irInstancesAnalyzer: IrInstancesAnalyzer,
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
@@ -24,9 +23,6 @@ class ReflektIrGenerationExtension(
      * Replace IR in the Reflekt queries to the list of the found entities
      */
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        if (!toReplaceIr) {
-            return
-        }
         val irInstances = irInstancesAnalyzer.getIrInstances()
         if (irInstances.isEmpty()) {
             return

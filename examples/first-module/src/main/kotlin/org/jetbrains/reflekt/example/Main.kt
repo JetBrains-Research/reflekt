@@ -2,6 +2,7 @@ package org.jetbrains.reflekt.example
 
 import org.jetbrains.kotlin.backend.common.ir.isTopLevel
 import org.jetbrains.reflekt.SmartReflekt
+import org.jetbrains.reflekt.Reflekt
 
 class Test(var a: List<Any>, b: List<Any>)
 
