@@ -26,11 +26,11 @@ class ExternalLibrariesAnalyzer(
         var libraryInvokes = ReflektInvokes()
         val packages = mutableSetOf<String>()
         reflektMetaFiles.forEach {
-            val currentInvokesWithPackages = SerializationUtils.decodeInvokes(it.readBytes(), module)
-            messageCollector?.log("Deserialized invokes: ${currentInvokesWithPackages.invokes}")
-            messageCollector?.log("Deserialized packages: ${currentInvokesWithPackages.packages}")
-            libraryInvokes = libraryInvokes.merge(currentInvokesWithPackages.invokes)
-            packages.addAll(currentInvokesWithPackages.packages)
+//            val currentInvokesWithPackages = SerializationUtils.decodeInvokes(it.readBytes(), module)
+//            messageCollector?.log("Deserialized invokes: ${currentInvokesWithPackages.invokes}")
+//            messageCollector?.log("Deserialized packages: ${currentInvokesWithPackages.packages}")
+//            libraryInvokes = libraryInvokes.merge(currentInvokesWithPackages.invokes)
+//            packages.addAll(currentInvokesWithPackages.packages)
         }
         messageCollector?.log("Library invokes: $libraryInvokes")
         messageCollector?.log("Library packages: $packages")

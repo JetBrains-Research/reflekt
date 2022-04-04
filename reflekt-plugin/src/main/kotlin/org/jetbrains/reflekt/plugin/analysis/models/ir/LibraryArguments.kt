@@ -1,11 +1,13 @@
 package org.jetbrains.reflekt.plugin.analysis.models.ir
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrReflektQueriesAnalyzer
+import kotlinx.serialization.Serializable
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.reflekt.plugin.analysis.models.BaseReflektDataByFile
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SignatureToAnnotations
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SupertypesToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.merge
+import org.jetbrains.reflekt.plugin.analysis.models.psi.*
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
-import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.ReflektArgumentsToFileSet
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toIrType
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableIrType
 
 typealias LibraryArgumentsMap<T> = HashMap<FileId, MutableSet<T>>
 
@@ -25,34 +27,65 @@ data class LibraryArguments(
     functions,
 ) {
     fun merge(second: LibraryArguments) = LibraryArguments(
-        classes = this.classes.merge(second.classes),
-        objects = this.objects.merge(second.objects),
-        functions = this.functions.merge(second.functions),
+        classes = classes.merge(second.classes) { mutableSetOf() },
+        objects = objects.merge(second.objects) { mutableSetOf() },
+        functions = functions.merge(second.functions) { mutableSetOf() },
     )
 
-    companion object {
-        fun fromIrReflektQueriesAnalyzer(analyzer: IrReflektQueriesAnalyzer) = LibraryArguments(
-            classes = analyzer.classProcessor.collectedElements.toLibraryArgumentsMap(),
-            objects = analyzer.objectProcessor.collectedElements.toLibraryArgumentsMap(),
-            functions = analyzer.functionProcessor.collectedElements.toLibraryArgumentsMap(),
+    fun toSerializableLibraryArguments() =
+        SerializableReflektQueryArguments(
+            objects = objects,
+            classes = classes,
+            functions = functions.mapValues { fileToArgs ->
+                fileToArgs.value.map {
+                    SerializableSignatureToAnnotations(
+                        annotations = it.annotations,
+                        irSignature = it.irSignature?.toSerializableIrType(),
+                    )
+                }.toMutableSet()
+            } as HashMap,
+        )
+}
+
+@Suppress("ConstructorParameterNaming")
+data class LibraryArgumentsWithInstances(
+    private var libraryArguments_: LibraryArguments = LibraryArguments(),
+    private var instances_: IrInstancesFqNames = IrInstancesFqNames(),
+) {
+    val libraryArguments: LibraryArguments get() = libraryArguments_
+    val instances: IrInstancesFqNames get() = instances_
+
+    fun toSerializableLibraryArgumentsWithInstances() =
+        SerializableLibraryArgumentsWithInstances(
+            libraryArguments = libraryArguments.toSerializableLibraryArguments(),
+            instances = instances,
         )
 
-        @Suppress("TYPE_ALIAS")
-        private fun <R> ReflektArgumentsToFileSet<R>.toLibraryArgumentsMap(): LibraryArgumentsMap<R> {
-            val entities: HashMap<FileId, MutableSet<R>> = HashMap()
-            this.forEach { (args, files) ->
-                files.forEach {
-                    entities.getOrPut(it) { mutableSetOf() }.add(args)
-                }
-            }
-            return entities
-        }
+    fun replace(newLibraryArguments: LibraryArguments, newInstances: IrInstancesFqNames) {
+        libraryArguments_ = newLibraryArguments
+        instances_ = newInstances
     }
 }
 
-private fun <T> LibraryArgumentsMap<T>.merge(second: LibraryArgumentsMap<T>): LibraryArgumentsMap<T> {
-    second.forEach { (file, res) ->
-        this.getOrPut(file) { mutableSetOf() }.addAll(res)
-    }
-    return second
+@Serializable
+data class SerializableLibraryArgumentsWithInstances(
+    val libraryArguments: SerializableReflektQueryArguments,
+    val instances: IrInstancesFqNames,
+) {
+    fun toLibraryArgumentsWithInstances(pluginContext: IrPluginContext) =
+        LibraryArgumentsWithInstances(
+            LibraryArguments(
+                objects = libraryArguments.objects,
+                classes = libraryArguments.classes,
+                functions = libraryArguments.functions.mapValues { fileToInvokes ->
+                    fileToInvokes.value.map {
+                        SignatureToAnnotations(
+                            annotations = it.annotations,
+                            irSignature = it.irSignature?.toIrType(pluginContext)
+                        )
+                    }.toMutableSet()
+                } as HashMap,
+            ),
+            instances,
+        )
 }

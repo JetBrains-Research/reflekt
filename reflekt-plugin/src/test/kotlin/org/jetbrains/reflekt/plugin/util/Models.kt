@@ -35,7 +35,7 @@ fun SupertypesToAnnotations.toPrettyString() = "supertypesToAnnotations: ${
 
 fun SignatureToAnnotations.toPrettyString() = "signatureToAnnotations: ${
     listOf(
-        "signature: ${signature.toPrettyString()},\n" +
+        "irSignature: ${irSignature.toPrettyString()},\n" +
             "annotations: ${annotations.joinToStringIndented()}"
     ).joinToStringIndented()
 }"
@@ -49,10 +49,10 @@ fun SupertypesToFilters.toPrettyString() = "supertype: ${supertype?.toPrettyStri
 fun Set<SupertypesToFilters>.toPrettyString() = joinToStringIndented { it.toPrettyString() }
 
 @JvmName("toPrettyStringSFunctionInvokes")
-fun FunctionInvokes.toPrettyString() = joinToStringIndented { it.toPrettyString() }
+fun FunctionQueryArguments.toPrettyString() = joinToStringIndented { it.toPrettyString() }
 
 @JvmName("toPrettyStringClassOrObjectInvokes")
-fun ClassOrObjectInvokes.toPrettyString() = joinToStringIndented { it.toPrettyString() }
+fun ClassOrObjectQueryArguments.toPrettyString() = joinToStringIndented { it.toPrettyString() }
 
 
 fun ReflektInvokes.toPrettyString() = "objects: ${objects.joinToStringIndented { k, v -> (k to v).toPrettyString { v.toPrettyString() } }},\n" +

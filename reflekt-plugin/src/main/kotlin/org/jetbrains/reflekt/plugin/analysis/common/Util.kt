@@ -60,34 +60,6 @@ fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding
     }
 }
 
-fun findReflektFunctionInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SignatureToAnnotations {
-    val filteredChildren = dotQualifiedExpressionNode.findMatchingFunctionInExpression()
-
-    val annotations = HashSet<String>()
-    var signature: KotlinType? = null
-
-    for (node in filteredChildren) {
-        val callExpressionRoot = node.parents().firstOrNull { it.hasType(ElementType.CALL_EXPRESSION) } ?: continue
-        when (node.text) {
-            ReflektFunction.WITH_ANNOTATIONS.functionName -> {
-                callExpressionRoot.getFqNamesOfValueArguments(binding).let { annotations.addAll(it) }
-                signature = callExpressionRoot.getTypeArguments().first().toParameterizedType(binding)
-            }
-            else -> error("Found an unexpected node text: ${node.text}")
-        }
-    }
-    signature ?: run {
-        error("Failed to find function signature.")
-    }
-    return SignatureToAnnotations(signature, annotations)
-}
-
-fun findReflektFunctionInvokeArgumentsByExpressionPart(expression: KtExpression, binding: BindingContext): SignatureToAnnotations? {
-    val callExpressionRoot = expression.node.parents().first()
-    return callExpressionRoot.findLastParentByType(ElementType.DOT_QUALIFIED_EXPRESSION)?.let { node ->
-        findReflektFunctionInvokeArguments(node, binding)
-    }
-}
 
 // [1]SmartReflekt.[2]|objects()/classes() or so on|
 // [dotQualifiedExpressionNode] is [1]

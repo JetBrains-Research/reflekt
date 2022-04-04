@@ -1,23 +1,16 @@
 package org.jetbrains.reflekt.plugin.analysis.models.psi
 
+import kotlinx.serialization.Serializable
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.reflekt.plugin.analysis.models.*
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
-import org.jetbrains.reflekt.plugin.analysis.processor.source.invokes.base.BaseInvokesProcessor
-import org.jetbrains.reflekt.plugin.analysis.processor.source.invokes.reflekt.*
-import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toKotlinType
-import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableKotlinType
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toIrType
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableIrType
 
-import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
-import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.types.KotlinType
-
-import kotlinx.serialization.Serializable
-
-typealias ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
-typealias FunctionInvokes = MutableSet<SignatureToAnnotations>
-typealias SerializableFunctionInvokes = MutableSet<SerializableSignatureToAnnotations>
-
-typealias BaseInvokeProcessors = Set<BaseInvokesProcessor<*>>
+typealias ClassOrObjectQueryArguments = MutableSet<SupertypesToAnnotations>
+typealias FunctionQueryArguments = MutableSet<SignatureToAnnotations>
+typealias SerializableFunctionQueryArguments = MutableSet<SerializableSignatureToAnnotations>
 
 interface ReflektQueryArguments
 
@@ -35,15 +28,13 @@ data class SupertypesToAnnotations(
 ) : ReflektQueryArguments
 
 /**
- * @property signature
- * @property annotations// kotlin.FunctionN< ... > // kotlin.FunctionN< ... >
  * @property irSignature
+ * @property annotations// kotlin.FunctionN< ... > // kotlin.FunctionN< ... >
  */
 // TODO: use IrType
 data class SignatureToAnnotations(
-    var signature: KotlinType?,
+    val irSignature: IrType?,
     val annotations: Set<String> = emptySet(),
-    val irSignature: IrType? = null,
 ) : ReflektQueryArguments
 
 /**
@@ -52,7 +43,7 @@ data class SignatureToAnnotations(
  */
 @Serializable
 data class SerializableSignatureToAnnotations(
-    val signature: SerializableKotlinType?,
+    val irSignature: SerializableIrType?,
     val annotations: Set<String> = emptySet(),
 )
 
@@ -62,42 +53,26 @@ data class SerializableSignatureToAnnotations(
  * @property functions
  */
 data class ReflektInvokes(
-    override val objects: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
-    override val classes: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
-    override val functions: HashMap<FileId, FunctionInvokes> = HashMap(),
-) : BaseReflektDataByFile<ClassOrObjectInvokes, ClassOrObjectInvokes, FunctionInvokes>(
+    override val objects: HashMap<FileId, ClassOrObjectQueryArguments> = HashMap(),
+    override val classes: HashMap<FileId, ClassOrObjectQueryArguments> = HashMap(),
+    override val functions: HashMap<FileId, FunctionQueryArguments> = HashMap(),
+) : BaseReflektDataByFile<ClassOrObjectQueryArguments, ClassOrObjectQueryArguments, FunctionQueryArguments>(
     objects,
     classes,
     functions) {
-    fun toSerializableReflektInvokes(): SerializableReflektInvokes =
-        SerializableReflektInvokes(
+    fun toSerializableReflektInvokes(): SerializableReflektQueryArguments =
+        SerializableReflektQueryArguments(
             objects = objects,
             classes = classes,
             functions = functions.mapValues { fileToInvokes ->
                 fileToInvokes.value.map {
                     SerializableSignatureToAnnotations(
                         annotations = it.annotations,
-                        signature = it.signature?.toSerializableKotlinType(),
+                        irSignature = it.irSignature?.toSerializableIrType(),
                     )
                 }.toMutableSet()
             } as HashMap,
         )
-
-    @Suppress("TYPE_ALIAS", "VARIABLE_NAME_INCORRECT")
-    fun merge(second: ReflektInvokes) = org.jetbrains.reflekt.plugin.analysis.models.merge(this, second) { i1: ReflektInvokes, i2: ReflektInvokes ->
-        ReflektInvokes(
-            objects = i1.objects.merge(i2.objects) { mutableSetOf() },
-            classes = i1.classes.merge(i2.classes) { mutableSetOf() },
-            functions = i1.functions.merge(i2.functions) { mutableSetOf() },
-        )
-    }
-    companion object {
-        fun createByProcessors(processors: BaseInvokeProcessors) = ReflektInvokes(
-            objects = processors.mapNotNull { it as? ReflektObjectInvokesProcessor }.first().fileToInvokes,
-            classes = processors.mapNotNull { it as? ReflektClassInvokesProcessor }.first().fileToInvokes,
-            functions = processors.mapNotNull { it as? ReflektFunctionInvokesProcessor }.first().fileToInvokes,
-        )
-    }
 }
 
 /**
@@ -106,10 +81,10 @@ data class ReflektInvokes(
  * @property functions
  */
 @Serializable
-data class SerializableReflektInvokes(
-    val objects: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
-    val classes: HashMap<FileId, ClassOrObjectInvokes> = HashMap(),
-    val functions: HashMap<FileId, SerializableFunctionInvokes> = HashMap(),
+data class SerializableReflektQueryArguments(
+    val objects: HashMap<FileId, ClassOrObjectQueryArguments> = HashMap(),
+    val classes: HashMap<FileId, ClassOrObjectQueryArguments> = HashMap(),
+    val functions: HashMap<FileId, SerializableFunctionQueryArguments> = HashMap(),
 )
 
 /**
@@ -133,10 +108,10 @@ data class ReflektInvokesWithPackages(
  */
 @Serializable
 data class SerializableReflektInvokesWithPackages(
-    val invokes: SerializableReflektInvokes,
+    val invokes: SerializableReflektQueryArguments,
     val packages: Set<String>,
 ) {
-    fun toReflektInvokesWithPackages(module: ModuleDescriptorImpl) =
+    fun toReflektInvokesWithPackages(pluginContext: IrPluginContext) =
         ReflektInvokesWithPackages(
             invokes = ReflektInvokes(
                 objects = invokes.objects,
@@ -145,7 +120,7 @@ data class SerializableReflektInvokesWithPackages(
                     fileToInvokes.value.map {
                         SignatureToAnnotations(
                             annotations = it.annotations,
-                            signature = it.signature?.toKotlinType(module),
+                            irSignature = it.irSignature?.toIrType(pluginContext)
                         )
                     }.toMutableSet()
                 } as HashMap,

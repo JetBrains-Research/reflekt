@@ -1,7 +1,7 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.descriptor.uses
 
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrClassOrObjectUses
-import org.jetbrains.reflekt.plugin.analysis.models.psi.ClassOrObjectInvokes
+import org.jetbrains.reflekt.plugin.analysis.models.psi.ClassOrObjectQueryArguments
 import org.jetbrains.reflekt.plugin.analysis.models.psi.SupertypesToAnnotations
 import org.jetbrains.reflekt.plugin.analysis.processor.descriptor.DescriptorProcessor
 import org.jetbrains.reflekt.plugin.analysis.resolve.isSubtypeOf
@@ -21,7 +21,7 @@ abstract class BaseDescriptorUsesProcessor<T : Any>(override val messageCollecto
 
     protected fun processClassOrObjectUses(
         descriptor: DeclarationDescriptor,
-        invokes: ClassOrObjectInvokes,
+        invokes: ClassOrObjectQueryArguments,
         uses: IrClassOrObjectUses,
     ): IrClassOrObjectUses {
         (descriptor as? ClassifierDescriptor)?.let {

@@ -10,6 +10,7 @@ import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.resolve.*
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.util.slicedMap.Slices
@@ -101,6 +102,10 @@ fun KotlinType.stringRepresentation(): String {
         }
     }
     return TypeStringRepresentationUtil.getStringRepresentation(DescriptorUtils.getFqName(declaration).asString(), typeArguments)
+}
+
+fun IrType.stringRepresentation(): String {
+    TODO("")
 }
 
 /**

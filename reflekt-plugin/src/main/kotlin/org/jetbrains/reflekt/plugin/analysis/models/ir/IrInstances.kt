@@ -1,9 +1,12 @@
 package org.jetbrains.reflekt.plugin.analysis.models.ir
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import org.jetbrains.reflekt.plugin.analysis.models.BaseCollectionReflektData
 
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.reflekt.plugin.analysis.models.merge
 
 /**
  * Stores all [classes], [objects], and [functions] from the project.
@@ -28,15 +31,20 @@ data class IrInstances(
  * @property classes
  * @property functions
  */
+// TODO: We can not inheritance from BaseCollectionReflektData since this issue:
+//  https://github.com/Kotlin/kotlinx.serialization/issues/1264
+@Serializable
 data class IrInstancesFqNames(
-    override val objects: List<String> = ArrayList(),
-    override val classes: List<String> = ArrayList(),
-    override val functions: List<String> = ArrayList(),
-) : BaseCollectionReflektData<List<String>, List<String>, List<String>>(
-    objects,
-    classes,
-    functions,
+    val objects: List<String> = ArrayList(),
+    val classes: List<String> = ArrayList(),
+    val functions: List<String> = ArrayList(),
 ) {
+    fun merge(second: IrInstancesFqNames) = IrInstancesFqNames(
+        classes = classes.merge(second.classes),
+        objects = objects.merge(second.objects),
+        functions = functions.merge(second.functions),
+    )
+
     companion object {
         /**
          * Converts [IrInstances] into [IrInstancesFqNames].

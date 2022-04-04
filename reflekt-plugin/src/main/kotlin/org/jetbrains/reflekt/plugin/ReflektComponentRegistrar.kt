@@ -1,8 +1,6 @@
 package org.jetbrains.reflekt.plugin
 
 import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.collector.ir.InstancesCollectorExtension
-import org.jetbrains.reflekt.plugin.analysis.collector.ir.ReflektArgumentsCollectorExtension
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
 import org.jetbrains.reflekt.plugin.generation.ReflektMetaFileGenerator
 import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
@@ -16,6 +14,9 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.reflekt.plugin.analysis.collector.ir.*
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
 
 import java.io.File
 
@@ -57,26 +58,38 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
 
         // Collect IR instances for classes, objects, and functions
         val instancesAnalyzer = IrInstancesAnalyzer()
+        val libraryArgumentsWithInstances = LibraryArgumentsWithInstances()
         IrGenerationExtension.registerExtension(
             project,
             InstancesCollectorExtension(
                 irInstancesAnalyzer = instancesAnalyzer,
+                reflektMetaFilesFromLibraries = config.reflektMetaFilesFromLibraries,
+                libraryArgumentsWithInstances = libraryArgumentsWithInstances,
                 messageCollector = config.messageCollector,
             ),
         )
-        // TODO: extract instances from ReflektMeta file and union with instancesAnalyzer
+        IrGenerationExtension.registerExtension(
+            project,
+            LibraryInstancesCollectorExtension(
+                irInstancesAnalyzer = instancesAnalyzer,
+                irInstancesFqNames = libraryArgumentsWithInstances.instances,
+            ),
+        )
 
         // TODO: separate cases and accept use Reflekt in both cases in the same time?
-        // e.g. a part of queries for the current project and IR replacement
-        // and another part with ReflektImpl approach??
+        //  e.g. a part of queries for the current project and IR replacement
+        //  and another part with ReflektImpl approach??
         if (config.toSaveMetadata) {
             project.registerLibraryExtensions(config, instancesAnalyzer)
         } else {
-            project.registerProjectExtensions(config, instancesAnalyzer)
+            project.registerProjectExtensions(config, instancesAnalyzer, libraryArgumentsWithInstances.libraryArguments)
         }
     }
 
-    private fun MockProject.registerLibraryExtensions(config: PluginConfig, instancesAnalyzer: IrInstancesAnalyzer) {
+    private fun MockProject.registerLibraryExtensions(
+        config: PluginConfig,
+        instancesAnalyzer: IrInstancesAnalyzer
+    ) {
         val reflektQueriesArguments = LibraryArguments()
         IrGenerationExtension.registerExtension(
             this,
@@ -98,12 +111,17 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         )
     }
 
-    private fun MockProject.registerProjectExtensions(config: PluginConfig, instancesAnalyzer: IrInstancesAnalyzer) {
+    private fun MockProject.registerProjectExtensions(
+        config: PluginConfig,
+        instancesAnalyzer: IrInstancesAnalyzer,
+        libraryArguments: LibraryArguments,
+    ) {
         // TODO: generate ReflektImpl for libraries queries from ReflektMeta
         IrGenerationExtension.registerExtension(
             this,
             ReflektIrGenerationExtension(
                 irInstancesAnalyzer = instancesAnalyzer,
+                libraryArguments = libraryArguments,
                 messageCollector = config.messageCollector,
             ),
         )

@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
+import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
 
 /**
  * @param reflektInvokes
@@ -37,5 +38,5 @@ class FunctionDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override v
     override fun shouldRunOn(descriptor: DeclarationDescriptor): Boolean = descriptor.isPublicTopLevelFunction && !descriptor.isMainFunction
 
     private fun SignatureToAnnotations.isCovering(function: FunctionDescriptor): Boolean =
-        shouldCheckAnnotations(annotations, function) && function.toParameterizedType()?.isSubtypeOf(signature!!) ?: false
+        shouldCheckAnnotations(annotations, function) && function.toParameterizedType()?.isSubtypeOf(irSignature?.toParameterizedType()!!) ?: false
 }

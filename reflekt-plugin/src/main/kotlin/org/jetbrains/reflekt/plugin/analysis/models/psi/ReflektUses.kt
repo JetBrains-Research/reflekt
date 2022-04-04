@@ -2,7 +2,6 @@ package org.jetbrains.reflekt.plugin.analysis.models.psi
 
 import org.jetbrains.reflekt.plugin.analysis.models.BaseReflektDataByFile
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
-import org.jetbrains.reflekt.plugin.analysis.processor.source.uses.*
 
 import org.jetbrains.kotlin.psi.*
 
@@ -24,12 +23,4 @@ data class ReflektUses(
 ) : BaseReflektDataByFile<ClassOrObjectUses, ClassOrObjectUses, FunctionUses>(
     objects,
     classes,
-    functions) {
-    companion object {
-        fun createByProcessors(processors: Set<BaseUsesProcessor<*>>) = ReflektUses(
-            objects = processors.mapNotNull { it as? ObjectUsesProcessor }.first().fileToUses,
-            classes = processors.mapNotNull { it as? ClassUsesProcessor }.first().fileToUses,
-            functions = processors.mapNotNull { it as? FunctionUsesProcessor }.first().fileToUses,
-        )
-    }
-}
+    functions)

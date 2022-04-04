@@ -242,7 +242,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
                 o.key.annotations,
                 wrappedCode(
                     generateWhenBody(
-                        mapOf(o.key.signature!!.stringRepresentation() to o.value),
+                        mapOf(o.key.irSignature!!.stringRepresentation() to o.value),
                         SIGNATURE,
                         toAddReturn = false,
                         getWhenOption = ::getWhenOptionForString,

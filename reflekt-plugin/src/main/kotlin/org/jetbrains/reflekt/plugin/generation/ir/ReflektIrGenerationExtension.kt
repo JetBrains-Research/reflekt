@@ -7,6 +7,8 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
 
 /**
  * Replaces Reflekt invoke calls with their results
@@ -17,6 +19,7 @@ import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
  */
 class ReflektIrGenerationExtension(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,
+    private val libraryArguments: LibraryArguments,
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     /**
@@ -27,6 +30,6 @@ class ReflektIrGenerationExtension(
         if (irInstances.isEmpty()) {
             return
         }
-        moduleFragment.transform(ReflektIrTransformer(pluginContext, irInstances, messageCollector), null)
+        moduleFragment.transform(ReflektIrTransformer(pluginContext, irInstances, libraryArguments, messageCollector), null)
     }
 }

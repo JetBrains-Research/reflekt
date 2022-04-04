@@ -44,6 +44,22 @@ data class SerializableKotlinType(
     val receiverType: SerializableKotlinType?,
 )
 
+@Serializable
+data class SerializableIrType(
+    val classifierFqName: String,
+    val hasQuestionMark: Boolean,
+    val arguments: List<SerializableIrTypeArgument>,
+    val annotations: List<SerializableIrType>,
+    val abbreviation: String? = null,
+)
+
+@Serializable
+data class SerializableIrTypeArgument(
+    val fqName: String,
+    val isStarProjection: Boolean,
+    val variance: Variance,
+)
+
 /**
  * @property fqName
  * @property isStarProjection
@@ -68,6 +84,7 @@ interface Sizeable {
  * @property classes
  * @property functions
  */
+@Serializable
 open class BaseCollectionReflektData<O : Collection<*>, C : Collection<*>, F : Collection<*>>(
     open val objects: O,
     open val classes: C,
@@ -101,6 +118,10 @@ open class BaseReflektDataByFile<O : Any, C : Any, F : Any>(
 @Suppress("IDENTIFIER_LENGTH")
 fun <K : Any, V : Any, T : MutableCollection<V>> HashMap<K, T>.merge(second: HashMap<K, T>, defaultValue: () -> T): HashMap<K, T> =
     this.also { second.forEach { (k, v) -> this.getOrPut(k) { defaultValue() }.addAll(v) } }
+
+fun <T> List<T>.merge(second: List<T>): List<T> {
+    return this.plus(second)
+}
 
 fun <T : Sizeable> merge(
     first: T,

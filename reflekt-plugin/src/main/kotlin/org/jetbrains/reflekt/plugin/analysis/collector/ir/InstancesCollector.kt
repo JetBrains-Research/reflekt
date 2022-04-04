@@ -7,9 +7,15 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.ir.util.nameForIrSerialization
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.reflekt.plugin.analysis.models.ir.*
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
+import java.io.File
+import kotlin.reflect.KFunction1
 
 /**
  * A collector for searching and collecting all classes, objects, and functions in the project.
@@ -35,9 +41,49 @@ class InstancesCollector(
  */
 class InstancesCollectorExtension(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,
+    private val libraryArgumentsWithInstances: LibraryArgumentsWithInstances,
+    private val reflektMetaFilesFromLibraries: Set<File>,
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
+    // TODO: can we avoid making a copy here?
+    private var libraryArguments = LibraryArguments()
+    private var irInstancesFqNames = IrInstancesFqNames()
+
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
+        extractInstancesFromLibraries(pluginContext)
         moduleFragment.acceptChildrenVoid(InstancesCollector(irInstancesAnalyzer, messageCollector))
     }
+
+    private fun extractInstancesFromLibraries(pluginContext: IrPluginContext) {
+        reflektMetaFilesFromLibraries.forEach { metaFile ->
+            val currentLibraryArgumentsWithInstances = SerializationUtils.decodeArguments(metaFile.readBytes(), pluginContext)
+            libraryArguments = libraryArguments.merge(currentLibraryArgumentsWithInstances.libraryArguments)
+            irInstancesFqNames = irInstancesFqNames.merge(currentLibraryArgumentsWithInstances.instances)
+        }
+        libraryArgumentsWithInstances.replace(libraryArguments, irInstancesFqNames)
+    }
+}
+
+class LibraryInstancesCollectorExtension(
+    private val irInstancesAnalyzer: IrInstancesAnalyzer,
+    private val irInstancesFqNames: IrInstancesFqNames
+    ) : IrGenerationExtension {
+    private val externalLibraryId = "EXTERNAL_LIBRARY"
+
+    override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
+        val classes = findIrClasses(irInstancesFqNames.classes, pluginContext::referenceClass)
+        val objects = findIrClasses(irInstancesFqNames.objects, pluginContext::referenceClass)
+        val functions = findIrFunctions(irInstancesFqNames.functions, pluginContext::referenceFunctions)
+        irInstancesAnalyzer.addDeclarations(externalLibraryId, classes, objects, functions)
+    }
+
+    private fun findIrClasses(
+        fqNamesStr: List<String>,
+        referenceDeclaration: (FqName) -> IrClassSymbol?
+        ) = fqNamesStr.mapNotNull { referenceDeclaration(FqName(it))?.owner }
+
+    private fun findIrFunctions(
+        fqNamesStr: List<String>,
+        referenceDeclaration: (FqName) -> Collection<IrFunctionSymbol>?
+    ) = fqNamesStr.mapNotNull { referenceDeclaration(FqName(it)) }.flatten().map { it.owner }
 }

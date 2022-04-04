@@ -80,7 +80,7 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
         fun collectInvokeArguments(expression: IrCall): SignatureToAnnotations? {
             val visitor = ReflektFunctionInvokeArgumentsCollector()
             expression.accept(visitor, null)
-            return visitor.signature?.let { SignatureToAnnotations(it, visitor.annotations, visitor.irSignature) }
+            return visitor.signature?.let { SignatureToAnnotations(visitor.irSignature, visitor.annotations) }
         }
     }
 }
