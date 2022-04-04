@@ -1,14 +1,14 @@
 package org.jetbrains.reflekt.plugin.generation
 
 import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.models.ir.*
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
-import org.jetbrains.reflekt.plugin.analysis.models.ir.*
-import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
 
 import java.io.File
 
@@ -30,11 +30,11 @@ class ReflektMetaFileGenerator(
     private fun saveMetaData(libraryArguments: LibraryArguments, instancesFqNames: IrInstancesFqNames) {
         messageCollector?.log("Save Reflekt meta data")
         reflektMetaFile.createNewFile()
-         reflektMetaFile.writeBytes(
-             SerializationUtils.encodeArguments(
-                 LibraryArgumentsWithInstances(libraryArguments, instancesFqNames),
-             ),
-         )
+        reflektMetaFile.writeBytes(
+            SerializationUtils.encodeArguments(
+                LibraryArgumentsWithInstances(libraryArguments, instancesFqNames),
+            ),
+        )
     }
 
     private fun IrInstancesAnalyzer.getInstancesFqNames() = IrInstancesFqNames.fromIrInstances(this.getIrInstances())

@@ -1,12 +1,14 @@
 package org.jetbrains.reflekt.plugin.analysis.models.psi
 
-import kotlinx.serialization.Serializable
-import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.reflekt.plugin.analysis.models.*
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toIrType
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableIrType
+
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.types.IrType
+
+import kotlinx.serialization.Serializable
 
 typealias ClassOrObjectQueryArguments = MutableSet<SupertypesToAnnotations>
 typealias FunctionQueryArguments = MutableSet<SignatureToAnnotations>
@@ -38,8 +40,8 @@ data class SignatureToAnnotations(
 ) : ReflektQueryArguments
 
 /**
- * @property signature
  * @property annotations// kotlin.FunctionN< ... >
+ * @property irSignature
  */
 @Serializable
 data class SerializableSignatureToAnnotations(
@@ -120,7 +122,7 @@ data class SerializableReflektInvokesWithPackages(
                     fileToInvokes.value.map {
                         SignatureToAnnotations(
                             annotations = it.annotations,
-                            irSignature = it.irSignature?.toIrType(pluginContext)
+                            irSignature = it.irSignature?.toIrType(pluginContext),
                         )
                     }.toMutableSet()
                 } as HashMap,

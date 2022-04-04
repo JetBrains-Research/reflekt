@@ -1,7 +1,10 @@
 package org.jetbrains.reflekt.plugin.analysis.serialization
 
-import kotlinx.serialization.*
-import kotlinx.serialization.protobuf.ProtoBuf
+import org.jetbrains.reflekt.plugin.analysis.models.SerializableIrType
+import org.jetbrains.reflekt.plugin.analysis.models.SerializableIrTypeArgument
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
+import org.jetbrains.reflekt.plugin.analysis.models.ir.SerializableLibraryArgumentsWithInstances
+
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.types.*
@@ -9,10 +12,9 @@ import org.jetbrains.kotlin.ir.types.impl.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
 import org.jetbrains.kotlin.types.Variance
-import org.jetbrains.reflekt.plugin.analysis.models.SerializableIrType
-import org.jetbrains.reflekt.plugin.analysis.models.SerializableIrTypeArgument
-import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
-import org.jetbrains.reflekt.plugin.analysis.models.ir.SerializableLibraryArgumentsWithInstances
+
+import kotlinx.serialization.*
+import kotlinx.serialization.protobuf.ProtoBuf
 
 @OptIn(ExperimentalSerializationApi::class)
 object SerializationUtils {
@@ -32,13 +34,13 @@ object SerializationUtils {
             return SerializableIrTypeArgument(
                 fqName = fqName,
                 isStarProjection = true,
-                variance = Variance.INVARIANT
+                variance = Variance.INVARIANT,
             )
         }
         return SerializableIrTypeArgument(
             fqName = fqName,
             isStarProjection = false,
-            variance = (this as IrTypeProjection).variance
+            variance = (this as IrTypeProjection).variance,
         )
     }
 
@@ -59,7 +61,7 @@ object SerializationUtils {
             arguments = arguments,
             // We use serialization only for functions signatures, they don't have annotations
             annotations = emptyList(),
-            abbreviation = abbreviation
+            abbreviation = abbreviation,
         )
     }
 

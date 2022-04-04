@@ -60,7 +60,6 @@ fun findReflektInvokeArgumentsByExpressionPart(expression: KtExpression, binding
     }
 }
 
-
 // [1]SmartReflekt.[2]|objects()/classes() or so on|
 // [dotQualifiedExpressionNode] is [1]
 fun findSmartReflektInvokeArguments(dotQualifiedExpressionNode: ASTNode, binding: BindingContext): SupertypesToFilters? {

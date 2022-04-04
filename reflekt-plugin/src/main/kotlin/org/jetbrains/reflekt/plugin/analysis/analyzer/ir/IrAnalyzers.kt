@@ -4,6 +4,8 @@ package org.jetbrains.reflekt.plugin.analysis.analyzer.ir
 
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
 import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektQueryArguments
+import org.jetbrains.reflekt.plugin.analysis.processor.FileId
+import org.jetbrains.reflekt.plugin.analysis.processor.ir.IrBaseProcessorByFile
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.instances.*
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.*
 import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
@@ -12,8 +14,6 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.reflekt.plugin.analysis.processor.FileId
-import org.jetbrains.reflekt.plugin.analysis.processor.ir.IrBaseProcessorByFile
 
 typealias IrElementProcessor = Processor<*, IrElement, IrFile>
 
@@ -53,13 +53,18 @@ class IrInstancesAnalyzer : IrAnalyzer() {
         functions = functionProcessor.fileToCollectedElements.values.flatten(),
     )
 
-    fun addDeclarations(fileId: FileId, classes: List<IrClass>, objects: List<IrClass>, functions: List<IrFunction>) {
+    fun addDeclarations(
+        fileId: FileId,
+        classes: List<IrClass>,
+        objects: List<IrClass>,
+        functions: List<IrFunction>) {
         classProcessor.addIrClassesToProcessor(fileId, classes)
         objectProcessor.addIrClassesToProcessor(fileId, objects)
         functionProcessor.fileToCollectedElements.getOrPut(fileId) { mutableListOf() }.addAll(functions)
     }
 
     // TODO: can we union IrClass and IrFunction?
+    @Suppress("TYPE_ALIAS")
     private fun IrBaseProcessorByFile<MutableList<IrClass>>.addIrClassesToProcessor(fileId: FileId, classes: List<IrClass>) {
         this.fileToCollectedElements.getOrPut(fileId) { mutableListOf() }.addAll(classes)
     }

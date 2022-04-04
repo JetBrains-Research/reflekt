@@ -1,13 +1,15 @@
 package org.jetbrains.reflekt.plugin.analysis.models.ir
 
-import kotlinx.serialization.Serializable
-import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.reflekt.plugin.analysis.models.BaseReflektDataByFile
 import org.jetbrains.reflekt.plugin.analysis.models.merge
 import org.jetbrains.reflekt.plugin.analysis.models.psi.*
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toIrType
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableIrType
+
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+
+import kotlinx.serialization.Serializable
 
 typealias LibraryArgumentsMap<T> = HashMap<FileId, MutableSet<T>>
 
@@ -67,6 +69,10 @@ data class LibraryArgumentsWithInstances(
     }
 }
 
+/**
+ * @property libraryArguments
+ * @property instances
+ */
 @Serializable
 data class SerializableLibraryArgumentsWithInstances(
     val libraryArguments: SerializableReflektQueryArguments,
@@ -81,7 +87,7 @@ data class SerializableLibraryArgumentsWithInstances(
                     fileToInvokes.value.map {
                         SignatureToAnnotations(
                             annotations = it.annotations,
-                            irSignature = it.irSignature?.toIrType(pluginContext)
+                            irSignature = it.irSignature?.toIrType(pluginContext),
                         )
                     }.toMutableSet()
                 } as HashMap,

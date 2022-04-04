@@ -1,7 +1,9 @@
 package org.jetbrains.reflekt.plugin
 
 import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.collector.ir.*
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
 import org.jetbrains.reflekt.plugin.generation.ReflektMetaFileGenerator
 import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
@@ -14,9 +16,6 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.reflekt.plugin.analysis.collector.ir.*
-import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
-import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
 
 import java.io.File
 
@@ -77,8 +76,8 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         )
 
         // TODO: separate cases and accept use Reflekt in both cases in the same time?
-        //  e.g. a part of queries for the current project and IR replacement
-        //  and another part with ReflektImpl approach??
+        // e.g. a part of queries for the current project and IR replacement
+        // and another part with ReflektImpl approach??
         if (config.toSaveMetadata) {
             project.registerLibraryExtensions(config, instancesAnalyzer)
         } else {
@@ -88,7 +87,7 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
 
     private fun MockProject.registerLibraryExtensions(
         config: PluginConfig,
-        instancesAnalyzer: IrInstancesAnalyzer
+        instancesAnalyzer: IrInstancesAnalyzer,
     ) {
         val reflektQueriesArguments = LibraryArguments()
         IrGenerationExtension.registerExtension(

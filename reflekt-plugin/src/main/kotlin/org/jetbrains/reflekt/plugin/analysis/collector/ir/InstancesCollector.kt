@@ -1,6 +1,8 @@
 package org.jetbrains.reflekt.plugin.analysis.collector.ir
 
 import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.models.ir.*
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
@@ -12,10 +14,8 @@ import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.ir.util.nameForIrSerialization
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.reflekt.plugin.analysis.models.ir.*
-import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
+
 import java.io.File
-import kotlin.reflect.KFunction1
 
 /**
  * A collector for searching and collecting all classes, objects, and functions in the project.
@@ -66,8 +66,8 @@ class InstancesCollectorExtension(
 
 class LibraryInstancesCollectorExtension(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,
-    private val irInstancesFqNames: IrInstancesFqNames
-    ) : IrGenerationExtension {
+    private val irInstancesFqNames: IrInstancesFqNames,
+) : IrGenerationExtension {
     private val externalLibraryId = "EXTERNAL_LIBRARY"
 
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
@@ -79,11 +79,11 @@ class LibraryInstancesCollectorExtension(
 
     private fun findIrClasses(
         fqNamesStr: List<String>,
-        referenceDeclaration: (FqName) -> IrClassSymbol?
-        ) = fqNamesStr.mapNotNull { referenceDeclaration(FqName(it))?.owner }
+        referenceDeclaration: (FqName) -> IrClassSymbol?,
+    ) = fqNamesStr.mapNotNull { referenceDeclaration(FqName(it))?.owner }
 
     private fun findIrFunctions(
         fqNamesStr: List<String>,
-        referenceDeclaration: (FqName) -> Collection<IrFunctionSymbol>?
+        referenceDeclaration: (FqName) -> Collection<IrFunctionSymbol>?,
     ) = fqNamesStr.mapNotNull { referenceDeclaration(FqName(it)) }.flatten().map { it.owner }
 }

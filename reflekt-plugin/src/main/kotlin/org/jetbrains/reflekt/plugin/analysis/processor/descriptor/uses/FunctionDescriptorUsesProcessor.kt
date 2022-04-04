@@ -1,5 +1,6 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.descriptor.uses
 
+import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionUses
 import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektInvokes
 import org.jetbrains.reflekt.plugin.analysis.models.psi.SignatureToAnnotations
@@ -13,7 +14,6 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
-import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
 
 /**
  * @param reflektInvokes
