@@ -1,20 +1,20 @@
 package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
-import org.jetbrains.reflekt.plugin.analysis.models.psi.FunctionUses
-import org.jetbrains.reflekt.plugin.generation.code.generator.statement
-import org.jetbrains.reflekt.plugin.generation.code.generator.toParameterSpecs
-
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import org.jetbrains.kotlin.psi.KtNamedFunction
-
+import org.jetbrains.kotlin.backend.common.ir.isTopLevel
+import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.reflekt.plugin.analysis.models.ir.FunctionLibraryQueriesResults
+import org.jetbrains.reflekt.plugin.generation.code.generator.statement
+import org.jetbrains.reflekt.plugin.generation.code.generator.toParameterSpecs
 import kotlin.reflect.KFunction
 
 /**
  * Generates a top level class Functions in the ReflektImpl.kt.
  *
  * @param enclosingClassName
- * @param uses stores entities that satisfy all Reflekt queries arguments (invokes)
+ * @param libraryQueriesResults stores entities that satisfy all Reflekt queries arguments (invokes)
  * @param fileGenerator a generator that can generate new unique aliased imports for functions
  *
  * @property typeName a fully-qualified class name
@@ -26,8 +26,9 @@ import kotlin.reflect.KFunction
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 class FunctionsGenerator(
     enclosingClassName: ClassName,
-    private val uses: FunctionUses,
-    private val fileGenerator: FileGenerator) : HelperClassGenerator() {
+    private val libraryQueriesResults: FunctionLibraryQueriesResults,
+    private val fileGenerator: FileGenerator,
+) : HelperClassGenerator() {
     override val typeName: ClassName = enclosingClassName.nestedClass("Functions")
     override val typeVariable = TypeVariableName("T", Any::class)
     override val returnParameter = KFunction::class.asClassName().parameterizedBy(typeVariable)
@@ -53,7 +54,7 @@ class FunctionsGenerator(
 
         addNestedTypes(object : WithAnnotationsGenerator() {
             override val toListFunctionBody = run {
-                generateNestedWhenBodyForFunctions(uses, ::functionReference)
+                generateNestedWhenBodyForFunctions(libraryQueriesResults, ::functionReference)
             }
         }.generate())
     }
@@ -64,13 +65,13 @@ class FunctionsGenerator(
      * @param function
      * @return a string representation of the function reference
      */
-    private fun functionReference(function: KtNamedFunction): String =
+    private fun functionReference(function: IrFunction): String =
         if (function.isTopLevel) {
-            val packageName = function.fqName!!.parent().toString()
-            val name = function.name!!
+            val packageName = function.fqNameWhenAvailable!!.parent().toString()
+            val name = function.name.toString()
             val memberName = MemberName(packageName, name)
             "::${fileGenerator.addUniqueAliasedImport(memberName)}"
         } else {
-            "${function.fqName!!.parent()}::${function.name}"
+            "${function.fqNameWhenAvailable!!.parent()}::${function.name}"
         }
 }

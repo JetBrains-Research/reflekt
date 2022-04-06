@@ -1,13 +1,16 @@
 package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
-import org.jetbrains.reflekt.plugin.analysis.models.psi.*
-import org.jetbrains.reflekt.plugin.generation.code.generator.*
-import org.jetbrains.reflekt.plugin.utils.stringRepresentation
-
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 import org.jetbrains.kotlin.psi.KtNamedFunction
-
+import org.jetbrains.reflekt.plugin.analysis.models.SignatureToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.SupertypesToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.ir.ClassOrObjectLibraryQueriesResults
+import org.jetbrains.reflekt.plugin.analysis.models.ir.FunctionLibraryQueriesResults
+import org.jetbrains.reflekt.plugin.generation.code.generator.*
+import org.jetbrains.reflekt.plugin.utils.stringRepresentation
 import java.util.*
 
 /**
@@ -234,8 +237,8 @@ abstract class HelperClassGenerator : ClassGenerator() {
     @Suppress("TYPE_ALIAS", "IDENTIFIER_LENGTH")
     // TODO: group by annotations (store set of signatures for the same set of annotations)
     protected fun generateNestedWhenBodyForFunctions(
-        invokesWithUses: FunctionUses,
-        getEntityName: (KtNamedFunction) -> String = { it.toString() },
+        invokesWithUses: FunctionLibraryQueriesResults,
+        getEntityName: (IrFunction) -> String = { it.toString() },
     ): CodeBlock {
         val mainFunction = { o: Map.Entry<SignatureToAnnotations, List<String>> ->
             getWhenOptionForSet(
@@ -280,7 +283,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
      *  }
      */
     @Suppress("TYPE_ALIAS", "IDENTIFIER_LENGTH")
-    protected fun generateNestedWhenBodyForClassesOrObjects(invokesWithUses: ClassOrObjectUses): CodeBlock {
+    protected fun generateNestedWhenBodyForClassesOrObjects(invokesWithUses: ClassOrObjectLibraryQueriesResults): CodeBlock {
         val mainFunction = { o: Map.Entry<SupertypesToAnnotations, List<String>> ->
             getWhenOptionForSet(
                 o.key.annotations,
@@ -295,7 +298,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
             )
         }
         return generateWhenBody(
-            invokesWithUses.mapValues { (_, v) -> v.mapNotNull { it.fqName?.toString() } }.toMap().asIterable(),
+            invokesWithUses.mapValues { (_, v) -> v.mapNotNull { it.fqNameWhenAvailable?.toString() } }.toMap().asIterable(),
             ANNOTATION_FQ_NAMES,
             generateBranchForWhenOption = mainFunction,
         )

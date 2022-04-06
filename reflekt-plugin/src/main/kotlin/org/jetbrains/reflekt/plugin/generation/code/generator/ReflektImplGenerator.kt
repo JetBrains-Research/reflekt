@@ -1,26 +1,21 @@
 package org.jetbrains.reflekt.plugin.generation.code.generator
 
-import org.jetbrains.reflekt.plugin.analysis.models.ir.flatten
-import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektUses
-import org.jetbrains.reflekt.plugin.generation.code.generator.models.*
-import org.jetbrains.reflekt.plugin.generation.code.generator.models.ClassesGenerator
-import org.jetbrains.reflekt.plugin.generation.code.generator.models.ObjectsGenerator
-
 import com.squareup.kotlinpoet.ClassName
-
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryQueriesResults
+import org.jetbrains.reflekt.plugin.generation.code.generator.models.*
 import java.util.*
 
 /**
  * Generates ReflektImpl.kt file.
  * An example of ReflektImpl.kt file can be found in the reflekt-dsl module.
  *
- * @property uses [ReflektUses] that were found in the project
+ * @property libraryQueriesResults [LibraryQueriesResults] that were found in the project
  *  (arguments from all Reflekt queries with entities that satisfy them)
  * @property packageName Reflekt package name
  * @property fileName name of the generated file
  * */
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
-class ReflektImplGenerator(private val uses: ReflektUses) : FileGenerator() {
+class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResults) : FileGenerator() {
     override val packageName = "org.jetbrains.reflekt"
     override val fileName = "ReflektImpl"
 
@@ -44,9 +39,9 @@ class ReflektImplGenerator(private val uses: ReflektUses) : FileGenerator() {
          */
         override fun generateImpl() {
             val innerGenerators = listOf(
-                ObjectsGenerator(typeName, uses.objects.flatten()),
-                ClassesGenerator(typeName, uses.classes.flatten()),
-                FunctionsGenerator(typeName, uses.functions.flatten(), this@ReflektImplGenerator),
+                ObjectsGenerator(typeName, libraryQueriesResults.objects),
+                ClassesGenerator(typeName, libraryQueriesResults.classes),
+                FunctionsGenerator(typeName, libraryQueriesResults.functions, this@ReflektImplGenerator),
             )
 
             addFunctions(innerGenerators.map { generator ->

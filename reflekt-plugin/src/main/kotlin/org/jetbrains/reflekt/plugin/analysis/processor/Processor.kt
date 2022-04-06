@@ -1,11 +1,7 @@
-package org.jetbrains.reflekt.plugin.analysis.processor.source
+package org.jetbrains.reflekt.plugin.analysis.processor
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
-
-typealias KtElementProcessor = Processor<*, KtElement, KtFile>
 
 /**
  * A base class for elements processors, e.g. process IrElement or KtElement

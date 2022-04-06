@@ -17,7 +17,10 @@ import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.util.isFakeOverride
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocLink
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.reflekt.plugin.analysis.ir.*
 
@@ -140,4 +143,14 @@ class IrFunctionSubtypesVisitor(namePrefix: String) : FilteredIrFunctionVisitor(
     }
 }
 
+/**
+ * We store all necessary info for tests in functions docs with specific tags (see test files), so we need to get them.
+ *
+ * @param tag
+ * @return
+ */
+fun KtNamedFunction.findTag(tag: String): KDocTag? = docComment?.getDefaultSection()?.findTagByName(tag)
 
+fun KtNamedFunction.getTagContent(tag: String): String = findTag(tag)?.getContent() ?: error("No tag $tag found for function $name")
+
+fun KtNamedFunction.parseKdocLinks(tag: String): List<String> = findTag(tag)?.getChildrenOfType<KDocLink>().orEmpty().map { it.getLinkText() }

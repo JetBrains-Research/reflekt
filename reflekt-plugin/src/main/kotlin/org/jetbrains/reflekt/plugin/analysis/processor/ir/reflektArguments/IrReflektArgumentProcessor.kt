@@ -3,7 +3,7 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments
 
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
-import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektQueryArguments
+import org.jetbrains.reflekt.plugin.analysis.models.ReflektQueryArguments
 import org.jetbrains.reflekt.plugin.analysis.processor.fullName
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.*
 import org.jetbrains.reflekt.plugin.generation.common.ReflektInvokeParts
@@ -58,12 +58,16 @@ abstract class IrReflektArgumentProcessor<R : ReflektQueryArguments, T : IrDecla
         // TODO: should throw an error if the arguments were not parsed?
         val queryArguments = element.collectQueryArguments() ?: return emptySet()
         collectedElements.getOrPut(queryArguments) { setOf(file.fullName) }
+        return filterInstancesOrGetFromCache(queryArguments)
+    }
+
+    fun filterInstancesOrGetFromCache(queryArguments: R): Set<T> {
         // If we have not filtered instances by the queryArguments call [filterInstances],
         // else return the cached result
         return cache.getOrPut(queryArguments) { filterInstances(queryArguments) }
     }
 
-    fun processQueryArguments(element: IrCall): R? = element.collectQueryArguments()
+    fun extractQueryArguments(element: IrCall): R? = element.collectQueryArguments()
 
     /**
      * Collects all query arguments from a Reflekt query, e.g. a set of supertypes and a set of annotations.

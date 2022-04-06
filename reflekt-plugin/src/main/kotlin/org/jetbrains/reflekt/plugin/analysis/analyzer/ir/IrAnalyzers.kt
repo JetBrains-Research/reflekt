@@ -2,18 +2,18 @@
 
 package org.jetbrains.reflekt.plugin.analysis.analyzer.ir
 
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
-import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektQueryArguments
-import org.jetbrains.reflekt.plugin.analysis.processor.FileId
-import org.jetbrains.reflekt.plugin.analysis.processor.ir.IrBaseProcessorByFile
-import org.jetbrains.reflekt.plugin.analysis.processor.ir.instances.*
-import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.*
-import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
-
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
+import org.jetbrains.reflekt.plugin.analysis.models.*
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
+import org.jetbrains.reflekt.plugin.analysis.processor.FileId
+import org.jetbrains.reflekt.plugin.analysis.processor.Processor
+import org.jetbrains.reflekt.plugin.analysis.processor.ir.IrBaseProcessorByFile
+import org.jetbrains.reflekt.plugin.analysis.processor.ir.instances.*
+import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.*
 
 typealias IrElementProcessor = Processor<*, IrElement, IrFile>
 
@@ -57,7 +57,8 @@ class IrInstancesAnalyzer : IrAnalyzer() {
         fileId: FileId,
         classes: List<IrClass>,
         objects: List<IrClass>,
-        functions: List<IrFunction>) {
+        functions: List<IrFunction>,
+    ) {
         classProcessor.addIrClassesToProcessor(fileId, classes)
         objectProcessor.addIrClassesToProcessor(fileId, objects)
         functionProcessor.fileToCollectedElements.getOrPut(fileId) { mutableListOf() }.addAll(functions)
@@ -75,9 +76,9 @@ class IrInstancesAnalyzer : IrAnalyzer() {
  *  and filters [IrInstances] according these arguments.
  */
 class IrReflektQueriesAnalyzer(irInstances: IrInstances, context: IrPluginContext) : IrAnalyzer() {
-    val classProcessor = IrClassArgumentProcessor(irInstances.classes, context)
-    val objectProcessor = IrObjectArgumentProcessor(irInstances.objects, context)
-    val functionProcessor = IrFunctionArgumentProcessor(irInstances.functions, context)
+    private val classProcessor = IrClassArgumentProcessor(irInstances.classes, context)
+    private val objectProcessor = IrObjectArgumentProcessor(irInstances.objects, context)
+    private val functionProcessor = IrFunctionArgumentProcessor(irInstances.functions, context)
     override val processors: List<IrElementProcessor> =
         listOf(classProcessor, objectProcessor, functionProcessor)
 
@@ -97,12 +98,18 @@ class IrReflektQueriesAnalyzer(irInstances: IrInstances, context: IrPluginContex
         }.flatten()
     }
 
+    fun filterInstancesByArguments(reflektQueryArguments: ReflektQueryArguments, instancesKind: ReflektEntity) = when (instancesKind) {
+        ReflektEntity.CLASSES -> classProcessor.filterInstancesOrGetFromCache(reflektQueryArguments as SupertypesToAnnotations)
+        ReflektEntity.OBJECTS -> objectProcessor.filterInstancesOrGetFromCache(reflektQueryArguments as SupertypesToAnnotations)
+        ReflektEntity.FUNCTIONS -> functionProcessor.filterInstancesOrGetFromCache(reflektQueryArguments as SignatureToAnnotations)
+    }
+
     fun parseReflektQueriesArguments(element: IrElement): ReflektQueryArguments? {
         if (element !is IrCall) {
             return null
         }
         val arguments = processors.filter { it.shouldRunOn(element) }.mapNotNull {
-            (it as? IrReflektArgumentProcessor<*, *>)?.processQueryArguments(element)
+            (it as? IrReflektArgumentProcessor<*, *>)?.extractQueryArguments(element)
         }
         require(arguments.size <= 1) { "Collect several types of reflekt query arguments from one call!" }
         if (arguments.isEmpty()) {

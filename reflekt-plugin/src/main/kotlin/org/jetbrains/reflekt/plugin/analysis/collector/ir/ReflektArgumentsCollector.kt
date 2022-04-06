@@ -1,17 +1,5 @@
 package org.jetbrains.reflekt.plugin.analysis.collector.ir
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrReflektQueriesAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
-import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SignatureToAnnotations
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SupertypesToAnnotations
-import org.jetbrains.reflekt.plugin.analysis.processor.fullName
-import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.getReflektInvokeParts
-import org.jetbrains.reflekt.plugin.generation.common.ReflektInvokeParts
-import org.jetbrains.reflekt.plugin.utils.Util.log
-
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -19,6 +7,17 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrReflektQueriesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
+import org.jetbrains.reflekt.plugin.analysis.models.SignatureToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.SupertypesToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
+import org.jetbrains.reflekt.plugin.analysis.processor.fullName
+import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.getReflektInvokeParts
+import org.jetbrains.reflekt.plugin.generation.common.ReflektInvokeParts
+import org.jetbrains.reflekt.plugin.utils.Util.log
 
 /**
  * Visits all [IrCall]s to extract all Reflekt queries arguments in the [IrFile].
