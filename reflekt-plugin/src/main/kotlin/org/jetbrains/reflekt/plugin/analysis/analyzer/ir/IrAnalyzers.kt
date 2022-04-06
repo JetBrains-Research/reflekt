@@ -1,4 +1,4 @@
-@file:Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER")
+@file:Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "FILE_UNORDERED_IMPORTS")
 
 package org.jetbrains.reflekt.plugin.analysis.analyzer.ir
 

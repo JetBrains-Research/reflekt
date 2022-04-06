@@ -1,3 +1,5 @@
+@file:Suppress("FILE_UNORDERED_IMPORTS")
+
 package org.jetbrains.reflekt.plugin.analysis.models.ir
 
 import kotlinx.serialization.Serializable
@@ -12,6 +14,9 @@ import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.to
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableIrType
 
 typealias LibraryArgumentsMap<T> = HashMap<FileId, MutableSet<T>>
+typealias TypeLibraryQueriesResults<K, V> = HashMap<K, MutableSet<V>>
+typealias ClassOrObjectLibraryQueriesResults = TypeLibraryQueriesResults<SupertypesToAnnotations, IrClass>
+typealias FunctionLibraryQueriesResults = TypeLibraryQueriesResults<SignatureToAnnotations, IrFunction>
 
 /**
  * Stores all Reflekt queries arguments from the library.
@@ -102,10 +107,6 @@ data class SerializableLibraryArgumentsWithInstances(
             instances,
         )
 }
-
-typealias TypeLibraryQueriesResults<K, V> = HashMap<K, MutableSet<V>>
-typealias ClassOrObjectLibraryQueriesResults = TypeLibraryQueriesResults<SupertypesToAnnotations, IrClass>
-typealias FunctionLibraryQueriesResults = TypeLibraryQueriesResults<SignatureToAnnotations, IrFunction>
 
 /**
  * Stores for each Reflekt query from libraries a set of [IrElement], that satisfy this query.

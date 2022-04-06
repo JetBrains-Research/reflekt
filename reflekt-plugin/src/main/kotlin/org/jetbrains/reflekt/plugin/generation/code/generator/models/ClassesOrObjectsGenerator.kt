@@ -1,4 +1,4 @@
-@file:Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
+@file:Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY", "FILE_UNORDERED_IMPORTS")
 
 package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
@@ -53,7 +53,8 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectLibrar
  * @property typeVariable a generic variable to parametrize functions in the generated class
  * @property returnParameter a type for casting the results (all found entities) to
  */
-class ClassesGenerator(enclosingClassName: ClassName, libraryQueriesResults: ClassOrObjectLibraryQueriesResults) : ClassesOrObjectsGenerator(libraryQueriesResults) {
+class ClassesGenerator(enclosingClassName: ClassName, libraryQueriesResults: ClassOrObjectLibraryQueriesResults) :
+    ClassesOrObjectsGenerator(libraryQueriesResults) {
     override val typeName: ClassName = enclosingClassName.nestedClass("Classes")
     override val typeVariable = TypeVariableName("T", Any::class)
     override val returnParameter = KClass::class.asClassName().parameterizedBy(typeVariable)
@@ -70,7 +71,8 @@ class ClassesGenerator(enclosingClassName: ClassName, libraryQueriesResults: Cla
  * @property typeVariable a generic variable to parametrize functions in the generated class
  * @property returnParameter a type for casting the results (all found entities) to
  */
-class ObjectsGenerator(enclosingClassName: ClassName, libraryQueriesResults: ClassOrObjectLibraryQueriesResults) : ClassesOrObjectsGenerator(libraryQueriesResults) {
+class ObjectsGenerator(enclosingClassName: ClassName, libraryQueriesResults: ClassOrObjectLibraryQueriesResults) :
+    ClassesOrObjectsGenerator(libraryQueriesResults) {
     override val typeName: ClassName = enclosingClassName.nestedClass("Objects")
     override val typeVariable = TypeVariableName("T")
     override val returnParameter = typeVariable

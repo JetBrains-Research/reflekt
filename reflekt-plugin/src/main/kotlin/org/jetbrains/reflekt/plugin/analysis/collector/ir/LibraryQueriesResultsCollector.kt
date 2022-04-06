@@ -1,3 +1,5 @@
+@file:Suppress("FILE_UNORDERED_IMPORTS")
+
 package org.jetbrains.reflekt.plugin.analysis.collector.ir
 
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
