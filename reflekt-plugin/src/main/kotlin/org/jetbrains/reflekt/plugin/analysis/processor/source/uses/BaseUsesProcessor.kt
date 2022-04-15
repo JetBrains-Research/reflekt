@@ -27,8 +27,10 @@ abstract class BaseUsesProcessor<T : Any>(override val binding: BindingContext, 
         fileToUses: HashMap<FileId, ClassOrObjectUses>,
     ): HashMap<FileId, ClassOrObjectUses> {
         (element as? KtClassOrObject)?.let {
-            invokes.filter { it.isCovering(element) }.forEach {
-                fileToUses.getOrPut(file.fullName) { HashMap() }.getOrPut(it) { mutableListOf() }.add(element)
+            invokes.filter { it.isCovering(element) }.forEach { filteredElement ->
+                fileToUses.getOrPut(file.fullName) { HashMap() }
+                    .getOrPut(filteredElement) { mutableListOf() }
+                    .add(element)
             }
         }
         return fileToUses

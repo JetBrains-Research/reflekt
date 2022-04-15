@@ -11,8 +11,8 @@ class FunctionInstancesProcessor(override val binding: BindingContext) : BaseIns
     override val fileToInstances: FileToListInstances<KtNamedFunction> = HashMap()
 
     override fun process(element: KtElement, file: KtFile): FileToListInstances<KtNamedFunction> {
-        (element as? KtNamedFunction)?.let {
-            fileToInstances.getOrPut(file.fullName) { ArrayList() }.add(it)
+        (element as? KtNamedFunction)?.let { namedFunction ->
+            fileToInstances.getOrPut(file.fullName) { ArrayList() }.add(namedFunction)
         }
         return fileToInstances
     }

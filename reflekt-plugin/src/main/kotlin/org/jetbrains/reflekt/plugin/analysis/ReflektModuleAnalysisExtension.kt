@@ -35,7 +35,8 @@ class ReflektModuleAnalysisExtension(
         project: Project,
         module: ModuleDescriptor,
         bindingTrace: BindingTrace,
-        files: Collection<KtFile>): AnalysisResult? {
+        files: Collection<KtFile>
+    ): AnalysisResult? {
         messageCollector?.log("ReflektAnalysisExtension is starting...")
         (module as? ModuleDescriptorImpl) ?: error("Internal error! Can not cast a ModuleDescriptor to ModuleDescriptorImpl")
         val externalLibrariesAnalyzer = ExternalLibrariesAnalyzer(reflektMetaFilesFromLibraries, module, messageCollector)

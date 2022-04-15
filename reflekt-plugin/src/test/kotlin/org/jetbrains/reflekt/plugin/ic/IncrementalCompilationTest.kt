@@ -88,7 +88,7 @@ class IncrementalCompilationTest {
         if (testRoot.exists()) {
             testRoot.deleteRecursively()
         }
-        testRoot.apply { mkdirs() }
+        testRoot.mkdirs()
         return testRoot
     }
 }

@@ -14,8 +14,8 @@ abstract class BaseClassInvokesProcessor(override val binding: BindingContext, o
     override val fileToInvokes: HashMap<FileId, ClassOrObjectInvokes> = HashMap()
 
     override fun process(element: KtElement, file: KtFile): HashMap<FileId, ClassOrObjectInvokes> {
-        processClassOrObjectInvokes(element)?.let {
-            fileToInvokes.getOrPut(file.fullName) { HashSet() }.addAll(it)
+        processClassOrObjectInvokes(element)?.let { obj ->
+            fileToInvokes.getOrPut(file.fullName) { HashSet() }.addAll(obj)
         }
         return fileToInvokes
     }

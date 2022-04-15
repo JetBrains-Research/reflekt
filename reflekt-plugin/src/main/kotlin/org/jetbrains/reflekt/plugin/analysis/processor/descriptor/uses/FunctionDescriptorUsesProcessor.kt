@@ -24,8 +24,8 @@ class FunctionDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override v
 
     override fun process(descriptor: DeclarationDescriptor): IrFunctionUses {
         (descriptor as? FunctionDescriptor)?.let {
-            invokes.filter { it.isCovering(descriptor) }.forEach {
-                uses.getOrPut(it) { mutableListOf() }.add(descriptor.toFunctionInfo())
+            invokes.filter { it.isCovering(descriptor) }.forEach { signature ->
+                uses.getOrPut(signature) { mutableListOf() }.add(descriptor.toFunctionInfo())
             }
         }
         return uses

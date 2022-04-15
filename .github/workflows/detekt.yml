@@ -20,7 +20,7 @@ jobs:
       - name: Gradle build with remote cache
         uses: burrunan/gradle-cache-action@v1
         with:
-          arguments: detektCheckAll
+          arguments: detektAll
           properties: |
             org.gradle.caching=true
           gradle-version: wrapper
