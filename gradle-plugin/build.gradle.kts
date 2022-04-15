@@ -1,3 +1,5 @@
+@file:Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+
 import tanvd.kosogor.proxy.publishJar
 import tanvd.kosogor.proxy.publishPlugin
 
@@ -28,7 +30,5 @@ publishPlugin {
         tags.addAll(listOf("kotlin", "reflection", "reflekt"))
     }
 }
-
-
 
 publishJar {}

@@ -55,12 +55,13 @@ allprojects {
     tasks.withType<Test> {
         dependsOn(tasks.withType<PublishToMavenLocal> {})
     }
-
-    configureDiktat()
-    configureDetekt()
 }
 
-createDiktatTask()
+allprojects {
+    configureDetekt()
+    configureDiktat()
+}
+
 createDetektTask()
 
 subprojects {

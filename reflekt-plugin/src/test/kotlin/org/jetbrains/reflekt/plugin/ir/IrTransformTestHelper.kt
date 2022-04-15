@@ -66,11 +66,4 @@ fun getResult() = $reflektCall.toList().also { functions ->
             messageOutputStream
         }.compile()
     }
-
-    private fun compile(
-        sourceFile: SourceFile,
-        plugin: ComponentRegistrar = ReflektComponentRegistrar(isTestConfiguration = true),
-    ): KotlinCompilation.Result {
-        return compile(listOf(sourceFile), plugin)
-    }
 }

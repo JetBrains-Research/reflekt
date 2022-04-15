@@ -14,12 +14,14 @@ class KotlinScriptRunnerTest {
     }
 
     @Test
+    @Suppress("ArrayPrimitive")
     fun scriptWithProperties() {
         val script = KotlinScriptRunner(
             properties = listOf("a" to Array::class, "b" to String::class),
             code = "a.size.toString() + b",
         )
         assertEquals("42",
+            // TODO: intArray is not applicable here?
             script.eval(listOf(arrayOf(1, 2, 3, 4), "2")),
         )
     }

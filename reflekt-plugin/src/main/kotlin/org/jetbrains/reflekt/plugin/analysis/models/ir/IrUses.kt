@@ -61,7 +61,11 @@ data class IrReflektUses(
     }
 }
 
-fun ClassOrObjectUses.toSupertypesToFqNamesMap() = this.map { it.key.supertypes to it.value.mapNotNull { it.fqName?.toString() } }.toMap()
+fun ClassOrObjectUses.toSupertypesToFqNamesMap() = this.map { obj ->
+    obj.key.supertypes to obj.value.mapNotNull {
+        it.fqName?.toString()
+    }
+}.toMap()
 
 @Suppress("IDENTIFIER_LENGTH", "TYPE_ALIAS")
 fun <T, V : KtElement> HashMap<FileId, TypeUses<T, V>>.flatten(): TypeUses<T, V> {

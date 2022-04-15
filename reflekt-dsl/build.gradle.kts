@@ -1,3 +1,5 @@
+@file:Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+
 import tanvd.kosogor.proxy.publishJar
 
 group = rootProject.group

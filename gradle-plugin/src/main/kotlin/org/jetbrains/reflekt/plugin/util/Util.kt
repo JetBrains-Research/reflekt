@@ -1,3 +1,7 @@
+@file:Suppress("Deprecation")
+
+// TODO: fix deprecated
+
 package org.jetbrains.reflekt.plugin.util
 
 import org.gradle.api.Project
