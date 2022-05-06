@@ -3,11 +3,6 @@ potential-bugs:
   Deprecation:
     active: true
 
-formatting:
-  MaximumLineLength:
-    active: false
-    maxLineLength: 180
-
 style:
   MaxLineLength:
     active: true

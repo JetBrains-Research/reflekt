@@ -131,6 +131,7 @@ fun SimpleFunctionDescriptor.createFunctionTypeWithDispatchReceiver(
         builtIns,
         annotations,
         receiver?.type,
+        contextReceiverParameters.map { it.type },
         parameters,
         null,
         returnType ?: return null,

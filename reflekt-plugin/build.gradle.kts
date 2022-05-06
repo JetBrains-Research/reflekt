@@ -4,8 +4,8 @@ group = rootProject.group
 version = rootProject.version
 
 plugins {
-    kotlin("kapt")
-    kotlin("plugin.serialization") version "1.5.31" apply true
+    alias(libs.plugins.kotlin.plugin.serialization)
+    id(libs.plugins.kotlin.kapt.get().pluginId)
 }
 
 dependencies {
@@ -14,24 +14,25 @@ dependencies {
     implementation(kotlin("scripting-jvm"))
     implementation(kotlin("scripting-jvm-host"))
 
-    implementation("com.google.auto.service", "auto-service-annotations", "1.0")
-    kapt("com.google.auto.service", "auto-service", "1.0")
+    implementation(libs.auto.service.annotations)
+    kapt(libs.auto.service)
 
     implementation(project(":reflekt-core"))
     implementation(project(":reflekt-dsl"))
 
     testImplementation(gradleTestKit())
 
-    implementation("com.squareup", "kotlinpoet", "1.9.0")
-    implementation("org.reflections", "reflections", "0.9.12")
+    implementation(libs.kotlinpoet)
+    implementation(libs.reflections)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.2.0")
+    implementation(libs.kotlinx.serialization.protobuf)
 
-    testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
-    testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.0")
-    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
-    testImplementation("com.google.code.gson", "gson", "2.8.8")
-    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.5")
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(libs.tomlj)
+    testImplementation(libs.gson)
+    testImplementation(libs.kotlin.compile.testing)
 }
 
 tasks.withType<Test> {
@@ -52,6 +53,15 @@ tasks.create("analysis", Test::class.java) {
     testLogging {
         events("passed", "skipped", "failed")
     }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>> {
+    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+}
+
+tasks.processTestResources.configure {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from(rootProject.file("gradle/libs.versions.toml"))
 }
 
 publishJar {}

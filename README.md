@@ -24,7 +24,7 @@ and by custom user condition via an extended DSL.
 The first one will be called `Reflekt`, and the second `SmartReflekt`.
 
 **Restrictions**. Reflekt analyses only `.kt` files (in the project and in the libraries); uses
-Kotlin `1.5.30`. Reflekt does not currently support incremental compilation.
+Kotlin `1.6.21`. Reflekt does not currently support incremental compilation.
 
 **Note**, we use [Intermediate Representation](https://kotlinlang.org/docs/whatsnew14.html#unified-backends-and-extensibility) of code in this plugin.
 It means, that Reflekt can be used for all available platforms: JVM, Native and JavaScript.
@@ -41,7 +41,7 @@ ___
 ## Getting started
 
 **Note**, currently we support the following Reflekt and Kotlin versions:
-`1.5.30`, `1.5.21`, `1.5.20`, `1.5.10`, `1.5.0`
+`1.6.21`, `1.5.30`, `1.5.21`, `1.5.20`, `1.5.10`, `1.5.0`
 
 Reflekt uses Gradle. If you have a Gradle project, you only need to do three things.
 
@@ -51,13 +51,13 @@ add the following lines in the `plugins` section:
 ```kotlin
 plugins {
     // Version of Kotlin should be 1.5.0+ that supports IR backend
-    kotlin("jvm") version "1.5.30" apply true
+    kotlin("jvm") version "1.6.21"
 
     // Please, use the same version with the Kotlin version in your project
-    id("org.jetbrains.reflekt") version "1.5.30" apply true
+    id("org.jetbrains.reflekt") version "1.6.21"
 
     // Necessary only for this example, for Kotless library
-    id("io.kotless") version "0.1.6" apply true
+    id("io.kotless") version "0.1.6"
 }
 ```
 
@@ -66,8 +66,7 @@ At the same time, add to the `settings.gradle.kts` file the following snippet:
 ```kotlin
 pluginManagement {
     resolutionStrategy {
-        this.eachPlugin {
-            
+        eachPlugin {
             if (requested.id.id == "org.jetbrains.reflekt") {
                 useModule("org.jetbrains.reflekt:gradle-plugin:${this.requested.version}")
             }
@@ -90,7 +89,7 @@ the following lines in the `dependencies` section:
 ```kotlin
 dependencies {
     // The version here and the version in the plugins sections should be equal
-    implementation("org.jetbrains.reflekt", "reflekt-dsl", "1.5.30")
+    implementation("org.jetbrains.reflekt", "reflekt-dsl", "1.6.21")
 
     // Necessary for this example
     compileOnly("io.kotless", "kotless-lang", "0.1.6")
@@ -132,8 +131,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         useIR = true
-        languageVersion = "1.5"
-        apiVersion = "1.5"
         jvmTarget = "11"
         // Current Reflekt version does not support incremental compilation process
         incremental = false

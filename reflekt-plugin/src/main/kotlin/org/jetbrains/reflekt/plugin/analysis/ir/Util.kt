@@ -1,8 +1,8 @@
 package org.jetbrains.reflekt.plugin.analysis.ir
 
+import org.jetbrains.kotlin.backend.jvm.ir.psiElement
 import org.jetbrains.reflekt.plugin.analysis.psi.function.toParameterizedType
 
-import org.jetbrains.kotlin.backend.jvm.codegen.psiElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.expressions.*

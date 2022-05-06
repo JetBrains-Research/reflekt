@@ -42,6 +42,7 @@ data class SerializableKotlinType(
     val arguments: List<SerializableTypeProjection> = emptyList(),
     val returnType: String,
     val receiverType: SerializableKotlinType?,
+    val contextReceiverTypes: List<SerializableKotlinType> = emptyList(),
 )
 
 /**
