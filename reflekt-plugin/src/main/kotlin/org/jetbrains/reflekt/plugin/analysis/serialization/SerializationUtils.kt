@@ -60,13 +60,13 @@ object SerializationUtils {
     fun KotlinType.toSerializableKotlinType(): SerializableKotlinType {
         val returnType = arguments.last().type.fullFqName()
         val receiverType = this.getReceiverTypeFromFunctionType()?.toSerializableKotlinType()
-//        val contextReceiverTypes = getContextReceiverTypesFromFunctionType().map { it.toSerializableKotlinType() }
+        val contextReceiverTypes = getContextReceiverTypesFromFunctionType().map { it.toSerializableKotlinType() }
         return SerializableKotlinType(
             fqName = fullFqName(),
             arguments = arguments.dropLast(1).map { it.toSerializableTypeProjection() },
             returnType = returnType,
             receiverType = receiverType,
-//            contextReceiverTypes = contextReceiverTypes,
+            contextReceiverTypes = contextReceiverTypes,
         )
     }
 

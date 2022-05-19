@@ -35,6 +35,7 @@ enum class ElementType(val value: String) {
  * @property arguments
  * @property returnType
  * @property receiverType
+ * @property contextReceiverTypes
  */
 @Serializable
 data class SerializableKotlinType(

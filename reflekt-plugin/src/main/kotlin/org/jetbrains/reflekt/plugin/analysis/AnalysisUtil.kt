@@ -1,9 +1,10 @@
 package org.jetbrains.reflekt.plugin.analysis
 
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.reflekt.plugin.analysis.analyzer.source.*
-import org.jetbrains.reflekt.plugin.utils.compiler.*
 import java.io.File
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.reflekt.plugin.analysis.analyzer.source.BaseAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.analyzer.source.ReflektAnalyzer
+import org.jetbrains.reflekt.plugin.utils.compiler.*
 
 @Suppress("AVOID_USING_UTILITY_CLASS")
 object AnalysisUtil {

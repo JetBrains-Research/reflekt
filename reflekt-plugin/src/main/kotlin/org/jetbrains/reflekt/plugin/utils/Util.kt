@@ -98,7 +98,8 @@ object Util {
         files: Set<KtFile>,
         bindingTrace: BindingTrace,
         toSave: Boolean = true,
-        messageCollector: MessageCollector? = null): ReflektInstances {
+        messageCollector: MessageCollector? = null,
+    ): ReflektInstances {
         val analyzer = SmartReflektAnalyzer(files, bindingTrace.bindingContext, messageCollector)
         val instances = analyzer.instances()
         if (toSave) {
