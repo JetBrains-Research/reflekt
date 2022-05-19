@@ -67,7 +67,7 @@ data class SerializableIrType(
  */
 @Serializable
 data class SerializableIrTypeArgument(
-    val fqName: String,
+    val fqName: String? = null,
     val isStarProjection: Boolean,
     val variance: Variance,
 )
@@ -130,8 +130,6 @@ open class BaseReflektDataByFile<O : Any, C : Any, F : Any>(
 @Suppress("IDENTIFIER_LENGTH")
 fun <K : Any, V : Any, T : MutableCollection<V>> HashMap<K, T>.merge(second: HashMap<K, T>, defaultValue: () -> T): HashMap<K, T> =
     this.also { second.forEach { (k, v) -> this.getOrPut(k) { defaultValue() }.addAll(v) } }
-
-fun <T> List<T>.merge(second: List<T>): List<T> = this.plus(second)
 
 fun <T : Sizeable> merge(
     first: T,

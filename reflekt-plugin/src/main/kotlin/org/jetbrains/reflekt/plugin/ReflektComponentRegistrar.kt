@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt.plugin
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.collector.ir.*
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
@@ -55,9 +55,9 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         val config = PluginConfig(configuration, isTestConfiguration = isTestConfiguration)
         configuration.messageCollector.log("PROJECT FILE PATH: ${project.projectFilePath}")
 
-        // Collect IR instances for classes, objects, and functions
         val instancesAnalyzer = IrInstancesAnalyzer()
         val libraryArgumentsWithInstances = LibraryArgumentsWithInstances()
+        // Collect IR instances for classes, objects, and functions
         IrGenerationExtension.registerExtension(
             project,
             InstancesCollectorExtension(
@@ -67,25 +67,33 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
                 messageCollector = config.messageCollector,
             ),
         )
-        IrGenerationExtension.registerExtension(
-            project,
-            LibraryInstancesCollectorExtension(
-                irInstancesAnalyzer = instancesAnalyzer,
-                irInstancesFqNames = libraryArgumentsWithInstances.instances,
-            ),
-        )
 
+        @Suppress("COMMENT_WHITE_SPACE")
         // TODO: separate cases and accept use Reflekt in both cases in the same time?
-        // e.g. a part of queries for the current project and IR replacement
-        // and another part with ReflektImpl approach??
+        //  e.g. a part of queries for the current project and IR replacement
+        //  and another part with ReflektImpl approach??
+        // The Reflekt compiler plugin considers two possible scenarios.
+        // (I) The first scenario is searching for entities in a project that uses Reflekt.
+        // It can also run additional steps, see II.b).
+        // (II) The second one is searching for entities from a library that is imported in a project.
+        //  This scenario has two steps:
+        //    II.a) Scan files in the library during it's compilation,
+        //    extract all Reflekt queries and entities fqNames and save them into the Reflektneta file.
+        //    On this step we don't replace IR for the Reflekt queries.
+        //    II.b) Run the first scenario during the project compilation, and
+        //    also extract the libraries queries from the II.a) step to handle them.
+        //    All libraries queries are handled separately: we generate a special ReflektImpl
+        //    file installed of IR replacement for these queries.
         if (config.toSaveMetadata) {
-            project.registerLibraryExtensions(config, instancesAnalyzer)
+            // Handle II.a) case
+            project.collectAndStoreReflektArguments(config, instancesAnalyzer)
         } else {
-            project.registerProjectExtensions(config, instancesAnalyzer, libraryArgumentsWithInstances.libraryArguments)
+            // Handle I case
+            project.replaceReflektQueries(config, instancesAnalyzer, libraryArgumentsWithInstances)
         }
     }
 
-    private fun MockProject.registerLibraryExtensions(
+    private fun MockProject.collectAndStoreReflektArguments(
         config: PluginConfig,
         instancesAnalyzer: IrInstancesAnalyzer,
     ) {
@@ -110,17 +118,25 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         )
     }
 
-    private fun MockProject.registerProjectExtensions(
+    private fun MockProject.replaceReflektQueries(
         config: PluginConfig,
         instancesAnalyzer: IrInstancesAnalyzer,
-        libraryArguments: LibraryArguments,
+        libraryArgumentsWithInstances: LibraryArgumentsWithInstances,
     ) {
+        // Extract reflekt arguments from external libraries
+        IrGenerationExtension.registerExtension(
+            this,
+            ExternalLibraryInstancesCollectorExtension(
+                irInstancesAnalyzer = instancesAnalyzer,
+                irInstancesFqNames = libraryArgumentsWithInstances.instances,
+            ),
+        )
         // TODO: generate ReflektImpl for libraries queries from ReflektMeta
         IrGenerationExtension.registerExtension(
             this,
             ReflektIrGenerationExtension(
                 irInstancesAnalyzer = instancesAnalyzer,
-                libraryArguments = libraryArguments,
+                libraryArguments = libraryArgumentsWithInstances.libraryArguments,
                 messageCollector = config.messageCollector,
             ),
         )

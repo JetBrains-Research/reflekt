@@ -1,6 +1,6 @@
 @file:Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER")
 
-package org.jetbrains.reflekt.plugin.analysis.analyzer.ir
+package org.jetbrains.reflekt.plugin.analysis.analyzer
 
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
 import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektQueryArguments
@@ -63,7 +63,7 @@ class IrInstancesAnalyzer : IrAnalyzer() {
         functionProcessor.fileToCollectedElements.getOrPut(fileId) { mutableListOf() }.addAll(functions)
     }
 
-    // TODO: can we union IrClass and IrFunction?
+    // TODO: can we unify IrClass and IrFunction?
     @Suppress("TYPE_ALIAS")
     private fun IrBaseProcessorByFile<MutableList<IrClass>>.addIrClassesToProcessor(fileId: FileId, classes: List<IrClass>) {
         this.fileToCollectedElements.getOrPut(fileId) { mutableListOf() }.addAll(classes)
@@ -75,9 +75,9 @@ class IrInstancesAnalyzer : IrAnalyzer() {
  *  and filters [IrInstances] according these arguments.
  */
 class IrReflektQueriesAnalyzer(irInstances: IrInstances, context: IrPluginContext) : IrAnalyzer() {
-    val classProcessor = IrClassArgumentProcessor(irInstances.classes, context)
-    val objectProcessor = IrObjectArgumentProcessor(irInstances.objects, context)
-    val functionProcessor = IrFunctionArgumentProcessor(irInstances.functions, context)
+    private val classProcessor = IrClassArgumentProcessor(irInstances.classes, context)
+    private val objectProcessor = IrObjectArgumentProcessor(irInstances.objects, context)
+    private val functionProcessor = IrFunctionArgumentProcessor(irInstances.functions, context)
     override val processors: List<IrElementProcessor> =
         listOf(classProcessor, objectProcessor, functionProcessor)
 
@@ -104,10 +104,9 @@ class IrReflektQueriesAnalyzer(irInstances: IrInstances, context: IrPluginContex
         val arguments = processors.filter { it.shouldRunOn(element) }.mapNotNull {
             (it as? IrReflektArgumentProcessor<*, *>)?.processQueryArguments(element)
         }
+        // Each processor handles only one type of the Reflekt query.
+        // E.g. [classProcessor] can handle only queries for classes, [objectProcessor] - only for objects and so on
         require(arguments.size <= 1) { "Collect several types of reflekt query arguments from one call!" }
-        if (arguments.isEmpty()) {
-            return null
-        }
-        return arguments.first()
+        return arguments.firstOrNull()
     }
 }

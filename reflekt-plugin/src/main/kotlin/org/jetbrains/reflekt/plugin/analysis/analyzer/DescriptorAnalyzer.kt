@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.plugin.analysis.analyzer.descriptor
+package org.jetbrains.reflekt.plugin.analysis.analyzer
 
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektUses
 import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektInvokes

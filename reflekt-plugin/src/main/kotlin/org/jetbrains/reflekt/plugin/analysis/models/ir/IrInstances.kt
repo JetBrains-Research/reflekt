@@ -1,7 +1,6 @@
 package org.jetbrains.reflekt.plugin.analysis.models.ir
 
 import org.jetbrains.reflekt.plugin.analysis.models.BaseCollectionReflektData
-import org.jetbrains.reflekt.plugin.analysis.models.merge
 
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
@@ -31,7 +30,7 @@ data class IrInstances(
  * @property classes
  * @property functions
  */
-// TODO: We can not inheritance from BaseCollectionReflektData since this issue:
+// TODO: We can not inherit from BaseCollectionReflektData since this issue:
 // https://github.com/Kotlin/kotlinx.serialization/issues/1264
 @Serializable
 data class IrInstancesFqNames(
@@ -40,9 +39,9 @@ data class IrInstancesFqNames(
     val functions: List<String> = ArrayList(),
 ) {
     fun merge(second: IrInstancesFqNames) = IrInstancesFqNames(
-        classes = classes.merge(second.classes),
-        objects = objects.merge(second.objects),
-        functions = functions.merge(second.functions),
+        classes = classes.plus(second.classes),
+        objects = objects.plus(second.objects),
+        functions = functions.plus(second.functions),
     )
 
     companion object {

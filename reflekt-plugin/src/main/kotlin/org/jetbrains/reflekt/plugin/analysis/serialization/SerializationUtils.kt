@@ -29,14 +29,13 @@ object SerializationUtils {
     }
 
     private fun IrTypeArgument.toSerializableIrTypeArgument(): SerializableIrTypeArgument {
-        val fqName = typeOrNull?.classFqName?.asString() ?: error("Can not get class fq name for IrTypeArgument")
         if (this is IrStarProjection) {
             return SerializableIrTypeArgument(
-                fqName = fqName,
                 isStarProjection = true,
                 variance = Variance.INVARIANT,
             )
         }
+        val fqName = typeOrNull?.classFqName?.asString() ?: error("Can not get class fq name for IrTypeProjection")
         return SerializableIrTypeArgument(
             fqName = fqName,
             isStarProjection = false,
@@ -52,7 +51,7 @@ object SerializationUtils {
     @OptIn(ObsoleteDescriptorBasedAPI::class)
     fun IrSimpleType.toSerializableIrType(): SerializableIrType {
         val classifierFqName = this.classifier.descriptor.fqNameOrNull()?.asString() ?: error("Can not get class fq name for ClassifierDescriptor")
-        val arguments = this.arguments.mapNotNull { (it as? IrTypeProjection)?.toSerializableIrTypeArgument() }
+        val arguments = this.arguments.map { it.toSerializableIrTypeArgument() }
         // TODO: should we serialize it?
         val abbreviation = null
         return SerializableIrType(
@@ -77,8 +76,9 @@ object SerializationUtils {
         if (this.isStarProjection) {
             return IrStarProjectionImpl
         }
+        requireNotNull(this.fqName) { "Empty fqName for IrTypeProjection" }
         return IrSimpleTypeBuilder().also {
-            it.classifier = pluginContext.referenceClass(FqName(this.fqName))
+            it.classifier = pluginContext.referenceClass(FqName(this.fqName!!))
         }.buildTypeProjection()
     }
 }
