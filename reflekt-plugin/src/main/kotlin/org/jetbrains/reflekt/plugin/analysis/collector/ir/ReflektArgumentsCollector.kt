@@ -1,3 +1,5 @@
+@file:Suppress("FILE_UNORDERED_IMPORTS")
+
 package org.jetbrains.reflekt.plugin.analysis.collector.ir
 
 import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
@@ -5,8 +7,8 @@ import org.jetbrains.reflekt.plugin.analysis.analyzer.IrReflektQueriesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SignatureToAnnotations
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SupertypesToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.SignatureToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.SupertypesToAnnotations
 import org.jetbrains.reflekt.plugin.analysis.processor.fullName
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.getReflektInvokeParts
 import org.jetbrains.reflekt.plugin.generation.common.ReflektInvokeParts

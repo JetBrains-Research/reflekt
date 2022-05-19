@@ -1,9 +1,9 @@
+@file:Suppress("FILE_UNORDERED_IMPORTS")
+
 package org.jetbrains.reflekt.plugin
 
 import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.collector.ir.*
-import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
-import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
 import org.jetbrains.reflekt.plugin.generation.ReflektMetaFileGenerator
 import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
@@ -16,6 +16,8 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.reflekt.plugin.analysis.models.ir.*
+import org.jetbrains.reflekt.plugin.generation.code.generator.ReflektImplGeneratorExtension
 
 import java.io.File
 
@@ -131,7 +133,7 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
                 irInstancesFqNames = libraryArgumentsWithInstances.instances,
             ),
         )
-        this.generateReflektImpl(config, instancesAnalyzer, libraryArguments)
+        this.generateReflektImpl(config, instancesAnalyzer, libraryArgumentsWithInstances.libraryArguments)
         IrGenerationExtension.registerExtension(
             this,
             ReflektIrGenerationExtension(
