@@ -28,7 +28,7 @@ import java.util.*
  *   Also currently we have different variable for one entity
  *   (e.g. withSupertypesFunctionBody, withSupertypesParameters, generateWithSupertypesFunction)
  */
-@Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
+@Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY", "UnnecessaryAbstractClass")
 abstract class HelperClassGenerator : ClassGenerator() {
     abstract val typeVariable: TypeVariableName
     abstract val returnParameter: TypeName

@@ -7,7 +7,7 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.backend.jvm.codegen.psiElement
+import org.jetbrains.kotlin.backend.jvm.ir.psiElement
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
@@ -29,7 +29,7 @@ import java.io.File
  * @property visitors
  */
 class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, BindingContext>>) : ComponentRegistrar {
-    @ObsoleteDescriptorBasedAPI
+    @OptIn(ObsoleteDescriptorBasedAPI::class)
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
         IrGenerationExtension.registerExtension(project, object : IrGenerationExtension {
             override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
@@ -78,7 +78,7 @@ class IrFunctionTypeVisitor(val filterByName: (String) -> Boolean) : IrElementVi
 class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, BindingContext> {
     val typeArguments = mutableListOf<TypeArgument>()
 
-    @ObsoleteDescriptorBasedAPI
+    @OptIn(ObsoleteDescriptorBasedAPI::class)
     override fun visitCall(expression: IrCall, data: BindingContext) {
         val typeArgument = expression.getTypeArgument(0) ?: error("No arguments found in expression $expression")
         val type = typeArgument.toParameterizedType()

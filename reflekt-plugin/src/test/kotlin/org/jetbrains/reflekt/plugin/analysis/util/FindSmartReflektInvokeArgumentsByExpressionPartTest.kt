@@ -20,7 +20,10 @@ class FindSmartReflektInvokeArgumentsByExpressionPartTest {
         expectedResult: String,
         directory: String) {
         val reflektClassPath = getReflektProjectJars()
-        val analyzer = SmartReflektTestAnalyzer(AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sources))
+        val analyzer = SmartReflektTestAnalyzer(AnalysisUtil.getBaseAnalyzer(
+            classPath = reflektClassPath,
+            sources = sources,
+        ))
         Assertions.assertEquals(expectedResult, analyzer.analyze().toPrettyString(), "Incorrect invoke arguments for directory $directory")
     }
 

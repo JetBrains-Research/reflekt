@@ -25,8 +25,8 @@ abstract class BaseDescriptorUsesProcessor<T : Any>(override val messageCollecto
         uses: IrClassOrObjectUses,
     ): IrClassOrObjectUses {
         (descriptor as? ClassifierDescriptor)?.let {
-            invokes.filter { it.isCovering(descriptor) }.forEach {
-                uses.getOrPut(it) { mutableListOf() }.add(descriptor.fqNameSafe.asString())
+            invokes.filter { it.isCovering(descriptor) }.forEach { supertypesToAnnotations ->
+                uses.getOrPut(supertypesToAnnotations) { mutableListOf() }.add(descriptor.fqNameSafe.asString())
             }
         }
         return uses

@@ -77,7 +77,7 @@ fun KtNamedFunction.parseKdocLinks(tag: String): List<String> = findTag(tag)?.ge
 
 fun visitKtElements(sourceFiles: List<File>, visitors: List<KtVisitor<Void, BindingContext>>): BindingContext {
     val reflektClassPath = getReflektProjectJars()
-    val analyzer = AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sourceFiles.toSet())
+    val analyzer = AnalysisUtil.getBaseAnalyzer(classPath = reflektClassPath, sources = sourceFiles.toSet(),)
     visitors.forEach { v -> analyzer.ktFiles.forEach { it.acceptChildren(v, analyzer.binding) } }
     return analyzer.binding
 }

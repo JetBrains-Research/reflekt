@@ -1,6 +1,12 @@
 package org.jetbrains.reflekt.util
 
+import org.tomlj.Toml
+
 object Util {
+    private val versionCatalog by lazy {
+        Toml.parse(javaClass.getResource("/libs.versions.toml")!!.readText())
+    }
+
     /** Global constant with plugin identifier */
     const val PLUGIN_ID = "org.jetbrains.reflekt"
     const val GRADLE_GROUP_ID = "org.jetbrains.reflekt"
@@ -9,7 +15,7 @@ object Util {
      * Just needs to be consistent with the artifactId in reflekt-plugin build.gradle.kts#publishJar
      */
     const val GRADLE_ARTIFACT_ID = "reflekt-plugin"
-    const val VERSION = "1.5.31"
+    val VERSION = versionCatalog.getString("versions.kotlin")!!
     val ENABLED_OPTION_INFO = MyCliOption(
         name = "enabled",
         valueDescription = "<true|false>",
@@ -25,7 +31,7 @@ object Util {
         MyCliOption(
             name = "reflektMetaFile",
             valueDescription = "<file's path>",
-            description = "File's path from the library with Reflekt meta infromation",
+            description = "File's path from the library with Reflekt meta information",
         )
     val OUTPUT_DIR_OPTION_INFO =
         MyCliOption(

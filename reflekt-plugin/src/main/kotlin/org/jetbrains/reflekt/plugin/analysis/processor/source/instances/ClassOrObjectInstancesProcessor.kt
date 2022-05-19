@@ -13,8 +13,8 @@ open class ClassOrObjectInstancesProcessor<T : KtClassOrObject>(override val bin
     override val fileToInstances: FileToListInstances<T> = HashMap()
 
     override fun process(element: KtElement, file: KtFile): FileToListInstances<T> {
-        (element as? T)?.let {
-            fileToInstances.getOrPut(file.fullName) { ArrayList() }.add(it)
+        (element as? T)?.let { castedElement ->
+            fileToInstances.getOrPut(file.fullName) { ArrayList() }.add(castedElement)
         }
         return fileToInstances
     }

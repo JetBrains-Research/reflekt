@@ -23,10 +23,11 @@ class FunctionDescriptorUsesProcessor(reflektInvokes: ReflektInvokes, override v
     private val invokes = getInvokesGroupedByFiles(reflektInvokes.functions)
 
     override fun process(descriptor: DeclarationDescriptor): IrFunctionUses {
-        (descriptor as? FunctionDescriptor)?.let {
-            invokes.filter { it.isCovering(descriptor) }.forEach {
-                uses.getOrPut(it) { mutableListOf() }.add(descriptor.toFunctionInfo())
-            }
+        if (descriptor is FunctionDescriptor) {
+            invokes.filter { it.isCovering(descriptor) }
+                .forEach { signatureToAnnotations ->
+                    uses.getOrPut(signatureToAnnotations) { mutableListOf() }.add(descriptor.toFunctionInfo())
+                }
         }
         return uses
     }

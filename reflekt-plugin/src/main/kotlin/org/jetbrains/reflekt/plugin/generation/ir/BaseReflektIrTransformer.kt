@@ -129,7 +129,8 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
             pluginContext,
             currentScope!!.scope,
             UNDEFINED_OFFSET,
-            UNDEFINED_OFFSET) {
+            UNDEFINED_OFFSET,
+        ) {
             // no need to pass a body to this object
         }
 }

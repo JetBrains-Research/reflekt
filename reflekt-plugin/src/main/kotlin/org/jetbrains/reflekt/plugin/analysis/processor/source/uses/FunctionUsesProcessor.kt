@@ -26,8 +26,8 @@ class FunctionUsesProcessor(
 
     override fun process(element: KtElement, file: KtFile): HashMap<FileId, FunctionUses> {
         (element as? KtNamedFunction)?.let {
-            invokes.filter { it.isCovering(element) }.forEach {
-                fileToUses.getOrPut(file.fullName) { HashMap() }.getOrPut(it) { mutableListOf() }.add(element)
+            invokes.filter { it.isCovering(element) }.forEach { signatureToAnnotations ->
+                fileToUses.getOrPut(file.fullName) { HashMap() }.getOrPut(signatureToAnnotations) { mutableListOf() }.add(element)
             }
         }
         return fileToUses

@@ -4,11 +4,14 @@ import org.gradle.internal.impldep.org.apache.commons.lang.SystemUtils
 import java.io.File
 import java.net.URL
 import java.nio.file.*
-
+import org.tomlj.Toml
 
 object MavenLocalUtil {
-    // We should use a const here since we can not get it from the project
-    private const val VERSION = "1.5.31"
+    private val versionCatalog by lazy {
+        Toml.parse(javaClass.getResource("/libs.versions.toml")!!.readText())
+    }
+
+    private val VERSION = versionCatalog.getString("versions.kotlin")!!
     private val mavenLocalPath = getMavenLocalPath()
 
     fun getReflektProjectJars(): Set<File> {
