@@ -1,9 +1,9 @@
+@file:Suppress("FILE_UNORDERED_IMPORTS")
+
 package org.jetbrains.reflekt.plugin
 
 import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.collector.ir.*
-import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
-import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
 import org.jetbrains.reflekt.plugin.generation.ReflektMetaFileGenerator
 import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
@@ -16,6 +16,8 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.reflekt.plugin.analysis.models.ir.*
+import org.jetbrains.reflekt.plugin.generation.code.generator.ReflektImplGeneratorExtension
 
 import java.io.File
 
@@ -131,7 +133,7 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
                 irInstancesFqNames = libraryArgumentsWithInstances.instances,
             ),
         )
-        // TODO: generate ReflektImpl for libraries queries from ReflektMeta
+        this.generateReflektImpl(config, instancesAnalyzer, libraryArgumentsWithInstances.libraryArguments)
         IrGenerationExtension.registerExtension(
             this,
             ReflektIrGenerationExtension(
@@ -146,6 +148,33 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
             SmartReflektIrGenerationExtension(
                 irInstancesAnalyzer = instancesAnalyzer,
                 classpath = config.dependencyJars,
+                messageCollector = config.messageCollector,
+            ),
+        )
+    }
+
+    private fun MockProject.generateReflektImpl(
+        config: PluginConfig,
+        instancesAnalyzer: IrInstancesAnalyzer,
+        libraryArguments: LibraryArguments,
+    ) {
+        if (libraryArguments.isNotEmpty() && config.outputDir == null) {
+            error("The output path for the ReflektImpl file was not specified")
+        }
+        val libraryQueriesResults = LibraryQueriesResults.fromLibraryArguments(libraryArguments)
+        IrGenerationExtension.registerExtension(
+            this,
+            LibraryQueriesResultsCollector(
+                irInstancesAnalyzer = instancesAnalyzer,
+                libraryQueriesResults = libraryQueriesResults,
+                messageCollector = config.messageCollector,
+            ),
+        )
+        IrGenerationExtension.registerExtension(
+            this,
+            ReflektImplGeneratorExtension(
+                libraryQueriesResults = libraryQueriesResults,
+                generationPath = config.outputDir!!,
                 messageCollector = config.messageCollector,
             ),
         )

@@ -3,7 +3,7 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.ir
 
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
-import org.jetbrains.reflekt.plugin.analysis.processor.source.Processor
+import org.jetbrains.reflekt.plugin.analysis.processor.Processor
 
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrFile

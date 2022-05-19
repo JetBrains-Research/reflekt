@@ -2,9 +2,6 @@
 
 package org.jetbrains.reflekt.plugin.utils
 
-import org.jetbrains.reflekt.plugin.analysis.models.psi.ReflektUses
-import org.jetbrains.reflekt.plugin.utils.Util.GET_USES
-import org.jetbrains.reflekt.plugin.utils.Util.USES_STORE_NAME
 import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
 
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
@@ -13,8 +10,6 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.resolve.*
 import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.util.slicedMap.Slices
-import org.jetbrains.kotlin.util.slicedMap.WritableSlice
 
 import java.io.File
 import java.io.PrintStream
@@ -22,16 +17,9 @@ import java.io.PrintStream
 /**
  * Common functions and constants for the plugin.
  *
- * @property USES_STORE_NAME the name for [ReflektUses] to store in the [BindingContext].
- *  [ReflektUses] store arguments from the Reflekt queries in this case
- *  [ReflektInstances] store all instances (entities) of classes/objects/functions in the project in this case
- * @property GET_USES new [WritableSlice] to store [ReflektUses] in the [BindingContext]
  * @property messageCollector get [MessageCollector] from the [CompilerConfiguration]
  */
 object Util {
-    private const val USES_STORE_NAME = "ReflektUses"
-    private val GET_USES: WritableSlice<String, ReflektUses> = Slices.createSimpleSlice()
-
     val CompilerConfiguration.messageCollector: MessageCollector
         get() = this.get(
             CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
@@ -64,13 +52,6 @@ object Util {
             CompilerMessageLocation.create(null),
         )
     }
-
-    /**
-     * Saves [ReflektUses] into the [BindingContext].
-     *
-     * @param uses
-     */
-    internal fun BindingTrace.saveUses(uses: ReflektUses) = record(GET_USES, USES_STORE_NAME, uses)
 }
 
 /**
@@ -105,7 +86,7 @@ fun KotlinType.stringRepresentation(): String {
 }
 
 fun IrType.stringRepresentation(): String {
-    TODO("")
+    TODO("Implement string representation")
 }
 
 /**
