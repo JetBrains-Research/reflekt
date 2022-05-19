@@ -109,7 +109,7 @@ data class SerializableLibraryArgumentsWithInstances(
 }
 
 /**
- * Stores for each Reflekt query from libraries a set of [IrElement], that satisfy this query.
+ * Stores for each Reflekt query from libraries a set of [IrElement], that satisfies this query.
  * @property classes
  * @property objects
  * @property functions
