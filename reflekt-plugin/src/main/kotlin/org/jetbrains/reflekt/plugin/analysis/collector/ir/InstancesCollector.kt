@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt.plugin.analysis.collector.ir
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.models.ir.*
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
 import org.jetbrains.reflekt.plugin.utils.Util.log
@@ -45,7 +45,7 @@ class InstancesCollectorExtension(
     private val reflektMetaFilesFromLibraries: Set<File>,
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
-    // TODO: can we avoid making a copy here?
+    // TODO: can we avoid making a copy here? (using var and make a copy later, e.g. 60-61 code rows)
     private var libraryArguments = LibraryArguments()
     private var irInstancesFqNames = IrInstancesFqNames()
 
@@ -64,7 +64,7 @@ class InstancesCollectorExtension(
     }
 }
 
-class LibraryInstancesCollectorExtension(
+class ExternalLibraryInstancesCollectorExtension(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,
     private val irInstancesFqNames: IrInstancesFqNames,
 ) : IrGenerationExtension {

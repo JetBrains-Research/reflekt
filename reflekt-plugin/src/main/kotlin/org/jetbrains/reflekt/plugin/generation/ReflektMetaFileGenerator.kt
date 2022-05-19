@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt.plugin.generation
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.models.ir.*
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils
 import org.jetbrains.reflekt.plugin.utils.Util.log

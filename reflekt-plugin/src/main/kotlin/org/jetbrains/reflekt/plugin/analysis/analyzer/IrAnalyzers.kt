@@ -1,6 +1,6 @@
 @file:Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "FILE_UNORDERED_IMPORTS")
 
-package org.jetbrains.reflekt.plugin.analysis.analyzer.ir
+package org.jetbrains.reflekt.plugin.analysis.analyzer
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrElement
@@ -64,7 +64,7 @@ class IrInstancesAnalyzer : IrAnalyzer() {
         functionProcessor.fileToCollectedElements.getOrPut(fileId) { mutableListOf() }.addAll(functions)
     }
 
-    // TODO: can we union IrClass and IrFunction?
+    // TODO: can we unify IrClass and IrFunction?
     @Suppress("TYPE_ALIAS")
     private fun IrBaseProcessorByFile<MutableList<IrClass>>.addIrClassesToProcessor(fileId: FileId, classes: List<IrClass>) {
         this.fileToCollectedElements.getOrPut(fileId) { mutableListOf() }.addAll(classes)
@@ -111,10 +111,9 @@ class IrReflektQueriesAnalyzer(irInstances: IrInstances, context: IrPluginContex
         val arguments = processors.filter { it.shouldRunOn(element) }.mapNotNull {
             (it as? IrReflektArgumentProcessor<*, *>)?.extractQueryArguments(element)
         }
+        // Each processor handles only one type of the Reflekt query.
+        // E.g. [classProcessor] can handle only queries for classes, [objectProcessor] - only for objects and so on
         require(arguments.size <= 1) { "Collect several types of reflekt query arguments from one call!" }
-        if (arguments.isEmpty()) {
-            return null
-        }
-        return arguments.first()
+        return arguments.firstOrNull()
     }
 }

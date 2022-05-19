@@ -48,6 +48,9 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
      * @param context
      * @return replacement for a result of terminal function
      * @throws ReflektGenerationException
+     *
+     *
+     * // listOf<T>(items... as T)
      */
     protected fun IrBuilderWithScope.resultIrCall(
         invokeParts: BaseReflektInvokeParts,
