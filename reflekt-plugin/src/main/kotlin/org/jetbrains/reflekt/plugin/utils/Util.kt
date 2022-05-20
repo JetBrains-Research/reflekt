@@ -7,9 +7,8 @@ import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.resolve.*
-import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.ir.types.*
+import org.jetbrains.kotlin.types.checker.SimpleClassicTypeSystemContext.isStarProjection
 
 import java.io.File
 import java.io.PrintStream
@@ -65,28 +64,23 @@ fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T 
     values.first { it.transform() == this }
 
 /**
- * String representation for [KotlinType].
+ * String representation for [IrType].
  * Should be the same as the string representation for KType.
  *
  * @return [String]
  */
-fun KotlinType.stringRepresentation(): String {
-    val declaration = requireNotNull(constructor.declarationDescriptor) {
-        "declarationDescriptor is null for constructor = $constructor with ${constructor.javaClass}"
-    }
-    val typeArguments = arguments.map {
+fun IrType.stringRepresentation(): String {
+    val fqName = this.classFqName?.asString() ?: error("IrType does not have classFqName")
+    val typeArguments = (this as? IrSimpleType)?.arguments?.map {
         // We should use * symbol in start projection instead of bounds according to KType representation
-        if (it.isStarProjection) {
+        if (it.isStarProjection()) {
             TypeStringRepresentationUtil.STAR_SYMBOL
         } else {
-            TypeStringRepresentationUtil.markAsNullable(it.type.stringRepresentation(), it.type.isMarkedNullable)
+            val type = it.typeOrNull ?: error("Type argument does not have type!")
+            TypeStringRepresentationUtil.markAsNullable(type.stringRepresentation(), type.isMarkedNullable())
         }
-    }
-    return TypeStringRepresentationUtil.getStringRepresentation(DescriptorUtils.getFqName(declaration).asString(), typeArguments)
-}
-
-fun IrType.stringRepresentation(): String {
-    TODO("Implement string representation")
+    } ?: emptyList()
+    return TypeStringRepresentationUtil.getStringRepresentation(fqName, typeArguments)
 }
 
 /**
