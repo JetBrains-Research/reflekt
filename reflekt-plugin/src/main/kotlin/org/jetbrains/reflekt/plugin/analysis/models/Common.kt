@@ -35,6 +35,7 @@ enum class ElementType(val value: String) {
  * @property arguments
  * @property returnType
  * @property receiverType
+ * @property contextReceiverTypes
  */
 @Serializable
 data class SerializableKotlinType(
@@ -42,6 +43,7 @@ data class SerializableKotlinType(
     val arguments: List<SerializableTypeProjection> = emptyList(),
     val returnType: String,
     val receiverType: SerializableKotlinType?,
+    val contextReceiverTypes: List<SerializableKotlinType> = emptyList(),
 )
 
 /**

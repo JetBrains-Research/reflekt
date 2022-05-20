@@ -3,7 +3,7 @@ package org.jetbrains.reflekt.plugin.scripting
 import org.jetbrains.reflekt.plugin.analysis.models.Import
 import org.reflections.ReflectionUtils
 import org.reflections.Reflections
-import org.reflections.scanners.SubTypesScanner
+import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
 import java.io.File
 import java.lang.reflect.*
@@ -28,9 +28,9 @@ class ImportChecker {
         // Scan each class in classpath
         val reflections = Reflections(
             ConfigurationBuilder()
-                .addClassLoader(classLoader)
+                .addClassLoaders(classLoader)
                 .setUrls(urls)
-                .setScanners(SubTypesScanner(false)),
+                .setScanners(Scanners.SubTypes.filterResultsBy { true }),
         )
 
         /*

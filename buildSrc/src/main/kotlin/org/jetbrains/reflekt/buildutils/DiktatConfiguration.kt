@@ -16,7 +16,9 @@ import org.gradle.kotlin.dsl.configure
 fun Project.configureDiktat() {
     apply<DiktatGradlePlugin>()
     configure<DiktatExtension> {
-        inputs = fileTree("src/main").apply { include("**/*.kt") }
+        inputs {
+            include("src/main/**/*.kt")
+        }
     }
 }
 
@@ -28,9 +30,9 @@ fun Project.createDiktatTask() {
         apply<DiktatGradlePlugin>()
         configure<DiktatExtension> {
             diktatConfigFile = rootProject.file("diktat-analysis.yml")
-            inputs = fileTree(".").apply {
-                include("*.kts")
-                include("buildSrc/**/*.kt")
+            inputs {
+                include("./*.kts")
+                include("./buildSrc/**/*.kt")
             }
         }
     }

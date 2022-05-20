@@ -2,7 +2,7 @@
   enabled: true
   configuration:
     domainName: org.jetbrains.reflekt
-    kotlinVersion: 1.5
+    kotlinVersion: 1.6
     srcDirectories: "main"
     testDirs: "test,nativeTest,commonTest"
 - name: ENUM_VALUE
@@ -147,6 +147,6 @@
 # disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1093
 - name: SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
   enabled: false
-# disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1114
-- name: CLASS_SHOULD_NOT_BE_ABSTRACT
+# disabled because IDEA already tracks imports well
+- name: FILE_UNORDERED_IMPORTS
   enabled: false

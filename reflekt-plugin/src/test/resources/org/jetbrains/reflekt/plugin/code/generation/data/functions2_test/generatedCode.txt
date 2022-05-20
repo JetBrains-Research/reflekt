@@ -24,7 +24,7 @@ public object ReflektImpl {
                 supertypeFqNames)
 
         public class WithSuperTypes<T>(
-            public val fqNames: Set<String>
+            public val fqNames: Set<String>,
         ) {
             public fun toList(): List<T> = emptyList()
 
@@ -33,7 +33,7 @@ public object ReflektImpl {
 
         public class WithAnnotations<T>(
             public val annotationFqNames: Set<String>,
-            public val supertypeFqNames: Set<String>
+            public val supertypeFqNames: Set<String>,
         ) {
             public fun toList(): List<T> = when (annotationFqNames) {
                 else -> emptyList()
@@ -51,7 +51,7 @@ public object ReflektImpl {
                 supertypeFqNames)
 
         public class WithSuperTypes<T : Any>(
-            public val fqNames: Set<String>
+            public val fqNames: Set<String>,
         ) {
             public fun toList(): List<KClass<T>> = emptyList()
 
@@ -60,7 +60,7 @@ public object ReflektImpl {
 
         public class WithAnnotations<T : Any>(
             public val annotationFqNames: Set<String>,
-            public val supertypeFqNames: Set<String>
+            public val supertypeFqNames: Set<String>,
         ) {
             public fun toList(): List<KClass<T>> = when (annotationFqNames) {
                 else -> emptyList()
@@ -76,7 +76,7 @@ public object ReflektImpl {
 
         public class WithAnnotations<T : Any>(
             public val annotationFqNames: Set<String>,
-            public val signature: String
+            public val signature: String,
         ) {
             public fun toList(): List<KFunction<T>> = when (annotationFqNames) {
                 setOf("org.jetbrains.reflekt.codegen.test.FirstAnnotationTest") -> {

@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import java.io.File
 
 /**
- * Kotlin compiler extension to replace IR in the SmartReflekt queries
+ * The Kotlin compiler extension to replace IR in the SmartReflekt queries.
  *
  * @param irInstancesAnalyzer to get project instances
  * @param classpath project dependencies that can be resolved at the compile time
@@ -22,7 +22,7 @@ class SmartReflektIrGenerationExtension(
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     /**
-     * Replace IR in the SmartReflekt queries to the list of the found entities
+     * Replaces IR in the SmartReflekt queries to the list of the found entities.
      */
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         val irInstances = irInstancesAnalyzer.getIrInstances()

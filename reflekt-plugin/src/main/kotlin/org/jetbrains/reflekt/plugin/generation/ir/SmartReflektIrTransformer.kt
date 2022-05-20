@@ -51,7 +51,7 @@ class SmartReflektIrTransformer(
      *
      * @param expression [IrCall]
      */
-    @ObsoleteDescriptorBasedAPI
+    @OptIn(ObsoleteDescriptorBasedAPI::class)
     override fun visitCall(expression: IrCall): IrExpression {
         val function = expression.symbol.owner
         val expressionFqName = function.fqNameForIrSerialization.toString()

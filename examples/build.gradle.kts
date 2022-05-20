@@ -5,9 +5,9 @@ group = rootProject.group
 version = rootProject.version
 
 plugins {
-    id("tanvd.kosogor") version "1.0.10" apply true
-    id("org.jetbrains.reflekt") version "1.5.31" apply true
-    kotlin("jvm") version "1.5.31" apply true
+    id("tanvd.kosogor") version "1.0.13"
+    id("org.jetbrains.reflekt") version "1.6.21"
+    kotlin("jvm") version "1.6.21"
 }
 
 allprojects {
@@ -19,9 +19,6 @@ allprojects {
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-            useIR = true
-            languageVersion = "1.5"
-            apiVersion = "1.5"
             jvmTarget = "11"
             // Current Reflekt version does not support incremental compilation process
             incremental = false
@@ -29,8 +26,8 @@ allprojects {
     }
 
     dependencies {
-        implementation("org.jetbrains.reflekt", "reflekt-dsl", "1.5.31")
-        implementation("com.github.gumtreediff", "core", "2.1.2")
+        implementation("org.jetbrains.reflekt", "reflekt-dsl", "1.6.21")
+        implementation("com.github.gumtreediff", "core", "3.0.0")
     }
 
     repositories {

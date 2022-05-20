@@ -42,7 +42,7 @@ class ReflektIrTransformer(
      *
      * @param expression [IrCall]
      */
-    @ObsoleteDescriptorBasedAPI
+    @OptIn(ObsoleteDescriptorBasedAPI::class)
     @Suppress("ReturnCount")
     override fun visitCall(expression: IrCall): IrExpression {
         messageCollector?.log("[IR] CURRENT EXPRESSION:\n${expression.dump()}")

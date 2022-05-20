@@ -3,25 +3,15 @@ import org.jetbrains.reflekt.buildutils.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 group = "org.jetbrains.reflekt"
-/*
-* To change version you should change the version in the following places:
-*  - here (the main build.gradle.kts file)
-*  - VERSION const in the Util.kt in the reflekt-core module
-*  - VERSION const in the MavenLocalUtil object
-*    class in tests in the reflekt-plugin module
-*  - two places in the main README.md file (after realising)
-*
-* Also, you should change the version in two places in the build.gradle.kts file in the example project
-* */
-version = "1.5.31"
+version = libs.versions.kotlin.asProvider().get()
 
 plugins {
-    id("tanvd.kosogor") version "1.0.12" apply true
-    kotlin("jvm") version "1.5.31" apply true
-    id("com.github.gmazzo.buildconfig") version "3.0.3" apply false
     `maven-publish`
-    kotlin("kapt") version "1.5.31" apply true
-    id("org.jetbrains.dokka") version "1.6.10"
+    alias(libs.plugins.kosogor)
+    alias(libs.plugins.buildconfig) apply false
+    alias(libs.plugins.dokka)
+    id(libs.plugins.kotlin.jvm.get().pluginId)
+    id(libs.plugins.kotlin.kapt.get().pluginId)
 }
 
 allprojects {
@@ -30,11 +20,7 @@ allprojects {
     }
 
     tasks.withType<KotlinJvmCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-            languageVersion = "1.5"
-            apiVersion = "1.5"
-        }
+        kotlinOptions.jvmTarget = "11"
     }
 
     repositories {
@@ -51,7 +37,7 @@ allprojects {
     }
 
     // We should publish the project in the local maven repository before the tests running
-    @kotlin.Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+    @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
     tasks.withType<Test> {
         dependsOn(tasks.withType<PublishToMavenLocal> {})
     }
@@ -64,9 +50,7 @@ createDiktatTask()
 createDetektTask()
 
 subprojects {
-    apply {
-        plugin("maven-publish")
-    }
+    apply(plugin = "maven-publish")
 
     publishing {
         repositories {

@@ -10,7 +10,7 @@ import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
 
 /**
- * Replaces Reflekt invoke calls with their results
+ * Replaces Reflekt invoke calls with their results.
  *
  * @param toReplaceIr if should enable this extension
  * @param irInstancesAnalyzer to get project instances
@@ -22,7 +22,7 @@ class ReflektIrGenerationExtension(
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     /**
-     * Replace IR in the Reflekt queries to the list of the found entities
+     * Replaces IR in the Reflekt queries to the list of the found entities.
      */
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         val irInstances = irInstancesAnalyzer.getIrInstances()

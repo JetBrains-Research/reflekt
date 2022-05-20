@@ -38,10 +38,10 @@ fun KType.stringRepresentation(): String {
     // If type is null it means we have star projection
     return TypeStringRepresentationUtil.getStringRepresentation(
         classifierName,
-        arguments.map {
-            it.type?.let { type ->
+        arguments.map { projection ->
+            projection.type?.let { type ->
                 TypeStringRepresentationUtil.markAsNullable(type.stringRepresentation(), type.isMarkedNullable)
-            } ?: it.toString()
+            } ?: projection.toString()
         },
     )
 }
