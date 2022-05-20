@@ -4,7 +4,7 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.backend.jvm.codegen.psiElement
+import org.jetbrains.kotlin.backend.jvm.ir.psiElement
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
@@ -32,7 +32,6 @@ import java.io.File
  * @property visitors
  */
 class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, IrPluginContext>>) : ComponentRegistrar {
-    @ObsoleteDescriptorBasedAPI
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
         IrGenerationExtension.registerExtension(project, object : IrGenerationExtension {
             override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
@@ -89,7 +88,6 @@ abstract class FilteredIrFunctionVisitor(val filter: (IrFunction) -> Boolean) : 
 class IrCallArgumentTypeVisitor : IrElementVisitor<Unit, IrPluginContext> {
     val typeArguments = mutableListOf<TypeArgument>()
 
-    @ObsoleteDescriptorBasedAPI
     override fun visitCall(expression: IrCall, data: IrPluginContext) {
         val typeArgument = expression.getTypeArgument(0) ?: error("No arguments found in expression $expression")
         val type = typeArgument.toParameterizedType()
@@ -124,7 +122,7 @@ class IrFunctionSubtypesVisitor(namePrefix: String) : FilteredIrFunctionVisitor(
 
     override fun visitFilteredFunction(declaration: IrFunction, data: IrPluginContext) {
         val declarationSubtypes = FunctionSubtypes(declaration)
-        val builtIns = declaration.createIrBuiltIns(data)
+        val builtIns = data.irBuiltIns
         for (functionSubtypes in functionSubtypesList) {
             if (declarationSubtypes.function.isSubtypeOf(functionSubtypes.function, builtIns)) {
                 functionSubtypes.actualSubtypes.add(declaration)

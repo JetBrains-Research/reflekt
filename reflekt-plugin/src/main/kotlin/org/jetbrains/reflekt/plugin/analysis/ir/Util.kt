@@ -2,21 +2,17 @@
 
 package org.jetbrains.reflekt.plugin.analysis.ir
 
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
-
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.backend.common.serialization.signature.IdSignatureDescriptor
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
-import org.jetbrains.kotlin.ir.backend.jvm.serialization.JvmManglerDesc
-import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.descriptors.IrBuiltIns
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.*
-import org.jetbrains.kotlin.psi2ir.generators.TypeTranslatorImpl
 import org.jetbrains.kotlin.resolve.scopes.receivers.TransientReceiver
 import org.jetbrains.kotlin.types.Variance
+import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
 
 fun IrCall.getFqNamesOfTypeArguments(): List<String> {
     val result = ArrayList<String>()
@@ -36,13 +32,7 @@ fun IrCall.getFqNamesOfClassReferenceValueArguments(): List<String> =
 @OptIn(ObsoleteDescriptorBasedAPI::class)
 fun IrType.toParameterizedType() = toKotlinType()
 
-fun IrClass.isSubtypeOf(type: IrType, pluginContext: IrPluginContext) = this.defaultType.isSubtypeOf(type, this.createIrBuiltIns(pluginContext))
-
-fun IrDeclaration.createIrBuiltIns(pluginContext: IrPluginContext): IrBuiltIns {
-    val symbolTable = SymbolTable(IdSignatureDescriptor(JvmManglerDesc()), pluginContext.irFactory)
-    val typeTranslator = TypeTranslatorImpl(symbolTable, pluginContext.languageVersionSettings, this.module)
-    return IrBuiltIns(this.module.builtIns, typeTranslator, symbolTable)
-}
+fun IrClass.isSubtypeOf(type: IrType, pluginContext: IrPluginContext) = this.defaultType.isSubtypeOf(type, IrTypeSystemContextImpl(pluginContext.irBuiltIns))
 
 fun IrType.makeTypeProjection() = makeTypeProjection(this, if (this is IrTypeProjection) this.variance else Variance.INVARIANT)
 

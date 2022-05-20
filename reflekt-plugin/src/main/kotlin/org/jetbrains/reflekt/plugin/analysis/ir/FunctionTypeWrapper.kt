@@ -1,15 +1,14 @@
 package org.jetbrains.reflekt.plugin.analysis.ir
 
-import org.jetbrains.reflekt.plugin.analysis.ir.FunctionTypeWrapper.Companion.wrap
-
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.jvm.codegen.isExtensionFunctionType
+import org.jetbrains.kotlin.ir.IrBuiltIns
 import org.jetbrains.kotlin.ir.backend.js.utils.asString
 import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.descriptors.IrBuiltIns
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.types.Variance
+import org.jetbrains.reflekt.plugin.analysis.ir.FunctionTypeWrapper.Companion.wrap
 
 /**
  * Represents function type with receiver, arguments, and return type, i.e:
@@ -78,7 +77,8 @@ data class FunctionTypeWrapper(
      *
      * @param superType a type to compare super typing with
      */
-    private fun isReturnSubtype(superType: FunctionTypeWrapper, builtIns: IrBuiltIns): Boolean = returnType.isSubtypeOf(superType.returnType, builtIns)
+    private fun isReturnSubtype(superType: FunctionTypeWrapper, builtIns: IrBuiltIns): Boolean =
+        returnType.isSubtypeOf(superType.returnType, IrTypeSystemContextImpl(builtIns))
 
     /**
      * Checks whether arguments of both functions have the same size and satisfy subtyping condition.
@@ -106,7 +106,7 @@ data class FunctionTypeWrapper(
      * @param builtIns
      */
     private fun isReceiverSubtype(superType: FunctionTypeWrapper, builtIns: IrBuiltIns): Boolean = if (this.receiver != null && superType.receiver != null) {
-        superType.receiver.isSubtypeOf(this.receiver, builtIns)
+        superType.receiver.isSubtypeOf(this.receiver, IrTypeSystemContextImpl(builtIns))
     } else {
         this.receiver == null && superType.receiver == null
     }
@@ -154,7 +154,7 @@ fun IrFunction.isSubtypeOf(other: IrType, pluginContext: IrPluginContext): Boole
 fun IrTypeArgument.isSubtypeOf(superType: IrTypeArgument, irBuiltIns: IrBuiltIns): Boolean {
     this.typeOrNull ?: error("Can not get type from IrTypeArgument: ${this.asString()}")
     superType.typeOrNull ?: error("Can not get type from IrTypeArgument: ${superType.asString()}")
-    return this.typeOrNull!!.isSubtypeOf(superType.typeOrNull!!, irBuiltIns)
+    return this.typeOrNull!!.isSubtypeOf(superType.typeOrNull!!, IrTypeSystemContextImpl(irBuiltIns))
 }
 
 // TODO: Move to other util?
