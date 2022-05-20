@@ -150,3 +150,7 @@
 # disabled because IDEA already tracks imports well
 - name: FILE_UNORDERED_IMPORTS
   enabled: false
+- name: KDOC_WITHOUT_RETURN_TAG
+  enabled: false
+- name: EXTENSION_FUNCTION_WITH_CLASS
+  enabled: false

@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
+import org.jetbrains.reflekt.plugin.analysis.models.isNotEmpty
 
 import java.io.File
 
