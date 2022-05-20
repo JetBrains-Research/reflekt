@@ -4,8 +4,8 @@ package org.jetbrains.reflekt.plugin.analysis.ir
 
 import org.jetbrains.reflekt.plugin.analysis.common.*
 import org.jetbrains.reflekt.plugin.analysis.models.*
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SignatureToAnnotations
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SupertypesToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.SignatureToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.SupertypesToAnnotations
 
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
@@ -22,7 +22,6 @@ open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
 }
 
 /**
- * IR version of [findReflektInvokeArguments] function.
  * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct [SupertypesToAnnotations].
  */
 class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
@@ -80,13 +79,12 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
         fun collectInvokeArguments(expression: IrCall): SignatureToAnnotations? {
             val visitor = ReflektFunctionInvokeArgumentsCollector()
             expression.accept(visitor, null)
-            return visitor.signature?.let { SignatureToAnnotations(it, visitor.annotations, visitor.irSignature) }
+            return visitor.signature?.let { SignatureToAnnotations(visitor.irSignature, visitor.annotations) }
         }
     }
 }
 
 /**
- * IR version of [findSmartReflektInvokeArguments] function.
  * Traverses subtree of expression and collects arguments of filter calls to construct [TypeArgumentToFilters].
  */
 class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) : IrRecursiveVisitor() {

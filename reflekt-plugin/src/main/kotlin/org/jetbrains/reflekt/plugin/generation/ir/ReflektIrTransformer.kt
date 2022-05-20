@@ -1,9 +1,10 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrReflektQueriesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.analyzer.IrReflektQueriesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.ir.toFunctionInfo
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.getReflektInvokeParts
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
@@ -25,11 +26,13 @@ import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
  * @property messageCollector
  * @property analyzer [IrReflektQueriesAnalyzer] to extract Reflekt queries arguments,
  *  e.g. supertypes, annotations, functions signatures
+ * @property libraryArguments TODO: use for ReflektImpl generation
  */
-@Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
+@Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY", "UnusedPrivateMember")
 class ReflektIrTransformer(
     private val pluginContext: IrPluginContext,
     private val irInstances: IrInstances,
+    private val libraryArguments: LibraryArguments,
     private val messageCollector: MessageCollector? = null,
 ) : BaseReflektIrTransformer(messageCollector) {
     private val analyzer = IrReflektQueriesAnalyzer(irInstances, pluginContext)

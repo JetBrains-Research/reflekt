@@ -48,7 +48,7 @@ class PluginConfig(
             messageCollector = configuration.messageCollector
 
             enabled = configuration[Keys.ENABLED] ?: false
-            outputDir = configuration[Keys.OUTPUT_DIR] ?: File("src/main/kotlin-gen")
+            outputDir = configuration[Keys.OUTPUT_DIR] ?: File("build/kotlin-gen")
 
             toSaveMetadata = configuration[Keys.TO_SAVE_METADATA] ?: false
             reflektMetaFileRelativePath = configuration[Keys.REFLEKT_META_PATH]

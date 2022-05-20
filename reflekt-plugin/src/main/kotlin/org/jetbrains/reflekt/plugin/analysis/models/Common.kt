@@ -45,6 +45,34 @@ data class SerializableKotlinType(
 )
 
 /**
+ * @property classifierFqName
+ * @property hasQuestionMark
+ * @property arguments
+ * @property annotations
+ * @property abbreviation
+ */
+@Serializable
+data class SerializableIrType(
+    val classifierFqName: String,
+    val hasQuestionMark: Boolean,
+    val arguments: List<SerializableIrTypeArgument>,
+    val annotations: List<SerializableIrType>,
+    val abbreviation: String? = null,
+)
+
+/**
+ * @property fqName
+ * @property isStarProjection
+ * @property variance
+ */
+@Serializable
+data class SerializableIrTypeArgument(
+    val fqName: String? = null,
+    val isStarProjection: Boolean,
+    val variance: Variance,
+)
+
+/**
  * @property fqName
  * @property isStarProjection
  * @property projectionKind
@@ -68,6 +96,7 @@ interface Sizeable {
  * @property classes
  * @property functions
  */
+@Serializable
 open class BaseCollectionReflektData<O : Collection<*>, C : Collection<*>, F : Collection<*>>(
     open val objects: O,
     open val classes: C,

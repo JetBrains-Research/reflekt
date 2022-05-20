@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt.plugin.analysis.collector.ir
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.analyzer.IrAnalyzer
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.IrElement

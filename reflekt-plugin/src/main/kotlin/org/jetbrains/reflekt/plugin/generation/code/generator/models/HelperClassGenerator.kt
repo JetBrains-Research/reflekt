@@ -1,13 +1,17 @@
-package org.jetbrains.reflekt.plugin.generation.code.generator.models
+@file:Suppress("FILE_UNORDERED_IMPORTS")
 
-import org.jetbrains.reflekt.plugin.analysis.models.psi.*
-import org.jetbrains.reflekt.plugin.generation.code.generator.*
-import org.jetbrains.reflekt.plugin.utils.stringRepresentation
+package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import org.jetbrains.kotlin.psi.KtNamedFunction
-
+import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.reflekt.plugin.analysis.models.SignatureToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.SupertypesToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.ir.ClassOrObjectLibraryQueriesResults
+import org.jetbrains.reflekt.plugin.analysis.models.ir.FunctionLibraryQueriesResults
+import org.jetbrains.reflekt.plugin.generation.code.generator.*
+import org.jetbrains.reflekt.plugin.utils.stringRepresentation
 import java.util.*
 
 /**
@@ -96,7 +100,8 @@ abstract class HelperClassGenerator : ClassGenerator() {
     @Suppress("SpreadOperator")
     private fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String) =
         statement("listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)}$typeSuffix as %T" }})",
-            *List(uses.size) { returnParameter }.toTypedArray())
+            *List(uses.size) { returnParameter }.toTypedArray(),
+        )
 
     /**
      * Generates 'when' option for a set of entities as a left part.
@@ -216,7 +221,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
      * @param invokesWithUses collection of invokes (arguments from the Reflekt queries)
      *  and uses (found entities) that satisfy these invokes.
      *  In this case invokes are [SignatureToAnnotations]
-     * @param getEntityName a function that gets a string representation for [KtNamedFunction]
+     * @param getEntityName a function that gets a string representation for [IrFunction]
      * @return generated [CodeBlock]:
      *  when ([ANNOTATION_FQ_NAMES]) {
      *   ...
@@ -234,15 +239,15 @@ abstract class HelperClassGenerator : ClassGenerator() {
     @Suppress("TYPE_ALIAS", "IDENTIFIER_LENGTH")
     // TODO: group by annotations (store set of signatures for the same set of annotations)
     protected fun generateNestedWhenBodyForFunctions(
-        invokesWithUses: FunctionUses,
-        getEntityName: (KtNamedFunction) -> String = { it.toString() },
+        invokesWithUses: FunctionLibraryQueriesResults,
+        getEntityName: (IrFunction) -> String = { it.toString() },
     ): CodeBlock {
         val mainFunction = { o: Map.Entry<SignatureToAnnotations, List<String>> ->
             getWhenOptionForSet(
                 o.key.annotations,
                 wrappedCode(
                     generateWhenBody(
-                        mapOf(o.key.signature!!.stringRepresentation() to o.value),
+                        mapOf(o.key.irSignature!!.stringRepresentation() to o.value),
                         SIGNATURE,
                         toAddReturn = false,
                         getWhenOption = ::getWhenOptionForString,
@@ -280,7 +285,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
      *  }
      */
     @Suppress("TYPE_ALIAS", "IDENTIFIER_LENGTH")
-    protected fun generateNestedWhenBodyForClassesOrObjects(invokesWithUses: ClassOrObjectUses): CodeBlock {
+    protected fun generateNestedWhenBodyForClassesOrObjects(invokesWithUses: ClassOrObjectLibraryQueriesResults): CodeBlock {
         val mainFunction = { o: Map.Entry<SupertypesToAnnotations, List<String>> ->
             getWhenOptionForSet(
                 o.key.annotations,
@@ -295,7 +300,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
             )
         }
         return generateWhenBody(
-            invokesWithUses.mapValues { (_, v) -> v.mapNotNull { it.fqName?.toString() } }.toMap().asIterable(),
+            invokesWithUses.mapValues { (_, v) -> v.mapNotNull { it.fqNameWhenAvailable?.toString() } }.toMap().asIterable(),
             ANNOTATION_FQ_NAMES,
             generateBranchForWhenOption = mainFunction,
         )

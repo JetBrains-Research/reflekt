@@ -3,6 +3,7 @@
 package org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments
 
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
+import org.jetbrains.reflekt.plugin.analysis.models.ReflektQueryArguments
 import org.jetbrains.reflekt.plugin.analysis.processor.fullName
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.*
 import org.jetbrains.reflekt.plugin.generation.common.ReflektInvokeParts
@@ -26,7 +27,7 @@ typealias ReflektArgumentsCache<T, E> = ResultToFilteredInstances<T, E>
  *  (e.g. for functions, or for classes)
  */
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER")
-abstract class IrReflektArgumentProcessor<R : Any, T : IrDeclaration> :
+abstract class IrReflektArgumentProcessor<R : ReflektQueryArguments, T : IrDeclaration> :
     IrBaseProcessorWithCache<R, T>() {
     override val collectedElements: ReflektArgumentsToFileSet<R> = HashMap()
     override val cache: ReflektArgumentsCache<R, T> = HashMap()
@@ -57,10 +58,16 @@ abstract class IrReflektArgumentProcessor<R : Any, T : IrDeclaration> :
         // TODO: should throw an error if the arguments were not parsed?
         val queryArguments = element.collectQueryArguments() ?: return emptySet()
         collectedElements.getOrPut(queryArguments) { setOf(file.fullName) }
+        return filterInstancesOrGetFromCache(queryArguments)
+    }
+
+    fun filterInstancesOrGetFromCache(queryArguments: R): Set<T> {
         // If we have not filtered instances by the queryArguments call [filterInstances],
         // else return the cached result
         return cache.getOrPut(queryArguments) { filterInstances(queryArguments) }
     }
+
+    fun extractQueryArguments(element: IrCall): R? = element.collectQueryArguments()
 
     /**
      * Collects all query arguments from a Reflekt query, e.g. a set of supertypes and a set of annotations.

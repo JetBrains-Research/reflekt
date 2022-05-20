@@ -1,18 +1,17 @@
 package org.jetbrains.reflekt.plugin.analysis.serialization
 
-import org.jetbrains.reflekt.plugin.analysis.models.SerializableKotlinType
-import org.jetbrains.reflekt.plugin.analysis.models.SerializableTypeProjection
-import org.jetbrains.reflekt.plugin.analysis.models.psi.*
+import org.jetbrains.reflekt.plugin.analysis.models.SerializableIrType
+import org.jetbrains.reflekt.plugin.analysis.models.SerializableIrTypeArgument
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
+import org.jetbrains.reflekt.plugin.analysis.models.ir.SerializableLibraryArgumentsWithInstances
 
-import org.jetbrains.kotlin.builtins.*
-import org.jetbrains.kotlin.descriptors.annotations.Annotations
-import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
+import org.jetbrains.kotlin.ir.types.*
+import org.jetbrains.kotlin.ir.types.impl.*
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.resolve.DescriptorUtils
-import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
-import org.jetbrains.kotlin.resolve.lazy.ResolveSessionUtils.getClassDescriptorsByFqName
-import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.types.TypeProjection
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
+import org.jetbrains.kotlin.types.Variance
 
 import kotlinx.serialization.*
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -21,56 +20,65 @@ import kotlinx.serialization.protobuf.ProtoBuf
 object SerializationUtils {
     private val protoBuf = ProtoBuf
 
-    fun encodeInvokes(invokesWithPackages: ReflektInvokesWithPackages): ByteArray = protoBuf.encodeToByteArray(invokesWithPackages.toSerializableReflektInvokesWithPackages())
+    fun encodeArguments(libraryArgumentsWithInstances: LibraryArgumentsWithInstances): ByteArray =
+        protoBuf.encodeToByteArray(libraryArgumentsWithInstances.toSerializableLibraryArgumentsWithInstances())
 
-    fun decodeInvokes(byteArray: ByteArray, module: ModuleDescriptorImpl): ReflektInvokesWithPackages {
-        val decoded = protoBuf.decodeFromByteArray<SerializableReflektInvokesWithPackages>(byteArray)
-        return decoded.toReflektInvokesWithPackages(module)
+    fun decodeArguments(byteArray: ByteArray, pluginContext: IrPluginContext): LibraryArgumentsWithInstances {
+        val decoded = protoBuf.decodeFromByteArray<SerializableLibraryArgumentsWithInstances>(byteArray)
+        return decoded.toLibraryArgumentsWithInstances(pluginContext)
     }
 
-    private fun deserializeKotlinType(module: ModuleDescriptorImpl, fqName: String?): KotlinType {
-        fqName ?: error("Fq name after deserialization is null")
-        val classDescriptor = getClassDescriptorsByFqName(module, FqName(fqName)).find { it.fqNameSafe.asString() == fqName }
-            ?: error("Can not find class descriptor with fqName $fqName")
-        return classDescriptor.defaultType
-    }
-
-    fun SerializableKotlinType.toKotlinType(module: ModuleDescriptorImpl): KotlinType {
-        val args = arguments.map { deserializeKotlinType(module, it.fqName) }
-        val returnType = deserializeKotlinType(module, this.returnType)
-        return createFunctionType(
-            DefaultBuiltIns.Instance,
-            Annotations.EMPTY,
-            this.receiverType?.toKotlinType(module),
-            parameterTypes = args,
-            returnType = returnType,
-            suspendFunction = false,
-            parameterNames = null,
-        )
-    }
-
-    private fun TypeProjection.toSerializableTypeProjection() =
-        SerializableTypeProjection(
-            fqName = type.fullFqName(),
-            isStarProjection = isStarProjection,
-            projectionKind = projectionKind,
-        )
-
-    fun KotlinType.toSerializableKotlinType(): SerializableKotlinType {
-        val returnType = arguments.last().type.fullFqName()
-        val receiverType = this.getReceiverTypeFromFunctionType()?.toSerializableKotlinType()
-        return SerializableKotlinType(
-            fqName = fullFqName(),
-            arguments = arguments.dropLast(1).map { it.toSerializableTypeProjection() },
-            returnType = returnType,
-            receiverType = receiverType,
-        )
-    }
-
-    private fun KotlinType.fullFqName(): String {
-        val declaration = requireNotNull(this.constructor.declarationDescriptor) {
-            "declarationDescriptor is null for constructor = $this.constructor with ${this.constructor.javaClass}"
+    private fun IrTypeArgument.toSerializableIrTypeArgument(): SerializableIrTypeArgument {
+        if (this is IrStarProjection) {
+            return SerializableIrTypeArgument(
+                isStarProjection = true,
+                variance = Variance.INVARIANT,
+            )
         }
-        return DescriptorUtils.getFqName(declaration).asString()
+        val fqName = typeOrNull?.classFqName?.asString() ?: error("Can not get class fq name for IrTypeProjection")
+        return SerializableIrTypeArgument(
+            fqName = fqName,
+            isStarProjection = false,
+            variance = (this as IrTypeProjection).variance,
+        )
+    }
+
+    fun IrType.toSerializableIrType(): SerializableIrType {
+        (this as? IrSimpleType) ?: error("Can not cast IrType to IrSimpleType")
+        return this.toSerializableIrType()
+    }
+
+    @OptIn(ObsoleteDescriptorBasedAPI::class)
+    fun IrSimpleType.toSerializableIrType(): SerializableIrType {
+        val classifierFqName = this.classifier.descriptor.fqNameOrNull()?.asString() ?: error("Can not get class fq name for ClassifierDescriptor")
+        val arguments = this.arguments.map { it.toSerializableIrTypeArgument() }
+        // TODO: should we serialize it?
+        val abbreviation = null
+        return SerializableIrType(
+            classifierFqName = classifierFqName,
+            hasQuestionMark = this.hasQuestionMark,
+            arguments = arguments,
+            // We use serialization only for functions signatures, they don't have annotations
+            annotations = emptyList(),
+            abbreviation = abbreviation,
+        )
+    }
+
+    fun SerializableIrType.toIrType(pluginContext: IrPluginContext) = IrSimpleTypeBuilder().also {
+        it.classifier = pluginContext.referenceClass(FqName(classifierFqName))
+        it.hasQuestionMark = this.hasQuestionMark
+        it.arguments = this.arguments.map { it.toIrTypeArgument(pluginContext) }
+        // TODO: should we deserialize it?
+        it.abbreviation = null
+    }.buildSimpleType()
+
+    private fun SerializableIrTypeArgument.toIrTypeArgument(pluginContext: IrPluginContext): IrTypeArgument {
+        if (this.isStarProjection) {
+            return IrStarProjectionImpl
+        }
+        requireNotNull(this.fqName) { "Empty fqName for IrTypeProjection" }
+        return IrSimpleTypeBuilder().also {
+            it.classifier = pluginContext.referenceClass(FqName(this.fqName!!))
+        }.buildTypeProjection()
     }
 }

@@ -5,7 +5,7 @@ package org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.ir.ReflektFunctionInvokeArgumentsCollector
 import org.jetbrains.reflekt.plugin.analysis.ir.isSubtypeOf
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SignatureToAnnotations
+import org.jetbrains.reflekt.plugin.analysis.models.SignatureToAnnotations
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrFunction

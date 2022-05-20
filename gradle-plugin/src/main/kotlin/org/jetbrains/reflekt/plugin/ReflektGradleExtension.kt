@@ -31,7 +31,7 @@ open class ReflektGradleExtension {
      * It would be automatically added to source set and marked
      * as generated in IntelliJ IDEA
      */
-    var generationPath: String = "src/main/kotlin-gen"
+    var generationPath: String = "build/src/main/kotlin-gen"
 
     /** If [false], Reflekt usages will not be saved into META-INF.
      * This information will be used if the current project is included

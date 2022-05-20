@@ -1,13 +1,22 @@
+@file:Suppress("FILE_UNORDERED_IMPORTS")
+
 package org.jetbrains.reflekt.plugin.analysis.models.ir
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.ir.IrReflektQueriesAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.models.BaseReflektDataByFile
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SignatureToAnnotations
-import org.jetbrains.reflekt.plugin.analysis.models.psi.SupertypesToAnnotations
+import kotlinx.serialization.Serializable
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.IrElement
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.reflekt.plugin.analysis.models.*
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
-import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.ReflektArgumentsToFileSet
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toIrType
+import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableIrType
 
 typealias LibraryArgumentsMap<T> = HashMap<FileId, MutableSet<T>>
+typealias TypeLibraryQueriesResults<K, V> = HashMap<K, MutableSet<V>>
+typealias ClassOrObjectLibraryQueriesResults = TypeLibraryQueriesResults<SupertypesToAnnotations, IrClass>
+typealias FunctionLibraryQueriesResults = TypeLibraryQueriesResults<SignatureToAnnotations, IrFunction>
 
 /**
  * Stores all Reflekt queries arguments from the library.
@@ -25,34 +34,111 @@ data class LibraryArguments(
     functions,
 ) {
     fun merge(second: LibraryArguments) = LibraryArguments(
-        classes = this.classes.merge(second.classes),
-        objects = this.objects.merge(second.objects),
-        functions = this.functions.merge(second.functions),
+        classes = classes.merge(second.classes) { mutableSetOf() },
+        objects = objects.merge(second.objects) { mutableSetOf() },
+        functions = functions.merge(second.functions) { mutableSetOf() },
     )
 
-    companion object {
-        fun fromIrReflektQueriesAnalyzer(analyzer: IrReflektQueriesAnalyzer) = LibraryArguments(
-            classes = analyzer.classProcessor.collectedElements.toLibraryArgumentsMap(),
-            objects = analyzer.objectProcessor.collectedElements.toLibraryArgumentsMap(),
-            functions = analyzer.functionProcessor.collectedElements.toLibraryArgumentsMap(),
+    fun toSerializableLibraryArguments() =
+        SerializableReflektQueryArguments(
+            objects = objects,
+            classes = classes,
+            functions = functions.mapValues { fileToArgs ->
+                fileToArgs.value.map {
+                    SerializableSignatureToAnnotations(
+                        annotations = it.annotations,
+                        irSignature = it.irSignature?.toSerializableIrType(),
+                    )
+                }.toMutableSet()
+            } as HashMap,
+        )
+}
+
+/**
+ * Stores all Reflekt queries arguments from the library with all instances of classes, objects, and functions.
+ * @property libraryArguments_
+ * @property instances_
+ */
+@Suppress("ConstructorParameterNaming")
+data class LibraryArgumentsWithInstances(
+    private var libraryArguments_: LibraryArguments = LibraryArguments(),
+    private var instances_: IrInstancesFqNames = IrInstancesFqNames(),
+) {
+    val libraryArguments: LibraryArguments get() = libraryArguments_
+    val instances: IrInstancesFqNames get() = instances_
+
+    fun toSerializableLibraryArgumentsWithInstances() =
+        SerializableLibraryArgumentsWithInstances(
+            libraryArguments = libraryArguments.toSerializableLibraryArguments(),
+            instances = instances,
         )
 
-        @Suppress("TYPE_ALIAS")
-        private fun <R> ReflektArgumentsToFileSet<R>.toLibraryArgumentsMap(): LibraryArgumentsMap<R> {
-            val entities: HashMap<FileId, MutableSet<R>> = HashMap()
-            this.forEach { (args, files) ->
-                files.forEach {
-                    entities.getOrPut(it) { mutableSetOf() }.add(args)
+    fun replace(newLibraryArguments: LibraryArguments, newInstances: IrInstancesFqNames) {
+        libraryArguments_ = newLibraryArguments
+        instances_ = newInstances
+    }
+}
+
+/**
+ * Stores serializable [LibraryArgumentsWithInstances]:
+ *  [libraryArguments] are replaced by [SerializableReflektQueryArguments] with serializable functions signatures.
+ * @property libraryArguments
+ * @property instances
+ */
+@Serializable
+data class SerializableLibraryArgumentsWithInstances(
+    val libraryArguments: SerializableReflektQueryArguments,
+    val instances: IrInstancesFqNames,
+) {
+    fun toLibraryArgumentsWithInstances(pluginContext: IrPluginContext) =
+        LibraryArgumentsWithInstances(
+            LibraryArguments(
+                objects = libraryArguments.objects,
+                classes = libraryArguments.classes,
+                functions = libraryArguments.functions.mapValues { fileToInvokes ->
+                    fileToInvokes.value.map {
+                        SignatureToAnnotations(
+                            annotations = it.annotations,
+                            irSignature = it.irSignature?.toIrType(pluginContext),
+                        )
+                    }.toMutableSet()
+                } as HashMap,
+            ),
+            instances,
+        )
+}
+
+/**
+ * Stores for each Reflekt query from libraries a set of [IrElement], that satisfies this query.
+ * @property classes
+ * @property objects
+ * @property functions
+ */
+// TODO: think about name
+data class LibraryQueriesResults(
+    val classes: ClassOrObjectLibraryQueriesResults = HashMap(),
+    val objects: ClassOrObjectLibraryQueriesResults = HashMap(),
+    val functions: FunctionLibraryQueriesResults = HashMap(),
+) {
+    companion object {
+        fun fromLibraryArguments(libraryArguments: LibraryArguments) = LibraryQueriesResults(
+            classes = libraryArguments.classes.flatten(),
+            objects = libraryArguments.objects.flatten(),
+            functions = libraryArguments.functions.flatten(),
+        )
+
+        @Suppress("IDENTIFIER_LENGTH", "TYPE_ALIAS")
+        private fun <T, V : IrElement> LibraryArgumentsMap<T>.flatten(): TypeLibraryQueriesResults<T, V> {
+            val queriesResults: TypeLibraryQueriesResults<T, V> = HashMap()
+            this.forEach { (_, arguments) ->
+                arguments.forEach {
+                    queriesResults.getOrPut(it) { mutableSetOf() }
                 }
             }
-            return entities
+            return queriesResults
         }
     }
 }
 
-private fun <T> LibraryArgumentsMap<T>.merge(second: LibraryArgumentsMap<T>): LibraryArgumentsMap<T> {
-    second.forEach { (file, res) ->
-        this.getOrPut(file) { mutableSetOf() }.addAll(res)
-    }
-    return second
-}
+@Suppress("IDENTIFIER_LENGTH")
+fun ClassOrObjectLibraryQueriesResults.toSupertypesToFqNamesMap() = this.map { (k, v) -> k.supertypes to v.mapNotNull { it.fqNameWhenAvailable } }.toMap()
