@@ -28,7 +28,3 @@ publishPlugin {
         tags.addAll(listOf("kotlin", "reflection", "reflekt"))
     }
 }
-
-
-
-publishJar {}
