@@ -31,6 +31,16 @@ enum class ElementType(val value: String) {
 }
 
 /**
+ * Interface of classes for which empty instances may exist.
+ */
+interface Emptiable {
+    /**
+     * Returns `true` if the instance is empty, `false` otherwise. The definition of "emptiness" may vary between implementations.
+     */
+    fun isEmpty(): Boolean
+}
+
+/**
  * @property fqName
  * @property arguments
  * @property returnType
@@ -58,23 +68,16 @@ data class SerializableTypeProjection(
     val projectionKind: Variance,
 )
 
-// TODO: think about a better name
-interface Sizeable {
-    fun isEmpty(): Boolean
-
-    fun isNotEmpty() = !isEmpty()
-}
-
 /**
  * @property objects
  * @property classes
  * @property functions
  */
-open class BaseCollectionReflektData<O : Collection<*>, C : Collection<*>, F : Collection<*>>(
+open class BaseCollectionReflektData<out O : Collection<*>, out C : Collection<*>, out F : Collection<*>>(
     open val objects: O,
     open val classes: C,
     open val functions: F,
-) : Sizeable {
+) : Emptiable {
     override fun isEmpty() = objects.isEmpty() && classes.isEmpty() && functions.isEmpty()
 }
 
@@ -83,11 +86,11 @@ open class BaseCollectionReflektData<O : Collection<*>, C : Collection<*>, F : C
  * @property classes
  * @property functions
  */
-open class BaseMapReflektData<O : HashMap<*, *>, C : HashMap<*, *>, F : HashMap<*, *>>(
+open class BaseMapReflektData<out O : MutableMap<*, *>, out C : MutableMap<*, *>, out F : MutableMap<*, *>>(
     open val objects: O,
     open val classes: C,
     open val functions: F,
-) : Sizeable {
+) : Emptiable {
     override fun isEmpty() = objects.isEmpty() && classes.isEmpty() && functions.isEmpty()
 }
 
@@ -98,13 +101,19 @@ open class BaseReflektDataByFile<O : Any, C : Any, F : Any>(
 ) : BaseMapReflektData<HashMap<FileId, O>, HashMap<FileId, C>, HashMap<FileId, F>>(
     objects,
     classes,
-    functions)
+    functions
+)
+
+/**
+ * Returns `true` if the instance is not empty.
+ */
+fun Emptiable.isNotEmpty() = !isEmpty()
 
 @Suppress("IDENTIFIER_LENGTH")
 fun <K : Any, V : Any, T : MutableCollection<V>> HashMap<K, T>.merge(second: HashMap<K, T>, defaultValue: () -> T): HashMap<K, T> =
     this.also { second.forEach { (k, v) -> this.getOrPut(k) { defaultValue() }.addAll(v) } }
 
-fun <T : Sizeable> merge(
+fun <T : Emptiable> merge(
     first: T,
     second: T,
     mergeFunction: (T, T) -> T,
