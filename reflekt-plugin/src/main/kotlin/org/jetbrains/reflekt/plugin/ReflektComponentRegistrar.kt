@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.reflekt.plugin.analysis.models.ir.*
+import org.jetbrains.reflekt.plugin.analysis.models.isNotEmpty
 import org.jetbrains.reflekt.plugin.generation.code.generator.ReflektImplGeneratorExtension
 
 import java.io.File
