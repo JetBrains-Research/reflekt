@@ -50,7 +50,7 @@ data class SerializableSignatureToAnnotations(
  */
 @Serializable
 data class SerializableReflektQueryArguments(
-    val objects: HashMap<FileId, ClassOrObjectQueryArguments> = HashMap(),
-    val classes: HashMap<FileId, ClassOrObjectQueryArguments> = HashMap(),
-    val functions: HashMap<FileId, SerializableFunctionQueryArguments> = HashMap(),
+    val objects: MutableMap<FileId, ClassOrObjectQueryArguments> = HashMap(),
+    val classes: MutableMap<FileId, ClassOrObjectQueryArguments> = HashMap(),
+    val functions: MutableMap<FileId, SerializableFunctionQueryArguments> = HashMap(),
 )

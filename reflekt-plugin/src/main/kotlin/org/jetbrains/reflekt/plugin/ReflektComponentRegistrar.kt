@@ -81,7 +81,7 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         // (II) The second one is searching for entities from a library that is imported in a project.
         //  This scenario has two steps:
         //    II.a) Scan files in the library during it's compilation,
-        //    extract all Reflekt queries and entities fqNames and save them into the Reflektneta file.
+        //    extract all Reflekt queries and entities fqNames and save them into the ReflektMeta file.
         //    On this step we don't replace IR for the Reflekt queries.
         //    II.b) Run the first scenario during the project compilation, and
         //    also extract the libraries queries from the II.a) step to handle them.

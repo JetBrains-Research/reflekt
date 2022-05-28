@@ -1,7 +1,5 @@
 package org.jetbrains.reflekt.plugin
 
-import org.jetbrains.reflekt.plugin.util.kotlin
-import org.jetbrains.reflekt.plugin.util.mySourceSets
 import org.jetbrains.reflekt.util.Util.DEPENDENCY_JAR_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.ENABLED_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.GRADLE_ARTIFACT_ID
@@ -14,15 +12,13 @@ import org.jetbrains.reflekt.util.Util.REFLEKT_META_FILE_PATH
 import org.jetbrains.reflekt.util.Util.SAVE_METADATA_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.VERSION
 import org.jetbrains.reflekt.util.file.extractAllFiles
-
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.*
-
+import org.jetbrains.reflekt.plugin.util.*
 import java.io.File
 
-@Suppress("unused")
 class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
     private val reflektMetaFile = "ReflektMeta"
     private val metaInfDir = "META-INF"
@@ -34,7 +30,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
         val extension = project.reflekt
 
         val reflektMetaFiles: MutableSet<File> = HashSet()
-        project.configurations.forEach {
+        for (it in project.configurations) {
             reflektMetaFiles.addAll(getReflektMetaFiles(getJarFilesToIntrospect(it, extension)))
         }
         val reflektMetaFilesOptions = reflektMetaFiles.map { SubpluginOption(key = REFLEKT_META_FILE_OPTION_INFO.name, value = it.absolutePath) }
@@ -46,7 +42,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
 
         with(project) {
             afterEvaluate {
-                project.mySourceSets.apply {
+                project.sourceSets.apply {
                     this.getAt("main").kotlin.srcDir(generationPath)
                 }
             }
@@ -90,7 +86,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
 
     private fun getReflektMetaFiles(jarFiles: Set<File>): List<File> {
         val files: MutableList<File> = ArrayList()
-        jarFiles.forEach { jar ->
+        for (jar in jarFiles) {
             getLibJarWithoutSources(jar)?.let {
                 files.add(getReflektMetaFile(it))
             }

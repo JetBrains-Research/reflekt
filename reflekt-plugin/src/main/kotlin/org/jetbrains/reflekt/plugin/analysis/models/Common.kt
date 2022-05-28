@@ -124,10 +124,10 @@ open class BaseMapReflektData<out O : MutableMap<*, *>, out C : MutableMap<*, *>
 }
 
 open class BaseReflektDataByFile<O : Any, C : Any, F : Any>(
-    override val objects: HashMap<FileId, O>,
-    override val classes: HashMap<FileId, C>,
-    override val functions: HashMap<FileId, F>,
-) : BaseMapReflektData<HashMap<FileId, O>, HashMap<FileId, C>, HashMap<FileId, F>>(
+    override val objects: MutableMap<FileId, O>,
+    override val classes: MutableMap<FileId, C>,
+    override val functions: MutableMap<FileId, F>,
+) : BaseMapReflektData<MutableMap<FileId, O>, MutableMap<FileId, C>, MutableMap<FileId, F>>(
     objects,
     classes,
     functions
@@ -139,16 +139,15 @@ open class BaseReflektDataByFile<O : Any, C : Any, F : Any>(
 fun Emptiable.isNotEmpty() = !isEmpty()
 
 @Suppress("IDENTIFIER_LENGTH")
-fun <K : Any, V : Any, T : MutableCollection<V>> HashMap<K, T>.merge(second: HashMap<K, T>, defaultValue: () -> T): HashMap<K, T> =
+inline fun <K : Any, V : Any, T : MutableCollection<V>, M : MutableMap<K, T>> M.merge(second: Map<K, T>, defaultValue: () -> T): M =
     this.also { second.forEach { (k, v) -> this.getOrPut(k) { defaultValue() }.addAll(v) } }
 
-fun <T : Emptiable> merge(
+inline fun <T : Emptiable> merge(
     first: T,
     second: T,
     mergeFunction: (T, T) -> T,
-): T =
-    when {
-        first.isEmpty() -> second
-        second.isEmpty() -> first
-        else -> mergeFunction(first, second)
-    }
+): T = when {
+    first.isEmpty() -> second
+    second.isEmpty() -> first
+    else -> mergeFunction(first, second)
+}

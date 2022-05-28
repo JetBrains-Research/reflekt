@@ -17,37 +17,34 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.types.Variance
 
 /**
- * Generates IR representation for varargs based on the list of [elements].
+ * Generates IR for varargs based on the list of [elements].
  *
  * @param elementType type of varargs in [elements] (consider <out> projection)
  * @param elements
  */
-fun IrBuilderWithScope.irVarargOut(elementType: IrType, elements: List<IrExpression>) =
-    IrVarargImpl(
-        startOffset = UNDEFINED_OFFSET,
-        endOffset = UNDEFINED_OFFSET,
-        type = context.irBuiltIns.arrayClass.typeWithArguments(listOf(makeTypeProjection(elementType, Variance.OUT_VARIANCE))),
-        varargElementType = elementType,
-        elements = elements,
-    )
+fun IrBuilderWithScope.irVarargOut(elementType: IrType, elements: List<IrExpression>): IrVararg = IrVarargImpl(
+    startOffset = UNDEFINED_OFFSET,
+    endOffset = UNDEFINED_OFFSET,
+    type = context.irBuiltIns.arrayClass.typeWithArguments(listOf(makeTypeProjection(elementType, Variance.OUT_VARIANCE))),
+    varargElementType = elementType,
+    elements = elements,
+)
 
 /**
- * Generates IR representation for KClass.
+ * Generates IR for [kotlin.reflect.KClass] reference for the given type.
  *
- * @param symbol [IrFunctionSymbol]
+ * @param symbol the symbol of the class to be referenced.
  */
-@Suppress("FUNCTION_NAME_INCORRECT_CASE")
-fun IrBuilderWithScope.irKClass(symbol: IrClassSymbol) =
-    IrClassReferenceImpl(
-        UNDEFINED_OFFSET,
-        UNDEFINED_OFFSET,
-        context.irBuiltIns.kClassClass.typeWith(symbol.defaultType),
-        symbol,
-        symbol.defaultType,
-    )
+fun IrBuilderWithScope.irClassReference(symbol: IrClassSymbol): IrClassReference = IrClassReferenceImpl(
+    UNDEFINED_OFFSET,
+    UNDEFINED_OFFSET,
+    context.irBuiltIns.kClassClass.typeWith(symbol.defaultType),
+    symbol,
+    symbol.defaultType,
+)
 
 /**
- * Generates IR representation for FunctionN.
+ * Generates IR for FunctionN.
  *
  * @param type function types (e.g. return type, arguments type, etc)
  * @param symbol [IrFunctionSymbol]
@@ -73,19 +70,19 @@ fun IrBuilderWithScope.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFu
 }
 
 /**
- * Casts [this] to the [expression] type, e.g. to KClass.
+ * Casts [type] to the [castTo] type, e.g. to KClass.
  *
- * @param expression [IrExpression] to cast to
+ * @param type
+ * @param castTo [IrExpression]
  */
-fun IrType.castTo(expression: IrExpression) =
-    IrTypeOperatorCallImpl(
-        startOffset = UNDEFINED_OFFSET,
-        endOffset = UNDEFINED_OFFSET,
-        type = this,
-        operator = IrTypeOperator.CAST,
-        typeOperand = this,
-        argument = expression,
-    )
+fun irTypeCast(type: IrType, castTo: IrExpression) = IrTypeOperatorCallImpl(
+    startOffset = UNDEFINED_OFFSET,
+    endOffset = UNDEFINED_OFFSET,
+    type = type,
+    operator = IrTypeOperator.CAST,
+    typeOperand = type,
+    argument = castTo,
+)
 
 /**
  * Generates IR representation for <collection_name>Of function, e.g. listOf or setOf.

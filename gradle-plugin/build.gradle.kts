@@ -1,4 +1,3 @@
-import tanvd.kosogor.proxy.publishJar
 import tanvd.kosogor.proxy.publishPlugin
 
 group = rootProject.group
@@ -6,6 +5,7 @@ version = rootProject.version
 
 plugins {
     kotlin("kapt")
+    `kotlin-dsl`
 }
 
 dependencies {

@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER", "unused")
+
 package org.jetbrains.reflekt.plugin.ir.type.functions
 
 

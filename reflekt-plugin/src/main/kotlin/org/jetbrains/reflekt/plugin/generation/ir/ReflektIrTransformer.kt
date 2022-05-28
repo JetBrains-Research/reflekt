@@ -1,5 +1,12 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.util.dump
+import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 import org.jetbrains.reflekt.plugin.analysis.analyzer.IrReflektQueriesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.ir.toFunctionInfo
@@ -7,16 +14,6 @@ import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.getReflektInvokeParts
 import org.jetbrains.reflekt.plugin.utils.Util.log
-
-import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
-import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.util.dump
-import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 
 /**
  * Replaces Reflekt invoke calls with their results.
@@ -42,7 +39,6 @@ class ReflektIrTransformer(
      *
      * @param expression [IrCall]
      */
-    @OptIn(ObsoleteDescriptorBasedAPI::class)
     @Suppress("ReturnCount")
     override fun visitCall(expression: IrCall): IrExpression {
         messageCollector?.log("[IR] CURRENT EXPRESSION:\n${expression.dump()}")
@@ -73,7 +69,7 @@ class ReflektIrTransformer(
     /**
      * Filters instances according to [IrCall].
      * If [irInstances] is empty we don't need to process [IrCall].
-     * If [IrCall] is a Reflekt call then extract all query arguments and filter instances
+     * If [IrCall] is a Reflekt call then extract all query arguments and filter instances.
      */
     private fun IrCall.filterInstances() = if (irInstances.isEmpty()) {
         emptyList()

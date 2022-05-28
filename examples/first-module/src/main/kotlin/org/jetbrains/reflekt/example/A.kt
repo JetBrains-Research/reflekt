@@ -21,5 +21,4 @@ object A3: AInterface {
 }
 
 @SecondAnnotation("Test")
-object A4: BInterface {
-}
+object A4: BInterface

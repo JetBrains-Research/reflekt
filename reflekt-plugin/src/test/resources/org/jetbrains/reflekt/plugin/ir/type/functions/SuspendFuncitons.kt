@@ -1,3 +1,5 @@
+@file:Suppress("RedundantSuspendModifier")
+
 package org.jetbrains.reflekt.plugin.ir.type.functions
 
 /**

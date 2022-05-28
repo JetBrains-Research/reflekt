@@ -29,14 +29,12 @@ class LibraryQueriesResultsCollector(
         messageCollector?.log("Finish filtering instances for the ReflektImpl file")
     }
 
-    private fun <K : ReflektQueryArguments, V> TypeLibraryQueriesResults<K, V>.filterInstances(
+    private inline fun <K : ReflektQueryArguments, reified V> TypeLibraryQueriesResults<K, V>.filterInstances(
         irReflektQueriesAnalyzer: IrReflektQueriesAnalyzer,
         instancesKind: ReflektEntity,
     ) {
-        this.forEach { (k, _) ->
-            this[k]?.addAll(
-                irReflektQueriesAnalyzer.filterInstancesByArguments(k, instancesKind).mapNotNull { it as? V },
-            )
+        for ((key, value) in this) {
+            value += irReflektQueriesAnalyzer.filterInstancesByArguments(key, instancesKind).mapNotNull { it as? V }
         }
     }
 }

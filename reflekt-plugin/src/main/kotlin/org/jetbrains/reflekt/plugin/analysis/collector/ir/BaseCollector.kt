@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.visitors.*
 
 /**
- * A base class for collecting information for [analyzer], e.g. collect all instances
+ * A base class for collecting information for [analyzer] e.g., collect all instances
  * @property analyzer
  * @property messageCollector
  */
@@ -25,6 +25,8 @@ abstract class BaseCollector(
  */
 class IrComposedCollector(private val collectors: List<BaseCollector>) : IrElementVisitorVoid {
     override fun visitElement(element: IrElement) {
-        collectors.forEach { element.acceptVoid(it) }
+        for (it in collectors) {
+            element.acceptVoid(it)
+        }
     }
 }

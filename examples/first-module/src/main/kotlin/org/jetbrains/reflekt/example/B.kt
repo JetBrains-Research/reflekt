@@ -1,7 +1,6 @@
 package org.jetbrains.reflekt.example
 
-class B1: BInterface {
-}
+class B1: BInterface
 
 @FirstAnnotation
 @SecondAnnotation("Test")

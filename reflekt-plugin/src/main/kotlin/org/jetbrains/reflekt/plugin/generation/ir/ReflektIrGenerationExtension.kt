@@ -12,9 +12,9 @@ import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
 /**
  * Replaces Reflekt invoke calls with their results.
  *
- * @param toReplaceIr if should enable this extension
- * @param irInstancesAnalyzer to get project instances
- * @param messageCollector
+ * @property irInstancesAnalyzer to get project instances
+ * @property libraryArguments
+ * @property messageCollector
  */
 class ReflektIrGenerationExtension(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,

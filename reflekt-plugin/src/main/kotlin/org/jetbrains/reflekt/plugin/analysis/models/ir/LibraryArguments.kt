@@ -13,8 +13,8 @@ import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toIrType
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toSerializableIrType
 
-typealias LibraryArgumentsMap<T> = HashMap<FileId, MutableSet<T>>
-typealias TypeLibraryQueriesResults<K, V> = HashMap<K, MutableSet<V>>
+typealias LibraryArgumentsMap<T> = MutableMap<FileId, MutableSet<T>>
+typealias TypeLibraryQueriesResults<K, V> = MutableMap<K, MutableSet<V>>
 typealias ClassOrObjectLibraryQueriesResults = TypeLibraryQueriesResults<SupertypesToAnnotations, IrClass>
 typealias FunctionLibraryQueriesResults = TypeLibraryQueriesResults<SignatureToAnnotations, IrFunction>
 
@@ -34,24 +34,23 @@ data class LibraryArguments(
     functions,
 ) {
     fun merge(second: LibraryArguments) = LibraryArguments(
-        classes = classes.merge(second.classes) { mutableSetOf() },
-        objects = objects.merge(second.objects) { mutableSetOf() },
-        functions = functions.merge(second.functions) { mutableSetOf() },
+        classes = classes.merge(second.classes) { HashSet() },
+        objects = objects.merge(second.objects) { HashSet() },
+        functions = functions.merge(second.functions) { HashSet() },
     )
 
-    fun toSerializableLibraryArguments() =
-        SerializableReflektQueryArguments(
-            objects = objects,
-            classes = classes,
-            functions = functions.mapValues { fileToArgs ->
-                fileToArgs.value.map {
-                    SerializableSignatureToAnnotations(
-                        annotations = it.annotations,
-                        irSignature = it.irSignature?.toSerializableIrType(),
-                    )
-                }.toMutableSet()
-            } as HashMap,
-        )
+    fun toSerializableLibraryArguments() = SerializableReflektQueryArguments(
+        objects = objects,
+        classes = classes,
+        functions = functions.mapValuesTo(HashMap()) { fileToArgs ->
+            fileToArgs.value.map {
+                SerializableSignatureToAnnotations(
+                    annotations = it.annotations,
+                    irSignature = it.irSignature?.toSerializableIrType(),
+                )
+            }.toHashSet()
+        },
+    )
 }
 
 /**
@@ -64,14 +63,16 @@ data class LibraryArgumentsWithInstances(
     private var libraryArguments_: LibraryArguments = LibraryArguments(),
     private var instances_: IrInstancesFqNames = IrInstancesFqNames(),
 ) {
-    val libraryArguments: LibraryArguments get() = libraryArguments_
-    val instances: IrInstancesFqNames get() = instances_
+    val libraryArguments: LibraryArguments
+        get() = libraryArguments_
 
-    fun toSerializableLibraryArgumentsWithInstances() =
-        SerializableLibraryArgumentsWithInstances(
-            libraryArguments = libraryArguments.toSerializableLibraryArguments(),
-            instances = instances,
-        )
+    val instances: IrInstancesFqNames
+        get() = instances_
+
+    fun toSerializableLibraryArgumentsWithInstances() = SerializableLibraryArgumentsWithInstances(
+        libraryArguments = libraryArguments.toSerializableLibraryArguments(),
+        instances = instances,
+    )
 
     fun replace(newLibraryArguments: LibraryArguments, newInstances: IrInstancesFqNames) {
         libraryArguments_ = newLibraryArguments
@@ -95,14 +96,14 @@ data class SerializableLibraryArgumentsWithInstances(
             LibraryArguments(
                 objects = libraryArguments.objects,
                 classes = libraryArguments.classes,
-                functions = libraryArguments.functions.mapValues { fileToInvokes ->
+                functions = libraryArguments.functions.mapValuesTo(HashMap()) { fileToInvokes ->
                     fileToInvokes.value.map {
                         SignatureToAnnotations(
                             annotations = it.annotations,
                             irSignature = it.irSignature?.toIrType(pluginContext),
                         )
-                    }.toMutableSet()
-                } as HashMap,
+                    }.toHashSet()
+                },
             ),
             instances,
         )
@@ -110,6 +111,7 @@ data class SerializableLibraryArgumentsWithInstances(
 
 /**
  * Stores for each Reflekt query from libraries a set of [IrElement], that satisfies this query.
+ *
  * @property classes
  * @property objects
  * @property functions
@@ -130,9 +132,9 @@ data class LibraryQueriesResults(
         @Suppress("IDENTIFIER_LENGTH", "TYPE_ALIAS")
         private fun <T, V : IrElement> LibraryArgumentsMap<T>.flatten(): TypeLibraryQueriesResults<T, V> {
             val queriesResults: TypeLibraryQueriesResults<T, V> = HashMap()
-            this.forEach { (_, arguments) ->
-                arguments.forEach {
-                    queriesResults.getOrPut(it) { mutableSetOf() }
+            for ((_, arguments) in this) {
+                for (it in arguments) {
+                    queriesResults.getOrPut(it) { HashSet() }
                 }
             }
             return queriesResults

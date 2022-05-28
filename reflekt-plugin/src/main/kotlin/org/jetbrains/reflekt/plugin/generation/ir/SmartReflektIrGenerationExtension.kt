@@ -13,7 +13,7 @@ import java.io.File
  * The Kotlin compiler extension to replace IR in the SmartReflekt queries.
  *
  * @param irInstancesAnalyzer to get project instances
- * @param classpath project dependencies that can be resolved at the compile time
+ * @param classpath project dependencies that can be resolved at the compile-time
  * @param messageCollector
  */
 class SmartReflektIrGenerationExtension(

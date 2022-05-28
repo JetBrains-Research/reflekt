@@ -30,7 +30,7 @@ object TypeStringRepresentationUtil {
 }
 
 /**
- * @return human readable string for `this` KType
+ * @return human-readable string for this [KType]
  */
 fun KType.stringRepresentation(): String {
     // Get simple classifier name, e.g. kotlin.Function1
@@ -48,7 +48,7 @@ fun KType.stringRepresentation(): String {
 
 /**
  * @param classifierName
- * @return human readable string for `this` KType and classifier name
+ * @return human-readable string for `this` [KType] and classifier name
  */
 internal fun KType.stringRepresentation(classifierName: String) =
     TypeStringRepresentationUtil.getStringRepresentation(classifierName, arguments.mapNotNull { it.type?.stringRepresentation() })

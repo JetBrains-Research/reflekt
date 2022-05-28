@@ -8,17 +8,17 @@ import org.jetbrains.reflekt.plugin.analysis.processor.Processor
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrFile
 
-typealias FileToListIrInstances<T> = HashMap<FileId, MutableList<T>>
-typealias ResultToFileSet<T> = HashMap<T, Set<FileId>>
-typealias ResultToFilteredInstances<R, I> = HashMap<R, Set<I>>
+typealias FileToListIrInstances<T> = MutableMap<FileId, MutableList<T>>
+typealias ResultToFileSet<T> = MutableMap<T, Set<FileId>>
+typealias ResultToFilteredInstances<R, I> = MutableMap<R, Set<I>>
 
 /**
  * A base class to process [IrElement] by [IrFile].
  *
  * @property fileToCollectedElements stores IR instances by [FileId]
  */
-abstract class IrBaseProcessorByFile<T : Any> : Processor<HashMap<FileId, T>, IrElement, IrFile>() {
-    abstract val fileToCollectedElements: HashMap<FileId, T>
+abstract class IrBaseProcessorByFile<T : Any> : Processor<MutableMap<FileId, T>, IrElement, IrFile>() {
+    abstract val fileToCollectedElements: MutableMap<FileId, T>
 }
 
 /**

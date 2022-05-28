@@ -58,7 +58,9 @@ class ClassesGenerator(enclosingClassName: ClassName, libraryQueriesResults: Cla
     override val typeName: ClassName = enclosingClassName.nestedClass("Classes")
     override val typeVariable = TypeVariableName("T", Any::class)
     override val returnParameter = KClass::class.asClassName().parameterizedBy(typeVariable)
-    override val typeSuffix = "::class"
+
+    override fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String): CodeBlock =
+        super.listOfWhenRightPart(uses) { getEntityName(it) + "::class" }
 }
 
 /**

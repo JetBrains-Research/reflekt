@@ -19,7 +19,7 @@ fun IrFunction.toPrettyString(): String {
 
 fun KtNamedDeclaration.toPrettyString() = fqName.toString()
 
-fun <T : Any> Pair<FileId, T>.toPrettyString(transform: (T) -> CharSequence) = "file: ${this.first}: ${transform(this.second)}"
+inline fun <T : Any> Pair<FileId, T>.toPrettyString(transform: (T) -> CharSequence) = "file: ${this.first}: ${transform(this.second)}"
 
 fun SupertypesToAnnotations.toPrettyString() = "supertypesToAnnotations: ${
     listOf(

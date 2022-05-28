@@ -1,5 +1,14 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
+import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
+import org.jetbrains.kotlin.ir.builders.*
+import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
+import org.jetbrains.kotlin.ir.types.*
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.reflekt.plugin.analysis.common.*
 import org.jetbrains.reflekt.plugin.analysis.ir.isSubtypeOf
 import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
@@ -8,19 +17,8 @@ import org.jetbrains.reflekt.plugin.generation.common.*
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.Util.log
 
-import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
-import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
-import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
-import org.jetbrains.kotlin.ir.builders.*
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
-import org.jetbrains.kotlin.ir.types.*
-import org.jetbrains.kotlin.name.FqName
-
 /**
- * Generates IR representation for the Reflekt terminal function (toList/toSet/etc).
+ * Generates IR for the Reflekt terminal function (toList/toSet/etc).
  */
 private val BaseReflektInvokeParts.irTerminalFunction: (IrPluginContext) -> IrFunctionSymbol
     get() = when (this) {
@@ -40,7 +38,7 @@ private val BaseReflektInvokeParts.irTerminalFunction: (IrPluginContext) -> IrFu
  */
 open class BaseReflektIrTransformer(private val messageCollector: MessageCollector?) : IrElementTransformerVoidWithContext() {
     /**
-     * Constructs replacement for result of Reflekt terminal function (toList/toSet/etc) for classes or objects
+     * Constructs replacement for result of Reflekt terminal function (toList/toSet/etc.) for classes or objects
      *
      * @param invokeParts info about invoke call to retrieve entity type (objects/classes) and terminal function (toList/toSet/etc)
      * @param resultValues list of qualified names of objects or classes to return
@@ -68,7 +66,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         }.map {
             when (invokeParts.entityType) {
                 ReflektEntity.OBJECTS -> irGetObject(it)
-                ReflektEntity.CLASSES -> itemType.castTo(irKClass(it))
+                ReflektEntity.CLASSES -> irTypeCast(itemType, irClassReference(it))
                 ReflektEntity.FUNCTIONS -> error("Use functionResultIrCall")
             }
         }
@@ -88,7 +86,6 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
      * @return [IrExpression]
      * @throws ReflektGenerationException
      */
-    @ObsoleteDescriptorBasedAPI
     @Suppress("TOO_MANY_LINES_IN_LAMBDA", "ThrowsCount")
     protected fun IrBuilderWithScope.functionResultIrCall(
         invokeParts: BaseReflektInvokeParts,
@@ -96,7 +93,7 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         resultType: IrType,
         context: IrPluginContext,
     ): IrExpression {
-        require(resultType is IrSimpleType)
+        require(resultType is IrSimpleType) { "resultType is not IrSimpleType" }
         val itemType = resultType.arguments[0].typeOrNull
             ?: throw ReflektGenerationException("Return type must have one type argument (e. g. List<T>, Set<T>)")
         require(itemType is IrSimpleType)
@@ -133,13 +130,12 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
      *
      * @param pluginContext
      */
-    protected fun newIrBuilder(pluginContext: IrPluginContext) =
-        object : IrBuilderWithScope(
-            pluginContext,
-            currentScope!!.scope,
-            UNDEFINED_OFFSET,
-            UNDEFINED_OFFSET,
-        ) {
-            // no need to pass a body to this object
-        }
+    protected fun newIrBuilder(pluginContext: IrPluginContext) = object : IrBuilderWithScope(
+        pluginContext,
+        currentScope!!.scope,
+        UNDEFINED_OFFSET,
+        UNDEFINED_OFFSET,
+    ) {
+        // no need to pass a body to this object
+    }
 }

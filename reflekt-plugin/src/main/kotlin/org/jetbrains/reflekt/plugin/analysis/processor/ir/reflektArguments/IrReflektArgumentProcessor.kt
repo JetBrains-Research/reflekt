@@ -24,7 +24,7 @@ typealias ReflektArgumentsCache<T, E> = ResultToFilteredInstances<T, E>
  * @property collectedElements
  * @property cache
  * @property reflektEntity stores the type of the [ReflektEntity] to define the type of the query
- *  (e.g. for functions, or for classes)
+ *  (e.g., for functions, or for classes)
  */
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER")
 abstract class IrReflektArgumentProcessor<R : ReflektQueryArguments, T : IrDeclaration> :
@@ -70,14 +70,14 @@ abstract class IrReflektArgumentProcessor<R : ReflektQueryArguments, T : IrDecla
     fun extractQueryArguments(element: IrCall): R? = element.collectQueryArguments()
 
     /**
-     * Collects all query arguments from a Reflekt query, e.g. a set of supertypes and a set of annotations.
+     * Collects all query arguments from a Reflekt query e.g., a set of supertypes and a set of annotations.
      *
      * @return
      */
     protected abstract fun IrCall.collectQueryArguments(): R?
 
     /**
-     * Filters all instances (e.g. all classes from the project and libraries) by the [queryArguments].
+     * Filters all instances (e.g., all classes from the project and libraries) by the [queryArguments].
      *
      * @param queryArguments
      * @return
@@ -92,7 +92,7 @@ abstract class IrReflektArgumentProcessor<R : ReflektQueryArguments, T : IrDecla
 
     /**
      * Check if the [T] element has at least one annotation from the [annotationsFqNames].
-     * If the [annotationsFqNames] is empty the Reflekt query does not have this argument and we should return {@code true}
+     * If the [annotationsFqNames] is empty the Reflekt query does not have this argument, and we should return {@code true}
      *
      * @param annotationsFqNames
      * @return
@@ -104,7 +104,7 @@ abstract class IrReflektArgumentProcessor<R : ReflektQueryArguments, T : IrDecla
         if (this.annotations.isEmpty()) {
             return false
         }
-        return annotationsFqNames.any { it in this.annotations.mapNotNull { it.annotationClass.fqNameWhenAvailable?.toString() } }
+        return annotationsFqNames.any { name -> name in this.annotations.mapNotNull { it.annotationClass.fqNameWhenAvailable?.toString() } }
     }
 }
 
