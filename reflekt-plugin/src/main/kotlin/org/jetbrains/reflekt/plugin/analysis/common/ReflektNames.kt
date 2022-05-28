@@ -53,6 +53,14 @@ enum class ReflektNestedClass(val className: String) {
 }
 
 /**
+ * @property propertyName
+ */
+enum class ReflektClassRegistry(val propertyName: String) {
+    REFLEKT_CLASSES("reflektClasses"),
+    ;
+}
+
+/**
  * @property functionName
  */
 enum class ReflektTerminalFunction(val functionName: String) {

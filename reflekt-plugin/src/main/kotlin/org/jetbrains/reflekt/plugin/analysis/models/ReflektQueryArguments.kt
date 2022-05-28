@@ -4,6 +4,9 @@ import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.kotlin.ir.types.IrType
 
 import kotlinx.serialization.Serializable
+import org.jetbrains.reflekt.ReflektClass
+import kotlin.reflect.KClass
+import kotlin.reflect.KVisibility
 
 typealias ClassOrObjectQueryArguments = MutableSet<SupertypesToAnnotations>
 typealias FunctionQueryArguments = MutableSet<SignatureToAnnotations>
@@ -43,6 +46,25 @@ data class SerializableSignatureToAnnotations(
     val annotations: Set<String> = emptySet(),
 )
 
+@Serializable
+data class SerializableReflektClass(
+    val annotations: Set<String>,
+    val isAbstract: Boolean,
+    val isCompanion: Boolean,
+    val isData: Boolean,
+    val isFinal: Boolean,
+    val isFun: Boolean,
+    val isInner: Boolean,
+    val isOpen: Boolean,
+    val isSealed: Boolean,
+    val isValue: Boolean,
+    val qualifiedName: String?,
+    val superclasses: Set<String>,
+    val sealedSubclasses: Set<String>,
+    val simpleName: String?,
+    val visibility: KVisibility?,
+)
+
 /**
  * @property objects
  * @property classes
@@ -53,4 +75,5 @@ data class SerializableReflektQueryArguments(
     val objects: MutableMap<FileId, ClassOrObjectQueryArguments> = HashMap(),
     val classes: MutableMap<FileId, ClassOrObjectQueryArguments> = HashMap(),
     val functions: MutableMap<FileId, SerializableFunctionQueryArguments> = HashMap(),
+    val mentionedClasses: MutableSet<SerializableReflektClass> = HashSet(),
 )

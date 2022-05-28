@@ -2,7 +2,9 @@
 
 package org.jetbrains.reflekt.plugin.generation.code.generator
 
-import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import org.jetbrains.reflekt.ReflektClass
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryQueriesResults
 import org.jetbrains.reflekt.plugin.generation.code.generator.models.*
 import java.util.*
@@ -52,7 +54,44 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                     body = statement("return %T()", generator.typeName),
                 )
             })
+
             addNestedTypes(innerGenerators.map { it.generate() })
+
+            builder.addProperty(
+                "reflektClasses",
+                MAP.parameterizedBy(ClassName("kotlin.reflect", "KClass").parameterizedBy(STAR), ReflektClass::class.asTypeName().parameterizedBy(STAR)),
+            )
+
+            builder.addInitializerBlock(buildCodeBlock {
+                addStatement("val m = HashMap<KClass<*>, ReflektClass<*>>()")
+
+                innerGenerators.filterIsInstance<ClassesGenerator>().flatMapTo(HashSet()) { it.mentionedClasses }.forEach { name ->
+                    val clazz = libraryQueriesResults.mentionedClasses.find { clazz -> clazz.qualifiedName == name } ?: error("Can't find class data for $name")
+
+                    addStatement(
+                        "m[$name::class] = ReflektClassImpl(" +
+                            "kClass = $name::class, " +
+                            "annotations = ${clazz.annotations.joinToString(separator = ", ", prefix = "hashSetOf(", postfix = ")") { "$it::class" }}, " +
+                            "isAbstract = ${clazz.isAbstract}, " +
+                            "isCompanion = ${clazz.isCompanion}, " +
+                            "isData = ${clazz.isData}, " +
+                            "isFinal = ${clazz.isFinal}, " +
+                            "isFun = ${clazz.isFun}, " +
+                            "isInner = ${clazz.isInner}, " +
+                            "isOpen = ${clazz.isOpen}, " +
+                            "isSealed = ${clazz.isSealed}, " +
+                            "isValue = ${clazz.isValue}, " +
+                            "qualifiedName = \"${clazz.qualifiedName}\", " +
+                            "superclasses = HashSet(), " +
+                            "sealedSubclasses = HashSet(), " +
+                            "simpleName = \"${clazz.simpleName}\", " +
+                            "visibility = ${if (clazz.visibility == null) "null" else "kotlin.reflect.KVisibility.${clazz.visibility.name}"}" +
+                            ")"
+                    )
+                }
+
+                addStatement("reflektClasses = m")
+            })
         }
     }
 }

@@ -2,7 +2,6 @@
 
 package org.jetbrains.reflekt.plugin.generation.ir.util
 
-import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.builders.IrBuilderWithScope
 import org.jetbrains.kotlin.ir.expressions.*
@@ -12,8 +11,6 @@ import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
-import org.jetbrains.kotlin.ir.util.isVararg
-import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.types.Variance
 
 /**
@@ -81,32 +78,5 @@ fun irTypeCast(type: IrType, castTo: IrExpression) = IrTypeOperatorCallImpl(
     type = type,
     operator = IrTypeOperator.CAST,
     typeOperand = type,
-    argument = castTo,
+    argument = this,
 )
-
-/**
- * Generates IR representation for <collection_name>Of function, e.g. listOf or setOf.
- *
- * @param collectionFqName e.g. kotlin.collections.listOf
- * @param pluginContext
- */
-fun funCollectionOf(collectionFqName: String, pluginContext: IrPluginContext) =
-    pluginContext.referenceFunctions(FqName(collectionFqName))
-        .single {
-            val parameters = it.owner.valueParameters
-            parameters.size == 1 && parameters[0].isVararg
-        }
-
-/**
- * Generates IR representation for listOf function.
- *
- * @param pluginContext
- */
-fun funListOf(pluginContext: IrPluginContext) = funCollectionOf("kotlin.collections.listOf", pluginContext)
-
-/**
- * Generates IR representation for setOf function.
- *
- * @param pluginContext
- */
-fun funSetOf(pluginContext: IrPluginContext) = funCollectionOf("kotlin.collections.setOf", pluginContext)

@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.reflekt.ReflektClass
 import org.jetbrains.reflekt.plugin.analysis.models.*
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.toIrType
@@ -28,6 +29,7 @@ data class LibraryArguments(
     override val classes: LibraryArgumentsMap<SupertypesToAnnotations> = HashMap(),
     override val objects: LibraryArgumentsMap<SupertypesToAnnotations> = HashMap(),
     override val functions: LibraryArgumentsMap<SignatureToAnnotations> = HashMap(),
+    val mentionedClasses: MutableSet<SerializableReflektClass> = HashSet(),
 ) : BaseReflektDataByFile<MutableSet<SupertypesToAnnotations>, MutableSet<SupertypesToAnnotations>, MutableSet<SignatureToAnnotations>>(
     classes,
     objects,
@@ -37,6 +39,10 @@ data class LibraryArguments(
         classes = classes.merge(second.classes) { HashSet() },
         objects = objects.merge(second.objects) { HashSet() },
         functions = functions.merge(second.functions) { HashSet() },
+        mentionedClasses = HashSet<SerializableReflektClass>().apply {
+            addAll(mentionedClasses)
+            addAll(second.mentionedClasses)
+        }
     )
 
     fun toSerializableLibraryArguments() = SerializableReflektQueryArguments(
@@ -50,6 +56,7 @@ data class LibraryArguments(
                 )
             }.toHashSet()
         },
+        mentionedClasses = mentionedClasses,
     )
 }
 
@@ -115,18 +122,21 @@ data class SerializableLibraryArgumentsWithInstances(
  * @property classes
  * @property objects
  * @property functions
+ * @property mentionedClasses
  */
 // TODO: think about name
 data class LibraryQueriesResults(
     val classes: ClassOrObjectLibraryQueriesResults = HashMap(),
     val objects: ClassOrObjectLibraryQueriesResults = HashMap(),
     val functions: FunctionLibraryQueriesResults = HashMap(),
+    val mentionedClasses: Set<SerializableReflektClass> = HashSet(),
 ) {
     companion object {
         fun fromLibraryArguments(libraryArguments: LibraryArguments) = LibraryQueriesResults(
             classes = libraryArguments.classes.flatten(),
             objects = libraryArguments.objects.flatten(),
             functions = libraryArguments.functions.flatten(),
+            mentionedClasses = libraryArguments.mentionedClasses,
         )
 
         @Suppress("IDENTIFIER_LENGTH", "TYPE_ALIAS")

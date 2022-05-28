@@ -94,6 +94,12 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
             // Handle I case
             project.replaceReflektQueries(config, instancesAnalyzer, libraryArgumentsWithInstances)
         }
+
+        project.generateReflektClasses(config)
+    }
+
+    private fun MockProject.generateReflektClasses(config: PluginConfig) {
+        TODO()
     }
 
     private fun MockProject.collectAndStoreReflektArguments(

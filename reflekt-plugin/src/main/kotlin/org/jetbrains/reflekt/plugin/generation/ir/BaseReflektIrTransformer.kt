@@ -5,8 +5,9 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.builders.*
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
+import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.reflekt.plugin.analysis.common.*
@@ -23,11 +24,17 @@ import org.jetbrains.reflekt.plugin.utils.Util.log
 private val BaseReflektInvokeParts.irTerminalFunction: (IrPluginContext) -> IrFunctionSymbol
     get() = when (this) {
         is ReflektInvokeParts -> when (terminalFunction) {
-            ReflektTerminalFunction.TO_LIST -> ::funListOf
-            ReflektTerminalFunction.TO_SET -> ::funSetOf
+            ReflektTerminalFunction.TO_LIST -> {
+                { GenerationSymbols(it).arrayListOf }
+            }
+            ReflektTerminalFunction.TO_SET -> {
+                { GenerationSymbols(it).hashSetOf }
+            }
         }
         is SmartReflektInvokeParts -> when (terminalFunction) {
-            SmartReflektTerminalFunction.RESOLVE -> ::funListOf
+            SmartReflektTerminalFunction.RESOLVE -> {
+                { GenerationSymbols(it).arrayListOf }
+            }
         }
     }
 
@@ -56,20 +63,22 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
         resultType: IrType,
         context: IrPluginContext,
     ): IrExpression {
-        require(resultType is IrSimpleType)
+        val generationSymbols = GenerationSymbols(context)
+        require(resultType is IrSimpleType) { "resultType is not IrSimpleType" }
 
         val itemType = resultType.arguments[0].typeOrNull
             ?: throw ReflektGenerationException("Return type must have one type argument (e. g. List<T>, Set<T>)")
 
-        val items = resultValues.map {
-            context.referenceClass(FqName(it)) ?: throw ReflektGenerationException("Failed to find class $it")
-        }.map {
-            when (invokeParts.entityType) {
-                ReflektEntity.OBJECTS -> irGetObject(it)
-                ReflektEntity.CLASSES -> irTypeCast(itemType, irClassReference(it))
-                ReflektEntity.FUNCTIONS -> error("Use functionResultIrCall")
+        val items = resultValues
+            .map { context.referenceClass(FqName(it)) ?: throw ReflektGenerationException("Failed to find class $it") }
+            .map {
+                when (invokeParts.entityType) {
+                    ReflektEntity.OBJECTS -> irGetObject(it)
+                    ReflektEntity.CLASSES -> irCall(generationSymbols.mapGet, ).castTo(itemType)
+                    ReflektEntity.FUNCTIONS -> error("Use functionResultIrCall")
+                }
             }
-        }
+
         return irCall(invokeParts.irTerminalFunction(context), type = resultType).also { call ->
             call.putTypeArgument(0, itemType)
             call.putValueArgument(0, irVarargOut(itemType, items))
