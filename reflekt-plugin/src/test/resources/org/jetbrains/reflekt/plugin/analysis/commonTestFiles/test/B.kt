@@ -1,12 +1,10 @@
 package org.jetbrains.reflekt.test
 
-class B1: BInterfaceTest {
-}
+class B1: BInterfaceTest
 
 @FirstAnnotationTest
 @SecondAnnotationTest("Test")
-class B2: BInterfaceTest {
-}
+class B2: BInterfaceTest
 
 @FirstAnnotationTest
 @SecondAnnotationTest("Test")

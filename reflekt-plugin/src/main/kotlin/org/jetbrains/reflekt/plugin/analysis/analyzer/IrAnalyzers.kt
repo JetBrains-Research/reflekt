@@ -93,9 +93,10 @@ class IrReflektQueriesAnalyzer(irInstances: IrInstances, context: IrPluginContex
         if (element !is IrCall) {
             return emptyList()
         }
-        return processors.filter { it.shouldRunOn(element) }.mapNotNull {
-            (it as? IrReflektArgumentProcessor<*, *>)?.processWithCurrentResult(element, file)
-        }.flatten()
+        return processors
+            .filter { it.shouldRunOn(element) }
+            .mapNotNull { (it as? IrReflektArgumentProcessor<*, *>)?.processWithCurrentResult(element, file) }
+            .flatten()
     }
 
     fun filterInstancesByArguments(reflektQueryArguments: ReflektQueryArguments, instancesKind: ReflektEntity) = when (instancesKind) {

@@ -31,7 +31,6 @@ dependencies {
     testImplementation(libs.junit.jupiter.params)
     testRuntimeOnly(libs.junit.jupiter.engine)
     testImplementation(libs.tomlj)
-    testImplementation(libs.gson)
     testImplementation(libs.kotlin.compile.testing)
 }
 

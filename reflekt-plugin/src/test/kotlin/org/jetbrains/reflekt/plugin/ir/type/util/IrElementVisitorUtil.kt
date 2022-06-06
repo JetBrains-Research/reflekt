@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.IrElement
-import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.backend.js.utils.asString
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
@@ -23,7 +22,6 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.reflekt.plugin.analysis.ir.*
-
 import java.io.File
 
 /**
@@ -36,7 +34,7 @@ class IrTestComponentRegistrar(val visitors: List<IrElementVisitor<Unit, IrPlugi
         IrGenerationExtension.registerExtension(project, object : IrGenerationExtension {
             override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
                 println("$moduleFragment module fragment")
-                visitors.forEach { moduleFragment.accept(it, pluginContext) }
+                for (it in visitors) moduleFragment.accept(it, pluginContext)
             }
         })
     }

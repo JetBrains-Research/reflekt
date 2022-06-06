@@ -19,7 +19,7 @@ internal val Project.reflekt: ReflektGradleExtension
  * Gradle extension class containing the configuration information for the plugin
  */
 open class ReflektGradleExtension {
-    /** If [false], this plugin won't actually be applied */
+    /** If `false`, this plugin won't actually be applied */
     var enabled: Boolean = true
 
     /** Libraries to introspect, which are in the project dependencies in the format: "$group:$name:$version" */
@@ -33,7 +33,7 @@ open class ReflektGradleExtension {
      */
     var generationPath: String = "build/src/main/kotlin-gen"
 
-    /** If [false], Reflekt usages will not be saved into META-INF.
+    /** If `false`, Reflekt usages will not be saved into META-INF.
      * This information will be used if the current project is included
      * as a library for ReflektImpl file generation. */
     var toSaveMetadata: Boolean = false

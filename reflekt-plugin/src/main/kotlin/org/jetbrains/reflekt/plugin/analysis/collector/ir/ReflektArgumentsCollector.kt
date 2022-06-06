@@ -13,7 +13,6 @@ import org.jetbrains.reflekt.plugin.analysis.processor.fullName
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.getReflektInvokeParts
 import org.jetbrains.reflekt.plugin.generation.common.ReflektInvokeParts
 import org.jetbrains.reflekt.plugin.utils.Util.log
-
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -23,7 +22,7 @@ import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 
 /**
- * Visits all [IrCall]s to extract all Reflekt queries arguments in the [IrFile].
+ * Visits all [IrCall]s to extract all Reflekt queries arguments in the [org.jetbrains.kotlin.ir.declarations.IrFile].
  */
 class ReflektArgumentsCollector(
     pluginContext: IrPluginContext,
@@ -43,10 +42,9 @@ class ReflektArgumentsCollector(
     private fun IrCall.collectReflektQueriesArgument(invokeParts: ReflektInvokeParts) {
         analyzer.parseReflektQueriesArguments(this)?.let { args ->
             when (invokeParts.entityType) {
-                ReflektEntity.OBJECTS -> reflektQueriesArguments.objects.getOrPut(currentFile.fullName) { mutableSetOf() }.add(args as SupertypesToAnnotations)
-                ReflektEntity.CLASSES -> reflektQueriesArguments.classes.getOrPut(currentFile.fullName) { mutableSetOf() }.add(args as SupertypesToAnnotations)
-                ReflektEntity.FUNCTIONS -> reflektQueriesArguments.functions.getOrPut(currentFile.fullName) { mutableSetOf() }
-                    .add(args as SignatureToAnnotations)
+                ReflektEntity.OBJECTS -> reflektQueriesArguments.objects.getOrPut(currentFile.fullName) { HashSet() }.add(args as SupertypesToAnnotations)
+                ReflektEntity.CLASSES -> reflektQueriesArguments.classes.getOrPut(currentFile.fullName) { HashSet() }.add(args as SupertypesToAnnotations)
+                ReflektEntity.FUNCTIONS -> reflektQueriesArguments.functions.getOrPut(currentFile.fullName) { HashSet() }.add(args as SignatureToAnnotations)
             }
         }
     }
@@ -54,7 +52,7 @@ class ReflektArgumentsCollector(
 
 /**
  *  A compiler plugin extension for searching and collection all Reflekt queries arguments,
- *   e.g. annotations, supertypes, or functions' sognatures.
+ *   e.g. annotations, supertypes, or functions' signatures.
  */
 class ReflektArgumentsCollectorExtension(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,

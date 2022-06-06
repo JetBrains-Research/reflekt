@@ -15,45 +15,43 @@ import java.net.URLClassLoader
  * @property allNames fully qualified names of public packages, classes, functions, and properties in classpath
  * */
 @Suppress("ConvertSecondaryConstructorToPrimary", "KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
-class ImportChecker {
+class ImportChecker(classpath: List<File>) {
     private val allNames = HashSet<String>()
 
-    constructor(classpath: List<File>) {
-        if (classpath.isEmpty()) {
-            return
+    init {
+        if (classpath.isNotEmpty()) {
+            val urls = classpath.map { it.toURI().toURL() }
+            val classLoader = URLClassLoader(urls.toTypedArray())
+            // Scan each class in classpath
+            val reflections = Reflections(
+                ConfigurationBuilder()
+                    .addClassLoaders(classLoader)
+                    .setUrls(urls)
+                    .setScanners(Scanners.SubTypes.filterResultsBy { true }),
+            )
+
+            /*
+             * Reflection is used at compile time with the compileClasspath configuration imports,
+             * so we can catch some unexpected errors like SecurityException or NoClassDefFoundError
+             * since some classes can not be loaded at compile time for some reason.
+             * This can happen if, for example, the included libraries use other libraries
+             * that may not be available at compile time.
+             */
+            @Suppress("TooGenericExceptionCaught")
+            // Get all classes (each class is a subtype of java.lang.Object)
+            reflections.getSubTypesOf(Object::class.java)
+                // Only public classes can be imported
+                .filter { Modifier.isPublic(it.modifiers) }
+                .filter { it.hasCanonicalName() }
+                .forEach { clazz ->
+                    // Full package may be imported
+                    allNames.add(clazz.packageName)
+                    // Class may be imported
+                    allNames.add(clazz.canonicalName)
+
+                    clazz.saveMethodsAndFields()
+                }
         }
-
-        val urls = classpath.map { it.toURI().toURL() }
-        val classLoader = URLClassLoader(urls.toTypedArray())
-        // Scan each class in classpath
-        val reflections = Reflections(
-            ConfigurationBuilder()
-                .addClassLoaders(classLoader)
-                .setUrls(urls)
-                .setScanners(Scanners.SubTypes.filterResultsBy { true }),
-        )
-
-        /*
-         * Reflection is used at compile time with the compileClasspath configuration imports,
-         * so we can catch some unexpected errors like SecurityException or NoClassDefFoundError
-         * since some classes can not be loaded at compile time for some reason.
-         * This can happen if, for example, the included libraries use other libraries
-         * that may not be available at compile time.
-         */
-        @Suppress("TooGenericExceptionCaught")
-        // Get all classes (each class is a subtype of java.lang.Object)
-        reflections.getSubTypesOf(Object::class.java)
-            // Only public classes can be imported
-            .filter { Modifier.isPublic(it.modifiers) }
-            .filter { it.hasCanonicalName() }
-            .forEach { clazz ->
-                // Full package may be imported
-                allNames.add(clazz.packageName)
-                // Class may be imported
-                allNames.add(clazz.canonicalName)
-
-                clazz.saveMethodsAndFields()
-            }
     }
 
     /**

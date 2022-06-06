@@ -21,5 +21,4 @@ object A3: AInterfaceTest {
 }
 
 @SecondAnnotationTest("Test")
-object A4: BInterfaceTest {
-}
+object A4: BInterfaceTest

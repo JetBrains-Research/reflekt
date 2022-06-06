@@ -8,5 +8,4 @@ interface AInterface1: AInterface {
     override fun description(): String
 }
 
-interface BInterface {
-}
+interface BInterface

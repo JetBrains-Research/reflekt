@@ -55,7 +55,7 @@ class InstancesCollectorExtension(
     }
 
     private fun extractInstancesFromLibraries(pluginContext: IrPluginContext) {
-        reflektMetaFilesFromLibraries.forEach { metaFile ->
+        for (metaFile in reflektMetaFilesFromLibraries) {
             val currentLibraryArgumentsWithInstances = SerializationUtils.decodeArguments(metaFile.readBytes(), pluginContext)
             libraryArguments = libraryArguments.merge(currentLibraryArgumentsWithInstances.libraryArguments)
             irInstancesFqNames = irInstancesFqNames.merge(currentLibraryArgumentsWithInstances.instances)

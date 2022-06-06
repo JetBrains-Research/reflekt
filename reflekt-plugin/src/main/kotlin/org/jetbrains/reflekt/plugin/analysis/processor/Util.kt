@@ -19,18 +19,18 @@ internal fun getNameWithPackage(packageFqName: FqName, name: String? = null): Fi
     return "${packageFqName.asString()}$postfix"
 }
 
-internal fun <K, V : MutableSet<K>> getInvokesGroupedByFiles(fileToInvokes: HashMap<FileId, V>) =
-    groupFilesByInvokes(fileToInvokes).keys.flatten().toMutableSet()
+internal fun <K, V : MutableSet<K>> getInvokesGroupedByFiles(fileToInvokes: Map<FileId, V>): MutableSet<K> =
+    groupFilesByInvokes(fileToInvokes).keys.flatten().toHashSet()
 
 // To avoid repeated checks for belonging invokes in different files,
 // we will group files by invokes and process each of them once
 // MutableSet<*> here is ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
 // or FunctionInvokes = MutableSet<SignatureToAnnotations> MutableSet<*>
 @Suppress("TYPE_ALIAS")
-private fun <T : MutableSet<*>> groupFilesByInvokes(fileToInvokes: HashMap<FileId, T>): HashMap<T, MutableSet<String>> {
+private fun <T : MutableSet<*>> groupFilesByInvokes(fileToInvokes: Map<FileId, T>): MutableMap<T, MutableSet<String>> {
     val filesByInvokes = HashMap<T, MutableSet<FileId>>()
-    fileToInvokes.forEach { (file, invoke) ->
-        filesByInvokes.getOrPut(invoke) { mutableSetOf() }.add(file)
+    for ((file, invoke) in fileToInvokes) {
+        filesByInvokes.getOrPut(invoke) { HashSet() }.add(file)
     }
     return filesByInvokes
 }

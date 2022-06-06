@@ -8,7 +8,6 @@ import org.jetbrains.reflekt.plugin.analysis.models.SignatureToAnnotations
 import org.jetbrains.reflekt.plugin.analysis.models.SupertypesToAnnotations
 
 import org.jetbrains.kotlin.ir.IrElement
-import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrFunctionExpression
 import org.jetbrains.kotlin.ir.types.IrType
@@ -54,7 +53,7 @@ class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
 }
 
 /**
- * IR version of [findReflektFunctionInvokeArguments] function.
+ * IR version of findReflektFunctionInvokeArguments function.
  * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct [SignatureToAnnotations].
  */
 class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
@@ -62,7 +61,6 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
     private val annotations = HashSet<String>()
     private var irSignature: IrType? = null
 
-    @OptIn(ObsoleteDescriptorBasedAPI::class)
     override fun visitCall(expression: IrCall, data: Nothing?) {
         super.visitCall(expression, data)
         val function = expression.symbol.owner
@@ -91,7 +89,6 @@ class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) :
     private val filters = ArrayList<Lambda>()
     private var irTypeArgument: IrType? = null
 
-    @OptIn(ObsoleteDescriptorBasedAPI::class)
     override fun visitCall(expression: IrCall, data: Nothing?) {
         super.visitCall(expression, data)
         val function = expression.symbol.owner

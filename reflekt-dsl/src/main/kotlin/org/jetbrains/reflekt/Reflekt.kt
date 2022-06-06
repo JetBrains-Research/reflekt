@@ -99,7 +99,7 @@ object Reflekt {
          * The class represents DSL for searching objects with several annotations.
          * Each item in the list\set with result will be cast to [T] type.
          */
-        class WithAnnotations<T : Any>(private val annotationFqNames: Set<String>, private val supertypeFqNames: Set<String>) {
+        class WithAnnotations<out T : Any>(private val annotationFqNames: Set<String>, private val supertypeFqNames: Set<String>) {
             /**
              * Get list of objects with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
              * Each item in the list\set with result will be cast to [T] type.
@@ -234,14 +234,13 @@ object Reflekt {
          *
          * @param klasses
          */
-        @OptIn(ExperimentalStdlibApi::class)
         inline fun <reified T : Function<*>> withAnnotations(vararg klasses: KClass<out Annotation>) =
             WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet(), typeOf<T>().stringRepresentation())
 
         /**
          * The class represents DSL for searching functions by the signature with several annotations.
          */
-        class WithAnnotations<T : Function<*>>(private val annotationFqNames: Set<String>, private val signature: String) {
+        class WithAnnotations<out T : Function<*>>(private val annotationFqNames: Set<String>, private val signature: String) {
             /**
              * Get list of functions with [T] signature and [annotationFqNames] annotations.
              *

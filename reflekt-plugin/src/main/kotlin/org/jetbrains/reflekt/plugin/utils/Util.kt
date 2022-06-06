@@ -60,7 +60,7 @@ object Util {
  * @param transform
  * @return [T]
  */
-fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T =
+inline fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T =
     values.first { it.transform() == this }
 
 /**

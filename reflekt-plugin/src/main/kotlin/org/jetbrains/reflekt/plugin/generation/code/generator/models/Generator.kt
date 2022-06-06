@@ -3,9 +3,9 @@ package org.jetbrains.reflekt.plugin.generation.code.generator.models
 /**
  * A base class for all code generators.
  */
-abstract class Generator<T> {
+abstract class Generator<out T> {
     /**
-     * Initialization of the main builder (e.g. TypeSpec.Builder or FileSpec.Builder) for the generator,
+     * Initialization of the main builder (e.g. [com.squareup.kotlinpoet.TypeSpec.Builder] or [com.squareup.kotlinpoet.FileSpec.Builder]) for the generator,
      *  the function can be empty if the builder does not exist for the current generator.
      *
      * Classes from the KotlinPoet that have builders don't have

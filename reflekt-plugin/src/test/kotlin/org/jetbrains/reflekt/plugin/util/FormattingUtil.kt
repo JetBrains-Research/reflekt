@@ -18,7 +18,7 @@ fun CharSequence.indentN(n: Int): String {
     return "$indent${this.toString().replace("\n", "\n$indent")}"
 }
 
-fun <T : Any?> Collection<T>.joinToStringIndented(
+inline fun <T : Any?> Collection<T>.joinToStringIndented(
     brackets: Brackets = Brackets.SQUARE,
     transform: (T) -> CharSequence = { it.toString() },
 ): String = if (this.isEmpty()) {
@@ -29,5 +29,5 @@ fun <T : Any?> Collection<T>.joinToStringIndented(
         .joinToString(separator = ",\n", prefix = "${brackets.left}\n", postfix = "\n${brackets.right}") { it.indentN(1) }
 }
 
-fun <K : Any?, V : Any?> Map<K, V>.joinToStringIndented(transform: (K, V) -> CharSequence): String =
-        toList().joinToStringIndented(brackets = Brackets.CURLY) { (k, v) -> transform(k, v) }
+inline fun <K : Any?, V : Any?> Map<K, V>.joinToStringIndented(transform: (K, V) -> CharSequence): String =
+    toList().joinToStringIndented(brackets = Brackets.CURLY) { (k, v) -> transform(k, v) }

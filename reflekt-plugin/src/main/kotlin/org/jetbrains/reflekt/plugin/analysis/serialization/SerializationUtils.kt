@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.types.Variance
 import kotlinx.serialization.*
 import kotlinx.serialization.protobuf.ProtoBuf
 
+@Suppress("UnnecessaryOptInAnnotation")
 @OptIn(ExperimentalSerializationApi::class)
 object SerializationUtils {
     private val protoBuf = ProtoBuf
@@ -67,7 +68,7 @@ object SerializationUtils {
     fun SerializableIrType.toIrType(pluginContext: IrPluginContext) = IrSimpleTypeBuilder().also {
         it.classifier = pluginContext.referenceClass(FqName(classifierFqName))
         it.hasQuestionMark = this.hasQuestionMark
-        it.arguments = this.arguments.map { it.toIrTypeArgument(pluginContext) }
+        it.arguments = this.arguments.map { argument -> argument.toIrTypeArgument(pluginContext) }
         // TODO: should we deserialize it?
         it.abbreviation = null
     }.buildSimpleType()
@@ -78,7 +79,7 @@ object SerializationUtils {
         }
         requireNotNull(this.fqName) { "Empty fqName for IrTypeProjection" }
         return IrSimpleTypeBuilder().also {
-            it.classifier = pluginContext.referenceClass(FqName(this.fqName!!))
+            it.classifier = pluginContext.referenceClass(FqName(this.fqName))
         }.buildTypeProjection()
     }
 }

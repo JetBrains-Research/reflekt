@@ -1,3 +1,5 @@
+@file:Suppress("RedundantUnitReturnType", "UNUSED_PARAMETER")
+
 package org.jetbrains.reflekt.test
 
 annotation class FunctionsTestAnnotation

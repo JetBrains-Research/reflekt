@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.*
-import org.jetbrains.kotlin.resolve.scopes.receivers.TransientReceiver
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
 
@@ -18,8 +17,8 @@ fun IrCall.getFqNamesOfTypeArguments(): List<String> {
     val result = ArrayList<String>()
     for (i in 0 until typeArgumentsCount) {
         val type = getTypeArgument(i)
-        require(type is IrSimpleType)
-        result.add(type.classFqName.toString())
+        require(type is IrSimpleType) { "Type argument is not IrSimpleType" }
+        result += type.classFqName.toString()
     }
     return result
 }
@@ -37,7 +36,7 @@ fun IrClass.isSubtypeOf(type: IrType, pluginContext: IrPluginContext) = this.def
 fun IrType.makeTypeProjection() = makeTypeProjection(this, if (this is IrTypeProjection) this.variance else Variance.INVARIANT)
 
 fun IrFunction.toFunctionInfo(): IrFunctionInfo {
-    fqNameWhenAvailable ?: error("Can not get fqname for function ${this}")
+    fqNameWhenAvailable ?: error("Can not get FqName for function $this")
     return IrFunctionInfo(
         fqNameWhenAvailable.toString(),
         receiverFqName = receiverType()?.classFqName?.asString(),
@@ -45,14 +44,4 @@ fun IrFunction.toFunctionInfo(): IrFunctionInfo {
     )
 }
 
-fun IrFunction.receiverType(): IrType? {
-    val extensionReceiver = this.extensionReceiverParameter
-    val dispatchReceiver = this.dispatchReceiverParameter
-    return if (dispatchReceiver != null && dispatchReceiver !is TransientReceiver) {
-        dispatchReceiver.type
-    } else if (extensionReceiver != null && extensionReceiver !is TransientReceiver) {
-        extensionReceiver.type
-    } else {
-        null
-    }
-}
+fun IrFunction.receiverType(): IrType? = extensionReceiverParameter?.type ?: dispatchReceiverParameter?.type

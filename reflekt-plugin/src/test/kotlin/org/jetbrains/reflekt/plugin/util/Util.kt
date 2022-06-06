@@ -1,24 +1,14 @@
 package org.jetbrains.reflekt.plugin.util
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import org.gradle.internal.impldep.org.apache.commons.lang.SystemUtils
 import java.io.*
 import kotlin.reflect.KClass
 
 object Util {
-    val gson: Gson = GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create()
-
     fun getResourcesRootPath(
         cls: KClass<*>,
         resourcesRootName: String = "data",
     ): String = cls.java.getResource(resourcesRootName)?.path ?: error("Was not found the resource: $resourcesRootName")
-
-    inline fun <reified T> parseJson(json: File): T =
-        gson.fromJson(json.readText(), T::class.java)
-
-    inline fun <reified T> toJson(value: T): String =
-        gson.toJson(value)
 
     /*
      * Run ProcessBuilder and return output

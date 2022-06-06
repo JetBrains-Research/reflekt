@@ -20,7 +20,6 @@ import java.util.*
  *
  *  @property typeVariable a generic variable to parametrize functions in the generated class
  *  @property returnParameter a type for casting the results (all found entities) to
- *  @property typeSuffix optional suffix to get a type of the entity, e.g. ::class
  *  @property withSupertypesFunctionBody the body of the withSupertypes function
  *  @property withAnnotationsFunctionBody the body of the withAnnotations function
  *  @property withSupertypesParameters parameters for the WithSuperTypes class (from its constructor)
@@ -36,7 +35,6 @@ import java.util.*
 abstract class HelperClassGenerator : ClassGenerator() {
     abstract val typeVariable: TypeVariableName
     abstract val returnParameter: TypeName
-    protected open val typeSuffix: String = ""
 
     open val withSupertypesFunctionBody: CodeBlock
         get() = statement(
@@ -98,8 +96,8 @@ abstract class HelperClassGenerator : ClassGenerator() {
      *  listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
      */
     @Suppress("SpreadOperator")
-    private fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String) =
-        statement("listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)}$typeSuffix as %T" }})",
+    protected open fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String) =
+        statement("listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)} as %T" }})",
             *List(uses.size) { returnParameter }.toTypedArray(),
         )
 
@@ -173,7 +171,7 @@ abstract class HelperClassGenerator : ClassGenerator() {
             builder.add("return ")
         }
         builder.beginControlFlow("when (%N)", conditionVariable)
-        invokesWithUses.forEach {
+        for (it in invokesWithUses) {
             builder.add(generateBranchForWhenOption(it))
         }
         builder.addStatement("else -> emptyList()")

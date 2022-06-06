@@ -12,13 +12,11 @@ import org.jetbrains.reflekt.plugin.utils.Util.log
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.IrElement
-import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.*
-import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
 
 import java.io.File
@@ -30,11 +28,11 @@ import kotlin.reflect.KClass
  *
  * @property irInstances
  * @property pluginContext
- * @property classpath project dependencies that can be resolved at the compile time
+ * @property classpath project dependencies that can be resolved at the compile-time
  * @property messageCollector
  * @property importChecker [ImportChecker] for filtering classpath for correct running the KotlinScript interpreter
  * @property sources map of absolute paths of [IrFile.fileEntry] to its content and imports.
- *  It is used for collecting arguments for the SmartRefelkt queries
+ *  It is used for collecting arguments for the SmartReflekt queries
  */
 @Suppress("KDOC_EXTRA_PROPERTY", "KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER")
 class SmartReflektIrTransformer(
@@ -51,7 +49,6 @@ class SmartReflektIrTransformer(
      *
      * @param expression [IrCall]
      */
-    @OptIn(ObsoleteDescriptorBasedAPI::class)
     override fun visitCall(expression: IrCall): IrExpression {
         val function = expression.symbol.owner
         val expressionFqName = function.fqNameForIrSerialization.toString()
@@ -88,7 +85,7 @@ class SmartReflektIrTransformer(
     }
 
     /**
-     * Check if [IrElement] is subtype of [type] (only for [IrClass] and [IrFunction], in other cases are [false])
+     * Check if [IrElement] is subtype of [type] (only for [IrClass] and [IrFunction], in other cases are `false`)
      *
      * @param type
      * @return {@code true} if [IrElement] is subtype of [type]

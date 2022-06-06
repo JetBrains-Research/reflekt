@@ -2,7 +2,7 @@ package org.jetbrains.reflekt
 
 import kotlin.reflect.KClass
 
-@Suppress("unused")
+@Suppress("UNUSED_PARAMETER")
 object ReflektImpl {
     fun objects() = Objects()
     fun classes() = Classes()
@@ -16,7 +16,7 @@ object ReflektImpl {
          * @property fqNames
          */
         @JvmInline
-        value class WithSuperTypes<T>(val fqNames: Set<String>) {
+        value class WithSuperTypes<out T>(val fqNames: Set<String>) {
             fun toList(): List<T> = error("This method should be replaced during compilation")
             fun toSet(): Set<T> = toList().toSet()
         }
@@ -24,7 +24,7 @@ object ReflektImpl {
         /**
          * @property annotationFqNames
          */
-        class WithAnnotations<T>(val annotationFqNames: Set<String>, supertypeFqNames: Set<String>) {
+        class WithAnnotations<out T>(val annotationFqNames: Set<String>, supertypeFqNames: Set<String>) {
             fun toList(): List<T> = error("This method should be replaced during compilation")
             fun toSet(): Set<T> = toList().toSet()
         }
@@ -57,10 +57,10 @@ object ReflektImpl {
         fun <T : Function<*>> withAnnotations(annotationFqNames: Set<String>, signature: String) = WithAnnotations<T>(annotationFqNames, signature)
 
         /**
+         * @param T returned class
          * @property annotationFqNames
          */
-        // T - returned class
-        class WithAnnotations<T : Function<*>>(val annotationFqNames: Set<String>, signature: String) {
+        class WithAnnotations<out T : Function<*>>(val annotationFqNames: Set<String>, signature: String) {
             fun toList(): List<T> = error("This method should be replaced during compilation")
             fun toSet(): Set<T> = toList().toSet()
         }
