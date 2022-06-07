@@ -5,6 +5,8 @@
     kotlinVersion: 1.6
     srcDirectories: "main"
     testDirs: "test,nativeTest,commonTest"
+- name: PARAMETER_NAME_IN_OUTER_LAMBDA
+  enabled: false
 - name: ENUM_VALUE
   enabled: true
   configuration:
@@ -143,9 +145,6 @@
   enabled: false
 # disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1091
 - name: COMMENTED_OUT_CODE
-  enabled: false
-# disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1093
-- name: SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
   enabled: false
 # disabled because IDEA already tracks imports well
 - name: FILE_UNORDERED_IMPORTS

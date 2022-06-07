@@ -8,7 +8,7 @@ class TestICReporter(private val isVerbose: Boolean = false) : ICReporterBase() 
     var exitCode: ExitCode = ExitCode.OK
         private set
 
-    val icLogLines = arrayListOf<String>()
+    private val icLogLines = arrayListOf<String>()
 
     override fun report(message: () -> String) {
         icLogLines.add(message())

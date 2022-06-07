@@ -6,28 +6,29 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektContext
+import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
 
 /**
  * Replaces Reflekt invoke calls with their results.
  *
- * @param reflektContext [IrReflektContext] to extract Reflekt uses
- * @param toReplaceIr if should enable this extension
- * @param messageCollector
+ * @property irInstancesAnalyzer to get project instances
+ * @property libraryArguments
+ * @property messageCollector
  */
 class ReflektIrGenerationExtension(
-    private val reflektContext: IrReflektContext,
-    private val toReplaceIr: Boolean,
+    private val irInstancesAnalyzer: IrInstancesAnalyzer,
+    private val libraryArguments: LibraryArguments,
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     /**
      * Replaces IR in the Reflekt queries to the list of the found entities.
      */
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        if (!toReplaceIr) {
+        val irInstances = irInstancesAnalyzer.getIrInstances()
+        if (irInstances.isEmpty()) {
             return
         }
-        val uses = reflektContext.uses ?: return
-        moduleFragment.transform(ReflektIrTransformer(pluginContext, uses, messageCollector), null)
+        moduleFragment.transform(ReflektIrTransformer(pluginContext, irInstances, libraryArguments, messageCollector), null)
     }
 }

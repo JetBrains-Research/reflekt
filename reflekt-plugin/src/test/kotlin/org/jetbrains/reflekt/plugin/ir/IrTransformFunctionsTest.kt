@@ -77,7 +77,7 @@ class IrTransformFunctionsTest {
         fun getSmartReflektFunctionsTestData(): List<Arguments> = listOf(
             Arguments.of(
                 setOf(""),
-                Signature("() -> Boolean", "it.name == \"fooBoolean\""),
+                Signature("() -> Boolean", "it.name.asString() == \"fooBoolean\""),
                 ""
             )
         )
@@ -98,7 +98,7 @@ class IrTransformFunctionsTest {
 //    }
 
     @ParameterizedTest(name = "Function test#{index} with [{arguments}]")
-    @Disabled("Failed with IllegalStateException, but in examples everything works fine")
+    @Disabled("Failed with IllegalStateException (an internal KotlinScript interpreter error), but in examples everything works fine")
     @MethodSource("getSmartReflektFunctionsTestData")
     fun testSmartReflektFunctions(expectedFunctions: Set<String>, functionsSignature: Signature, functionsArguments: String) {
         Assertions.assertEquals(expectedFunctions, ReflektType.SMART_REFLEKT.functionsInvokeCall(functionsSignature, functionsArguments).call())

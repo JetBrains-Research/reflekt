@@ -9,9 +9,9 @@ data class Modification(
 ) {
     fun applyActions(): File? {
         var currentFile: File? = file
-        actions.forEach {
-            require(currentFile != null) { "The current file is null, but not all edit actions have been applied" }
-            currentFile = it.apply(currentFile!!)
+        for (it in actions) {
+            requireNotNull(currentFile) { "The current file is null, but not all edit actions have been applied" }
+            currentFile = it.apply(currentFile)
         }
         return currentFile
     }

@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import tanvd.kosogor.proxy.publishJar
 
 group = rootProject.group
@@ -9,6 +10,6 @@ dependencies {
 
 publishJar {}
 
-tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>> {
+tasks.withType<KotlinCompile<*>> {
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 }

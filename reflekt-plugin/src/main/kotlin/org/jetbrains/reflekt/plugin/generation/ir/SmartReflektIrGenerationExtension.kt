@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt.plugin.generation.ir
 
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektContext
+import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
 
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -12,20 +12,23 @@ import java.io.File
 /**
  * The Kotlin compiler extension to replace IR in the SmartReflekt queries.
  *
- * @param classpath project dependencies that can be resolved at the compile time
- * @param reflektContext [IrReflektContext] to extract project instances
+ * @param irInstancesAnalyzer to get project instances
+ * @param classpath project dependencies that can be resolved at the compile-time
  * @param messageCollector
  */
 class SmartReflektIrGenerationExtension(
+    private val irInstancesAnalyzer: IrInstancesAnalyzer,
     private val classpath: List<File>,
-    private val reflektContext: IrReflektContext,
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     /**
      * Replaces IR in the SmartReflekt queries to the list of the found entities.
      */
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        val instances = reflektContext.instances ?: error("Instances must be saved to reflektContext before running SmartReflektIrGenerationExtension")
-        moduleFragment.transform(SmartReflektIrTransformer(pluginContext, instances, classpath, messageCollector), null)
+        val irInstances = irInstancesAnalyzer.getIrInstances()
+        if (irInstances.isEmpty()) {
+            return
+        }
+        moduleFragment.transform(SmartReflektIrTransformer(irInstances, pluginContext, classpath, messageCollector), null)
     }
 }

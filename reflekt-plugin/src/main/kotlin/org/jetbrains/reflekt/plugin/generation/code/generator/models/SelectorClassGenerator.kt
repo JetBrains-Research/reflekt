@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import kotlin.reflect.KClass
 
 /**
- * An abstract class to generate a new internal class from the DSL, e.g. WithSuperTypes or WithAnnotations.
+ * An abstract class to generate a new internal class from the DSL e.g., WithSuperTypes or WithAnnotations.
  *
  * @property typeVariable a generic variable to parametrize functions in the generated class
  * @property returnParameter a type for casting the results (all found entities) to

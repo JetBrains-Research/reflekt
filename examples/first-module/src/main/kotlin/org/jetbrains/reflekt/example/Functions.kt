@@ -49,4 +49,4 @@ fun <T> fooMyInClass(): MyInClass<T> = MyInClass()
 
 fun withStar(a: List<*>) { }
 
-fun <T: Number> withBound(a: T) { }
+fun <T: Number> withBound(a: T) { println("withBound function, a: $a") }
