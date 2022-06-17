@@ -1,10 +1,9 @@
 package org.jetbrains.reflekt.plugin.analysis.models
 
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
-
 import org.jetbrains.kotlin.types.Variance
-
 import kotlinx.serialization.Serializable
+import org.jetbrains.kotlin.ir.types.SimpleTypeNullability
 
 /**
  * @property value
@@ -58,18 +57,20 @@ data class SerializableKotlinType(
 
 /**
  * @property classifierFqName
- * @property hasQuestionMark
+ * @property nullability
  * @property arguments
  * @property annotations
  * @property abbreviation
+ * @property variance
  */
 @Serializable
 data class SerializableIrType(
     val classifierFqName: String,
-    val hasQuestionMark: Boolean,
+    val nullability: SimpleTypeNullability,
     val arguments: List<SerializableIrTypeArgument>,
     val annotations: List<SerializableIrType>,
     val abbreviation: String? = null,
+    val variance: Variance,
 )
 
 /**
