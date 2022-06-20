@@ -24,7 +24,7 @@ abstract class IrBaseProcessorByFile<T : Any> : Processor<MutableMap<FileId, T>,
 /**
  * A base class to process [IrElement] and extract [T].
  * For each [T] stores the set of [FileId] where the initial [IrElement] were found.
- * Also, for each [T] calculates [E] and store in the [cache], e.g. filter all instances by a Reflekt query
+ * Also, for each [T] calculates [E] and store in the [cache] e.g., filter all instances by a Reflekt query
  *
  * @property collectedElements stores a [HashMap] with processed result and a [FileId] set for this result
  * @property cache

@@ -51,7 +51,8 @@ fun getResult() = $reflektCall.toList().also { functions ->
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, compilationResult.exitCode)
         val testResults = compilationResult.classLoader.loadClass("org.jetbrains.reflekt.test.ir.MainKt")
         val resultFun = testResults.getMethod("getResult")
-        return resultFun.invoke(null) as Set<String>
+        @Suppress("UNCHECKED_CAST")
+        return resultFun(null) as Set<String>
     }
 
     private fun compile(

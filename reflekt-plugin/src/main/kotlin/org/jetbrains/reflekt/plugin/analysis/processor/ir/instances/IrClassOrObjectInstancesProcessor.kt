@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.ir.declarations.IrFile
 abstract class IrClassOrObjectInstancesProcessor<T : IrClass> : IrBaseProcessorByFile<MutableList<IrClass>>() {
     override val fileToCollectedElements: FileToListIrInstances<IrClass> = HashMap()
     override fun process(element: IrElement, file: IrFile): FileToListIrInstances<IrClass> {
-        (element as? T)?.let {
+        (element as? IrClass)?.let {
             fileToCollectedElements.getOrPut(file.fullName) { ArrayList() }.add(it)
         }
         return fileToCollectedElements
