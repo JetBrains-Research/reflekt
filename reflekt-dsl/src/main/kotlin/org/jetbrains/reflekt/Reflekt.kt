@@ -169,14 +169,14 @@ object Reflekt {
              * Each item in the list\set with result will be cast to [T] type.
              *
              */
-            fun toList(): List<KClass<T>> = ReflektImpl.classes().withSuperTypes<T>(fqNames).toList()
+            fun toList(): List<ReflektClass<T>> = ReflektImpl.classes().withSuperTypes<T>(fqNames).toList()
 
             /**
              * Get set of classes with [fqNames] supertypes.
              * Each item in the list\set with result will be cast to [T] type.
              *
              */
-            fun toSet(): Set<KClass<T>> = toList().toSet()
+            fun toSet(): Set<ReflektClass<T>> = toList().toSet()
 
             /**
              * Filter classes with [fqNames] supertypes by several annotations.
@@ -199,14 +199,14 @@ object Reflekt {
              * Each item in the list\set with result will be cast to [T] type.
              *
              */
-            fun toList(): List<KClass<T>> = ReflektImpl.classes().withAnnotations<T>(annotationFqNames, supertypeFqNames).toList()
+            fun toList(): List<ReflektClass<T>> = ReflektImpl.classes().withAnnotations<T>(annotationFqNames, supertypeFqNames).toList()
 
             /**
              * Get set of classes with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
              * Each item in the list\set with result will be cast to [T] type.
              *
              */
-            fun toSet(): Set<KClass<T>> = toList().toSet()
+            fun toSet(): Set<ReflektClass<T>> = toList().toSet()
 
             /**
              * Filter classes with [annotationFqNames] annotations by one supertype. All classes will be cast to [T] type.

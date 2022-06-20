@@ -40,10 +40,11 @@ import kotlin.reflect.KClass
 @Suppress("KDOC_EXTRA_PROPERTY", "KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER")
 class SmartReflektIrTransformer(
     private val irInstances: IrInstances,
-    private val pluginContext: IrPluginContext,
+    pluginContext: IrPluginContext,
     private val classpath: List<File>,
     private val messageCollector: MessageCollector? = null,
-) : BaseReflektIrTransformer(messageCollector) {
+    storageClassGenerator: StorageClassGenerator = StorageClassGenerator(pluginContext),
+) : BaseReflektIrTransformer(pluginContext, messageCollector, storageClassGenerator) {
     private val importChecker = ImportChecker(classpath)
     private val sources = HashMap<String, SourceFile>()
 
@@ -69,20 +70,19 @@ class SmartReflektIrTransformer(
                 } else {
                     filterInstances(irInstances.classes, invokeArguments)
                 }
-                newIrBuilder(pluginContext).resultIrCall(
+                resultIrCall(
+                    currentFile.module,
                     invokeParts,
                     filteredInstances.mapNotNull { (it as? IrClass)?.fqNameWhenAvailable?.asString() },
                     expression.type,
-                    pluginContext,
                 )
             }
             ReflektEntity.FUNCTIONS -> {
                 val filteredInstances = filterInstances(irInstances.functions, invokeArguments)
-                newIrBuilder(pluginContext).functionResultIrCall(
+                functionResultIrCall(
                     invokeParts,
                     filteredInstances.mapNotNull { (it as? IrFunction)?.toFunctionInfo() },
                     expression.type,
-                    pluginContext,
                 )
             }
         }

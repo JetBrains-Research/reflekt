@@ -1,7 +1,7 @@
 package org.jetbrains.reflekt
 
-import org.jetbrains.kotlin.ir.declarations.*
-import kotlin.reflect.KClass
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrFunction
 
 /*
 * The main SmartReflekt DSL.
@@ -47,7 +47,7 @@ object SmartReflekt {
         /*
          * Resolve user's condition - find all classes that satisfy the condition from the filter function.
          */
-        fun resolve(): List<KClass<T>> = compileTime()
+        fun resolve(): List<ReflektClass<T>> = compileTime()
     }
 
     class ObjectCompileTimeExpression<T : Any> {

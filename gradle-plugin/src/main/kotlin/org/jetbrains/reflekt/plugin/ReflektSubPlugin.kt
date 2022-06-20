@@ -23,7 +23,6 @@ typealias ReflektMetaFilesFromLibrariesMap = HashMap<String, Set<File>>
 class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
     private lateinit var reflektMetaFilesFromLibrariesMap: ReflektMetaFilesFromLibrariesMap
 
-    @Suppress("TYPE_ALIAS")
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         println("ReflektSubPlugin loaded")
         val project = kotlinCompilation.target.project

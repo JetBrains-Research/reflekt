@@ -1,5 +1,6 @@
 package org.jetbrains.reflekt.plugin.analysis.common
 
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.reflekt.Reflekt
 import org.jetbrains.reflekt.SmartReflekt
 
@@ -50,6 +51,16 @@ enum class ReflektNestedClass(val className: String) {
     WITH_ANNOTATIONS(ReflektFunction.WITH_ANNOTATIONS.functionName.replaceFirstChar(Char::titlecase)),
     WITH_SUPERTYPES(ReflektFunction.WITH_SUPERTYPES.functionName.replaceFirstChar(Char::titlecase)),
     ;
+}
+
+/**
+ * @property propertyNameString
+ */
+enum class ReflektClassRegistry(val propertyNameString: String) {
+    REFLEKT_CLASSES("reflektClasses"),
+    ;
+
+    val propertyNameName = Name.identifier(propertyNameString)
 }
 
 /**

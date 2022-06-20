@@ -5,75 +5,99 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.builders.*
+import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
+import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.types.*
+import org.jetbrains.kotlin.ir.util.fields
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.reflekt.plugin.analysis.common.*
+import org.jetbrains.kotlin.name.Name
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektClassRegistry
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.ir.isSubtypeOf
 import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
-import org.jetbrains.reflekt.plugin.generation.common.*
+import org.jetbrains.reflekt.plugin.generation.common.BaseReflektInvokeParts
+import org.jetbrains.reflekt.plugin.generation.common.ReflektGenerationException
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.Util.log
+import org.jetbrains.reflekt.plugin.utils.getReflectionKnownHierarchy
 
-/**
- * Generates IR for the Reflekt terminal function (toList/toSet/etc).
- */
-private val BaseReflektInvokeParts.irTerminalFunction: (IrPluginContext) -> IrFunctionSymbol
-    get() = when (this) {
-        is ReflektInvokeParts -> when (terminalFunction) {
-            ReflektTerminalFunction.TO_LIST -> ::funListOf
-            ReflektTerminalFunction.TO_SET -> ::funSetOf
-        }
-        is SmartReflektInvokeParts -> when (terminalFunction) {
-            SmartReflektTerminalFunction.RESOLVE -> ::funListOf
-        }
-    }
+typealias ModuleStorageClassesMap = MutableMap<Name, Pair<IrClassSymbol, MutableSet<IrClassSymbol>>>
 
 /**
  * A base class for the Reflekt IR transformers.
  *
+ * @property pluginContext
  * @property messageCollector
  */
-open class BaseReflektIrTransformer(private val messageCollector: MessageCollector?) : IrElementTransformerVoidWithContext() {
+open class BaseReflektIrTransformer(
+    final override val pluginContext: IrPluginContext,
+    private val messageCollector: MessageCollector?,
+    private val storageClassGenerator: StorageClassGenerator = StorageClassGenerator(pluginContext),
+) : IrElementTransformerVoidWithContext(), IrBuilderExtension {
+    private val generationSymbols = GenerationSymbols(pluginContext)
+
+    /**
+     * Map of stored class data: keys are module fragments, values are pairs of storage class and data need to be stored in it afterward.
+     */
+    val storageClasses: ModuleStorageClassesMap = HashMap()
+
     /**
      * Constructs replacement for result of Reflekt terminal function (toList/toSet/etc.) for classes or objects
      *
-     * @param invokeParts info about invoke call to retrieve entity type (objects/classes) and terminal function (toList/toSet/etc)
-     * @param resultValues list of qualified names of objects or classes to return
+     * @param moduleFragment module fragment of the expression.
+     * @param invokeParts info about invoke call to retrieve entity type (objects/classes) and terminal function (toList/toSet/etc).
+     * @param resultValues list of qualified names of objects or classes to return.
      * @param resultType
-     * @param context
-     * @return replacement for a result of terminal function
+     * @return replacement for a result of terminal function.
      * @throws ReflektGenerationException
-     *
-     *
-     * // listOf<T>(items... as T)
      */
-    protected fun IrBuilderWithScope.resultIrCall(
+    protected fun resultIrCall(
+        moduleFragment: IrModuleFragment,
         invokeParts: BaseReflektInvokeParts,
         resultValues: List<String>,
         resultType: IrType,
-        context: IrPluginContext,
-    ): IrExpression {
-        require(resultType is IrSimpleType)
+    ): IrExpression = IrBuilderWithCurrentScope().run {
+        require(resultType is IrSimpleType) { "resultType is not IrSimpleType" }
 
         val itemType = resultType.arguments[0].typeOrNull
             ?: throw ReflektGenerationException("Return type must have one type argument (e. g. List<T>, Set<T>)")
 
-        val items = resultValues.map {
-            context.referenceClass(FqName(it)) ?: throw ReflektGenerationException("Failed to find class $it")
-        }.map {
-            when (invokeParts.entityType) {
-                ReflektEntity.OBJECTS -> irGetObject(it)
-                ReflektEntity.CLASSES -> irTypeCast(itemType, irClassReference(it))
-                ReflektEntity.FUNCTIONS -> error("Use functionResultIrCall")
+        val items = resultValues
+            .map { pluginContext.referenceClass(FqName(it)) ?: throw ReflektGenerationException("Failed to find class $it") }
+            .map { classSymbol ->
+                when (invokeParts.entityType) {
+                    ReflektEntity.OBJECTS -> irGetObject(classSymbol)
+                    ReflektEntity.CLASSES -> {
+                        val (storageClass, storageClassData) =
+                            storageClasses.getOrPut(moduleFragment.name) { storageClassGenerator.createStorageClass(moduleFragment) to HashSet() }
+                        storageClassData += classSymbol.owner.getReflectionKnownHierarchy()
+
+                        irTypeCast(
+                            itemType,
+                            irCheckNotNull(
+                                irCall(
+                                    generationSymbols.mapGet,
+                                    dispatchReceiver = irGetField(
+                                        irGetObject(storageClass),
+                                        storageClass.fields.map { it.owner }.first { it.name == ReflektClassRegistry.REFLEKT_CLASSES.propertyNameName },
+                                    ),
+                                    valueArguments = listOf(irClassReference(classSymbol)),
+                                ),
+                            ),
+                        )
+                    }
+
+                    ReflektEntity.FUNCTIONS -> error("Use functionResultIrCall")
+                }
             }
-        }
-        return irCall(invokeParts.irTerminalFunction(context), type = resultType).also { call ->
-            call.putTypeArgument(0, itemType)
-            call.putValueArgument(0, irVarargOut(itemType, items))
-        }
+
+        return irCall(
+            generationSymbols.irTerminalFunction(invokeParts),
+            typeArguments = listOf(itemType),
+            valueArguments = listOf(irVarargOut(itemType, items)),
+        )
     }
 
     /**
@@ -82,27 +106,27 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
      * @param invokeParts info about invoke call terminal function (toList/toSet/etc)
      * @param resultValues list of function qualified names with additional info to generate the right call
      * @param resultType
-     * @param context
      * @return [IrExpression]
      * @throws ReflektGenerationException
      */
     @Suppress("TOO_MANY_LINES_IN_LAMBDA", "ThrowsCount")
-    protected fun IrBuilderWithScope.functionResultIrCall(
+    protected fun functionResultIrCall(
         invokeParts: BaseReflektInvokeParts,
         resultValues: List<IrFunctionInfo>,
         resultType: IrType,
-        context: IrPluginContext,
-    ): IrExpression {
+    ): IrExpression = IrBuilderWithCurrentScope().run {
         require(resultType is IrSimpleType) { "resultType is not IrSimpleType" }
+
         val itemType = resultType.arguments[0].typeOrNull
             ?: throw ReflektGenerationException("Return type must have one type argument (e. g. List<T>, Set<T>)")
+
         require(itemType is IrSimpleType)
 
         messageCollector?.log("RES ARGS: ${itemType.arguments.map { (it as IrSimpleType).classFqName }}")
         messageCollector?.log("size of result values ${resultValues.size}")
         val items = resultValues.map { irFunctionInfo ->
-            val functionSymbol = context.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
-                symbol.owner.isSubtypeOf(itemType, context).also { messageCollector?.log("${symbol.owner.isSubtypeOf(itemType, context)}") }
+            val functionSymbol = pluginContext.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
+                symbol.owner.isSubtypeOf(itemType, pluginContext).also { messageCollector?.log("${symbol.owner.isSubtypeOf(itemType, pluginContext)}") }
             }
             messageCollector?.log("function symbol is $functionSymbol")
             functionSymbol ?: run {
@@ -112,27 +136,27 @@ open class BaseReflektIrTransformer(private val messageCollector: MessageCollect
             irKFunction(itemType, functionSymbol).also { call ->
                 irFunctionInfo.receiverFqName?.let {
                     if (irFunctionInfo.isObjectReceiver) {
-                        val dispatchSymbol = context.referenceClass(FqName(irFunctionInfo.receiverFqName))
+                        val dispatchSymbol = pluginContext.referenceClass(FqName(irFunctionInfo.receiverFqName))
                             ?: throw ReflektGenerationException("Failed to find receiver class ${irFunctionInfo.receiverFqName}")
                         call.dispatchReceiver = irGetObject(dispatchSymbol)
                     }
                 }
             }
         }
-        return irCall(invokeParts.irTerminalFunction(context), type = resultType).also { call ->
-            call.putTypeArgument(0, itemType)
-            call.putValueArgument(0, irVarargOut(itemType, items))
-        }
+
+        return irCall(
+            generationSymbols.irTerminalFunction(invokeParts),
+            typeArguments = listOf(itemType),
+            valueArguments = listOf(irVarargOut(itemType, items)),
+        )
     }
 
     /**
-     * Creates a new [IrBuilderWithScope] to generate IR.
-     *
-     * @param pluginContext
+     * [IrBuilderWithScope] to generate IR.
      */
-    protected fun newIrBuilder(pluginContext: IrPluginContext) = object : IrBuilderWithScope(
+    private inner class IrBuilderWithCurrentScope(scope: Scope = currentScope!!.scope) : IrBuilderWithScope(
         pluginContext,
-        currentScope!!.scope,
+        scope,
         UNDEFINED_OFFSET,
         UNDEFINED_OFFSET,
     ) {

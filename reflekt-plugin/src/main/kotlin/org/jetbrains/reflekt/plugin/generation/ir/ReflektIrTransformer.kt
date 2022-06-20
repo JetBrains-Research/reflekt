@@ -5,8 +5,7 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.util.dump
-import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.reflekt.plugin.analysis.analyzer.IrReflektQueriesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.ir.toFunctionInfo
@@ -27,11 +26,12 @@ import org.jetbrains.reflekt.plugin.utils.Util.log
  */
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY", "UnusedPrivateMember")
 class ReflektIrTransformer(
-    private val pluginContext: IrPluginContext,
+    pluginContext: IrPluginContext,
     private val irInstances: IrInstances,
     private val libraryArguments: LibraryArguments,
     private val messageCollector: MessageCollector? = null,
-) : BaseReflektIrTransformer(messageCollector) {
+    storageClassGenerator: StorageClassGenerator = StorageClassGenerator(pluginContext),
+) : BaseReflektIrTransformer(pluginContext, messageCollector, storageClassGenerator) {
     private val analyzer = IrReflektQueriesAnalyzer(irInstances, pluginContext)
 
     /**
@@ -48,17 +48,16 @@ class ReflektIrTransformer(
         messageCollector?.log("[IR] INVOKE PARTS: $invokeParts")
         // TODO: delete duplicate with SmartReflektIrTransformer
         val call = when (invokeParts.entityType) {
-            ReflektEntity.OBJECTS, ReflektEntity.CLASSES -> newIrBuilder(pluginContext).resultIrCall(
+            ReflektEntity.OBJECTS, ReflektEntity.CLASSES -> resultIrCall(
+                currentFile.module,
                 invokeParts,
                 filteredInstances.mapNotNull { (it as? IrClass)?.fqNameWhenAvailable?.asString() },
                 expression.type,
-                pluginContext,
             )
-            ReflektEntity.FUNCTIONS -> newIrBuilder(pluginContext).functionResultIrCall(
+            ReflektEntity.FUNCTIONS -> functionResultIrCall(
                 invokeParts,
                 filteredInstances.mapNotNull { (it as? IrFunction)?.toFunctionInfo() },
                 expression.type,
-                pluginContext,
             )
         }
         messageCollector?.log("[IR] FOUND CALL (${invokeParts.entityType}):\n${expression.dump()}")

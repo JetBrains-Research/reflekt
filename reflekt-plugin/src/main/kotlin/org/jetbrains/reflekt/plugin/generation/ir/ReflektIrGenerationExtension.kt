@@ -1,5 +1,3 @@
-@file:Suppress("FILE_UNORDERED_IMPORTS")
-
 package org.jetbrains.reflekt.plugin.generation.ir
 
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
@@ -29,6 +27,9 @@ class ReflektIrGenerationExtension(
         if (irInstances.isEmpty()) {
             return
         }
-        moduleFragment.transform(ReflektIrTransformer(pluginContext, irInstances, libraryArguments, messageCollector), null)
+        val storageClassGenerator = StorageClassGenerator(pluginContext)
+        val transformer = ReflektIrTransformer(pluginContext, irInstances, libraryArguments, messageCollector, storageClassGenerator)
+        moduleFragment.transform(transformer, null)
+        storageClassGenerator.contributeInitializers(transformer.storageClasses)
     }
 }

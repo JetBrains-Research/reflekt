@@ -29,6 +29,9 @@ class SmartReflektIrGenerationExtension(
         if (irInstances.isEmpty()) {
             return
         }
-        moduleFragment.transform(SmartReflektIrTransformer(irInstances, pluginContext, classpath, messageCollector), null)
+        val storageClassGenerator = StorageClassGenerator(pluginContext)
+        val transformer = SmartReflektIrTransformer(irInstances, pluginContext, classpath, messageCollector, storageClassGenerator)
+        moduleFragment.transform(transformer, null)
+        storageClassGenerator.contributeInitializers(transformer.storageClasses)
     }
 }

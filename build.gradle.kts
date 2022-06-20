@@ -4,9 +4,6 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import org.jetbrains.reflekt.buildutils.*
 
-group = "org.jetbrains.reflekt"
-version = libs.versions.kotlin.asProvider().get()
-
 plugins {
     `maven-publish`
     alias(libs.plugins.kosogor)
@@ -18,6 +15,9 @@ plugins {
 val detektReportMerge by tasks.registering(ReportMergeTask::class) {
     output.set(rootProject.buildDir.resolve("reports/detekt/merge.sarif"))
 }
+
+group = "org.jetbrains.reflekt"
+version = libs.versions.kotlin.asProvider().get()
 
 allprojects {
     apply {

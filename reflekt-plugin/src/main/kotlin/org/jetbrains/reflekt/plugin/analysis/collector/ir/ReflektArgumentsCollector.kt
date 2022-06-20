@@ -56,8 +56,7 @@ class ReflektArgumentsCollector(
 }
 
 /**
- *  A compiler plugin extension for searching and collection all Reflekt queries arguments,
- *   e.g. annotations, supertypes, or functions' signatures.
+ * A compiler plugin extension for searching and collection all Reflekt queries arguments, e.g. annotations, supertypes, or functions' signatures.
  */
 class ReflektArgumentsCollectorExtension(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,

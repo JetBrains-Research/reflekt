@@ -45,9 +45,9 @@ class ImportChecker(classpath: List<File>) {
                 .filter { it.hasCanonicalName() }
                 .forEach { clazz ->
                     // Full package may be imported
-                    allNames.add(clazz.packageName)
+                    allNames += clazz.packageName
                     // Class may be imported
-                    allNames.add(clazz.canonicalName)
+                    allNames += clazz.canonicalName
 
                     clazz.saveMethodsAndFields()
                 }

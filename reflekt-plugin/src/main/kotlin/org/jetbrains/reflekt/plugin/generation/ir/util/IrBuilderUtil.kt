@@ -2,18 +2,18 @@
 
 package org.jetbrains.reflekt.plugin.generation.ir.util
 
-import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
-import org.jetbrains.kotlin.ir.builders.IrBuilderWithScope
+import org.jetbrains.kotlin.ir.builders.IrBuilder
+import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.declarations.impl.IrVariableImpl
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
-import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
+import org.jetbrains.kotlin.ir.symbols.*
+import org.jetbrains.kotlin.ir.symbols.impl.IrVariableSymbolImpl
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
-import org.jetbrains.kotlin.ir.util.isVararg
-import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.ir.builders.*
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.Variance
 
 /**
@@ -22,22 +22,42 @@ import org.jetbrains.kotlin.types.Variance
  * @param elementType type of varargs in [elements] (consider <out> projection)
  * @param elements
  */
-fun IrBuilderWithScope.irVarargOut(elementType: IrType, elements: List<IrExpression>): IrVararg = IrVarargImpl(
-    startOffset = UNDEFINED_OFFSET,
-    endOffset = UNDEFINED_OFFSET,
+fun IrBuilder.irVarargOut(elementType: IrType, elements: List<IrExpression>) = IrVarargImpl(
+    startOffset = startOffset,
+    endOffset = endOffset,
     type = context.irBuiltIns.arrayClass.typeWithArguments(listOf(makeTypeProjection(elementType, Variance.OUT_VARIANCE))),
     varargElementType = elementType,
     elements = elements,
 )
+
+fun IrBuilder.irGetEnumValue(type: IrType, symbol: IrEnumEntrySymbol) = IrGetEnumValueImpl(startOffset, endOffset, type, symbol)
+
+fun <T> IrBuilder.irVariableVal(
+    parent: T,
+    name: Name,
+    type: IrType,
+    isConst: Boolean,
+    isLateinit: Boolean,
+) where T : IrDeclaration, T : IrDeclarationParent = IrVariableImpl(
+    startOffset, endOffset, parent.origin,
+    IrVariableSymbolImpl(),
+    name,
+    type,
+    false,
+    isConst,
+    isLateinit,
+).also {
+    it.parent = parent
+}
 
 /**
  * Generates IR for [kotlin.reflect.KClass] reference for the given type.
  *
  * @param symbol the symbol of the class to be referenced.
  */
-fun IrBuilderWithScope.irClassReference(symbol: IrClassSymbol): IrClassReference = IrClassReferenceImpl(
-    UNDEFINED_OFFSET,
-    UNDEFINED_OFFSET,
+fun IrBuilder.irClassReference(symbol: IrClassSymbol) = IrClassReferenceImpl(
+    startOffset,
+    endOffset,
     context.irBuiltIns.kClassClass.typeWith(symbol.defaultType),
     symbol,
     symbol.defaultType,
@@ -50,7 +70,7 @@ fun IrBuilderWithScope.irClassReference(symbol: IrClassSymbol): IrClassReference
  * @param symbol [IrFunctionSymbol]
  */
 @Suppress("FUNCTION_NAME_INCORRECT_CASE")
-fun IrBuilderWithScope.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFunctionReference {
+fun IrBuilder.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFunctionReferenceImpl {
     require(type is IrSimpleType)
     val kFunctionType = IrSimpleTypeImpl(
         context.irBuiltIns.kFunctionN(type.arguments.size - 1).symbol,
@@ -60,8 +80,8 @@ fun IrBuilderWithScope.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFu
     )
     // Todo: are we sure there should be 0 typeArgumentsCount?
     return IrFunctionReferenceImpl(
-        startOffset = UNDEFINED_OFFSET,
-        endOffset = UNDEFINED_OFFSET,
+        startOffset = startOffset,
+        endOffset = endOffset,
         type = kFunctionType,
         symbol = symbol,
         typeArgumentsCount = 0,
@@ -70,43 +90,33 @@ fun IrBuilderWithScope.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFu
 }
 
 /**
- * Casts [type] to the [castTo] type, e.g. to KClass.
+ * Casts [type] to the [castTo] type, e.g., to KClass.
  *
  * @param type
  * @param castTo [IrExpression]
  */
-fun irTypeCast(type: IrType, castTo: IrExpression) = IrTypeOperatorCallImpl(
-    startOffset = UNDEFINED_OFFSET,
-    endOffset = UNDEFINED_OFFSET,
+fun IrBuilder.irTypeCast(type: IrType, castTo: IrExpression) = IrTypeOperatorCallImpl(
+    startOffset = startOffset,
+    endOffset = endOffset,
     type = type,
     operator = IrTypeOperator.CAST,
     typeOperand = type,
     argument = castTo,
 )
 
-/**
- * Generates IR representation for <collection_name>Of function, e.g. listOf or setOf.
- *
- * @param collectionFqName e.g. kotlin.collections.listOf
- * @param pluginContext
- */
-fun funCollectionOf(collectionFqName: String, pluginContext: IrPluginContext) =
-    pluginContext.referenceFunctions(FqName(collectionFqName))
-        .single {
-            val parameters = it.owner.valueParameters
-            parameters.size == 1 && parameters[0].isVararg
-        }
-
-/**
- * Generates IR representation for listOf function.
- *
- * @param pluginContext
- */
-fun funListOf(pluginContext: IrPluginContext) = funCollectionOf("kotlin.collections.listOf", pluginContext)
-
-/**
- * Generates IR representation for setOf function.
- *
- * @param pluginContext
- */
-fun funSetOf(pluginContext: IrPluginContext) = funCollectionOf("kotlin.collections.setOf", pluginContext)
+fun IrBuilderWithScope.irCall(
+    callee: IrFunctionSymbol,
+    typeArguments: List<IrType?> = emptyList(),
+    dispatchReceiver: IrExpression? = null,
+    extensionReceiver: IrExpression? = null,
+    valueArguments: List<IrExpression?> = emptyList(),
+) = irCall(callee, callee.owner.returnType).also { call ->
+    typeArguments.forEachIndexed { index, argument ->
+        call.putTypeArgument(index, argument)
+    }
+    call.dispatchReceiver = dispatchReceiver
+    call.extensionReceiver = extensionReceiver
+    valueArguments.forEachIndexed { index, argument ->
+        call.putValueArgument(index, argument)
+    }
+}
