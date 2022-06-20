@@ -37,10 +37,11 @@ fun $resultMethod() = $resultMethodBody
  * Compiles ResultFile with [commonTestFiles] and returns the call result of [ResultFile.resultMethod]
  */
 object ResultCall {
-    private val commonTestFiles = Util.getResourcesRootPath(ResultCall::class, "commonTestFiles").getAllNestedFiles()
+    @PublishedApi
+    internal val commonTestFiles = Util.getResourcesRootPath(ResultCall::class, "commonTestFiles").getAllNestedFiles()
         .map { SourceFile.fromPath(it) }
 
-    fun <T> ResultFile<T>.call(useIR: Boolean = true): T {
+    inline fun <reified T> ResultFile<T>.call(useIR: Boolean = true): T {
         val compilationResult = KotlinCompilation().apply {
             sources = commonTestFiles.plus(file)
             jvmTarget = "11"

@@ -57,20 +57,23 @@ object SerializationUtils {
         val abbreviation = null
         return SerializableIrType(
             classifierFqName = classifierFqName,
-            hasQuestionMark = this.hasQuestionMark,
+            nullability = nullability,
             arguments = arguments,
             // We use serialization only for functions signatures, they don't have annotations
             annotations = emptyList(),
             abbreviation = abbreviation,
+            variance = variance
         )
     }
 
     fun SerializableIrType.toIrType(pluginContext: IrPluginContext) = IrSimpleTypeBuilder().also {
         it.classifier = pluginContext.referenceClass(FqName(classifierFqName))
-        it.hasQuestionMark = this.hasQuestionMark
+        it.nullability = this.nullability
         it.arguments = this.arguments.map { argument -> argument.toIrTypeArgument(pluginContext) }
         // TODO: should we deserialize it?
         it.abbreviation = null
+
+        it.variance = this.variance
     }.buildSimpleType()
 
     private fun SerializableIrTypeArgument.toIrTypeArgument(pluginContext: IrPluginContext): IrTypeArgument {
