@@ -22,8 +22,8 @@ object SerializationUtils {
     private fun ReflektMetaFilesFromLibrariesMap.toSerializableReflektMetaFilesFromLibrariesMap() =
         HashMap(this.mapValues { (_, v) -> v.map { it.path }.toSet() })
 
-    private fun getAbsoluteCacheFolderPath(buildDir: String) = "$buildDir/$relativeCacheFolderName"
-    private fun getAbsoluteCacheFile(buildDir: String) = File("${getAbsoluteCacheFolderPath(buildDir)}/$relativeCacheFileName")
+    private fun getAbsoluteCacheFolderPath(buildDir: String) = "$buildDir/$RELATIVE_CACHE_FOLDER_NAME"
+    private fun getAbsoluteCacheFile(buildDir: String) = File("${getAbsoluteCacheFolderPath(buildDir)}/$RELATIVE_CACHE_FILE_NAME")
 
     fun serializeReflektMetaFilesFromLibrariesMap(map: ReflektMetaFilesFromLibrariesMap, buildDir: String) {
         File(getAbsoluteCacheFolderPath(buildDir)).mkdirs()
