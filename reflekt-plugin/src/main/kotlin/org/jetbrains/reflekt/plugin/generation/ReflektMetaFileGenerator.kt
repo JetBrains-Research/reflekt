@@ -28,7 +28,7 @@ class ReflektMetaFileGenerator(
     }
 
     private fun saveMetaData(libraryArguments: LibraryArguments, instancesFqNames: IrInstancesFqNames) {
-        messageCollector?.log("Save Reflekt meta data")
+        messageCollector?.log("Save Reflekt meta data: ${reflektMetaFile.path}")
         reflektMetaFile.createNewFile()
         reflektMetaFile.writeBytes(
             SerializationUtils.encodeArguments(

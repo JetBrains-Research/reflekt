@@ -6,6 +6,7 @@ version = rootProject.version
 plugins {
     kotlin("kapt")
     `kotlin-dsl`
+    alias(libs.plugins.kotlin.plugin.serialization)
 }
 
 dependencies {
@@ -13,6 +14,7 @@ dependencies {
     implementation(project(":reflekt-core"))
     api(project(":reflekt-dsl"))
     implementation(kotlin("compiler-embeddable"))
+    implementation(libs.kotlinx.serialization.protobuf)
 }
 
 publishPlugin {
