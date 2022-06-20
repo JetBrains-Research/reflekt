@@ -24,7 +24,6 @@ typealias ReflektMetaFilesFromLibrariesMap = HashMap<String, Set<File>>
 class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
     private val reflektMetaFile = "ReflektMeta"
     private val metaInfDir = "META-INF"
-
     private lateinit var reflektMetaFilesFromLibrariesMap: ReflektMetaFilesFromLibrariesMap
 
     @Suppress("TYPE_ALIAS")

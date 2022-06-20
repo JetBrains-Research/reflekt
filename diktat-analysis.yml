@@ -153,3 +153,5 @@
   enabled: false
 - name: EXTENSION_FUNCTION_WITH_CLASS
   enabled: false
+- name: IDENTIFIER_LENGTH
+  enabled: false
