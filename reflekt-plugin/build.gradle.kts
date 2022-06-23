@@ -27,9 +27,30 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.protobuf)
 
+    // TODO: use version from libs.versions..toml
+    "org.jetbrains.kotlin:kotlin-compiler:1.7.0".let {
+        compileOnly(it)
+        testImplementation(it)
+    }
+
+    testRuntimeOnly(libs.kotlin.test)
+    testRuntimeOnly(libs.kotlin.script.runtime)
+    testRuntimeOnly(libs.kotlin.annotations.jvm)
+
+    testImplementation(libs.kotlin.reflect)
+    testImplementation(libs.kotlin.compiler.internal.test.framework)
+    testImplementation("junit:junit:4.12")
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.platform.commons)
+    testImplementation(libs.junit.platform.launcher)
+    testImplementation(libs.junit.platform.runner)
+    testImplementation(libs.junit.platform.suite.api)
+
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.jupiter.params)
     testRuntimeOnly(libs.junit.jupiter.engine)
+
     testImplementation(libs.tomlj)
     testImplementation(libs.kotlin.compile.testing)
 }
@@ -42,15 +63,14 @@ tasks.withType<Test> {
     testLogging {
         events("passed", "skipped", "failed")
     }
-}
 
-tasks.create("analysis", Test::class.java) {
-    useJUnitPlatform {
-        includeTags = setOf("analysis")
-    }
-
-    testLogging {
-        events("passed", "skipped", "failed")
+    doFirst {
+        setLibraryProperty("org.jetbrains.kotlin.test.kotlin-stdlib", "kotlin-stdlib")
+        setLibraryProperty("org.jetbrains.kotlin.test.kotlin-stdlib-jdk8", "kotlin-stdlib-jdk8")
+        setLibraryProperty("org.jetbrains.kotlin.test.kotlin-reflect", "kotlin-reflect")
+        setLibraryProperty("org.jetbrains.kotlin.test.kotlin-test", "kotlin-test")
+        setLibraryProperty("org.jetbrains.kotlin.test.kotlin-script-runtime", "kotlin-script-runtime")
+        setLibraryProperty("org.jetbrains.kotlin.test.kotlin-annotations-jvm", "kotlin-annotations-jvm")
     }
 }
 
@@ -64,3 +84,13 @@ tasks.processTestResources.configure {
 }
 
 publishJar {}
+
+fun Test.setLibraryProperty(propName: String, jarName: String) {
+    val path = project.configurations
+        .testRuntimeClasspath.get()
+        .files
+        .find { """$jarName-\d.*jar""".toRegex().matches(it.name) }
+        ?.absolutePath
+        ?: return
+    systemProperty(propName, path)
+}
