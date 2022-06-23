@@ -1,5 +1,6 @@
 package org.jetbrains.reflekt.plugin.scripting
 
+import org.gradle.internal.impldep.org.junit.Ignore
 import org.jetbrains.reflekt.plugin.analysis.models.Import
 import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
 import org.junit.jupiter.api.*

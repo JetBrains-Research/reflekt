@@ -28,7 +28,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.protobuf)
 
     // TODO: use version from libs.versions..toml
-    "org.jetbrains.kotlin:kotlin-compiler:1.7.0".let {
+    "org.jetbrains.kotlin:kotlin-compiler:1.7.20-dev-2312".let {
         compileOnly(it)
         testImplementation(it)
     }

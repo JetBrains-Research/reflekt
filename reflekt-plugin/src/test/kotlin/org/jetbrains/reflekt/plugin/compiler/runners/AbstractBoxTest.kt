@@ -30,7 +30,6 @@ open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGen
             +DUMP_IR
         }
 
-        fir2IrStep()
         irHandlersStep {
             useHandlers(
                 ::IrTextDumpHandler,

@@ -5,7 +5,7 @@
 #  - two places in the main README.md file (after releasing)
 #
 # Also, you should change the version in two places in the build.gradle.kts file in the example project
-kotlin = "1.7.0"
+kotlin = "1.7.20-dev-2312"
 
 auto-service = "1.0.1"
 buildconfig = "3.0.3"

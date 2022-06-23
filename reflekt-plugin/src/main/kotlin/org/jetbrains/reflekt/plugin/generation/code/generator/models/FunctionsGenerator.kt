@@ -4,9 +4,9 @@ package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import org.jetbrains.kotlin.backend.common.ir.isTopLevel
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.kotlin.ir.util.isTopLevel
 import org.jetbrains.reflekt.plugin.analysis.models.ir.FunctionLibraryQueriesResults
 import org.jetbrains.reflekt.plugin.generation.code.generator.statement
 import org.jetbrains.reflekt.plugin.generation.code.generator.toParameterSpecs
