@@ -2,24 +2,22 @@
 
 package org.jetbrains.reflekt.plugin
 
-import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
-import org.jetbrains.reflekt.plugin.analysis.collector.ir.*
-import org.jetbrains.reflekt.plugin.generation.ReflektMetaFileGenerator
-import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
-import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
-import org.jetbrains.reflekt.plugin.utils.PluginConfig
-import org.jetbrains.reflekt.plugin.utils.Util.log
-import org.jetbrains.reflekt.plugin.utils.Util.messageCollector
-
 import com.google.auto.service.AutoService
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
+import org.jetbrains.reflekt.plugin.analysis.collector.ir.*
 import org.jetbrains.reflekt.plugin.analysis.models.ir.*
 import org.jetbrains.reflekt.plugin.analysis.models.isNotEmpty
+import org.jetbrains.reflekt.plugin.generation.ReflektMetaFileGenerator
 import org.jetbrains.reflekt.plugin.generation.code.generator.ReflektImplGeneratorExtension
-
+import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
+import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
+import org.jetbrains.reflekt.plugin.utils.PluginConfig
+import org.jetbrains.reflekt.plugin.utils.Util.log
+import org.jetbrains.reflekt.plugin.utils.Util.messageCollector
 import java.io.File
 
 /**
@@ -41,7 +39,6 @@ import java.io.File
  */
 @AutoService(ComponentRegistrar::class)
 @Suppress("TOO_LONG_FUNCTION")
-// TODO: delete unnecessary extensions
 class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false) : ComponentRegistrar {
     /**
      * Tne main plugin's function that parses all compiler arguments and runs all Kotlin compiler's extensions.

@@ -44,11 +44,6 @@ object Util {
         valueDescription = "<true|false>",
         description = "Whether to save Reflekt usages into META-INF",
     )
-    val LIBRARY_TO_INTROSPECT = MyCliOption(
-        name = "introspectedLibrary",
-        valueDescription = "<library name>",
-        description = "Names of the libraries' for introspection",
-    )
     val REFLEKT_META_FILE_PATH = MyCliOption(
         name = "reflektMetaPath",
         valueDescription = "<path to the ReflektMeta file>",

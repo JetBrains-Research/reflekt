@@ -1,12 +1,10 @@
 package org.jetbrains.reflekt.plugin.utils
 
-import org.jetbrains.reflekt.plugin.utils.Util.initMessageCollector
-import org.jetbrains.reflekt.plugin.utils.Util.log
-import org.jetbrains.reflekt.plugin.utils.Util.messageCollector
-
+import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfiguration
-
+import org.jetbrains.reflekt.plugin.utils.Util.initMessageCollector
+import org.jetbrains.reflekt.plugin.utils.Util.log
 import java.io.File
 
 /**
@@ -45,7 +43,7 @@ class PluginConfig(
     init {
         configuration?.let {
             configuration.initMessageCollector(logFilePath)
-            messageCollector = configuration.messageCollector
+            messageCollector = configuration[CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY]
 
             enabled = configuration[Keys.ENABLED] ?: false
             outputDir = configuration[Keys.OUTPUT_DIR] ?: File("build/kotlin-gen")
@@ -65,9 +63,9 @@ class PluginConfig(
     /**
      * Builds the pretty string of the current configuration.
      *
-     * @return [StringBuilder]
+     * @return [String]
      */
-    fun prettyString() = buildString {
+    private fun prettyString() = buildString {
         append("REFLEKT CONFIGURATION:\n")
         append("ENABLED: $enabled\n")
         append("REFLEKT META FILES FROM LIBRARIES: ${reflektMetaFilesFromLibraries.map { it.absolutePath }}\n")

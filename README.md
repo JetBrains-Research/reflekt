@@ -103,16 +103,30 @@ Thirdly, customize the Reflekt plugin. In the `build.gradle.kts` file, add the `
 reflekt {
     // Enable or disable Reflekt plugin
     enabled = true
-    // List of external libraries for dependencies search
-    // Use only DependencyHandlers which have canBeResolve = True
-    // Note: Reflekt works only with kt files from libraries
-    librariesToIntrospect = listOf("io.kotless:kotless-dsl:0.1.6")
 }
 ```
 
-_Please note that the `librariesToIntrospect` argument should contain only the dependencies that you
-use in the `dependencies` section. These dependencies may be implemented in Java or Kotlin language,
-but the analysis will be made only on Kotlin files._
+**Please note** that Reflekt can also analyze the files from the external libraries. 
+Reflekt can handle only libraries from the `dependencies` section and 
+DependencyHandlers of them should be `canBeResolve = True`, e.g.:
+```kotlin
+val reflektConfiguration by configurations.creating {
+    isCanBeResolved = true
+}
+
+configurations["implementation"].extendsFrom(reflektConfiguration)
+```
+Also, this library should contain a specific file called `ReflektMeta` to store additional 
+meta information. To enable it, the library should use Reflekt with the following configuration:
+```kotlin
+reflekt {
+    // Enable or disable Reflekt plugin
+    enabled = true
+    // Create ReflektMeta file
+    toSaveMetadata = true
+}
+```
+
 
 To avoid some bugs and enable IR, please add the following compilation settings 
 for Java and Kotlin in the `build.gradle.kts` file:
