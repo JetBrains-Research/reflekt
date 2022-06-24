@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.test.directives.CodegenTestDirectives.DUMP_IR
 import org.jetbrains.kotlin.test.model.DependencyKind
 import org.jetbrains.kotlin.test.model.TestModule
 import org.jetbrains.kotlin.test.runners.RunnerWithTargetBackendForTestGeneratorMarker
+import org.jetbrains.kotlin.test.runners.baseFirDiagnosticTestConfiguration
 import org.jetbrains.kotlin.test.services.EnvironmentConfigurator
 import org.jetbrains.kotlin.test.services.TestServices
 import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
@@ -39,6 +40,9 @@ open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGen
         defaultDirectives {
             +DUMP_IR
         }
+
+        // TODO: why should I do it??
+        baseFirDiagnosticTestConfiguration()
 
         irHandlersStep {
             useHandlers(
