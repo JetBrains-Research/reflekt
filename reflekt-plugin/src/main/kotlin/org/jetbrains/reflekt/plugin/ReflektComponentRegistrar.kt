@@ -40,6 +40,8 @@ import java.io.File
 @AutoService(ComponentRegistrar::class)
 @Suppress("TOO_LONG_FUNCTION")
 class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false) : ComponentRegistrar {
+    override val supportsK2: Boolean = false
+
     /**
      * Tne main plugin's function that parses all compiler arguments and runs all Kotlin compiler's extensions.
      * All extensions will be called multiple times (for each project module),

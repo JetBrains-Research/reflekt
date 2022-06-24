@@ -52,6 +52,7 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    workingDir = project.rootDir
 
     doFirst {
         setLibraryProperty("org.jetbrains.kotlin.test.kotlin-stdlib", "kotlin-stdlib")

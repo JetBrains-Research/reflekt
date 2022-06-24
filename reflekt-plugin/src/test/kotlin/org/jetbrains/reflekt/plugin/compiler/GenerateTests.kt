@@ -5,9 +5,8 @@ import org.jetbrains.reflekt.plugin.compiler.runners.AbstractBoxTest
 
 fun main() {
     generateTestGroupSuiteWithJUnit5 {
-        // TODO: change testDataRoot and testsRoot
         testGroup(
-            testDataRoot = "reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/runners",
+            testDataRoot = "reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen",
             testsRoot = "reflekt-plugin/src/test/java"
         ) {
             testClass<AbstractBoxTest> {
