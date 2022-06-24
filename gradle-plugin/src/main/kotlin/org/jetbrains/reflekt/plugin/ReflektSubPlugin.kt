@@ -60,10 +60,10 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
         }
     }
 
-    // TODO: should we scan all dependencies or the user can set up it?
+    // TODO: should we scan all dependencies or the user can set it up?
     private fun Project.getReflektMetaFilesFromLibraries(): MutableSet<File> {
         val reflektMetaFilesFromLibraries: MutableSet<File> = HashSet()
-        // We should miss all kotlinCompiler configuration since they wiil be resolved later by the Kotlin compiler
+        // We should skip all kotlinCompiler configuration since they will be resolved later by the Kotlin compiler
         for (conf in this.configurations.filter { it.isCanBeResolved && !("kotlinCompiler" in it.name) }) {
             val files = reflektMetaFilesFromLibrariesMap.getOrPut(conf.name) { getReflektMetaFiles(getJarFilesToIntrospect(conf)) }
             reflektMetaFilesFromLibraries.addAll(files)

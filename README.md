@@ -106,7 +106,7 @@ reflekt {
 }
 ```
 
-**Please note** that the Reflekt can also analyze the files from the external libraries. 
+**Please note** that Reflekt can also analyze the files from the external libraries. 
 Reflekt can handle only libraries from the `dependencies` section and 
 DependencyHandlers of them should be `canBeResolve = True`, e.g.:
 ```kotlin
@@ -116,8 +116,8 @@ val reflektConfiguration by configurations.creating {
 
 configurations["implementation"].extendsFrom(reflektConfiguration)
 ```
-Also, this library should contain a special file `ReflektMeta`. The last point means the library
-should use Reflekt with the following configuration:
+Also, this library should contain a specific file called `ReflektMeta` to store additional 
+meta information. To enable it, the library should use Reflekt with the following configuration:
 ```kotlin
 reflekt {
     // Enable or disable Reflekt plugin
