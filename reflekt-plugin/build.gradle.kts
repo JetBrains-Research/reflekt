@@ -9,7 +9,6 @@ plugins {
 }
 
 dependencies {
-    implementation(kotlin("compiler-embeddable"))
     implementation(kotlin("scripting-common"))
     implementation(kotlin("scripting-jvm"))
     implementation(kotlin("scripting-jvm-host"))
@@ -27,7 +26,7 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.protobuf)
 
-    // TODO: use version from libs.versions..toml
+    // TODO: use version from libs.versions.toml
     "org.jetbrains.kotlin:kotlin-compiler:1.7.20-dev-2312".let {
         compileOnly(it)
         testImplementation(it)
@@ -42,27 +41,17 @@ dependencies {
     testImplementation("junit:junit:4.12")
 
     testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.commons)
     testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.junit.platform.runner)
     testImplementation(libs.junit.platform.suite.api)
 
-    testImplementation(libs.junit.jupiter.api)
-    testImplementation(libs.junit.jupiter.params)
-    testRuntimeOnly(libs.junit.jupiter.engine)
-
     testImplementation(libs.tomlj)
-    testImplementation(libs.kotlin.compile.testing)
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform {
-        includeTags = setOf("analysis", "scripting", "ir", "parametrizedType", "codegen", "ic")
-    }
-
-    testLogging {
-        events("passed", "skipped", "failed")
-    }
+    useJUnitPlatform()
 
     doFirst {
         setLibraryProperty("org.jetbrains.kotlin.test.kotlin-stdlib", "kotlin-stdlib")
@@ -93,4 +82,20 @@ fun Test.setLibraryProperty(propName: String, jarName: String) {
         ?.absolutePath
         ?: return
     systemProperty(propName, path)
+}
+
+tasks.create<JavaExec>("generateTests") {
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("org.jetbrains.reflekt.plugin.compiler.GenerateTestsKt")
+}
+
+sourceSets {
+    main {
+        java.setSrcDirs(listOf("src/main"))
+        resources.setSrcDirs(listOf("resources"))
+    }
+    test {
+        java.setSrcDirs(listOf("src/test/java", "src/test/kotlin"))
+        resources.setSrcDirs(listOf("resources"))
+    }
 }
