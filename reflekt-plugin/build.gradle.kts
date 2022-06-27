@@ -17,6 +17,7 @@ dependencies {
     kapt(libs.auto.service)
 
     implementation(project(":reflekt-core"))
+    implementation(project(":reflekt-dsl"))
 
     implementation(libs.kotlinpoet)
     implementation(libs.reflections)
@@ -74,10 +75,9 @@ fun Test.setLibraryProperty(propName: String, jarName: String) {
             .get()
             .files
             .find { """$jarName-\d.*jar""".toRegex().matches(it.name) }
-            ?.absolutePath?.let { println(it)
-            it
-            }
+            ?.absolutePath
             ?: return
+    println("$propName: $path")
     systemProperty(propName, path)
 }
 

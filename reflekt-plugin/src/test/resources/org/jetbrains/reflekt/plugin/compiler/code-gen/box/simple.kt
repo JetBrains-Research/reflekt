@@ -1,21 +1,48 @@
-import org.jetbrains.reflekt.Reflekt
-
+// FILE: Annotations.kt
 annotation class FirstAnnotation
 
 annotation class SecondAnnotation(val message: String)
 
-@FirstAnnotation
-fun foo() {
-    println("public first example foo")
+// FILE: Interfaces.kt
+interface AInterface {
+    fun description(): String
+}
+
+interface AInterface1: AInterface {
+    override fun description(): String
+}
+
+interface BInterface
+
+// FILE: Objects.kt
+object A1: AInterface {
+    override fun description(): String {
+        return "HELLO A1"
+    }
+}
+
+@SecondAnnotation("Test")
+object A2: AInterface {
+    override fun description(): String {
+        return "HELLO A2"
+    }
 }
 
 @FirstAnnotation
-private fun barPrivate() {
-    println("private first example bar")
+object A3: AInterface {
+    override fun description(): String {
+        return "HELLO A3"
+    }
 }
+
+@SecondAnnotation("Test")
+object A4: BInterface
+
+// FILE: TestCase.kt
+import org.jetbrains.reflekt.Reflekt
 
 fun box(): String {
-    val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList()
-    println(functions)
-    return if (functions.toString() == "Some results") { "OK" } else { "Fail: $functions" }
+    val objects = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+    val strRepresentation = objects.joinToString { it::class.qualifiedName ?: "Undefined name" }
+    return if (strRepresentation == "A2, A3") "OK"  else "Fail: $strRepresentation"
 }

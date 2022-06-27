@@ -1,6 +1,5 @@
+import org.gradle.model.internal.core.ModelNodes.withType
 import org.jetbrains.reflekt.buildutils.*
-
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 group = "org.jetbrains.reflekt"
 version = libs.versions.kotlin.asProvider().get()
@@ -19,8 +18,11 @@ allprojects {
         plugin("kotlin")
     }
 
-    tasks.withType<KotlinJvmCompile> {
-        kotlinOptions.jvmTarget = "11"
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+        kotlinOptions {
+            jvmTarget = "11"
+            freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+        }
     }
 
     repositories {
@@ -41,10 +43,6 @@ allprojects {
     @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
     tasks.withType<Test> {
         dependsOn(tasks.withType<PublishToMavenLocal> {}, ":reflekt-plugin:jar", ":reflekt-dsl:jar")
-    }
-
-    tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>> {
-        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     }
 
     configureDiktat()
