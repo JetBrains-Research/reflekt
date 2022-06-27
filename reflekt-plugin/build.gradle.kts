@@ -17,9 +17,6 @@ dependencies {
     kapt(libs.auto.service)
 
     implementation(project(":reflekt-core"))
-    implementation(project(":reflekt-dsl"))
-
-    testImplementation(gradleTestKit())
 
     implementation(libs.kotlinpoet)
     implementation(libs.reflections)
@@ -64,10 +61,6 @@ tasks.withType<Test> {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>> {
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-}
-
 tasks.processTestResources.configure {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     from(rootProject.file("gradle/libs.versions.toml"))
@@ -76,12 +69,15 @@ tasks.processTestResources.configure {
 publishJar {}
 
 fun Test.setLibraryProperty(propName: String, jarName: String) {
-    val path = project.configurations
-        .testRuntimeClasspath.get()
-        .files
-        .find { """$jarName-\d.*jar""".toRegex().matches(it.name) }
-        ?.absolutePath
-        ?: return
+    val path =
+        project.configurations.testRuntimeClasspath
+            .get()
+            .files
+            .find { """$jarName-\d.*jar""".toRegex().matches(it.name) }
+            ?.absolutePath?.let { println(it)
+            it
+            }
+            ?: return
     systemProperty(propName, path)
 }
 

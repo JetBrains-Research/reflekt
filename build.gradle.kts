@@ -40,7 +40,11 @@ allprojects {
     // We should publish the project in the local maven repository before the tests running
     @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
     tasks.withType<Test> {
-        dependsOn(tasks.withType<PublishToMavenLocal> {})
+        dependsOn(tasks.withType<PublishToMavenLocal> {}, ":reflekt-plugin:jar", ":reflekt-dsl:jar")
+    }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>> {
+        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     }
 
     configureDiktat()

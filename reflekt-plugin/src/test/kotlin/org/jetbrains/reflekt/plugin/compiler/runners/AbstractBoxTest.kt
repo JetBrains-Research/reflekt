@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.test.builders.*
 import org.jetbrains.kotlin.test.directives.CodegenTestDirectives.DUMP_IR
 import org.jetbrains.kotlin.test.directives.ConfigurationDirectives.WITH_STDLIB
 import org.jetbrains.kotlin.test.frontend.classic.handlers.ClassicDiagnosticsHandler
+import org.jetbrains.kotlin.test.frontend.classic.handlers.DiagnosticMessagesTextHandler
 import org.jetbrains.kotlin.test.model.DependencyKind
 import org.jetbrains.kotlin.test.model.FrontendKinds
 import org.jetbrains.kotlin.test.runners.*
@@ -33,14 +34,17 @@ open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGen
             +DUMP_IR
             +WITH_STDLIB
         }
+
         classicFrontendStep()
         classicFrontendHandlersStep {
             useHandlers(
-                ::ClassicDiagnosticsHandler
+                ::ClassicDiagnosticsHandler,
+                ::DiagnosticMessagesTextHandler
             )
         }
 
         psi2IrStep()
+
         irHandlersStep {
             useHandlers(
                 ::IrTextDumpHandler,
@@ -48,20 +52,18 @@ open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGen
             )
         }
         facadeStep(::JvmIrBackendFacade)
+
         jvmArtifactsHandlersStep {
             useHandlers(::JvmBoxRunner)
         }
-
         useAfterAnalysisCheckers(::BlackBoxCodegenSuppressor)
+        enableMetaInfoHandler()
 
         useConfigurators(
             ::ReflektPluginProvider,
         )
-
         useCustomRuntimeClasspathProviders(
             ::ReflektRuntimeClasspathProvider
         )
-
-        enableMetaInfoHandler()
     }
 }
