@@ -23,9 +23,8 @@ dependencies {
     implementation(libs.reflections)
 
     implementation(libs.kotlinx.serialization.protobuf)
-
-    // TODO: use version from libs.versions.toml
-    "org.jetbrains.kotlin:kotlin-compiler:1.7.20-dev-2312".let {
+    
+    kotlin("compiler").let {
         compileOnly(it)
         testImplementation(it)
     }
