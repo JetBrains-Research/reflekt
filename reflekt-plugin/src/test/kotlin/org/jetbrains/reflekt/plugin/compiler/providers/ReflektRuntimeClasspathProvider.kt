@@ -1,12 +1,11 @@
 package org.jetbrains.reflekt.plugin.compiler.providers
 
-import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoot
 import org.jetbrains.kotlin.test.model.TestModule
 import org.jetbrains.kotlin.test.services.RuntimeClasspathProvider
 import org.jetbrains.kotlin.test.services.TestServices
-import org.jetbrains.reflekt.plugin.compiler.providers.ReflektClasspathProvider.REFLEKT_DSL
-import org.jetbrains.reflekt.plugin.compiler.providers.ReflektClasspathProvider.REFLEKT_PLUGIN
-import org.jetbrains.reflekt.plugin.compiler.providers.ReflektClasspathProvider.findJar
+import org.jetbrains.reflekt.plugin.util.ReflektClasspathProvider.REFLEKT_DSL
+import org.jetbrains.reflekt.plugin.util.ReflektClasspathProvider.REFLEKT_PLUGIN
+import org.jetbrains.reflekt.plugin.util.ReflektClasspathProvider.findJar
 import java.io.File
 
 class ReflektRuntimeClasspathProvider(testServices: TestServices) : RuntimeClasspathProvider(testServices) {

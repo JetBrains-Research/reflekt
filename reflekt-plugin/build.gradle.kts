@@ -23,11 +23,13 @@ dependencies {
     implementation(libs.reflections)
 
     implementation(libs.kotlinx.serialization.protobuf)
-    
-    kotlin("compiler").let {
-        compileOnly(it)
-        testImplementation(it)
-    }
+
+    // TODO: disable runtime after deleting kotlin script
+    kotlin("compiler")
+//        .let {
+//        compileOnly(it)
+//        testImplementation(it)
+//    }
 
     testRuntimeOnly(libs.kotlin.test)
     testRuntimeOnly(libs.kotlin.script.runtime)
