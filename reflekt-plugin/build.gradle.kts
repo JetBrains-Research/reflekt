@@ -11,7 +11,7 @@ plugins {
 dependencies {
     implementation(kotlin("scripting-common"))
     implementation(kotlin("scripting-jvm"))
-    implementation(kotlin("scripting-jvm-host"))
+    implementation(kotlin("scripting-jvm-host-unshaded"))
 
     implementation(libs.auto.service.annotations)
     kapt(libs.auto.service)

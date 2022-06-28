@@ -1,4 +1,3 @@
-import org.gradle.model.internal.core.ModelNodes.withType
 import org.jetbrains.reflekt.buildutils.*
 
 group = "org.jetbrains.reflekt"
