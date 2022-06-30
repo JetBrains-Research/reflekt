@@ -44,8 +44,9 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
 
         with(project) {
             afterEvaluate {
+                // TODO: check if it works correctly
                 project.sourceSets.apply {
-                    this.getAt("main").kotlin.srcDir(generationPath)
+                    this.getAt("main").allSource.srcDir(generationPath)
                 }
             }
         }
