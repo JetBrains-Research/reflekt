@@ -31,6 +31,7 @@ import org.jetbrains.reflekt.plugin.compiler.providers.ReflektPluginProvider
 import org.jetbrains.reflekt.plugin.compiler.providers.ReflektRuntimeClasspathProvider
 import java.io.File
 
+// просто тесты, тесты с общими файлами, тесты с рефлектом,
 open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGeneratorMarker {
     override val targetBackend: TargetBackend
         get() = TargetBackend.JVM_IR
