@@ -27,4 +27,10 @@ public class BoxTestGenerated extends AbstractBoxTest {
     public void testSimple() throws Exception {
         runTest("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/box/simple.kt");
     }
+
+    @Test
+    @TestMetadata("simple2.kt")
+    public void testSimple2() throws Exception {
+        runTest("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/box/simple2.kt");
+    }
 }
