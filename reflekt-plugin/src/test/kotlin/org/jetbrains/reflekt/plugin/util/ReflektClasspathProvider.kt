@@ -16,6 +16,7 @@ object ReflektClasspathProvider {
         ?: error(failMessage(moduleName))
     }
 
+    @Suppress("MaxLineLength")
     fun getAbsolutePathsOfDefaultJars(): List<File> {
         // TODO: delete it on Wednesday (29/06/22) after a fix to a new kotlin bootstrap version
         val paths = listOf(
