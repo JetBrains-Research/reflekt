@@ -26,7 +26,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
     private val metaInfDir = "META-INF"
     private lateinit var reflektMetaFilesFromLibrariesMap: ReflektMetaFilesFromLibrariesMap
 
-    @Suppress("TYPE_ALIAS")
+    @Suppress("TYPE_ALIAS", "DEBUG_PRINT")
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         println("ReflektSubPlugin loaded")
         val project = kotlinCompilation.target.project
@@ -112,11 +112,15 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
     private fun getLibJarWithoutSources(jarFile: File): File? {
         val jarName = "${jarFile.name.substringBeforeLast('.', "")}.jar"
         // TODO: make sure each jar has the same file structure and it's safe to call jarFile.parentFile.parentFile.listFiles()
-        jarFile.parentFile.parentFile.listFiles()?.filter { it.isDirectory }?.forEach { folder ->
-            folder.listFiles()?.find { it.name == jarName }.let {
-                return it
+        jarFile.parentFile
+            .parentFile
+            .listFiles()
+            ?.filter { it.isDirectory }
+            ?.forEach { folder ->
+                folder.listFiles()?.find { it.name == jarName }.let {
+                    return it
+                }
             }
-        }
         return null
     }
 

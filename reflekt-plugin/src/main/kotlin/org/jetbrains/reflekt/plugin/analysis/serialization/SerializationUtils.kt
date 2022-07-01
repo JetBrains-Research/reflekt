@@ -25,7 +25,7 @@ object SerializationUtils {
         protoBuf.encodeToByteArray(libraryArgumentsWithInstances.toSerializableLibraryArgumentsWithInstances())
 
     fun decodeArguments(byteArray: ByteArray, pluginContext: IrPluginContext): LibraryArgumentsWithInstances {
-        val decoded = protoBuf.decodeFromByteArray<SerializableLibraryArgumentsWithInstances>(byteArray)
+        val decoded: SerializableLibraryArgumentsWithInstances = protoBuf.decodeFromByteArray(byteArray)
         return decoded.toLibraryArgumentsWithInstances(pluginContext)
     }
 
@@ -51,7 +51,10 @@ object SerializationUtils {
 
     @OptIn(ObsoleteDescriptorBasedAPI::class)
     fun IrSimpleType.toSerializableIrType(): SerializableIrType {
-        val classifierFqName = this.classifier.descriptor.fqNameOrNull()?.asString() ?: error("Can not get class fq name for ClassifierDescriptor")
+        val classifierFqName = this.classifier.descriptor
+            .fqNameOrNull()
+            ?.asString()
+            ?: error("Can not get class fq name for ClassifierDescriptor")
         val arguments = this.arguments.map { it.toSerializableIrTypeArgument() }
         // TODO: should we serialize it?
         val abbreviation = null
@@ -62,7 +65,7 @@ object SerializationUtils {
             // We use serialization only for functions signatures, they don't have annotations
             annotations = emptyList(),
             abbreviation = abbreviation,
-            variance = variance
+            variance = variance,
         )
     }
 

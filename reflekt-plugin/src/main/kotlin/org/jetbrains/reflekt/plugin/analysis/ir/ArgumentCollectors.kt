@@ -24,8 +24,8 @@ open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
  * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct [SupertypesToAnnotations].
  */
 class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
-    private val supertypes = HashSet<String>()
-    private val annotations = HashSet<String>()
+    private val supertypes: HashSet<String> = HashSet()
+    private val annotations: HashSet<String> = HashSet()
 
     override fun visitCall(expression: IrCall, data: Nothing?) {
         super.visitCall(expression, data)
@@ -58,7 +58,7 @@ class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
  */
 class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
     private var signature: KotlinType? = null
-    private val annotations = HashSet<String>()
+    private val annotations: HashSet<String> = HashSet()
     private var irSignature: IrType? = null
 
     override fun visitCall(expression: IrCall, data: Nothing?) {
@@ -86,7 +86,7 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
  * Traverses subtree of expression and collects arguments of filter calls to construct [TypeArgumentToFilters].
  */
 class SmartReflektInvokeArgumentsCollector(private val sourceFile: SourceFile) : IrRecursiveVisitor() {
-    private val filters = ArrayList<Lambda>()
+    private val filters: ArrayList<Lambda> = ArrayList()
     private var irTypeArgument: IrType? = null
 
     override fun visitCall(expression: IrCall, data: Nothing?) {

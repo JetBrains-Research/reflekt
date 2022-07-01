@@ -33,7 +33,7 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
             REFLEKT_META_FILE_FROM_LIBRARY_OPTION,
             OUTPUT_DIR_OPTION,
             SAVE_METADATA_OPTION,
-            REFLEKT_META_FILE_PATH_OPTION
+            REFLEKT_META_FILE_PATH_OPTION,
         )
 
     /**

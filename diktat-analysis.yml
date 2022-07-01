@@ -103,11 +103,6 @@
   enabled: true
   configuration:
     maxNestedBlockQuantity: 4
-- name: TRAILING_COMMA
-  enabled: true
-  configuration:
-    valueArgument: true
-    valueParameter: true
 # disabled due to a huge number of documentation that should be added
 - name: MISSING_KDOC_ON_FUNCTION
   enabled: false
@@ -134,23 +129,30 @@
 # Custom getters and setters should be revised later
 - name: CUSTOM_GETTERS_SETTERS
   enabled: false
-# https://github.com/diktat-static-analysis/diKTat/issues/1106
 - name: TRAILING_COMMA
-  enabled: false
-# https://github.com/diktat-static-analysis/diKTat/issues/1109
+  enabled: true
+  configuration:
+    valueArgument: false
+    valueParameter: true
+    indices: true
+    whenConditions: true
+    collectionLiteral: true
+    typeArgument: true
+    typeParameter: true
+    destructuringDeclaration: true
+# Non const variables in Objects in this project are using UPPER_SNAKE_CASE
 - name: VARIABLE_NAME_INCORRECT_FORMAT
   enabled: false
-# disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1090
 - name: GENERIC_VARIABLE_WRONG_DECLARATION
-  enabled: false
-# disabled due to: https://github.com/diktat-static-analysis/diKTat/issues/1091
+  enabled: true
 - name: COMMENTED_OUT_CODE
-  enabled: false
+  enabled: true
 # disabled because IDEA already tracks imports well
+# but there is no IDEA checks in GitHub CI/CD, so we suggest to enable diktat and detekt always in CI
 - name: FILE_UNORDERED_IMPORTS
   enabled: false
 - name: KDOC_WITHOUT_RETURN_TAG
-  enabled: false
+  enabled: true
 - name: EXTENSION_FUNCTION_WITH_CLASS
   enabled: false
 - name: IDENTIFIER_LENGTH

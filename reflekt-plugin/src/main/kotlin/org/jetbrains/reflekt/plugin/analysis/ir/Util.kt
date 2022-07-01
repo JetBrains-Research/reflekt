@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
 
 fun IrCall.getFqNamesOfTypeArguments(): List<String> {
-    val result = ArrayList<String>()
+    val result: ArrayList<String> = ArrayList()
     for (i in 0 until typeArgumentsCount) {
         val type = getTypeArgument(i)
         require(type is IrSimpleType) { "Type argument is not IrSimpleType" }

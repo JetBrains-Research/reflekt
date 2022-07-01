@@ -52,8 +52,11 @@ fun controlFlow(
     code: CodeBlock,
     template: String,
     vararg args: Any?): CodeBlock =
-    CodeBlock.builder().beginControlFlow(template, *args).add(code)
-        .endControlFlow().build()
+    CodeBlock.builder()
+        .beginControlFlow(template, *args)
+        .add(code)
+        .endControlFlow()
+        .build()
 
 /**
  * Wraps a [CodeBlock] in brackets.

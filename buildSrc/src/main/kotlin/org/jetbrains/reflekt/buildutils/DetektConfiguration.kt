@@ -4,11 +4,11 @@
 
 package org.jetbrains.reflekt.buildutils
 
+import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.*
 
 /**
  * Configure Detekt for a single project
@@ -18,7 +18,6 @@ fun Project.configureDetekt() {
     configure<DetektExtension> {
         config = rootProject.files("detekt.yml")
         buildUponDefaultConfig = true
-        debug = true
     }
 }
 
@@ -26,9 +25,9 @@ fun Project.configureDetekt() {
  * Register a unified detekt task
  */
 fun Project.createDetektTask() {
-    tasks.register("detektCheckAll") {
+    tasks.register("detektAll") {
         allprojects {
-            this@register.dependsOn(tasks.getByName("detekt"))
+            this@register.dependsOn(tasks.withType<Detekt>())
         }
     }
 }

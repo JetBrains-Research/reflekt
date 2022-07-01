@@ -26,10 +26,10 @@ internal fun <K, V : MutableSet<K>> getInvokesGroupedByFiles(fileToInvokes: Map<
 // we will group files by invokes and process each of them once
 // MutableSet<*> here is ClassOrObjectInvokes = MutableSet<SupertypesToAnnotations>
 // or FunctionInvokes = MutableSet<SignatureToAnnotations> MutableSet<*>
-@Suppress("TYPE_ALIAS")
+@Suppress("TYPE_ALIAS", "GENERIC_VARIABLE_WRONG_DECLARATION")
 private fun <T : MutableSet<*>> groupFilesByInvokes(fileToInvokes: Map<FileId, T>): MutableMap<T, MutableSet<String>> {
     val filesByInvokes = HashMap<T, MutableSet<FileId>>()
-    for ((file, invoke) in fileToInvokes) {
+    fileToInvokes.forEach { (file, invoke) ->
         filesByInvokes.getOrPut(invoke) { HashSet() }.add(file)
     }
     return filesByInvokes

@@ -42,7 +42,7 @@ class SmartReflektIrTransformer(
     private val messageCollector: MessageCollector? = null,
 ) : BaseReflektIrTransformer(messageCollector) {
     private val importChecker = ImportChecker(classpath)
-    private val sources = HashMap<String, SourceFile>()
+    private val sources: HashMap<String, SourceFile> = HashMap()
 
     /**
      * Visit [IrCall] and replace IR to found entities if it is a SmartReflekt query

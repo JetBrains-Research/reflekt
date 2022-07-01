@@ -58,7 +58,7 @@ data class LibraryArguments(
  * @property libraryArguments_
  * @property instances_
  */
-@Suppress("ConstructorParameterNaming")
+@Suppress("ConstructorParameterNaming", "VARIABLE_NAME_INCORRECT_FORMAT")
 data class LibraryArgumentsWithInstances(
     private var libraryArguments_: LibraryArguments = LibraryArguments(),
     private var instances_: IrInstancesFqNames = IrInstancesFqNames(),

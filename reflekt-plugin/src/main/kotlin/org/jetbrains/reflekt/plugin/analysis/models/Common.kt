@@ -34,7 +34,9 @@ enum class ElementType(val value: String) {
  */
 interface Emptiable {
     /**
-     * Returns `true` if the instance is empty, `false` otherwise. The definition of "emptiness" may vary between implementations.
+     * The definition of "emptiness" may vary between implementations.
+     *
+     * @return `true` if the instance is empty, `false` otherwise.
      */
     fun isEmpty(): Boolean
 }

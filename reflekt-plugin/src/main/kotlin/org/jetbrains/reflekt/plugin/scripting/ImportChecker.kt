@@ -16,7 +16,7 @@ import java.net.URLClassLoader
  * */
 @Suppress("ConvertSecondaryConstructorToPrimary", "KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 class ImportChecker(classpath: List<File>) {
-    private val allNames = HashSet<String>()
+    private val allNames: HashSet<String> = HashSet()
 
     init {
         if (classpath.isNotEmpty()) {

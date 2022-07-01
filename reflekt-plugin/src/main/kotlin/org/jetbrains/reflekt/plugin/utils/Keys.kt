@@ -20,6 +20,7 @@ import java.io.File
  * @property LIBRARY_TO_INTROSPECT stores names of the libraries' for introspection
  *  (each library should be included in the project by a configuration that can be resolved in the compile-time)
  */
+@Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
 internal object Keys {
     val OUTPUT_DIR = CompilerConfigurationKey<File>("$PLUGIN_ID.outputDir")
     val ENABLED = CompilerConfigurationKey<Boolean>("$PLUGIN_ID.enabled")

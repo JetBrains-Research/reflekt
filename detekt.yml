@@ -2,6 +2,8 @@
 potential-bugs:
   Deprecation:
     active: true
+  UnsafeCallOnNullableType:
+    active: false
 
 style:
   MaxLineLength:

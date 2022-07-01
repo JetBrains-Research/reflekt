@@ -42,11 +42,12 @@ allprojects {
         dependsOn(tasks.withType<PublishToMavenLocal> {})
     }
 
-    configureDiktat()
-    configureDetekt()
+    allprojects {
+        configureDetekt()
+        configureDiktat()
+    }
 }
 
-createDiktatTask()
 createDetektTask()
 
 subprojects {
@@ -61,6 +62,24 @@ subprojects {
                     username = System.getenv("JB_SPACE_CLIENT_ID")?.takeIf { it.isNotBlank() } ?: ""
                     password = System.getenv("JB_SPACE_CLIENT_SECRET")?.takeIf { it.isNotBlank() } ?: ""
                 }
+            }
+        }
+    }
+}
+
+fun Project.configureDiktat() {
+    apply<org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin>()
+    configure<org.cqfn.diktat.plugin.gradle.DiktatExtension> {
+        diktatConfigFile = rootProject.file("diktat-analysis.yml")
+        githubActions = findProperty("diktat.githubActions")?.toString()?.toBoolean() ?: false
+        inputs {
+            // using `Project#path` here, because it must be unique in gradle's project hierarchy
+            if (path == rootProject.path) {
+                include("$rootDir/buildSrc/src/**/*.kt", "$rootDir/*.kts", "$rootDir/buildSrc/**/*.kts")
+                exclude("src/test/**/*.kt")  // path matching this pattern will not be checked by diktat
+            } else {
+                include("src/**/*.kt", "**/*.kts")
+                exclude("src/test/**/*.kt")  // path matching this pattern will not be checked by diktat
             }
         }
     }
