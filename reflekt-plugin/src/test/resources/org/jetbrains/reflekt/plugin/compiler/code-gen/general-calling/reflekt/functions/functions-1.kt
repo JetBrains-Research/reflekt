@@ -3,7 +3,8 @@ import org.jetbrains.reflekt.Reflekt
 import org.jetbrains.reflekt.test.helpers.checkCallResult
 import org.jetbrains.reflekt.example.*
 
+
 fun box(): String = checkCallResult(
-    { Reflekt.classes().withSuperType<AInterface>().toList() },
+    { Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList() },
     listOf("A", "B")
 )

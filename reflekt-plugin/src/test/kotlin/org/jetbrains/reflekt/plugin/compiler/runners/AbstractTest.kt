@@ -20,7 +20,6 @@ import org.jetbrains.kotlin.test.runners.codegen.commonConfigurationForCodegenTe
 import org.jetbrains.kotlin.test.runners.codegen.configureCommonHandlersForBoxTest
 import org.jetbrains.reflekt.plugin.compiler.providers.*
 
-// просто тесты, тесты с общими файлами, тесты с рефлектом,
 open class AbstractTest : BaseTestRunner(), RunnerWithTargetBackendForTestGeneratorMarker {
     override val targetBackend: TargetBackend
         get() = TargetBackend.JVM_IR

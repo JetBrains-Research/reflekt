@@ -47,9 +47,3 @@ fun box(): String = checkCallResult(
     listOf("A2", "A3")
 )
 
-//{
-//    return "OK"
-//    val objects = Reflekt.objects().withAnnotations<InterfaceC>(IrTestAnnotation::class).toList()
-//    val strRepresentation = objects.joinToString { it::class.qualifiedName ?: "Undefined name" }
-//    return if (strRepresentation == "org.jetbrains.reflekt.test.ir.TestA") "OK"  else "Fail: $strRepresentation"
-//}

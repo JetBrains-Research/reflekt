@@ -4,6 +4,6 @@ import org.jetbrains.reflekt.test.helpers.checkCallResult
 import org.jetbrains.reflekt.example.*
 
 fun box(): String = checkCallResult(
-    { Reflekt.classes().withSuperType<AInterface>().toList() },
+    { Reflekt.objects().withAnnotations<A1>(FirstAnnotation::class).withSupertypes(AInterface::class).toList() },
     listOf("A", "B")
 )

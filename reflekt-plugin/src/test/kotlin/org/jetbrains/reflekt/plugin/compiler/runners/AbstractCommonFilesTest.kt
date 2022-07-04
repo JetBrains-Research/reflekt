@@ -5,8 +5,11 @@ import org.jetbrains.kotlin.test.builders.TestConfigurationBuilder
 import org.jetbrains.kotlin.test.services.AdditionalSourceProvider
 import org.jetbrains.reflekt.plugin.compiler.providers.CommonFilesProvider
 
-open class AbstractCommonFilesTest : AbstractTest() {
-    open val commonFilesProvider: Constructor<AdditionalSourceProvider> = { CommonFilesProvider(it, COMMON_FILES_PATH) }
+/**
+ * Tests with both helpers methods and common files provided.
+ */
+open class AbstractCommonFilesTest : AbstractHelpersTest() {
+    private val commonFilesProvider: Constructor<AdditionalSourceProvider> = { CommonFilesProvider(it, COMMON_FILES_PATH) }
 
     override fun configure(builder: TestConfigurationBuilder) {
         super.configure(builder)
@@ -14,7 +17,7 @@ open class AbstractCommonFilesTest : AbstractTest() {
     }
 
     companion object {
-        private const val COMMON_FILES_PATH: String = "/reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/commonFiles/first-example"
+        private const val COMMON_FILES_PATH: String = "reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/additional-sources/common-files"
     }
 }
 
