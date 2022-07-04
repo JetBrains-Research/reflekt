@@ -40,10 +40,16 @@ object A4: BInterface
 
 // FILE: TestCase.kt
 import org.jetbrains.reflekt.Reflekt
+import org.jetbrains.reflekt.test.helpers.checkCallResult
 
-// вынести это в одну штуку куда-то мб?
-fun box(): String {
-    val objects = Reflekt.objects().withAnnotations<>(IrTestAnnotation::class).toList()
-    val strRepresentation = objects.joinToString { it::class.qualifiedName ?: "Undefined name" }
-    return if (strRepresentation == "A4") "OK"  else "Fail: $strRepresentation"
-}
+fun box(): String = checkCallResult(
+    { Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList() },
+    listOf("A2", "A3")
+)
+
+//{
+//    return "OK"
+//    val objects = Reflekt.objects().withAnnotations<InterfaceC>(IrTestAnnotation::class).toList()
+//    val strRepresentation = objects.joinToString { it::class.qualifiedName ?: "Undefined name" }
+//    return if (strRepresentation == "org.jetbrains.reflekt.test.ir.TestA") "OK"  else "Fail: $strRepresentation"
+//}

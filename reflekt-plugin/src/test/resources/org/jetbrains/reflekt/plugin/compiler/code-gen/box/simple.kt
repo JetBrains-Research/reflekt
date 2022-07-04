@@ -41,6 +41,7 @@ object A4: BInterface
 // FILE: TestCase.kt
 import org.jetbrains.reflekt.Reflekt
 
+
 fun box(): String {
     val objects = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
     val strRepresentation = objects.joinToString { it::class.qualifiedName ?: "Undefined name" }
