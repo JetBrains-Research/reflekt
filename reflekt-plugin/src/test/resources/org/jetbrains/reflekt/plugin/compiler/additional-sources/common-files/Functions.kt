@@ -1,34 +1,34 @@
-package org.jetbrains.reflekt.example
+package org.jetbrains.reflekt.test.common
 
 @FirstAnnotation
-fun foo() {
+fun foo2() {
     println("public first example foo")
 }
 
 @FirstAnnotation
-private fun barPrivate() {
+private fun foo3() {
     println("private first example bar")
 }
 
 @FirstAnnotation
-fun bar() {
+fun foo4() {
     println("public first example bar")
 }
 
 class TestFunctions {
     @FirstAnnotation
-    fun foo() {
+    fun foo5() {
         println("public first example foo in TestFunctions class")
     }
 
     @FirstAnnotation
-    private fun barPrivate() {
+    private fun foo6() {
         println("private first example bar in TestFunctions class")
     }
 
     companion object {
         @FirstAnnotation
-        fun foo() {
+        fun foo7() {
             println("public first example foo in companion object in TestFunctions class")
         }
     }

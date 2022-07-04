@@ -1,10 +1,9 @@
 // FILE: TestCase.kt
 import org.jetbrains.reflekt.Reflekt
-import org.jetbrains.reflekt.test.helpers.checkCallResult
-import org.jetbrains.reflekt.example.*
+import org.jetbrains.reflekt.test.helpers.checkObjectsCallResult
+import org.jetbrains.reflekt.test.common.*
 
-
-fun box(): String = checkCallResult(
-    { Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class).toList() },
-    listOf("A", "B")
+fun box(): String = checkObjectsCallResult(
+    { Reflekt.objects().withSuperType<AInterface1>().toList() },
+    emptyList(),
 )

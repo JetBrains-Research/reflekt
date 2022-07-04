@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.plugin.compiler.providers
+package org.jetbrains.reflekt.plugin.compiler.providers.reflekt
 
 import com.intellij.mock.MockProject
 import com.intellij.openapi.project.Project

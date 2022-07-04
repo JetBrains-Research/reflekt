@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.example
+package org.jetbrains.reflekt.test.common
 
 interface AInterface {
     fun description(): String

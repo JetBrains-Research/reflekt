@@ -40,9 +40,9 @@ object A4: BInterface
 
 // FILE: TestCase.kt
 import org.jetbrains.reflekt.Reflekt
-import org.jetbrains.reflekt.test.helpers.checkCallResult
+import org.jetbrains.reflekt.test.helpers.checkObjectsCallResult
 
-fun box(): String = checkCallResult(
+fun box(): String = checkObjectsCallResult(
     { Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList() },
     listOf("A2", "A3")
 )

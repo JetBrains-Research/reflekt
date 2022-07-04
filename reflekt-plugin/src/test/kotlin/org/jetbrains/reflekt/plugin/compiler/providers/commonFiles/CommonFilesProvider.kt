@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.plugin.compiler.providers
+package org.jetbrains.reflekt.plugin.compiler.providers.commonFiles
 
 import org.jetbrains.kotlin.test.directives.model.RegisteredDirectives
 import org.jetbrains.kotlin.test.model.TestFile

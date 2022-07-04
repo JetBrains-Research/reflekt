@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.example
+package org.jetbrains.reflekt.test.common
 
 class B1: BInterface
 
@@ -11,3 +11,5 @@ data class B2(val x: Int): BInterface
 class B3: BInterface {
     class B4: BInterface
 }
+
+private data class B4(val x: Double): BInterface

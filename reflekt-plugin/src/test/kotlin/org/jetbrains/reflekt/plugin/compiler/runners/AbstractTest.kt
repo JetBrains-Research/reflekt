@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.test.directives.CodegenTestDirectives.DUMP_IR
 import org.jetbrains.kotlin.test.directives.CodegenTestDirectives.IGNORE_DEXING
 import org.jetbrains.kotlin.test.directives.ConfigurationDirectives.WITH_STDLIB
 import org.jetbrains.kotlin.test.directives.JvmEnvironmentConfigurationDirectives.FULL_JDK
+import org.jetbrains.kotlin.test.directives.JvmEnvironmentConfigurationDirectives.WITH_REFLECT
 import org.jetbrains.kotlin.test.directives.JvmEnvironmentConfigurationDirectives.JVM_TARGET
 import org.jetbrains.kotlin.test.frontend.classic.ClassicFrontend2IrConverter
 import org.jetbrains.kotlin.test.frontend.classic.ClassicFrontendFacade
@@ -18,7 +19,8 @@ import org.jetbrains.kotlin.test.model.*
 import org.jetbrains.kotlin.test.runners.*
 import org.jetbrains.kotlin.test.runners.codegen.commonConfigurationForCodegenTest
 import org.jetbrains.kotlin.test.runners.codegen.configureCommonHandlersForBoxTest
-import org.jetbrains.reflekt.plugin.compiler.providers.*
+import org.jetbrains.reflekt.plugin.compiler.providers.reflekt.ReflektPluginProvider
+import org.jetbrains.reflekt.plugin.compiler.providers.reflekt.ReflektRuntimeClasspathProvider
 
 open class AbstractTest : BaseTestRunner(), RunnerWithTargetBackendForTestGeneratorMarker {
     override val targetBackend: TargetBackend
@@ -46,6 +48,7 @@ open class AbstractTest : BaseTestRunner(), RunnerWithTargetBackendForTestGenera
             JVM_TARGET with JvmTarget.JVM_11
             +IGNORE_DEXING
             +FULL_JDK
+            +WITH_REFLECT
         }
 
         configureClassicFrontendHandlersStep {
@@ -64,9 +67,6 @@ open class AbstractTest : BaseTestRunner(), RunnerWithTargetBackendForTestGenera
         useCustomRuntimeClasspathProviders(
             ::ReflektRuntimeClasspathProvider,
         )
-//        useAdditionalSourceProviders(
-//            ::HelperTestBoxProvider,
-//        )
     }
 }
 

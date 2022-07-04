@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.plugin.compiler.providers
+package org.jetbrains.reflekt.plugin.compiler.providers.reflekt
 
 import org.jetbrains.kotlin.test.model.TestModule
 import org.jetbrains.kotlin.test.services.RuntimeClasspathProvider

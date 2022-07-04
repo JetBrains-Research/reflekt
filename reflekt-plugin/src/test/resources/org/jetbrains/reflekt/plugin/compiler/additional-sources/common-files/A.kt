@@ -1,4 +1,4 @@
-package org.jetbrains.reflekt.example
+package org.jetbrains.reflekt.test.common
 
 object A1: AInterface {
     override fun description(): String {
@@ -22,3 +22,6 @@ object A3: AInterface {
 
 @SecondAnnotation("Test")
 object A4: BInterface
+
+@SecondAnnotation("Test")
+private object A5: BInterface

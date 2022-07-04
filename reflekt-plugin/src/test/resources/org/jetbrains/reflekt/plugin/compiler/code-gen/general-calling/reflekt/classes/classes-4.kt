@@ -1,10 +1,10 @@
 // FILE: TestCase.kt
 import org.jetbrains.reflekt.Reflekt
-import org.jetbrains.reflekt.test.helpers.checkCallResult
-import org.jetbrains.reflekt.example.*
+import org.jetbrains.reflekt.test.helpers.checkClassesCallResult
+import org.jetbrains.reflekt.test.common.*
 
-
-fun box(): String = checkCallResult(
-    { Reflekt.classes().withSuperType<Action>().toList() },
-    listOf("A", "B")
+fun box(): String = checkClassesCallResult(
+    { Reflekt.classes().withSuperTypes(B2::class).toList() },
+    listOf("B2"),
+    "org.jetbrains.reflekt.test.common",
 )

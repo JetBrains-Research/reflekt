@@ -1,11 +1,6 @@
-package org.jetbrains.reflekt.plugin.compiler.providers
+package org.jetbrains.reflekt.plugin.compiler.providers.commonFiles
 
-import org.jetbrains.kotlin.test.directives.model.RegisteredDirectives
-import org.jetbrains.kotlin.test.model.TestFile
-import org.jetbrains.kotlin.test.model.TestModule
-import org.jetbrains.kotlin.test.services.AdditionalSourceProvider
 import org.jetbrains.kotlin.test.services.TestServices
-import java.io.File
 
 /**
  * Provides helper functions to call from 'box' tests such as Reflekt calls result parsing, etc.
