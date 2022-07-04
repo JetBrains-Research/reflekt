@@ -63,7 +63,7 @@ class PluginConfig(
     /**
      * Builds the pretty string of the current configuration.
      *
-     * @return [StringBuilder]
+     * @return [String]
      */
     private fun prettyString() = buildString {
         append("REFLEKT CONFIGURATION:\n")
