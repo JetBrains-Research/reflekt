@@ -78,7 +78,6 @@ fun Test.setLibraryProperty(propName: String, jarName: String) {
             .find { """$jarName-\d.*jar""".toRegex().matches(it.name) }
             ?.absolutePath
             ?: return
-    println("$propName: $path")
     systemProperty(propName, path)
 }
 
