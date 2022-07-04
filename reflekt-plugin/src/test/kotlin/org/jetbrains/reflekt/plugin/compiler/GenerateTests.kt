@@ -1,9 +1,8 @@
 package org.jetbrains.reflekt.plugin.compiler
 
 import org.jetbrains.kotlin.generators.generateTestGroupSuiteWithJUnit5
-import org.jetbrains.reflekt.plugin.compiler.runners.*
-
-// check org/jetbrains/kotlin/generators/tests/analysis/api/analysisApi.kt
+import org.jetbrains.reflekt.plugin.compiler.runners.AbstractCommonFilesTest
+import org.jetbrains.reflekt.plugin.compiler.runners.AbstractHelpersTest
 
 fun main() {
     generateTestGroupSuiteWithJUnit5 {

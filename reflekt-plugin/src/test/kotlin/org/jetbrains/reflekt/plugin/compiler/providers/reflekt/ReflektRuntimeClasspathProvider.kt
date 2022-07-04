@@ -10,6 +10,6 @@ import java.io.File
 
 class ReflektRuntimeClasspathProvider(testServices: TestServices) : RuntimeClasspathProvider(testServices) {
     override fun runtimeClassPaths(module: TestModule): List<File> {
-        return listOf(REFLEKT_PLUGIN, REFLEKT_DSL).map{ findJar(it, testServices) }
+        return listOf(REFLEKT_PLUGIN, REFLEKT_DSL).map { findJar(it, testServices) }
     }
 }

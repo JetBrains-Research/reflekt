@@ -9,6 +9,6 @@ import org.jetbrains.reflekt.plugin.compiler.providers.commonFiles.HelperTestBox
 open class AbstractHelpersTest : AbstractTest() {
     override fun configure(builder: TestConfigurationBuilder) {
         super.configure(builder)
-        builder.useAdditionalSourceProviders( { HelperTestBoxProvider(it) } )
+        builder.useAdditionalSourceProviders({ HelperTestBoxProvider(it) })
     }
 }
