@@ -8,6 +8,7 @@ import org.jetbrains.reflekt.plugin.generation.common.SmartReflektInvokeParts
 import org.jetbrains.reflekt.plugin.scripting.ImportChecker
 import org.jetbrains.reflekt.plugin.scripting.KotlinScriptRunner
 import org.jetbrains.reflekt.plugin.utils.Util.log
+import org.jetbrains.reflekt.plugin.utils.Util.getKotlinCompilerJar
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -18,6 +19,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
+import org.jetbrains.kotlin.ir.PsiIrFileEntry
 
 import java.io.File
 
@@ -43,6 +45,9 @@ class SmartReflektIrTransformer(
 ) : BaseReflektIrTransformer(messageCollector) {
     private val importChecker = ImportChecker(classpath)
     private val sources = HashMap<String, SourceFile>()
+
+    // TODO: check with real project: should we get it only for tests or not
+    private val kotlinCompilerJar = getKotlinCompilerJar()
 
     /**
      * Visit [IrCall] and replace IR to found entities if it is a SmartReflekt query
@@ -127,7 +132,7 @@ class SmartReflektIrTransformer(
     ): Boolean {
         for (filter in filters) {
             val result = KotlinScriptRunner(
-                classpath = classpath,
+                classpath = classpath + kotlinCompilerJar,
                 imports = imports,
                 properties = filter.parameters.zip(listOf(elementClass)),
                 code = filter.body,
@@ -147,10 +152,12 @@ class SmartReflektIrTransformer(
      */
     private fun getSourceFile(irFile: IrFile): SourceFile {
         val file = File(irFile.fileEntry.name)
-        return sources[file.absolutePath] ?: file.readText().toSourceFile().also {
+        return sources[file.absolutePath] ?: irFile.readText().toSourceFile().also {
             sources[file.absolutePath] = it
         }
     }
+
+    private fun IrFile.readText() = (this.fileEntry as PsiIrFileEntry).psiFile.text
 
     /**
      * Construct [SourceFile] manually from [String] (extract imports and its content)

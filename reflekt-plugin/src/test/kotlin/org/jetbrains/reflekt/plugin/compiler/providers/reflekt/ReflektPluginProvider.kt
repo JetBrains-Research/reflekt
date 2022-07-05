@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.test.services.TestServices
 import org.jetbrains.reflekt.plugin.ReflektComponentRegistrar
 import org.jetbrains.reflekt.plugin.util.ReflektClasspathProvider.REFLEKT_DSL
 import org.jetbrains.reflekt.plugin.util.ReflektClasspathProvider.REFLEKT_PLUGIN
+import org.jetbrains.reflekt.plugin.utils.Util.getKotlinCompilerJar
 import org.jetbrains.reflekt.plugin.util.ReflektClasspathProvider.findJar
 
 class ReflektPluginProvider(testServices: TestServices) : EnvironmentConfigurator(testServices) {
@@ -22,5 +23,6 @@ class ReflektPluginProvider(testServices: TestServices) : EnvironmentConfigurato
             val jar = findJar(it, testServices)
             configuration.addJvmClasspathRoot(jar)
         }
+        configuration.addJvmClasspathRoot(getKotlinCompilerJar())
     }
 }

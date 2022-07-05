@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrFunctionExpression
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
-import org.jetbrains.kotlin.types.KotlinType
 
 open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
     override fun visitElement(element: IrElement, data: Nothing?) {
@@ -57,7 +56,6 @@ class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
  * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct [SignatureToAnnotations].
  */
 class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
-    private var signature: KotlinType? = null
     private val annotations = HashSet<String>()
     private var irSignature: IrType? = null
 
@@ -67,7 +65,6 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
         when (function.name.asString()) {
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
                 annotations.addAll(expression.getFqNamesOfClassReferenceValueArguments())
-                signature = expression.getTypeArgument(0)?.toParameterizedType()
                 irSignature = expression.getTypeArgument(0)
             }
         }
@@ -77,7 +74,7 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
         fun collectInvokeArguments(expression: IrCall): SignatureToAnnotations? {
             val visitor = ReflektFunctionInvokeArgumentsCollector()
             expression.accept(visitor, null)
-            return visitor.signature?.let { SignatureToAnnotations(visitor.irSignature, visitor.annotations) }
+            return visitor.irSignature?.let { SignatureToAnnotations(visitor.irSignature, visitor.annotations) }
         }
     }
 }
