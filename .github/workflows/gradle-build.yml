@@ -12,7 +12,7 @@ jobs:
         uses: actions/setup-java@v3.4.0
         with:
           java-version: 11
-          distribution: adopt-openj9
+          distribution: liberica
       - uses: gradle/gradle-build-action@v2.2.1
         with:
           arguments: build --stacktrace
