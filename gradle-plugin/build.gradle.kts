@@ -12,7 +12,6 @@ dependencies {
     implementation(kotlin("gradle-plugin-api"))
     implementation(project(":reflekt-core"))
     api(project(":reflekt-dsl"))
-    implementation(kotlin("compiler-embeddable"))
     implementation(libs.kotlinx.serialization.protobuf)
 }
 

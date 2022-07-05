@@ -17,7 +17,13 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.kotlin.gradle.plugin)
-    implementation(libs.diktat.gradle.plugin)
-    implementation(libs.detekt.gradle.plugin)
+    implementation(libs.gradle.plugin.kotlin)
+    implementation(libs.gradle.plugin.diktat)
+    implementation(libs.gradle.plugin.detekt)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
 }

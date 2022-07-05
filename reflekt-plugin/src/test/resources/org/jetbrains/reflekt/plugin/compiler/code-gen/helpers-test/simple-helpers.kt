@@ -40,9 +40,10 @@ object A4: BInterface
 
 // FILE: TestCase.kt
 import org.jetbrains.reflekt.Reflekt
+import org.jetbrains.reflekt.test.helpers.checkObjectsCallResult
 
-fun box(): String {
-    val objects = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
-    val strRepresentation = objects.joinToString { it::class.qualifiedName ?: "Undefined name" }
-    return if (strRepresentation == "A2, A3") "OK"  else "Fail: $strRepresentation"
-}
+fun box(): String = checkObjectsCallResult(
+    { Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList() },
+    listOf("A2", "A3")
+)
+
