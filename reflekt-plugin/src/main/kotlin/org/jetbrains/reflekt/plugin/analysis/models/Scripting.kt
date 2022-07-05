@@ -1,18 +1,6 @@
 package org.jetbrains.reflekt.plugin.analysis.models
 
 import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.types.KotlinType
-
-/**
- * @property supertype
- * @property filters
- * @property imports
- */
-data class SupertypesToFilters(
-    val supertype: KotlinType? = null,
-    val filters: List<Lambda> = emptyList(),
-    val imports: List<Import> = emptyList(),
-)
 
 /**
  * @property body

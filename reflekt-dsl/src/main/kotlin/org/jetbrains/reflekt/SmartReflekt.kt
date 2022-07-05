@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.ir.declarations.*
 import kotlin.reflect.KClass
 
 /*
-* The main SmartReflekt DSL for `multi-module` projects
+* The main SmartReflekt DSL.
 * */
 @Suppress("UNUSED_PARAMETER")
 object SmartReflekt {

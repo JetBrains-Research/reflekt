@@ -349,4 +349,80 @@ public class CommonFilesTestGenerated extends AbstractCommonFilesTest {
             }
         }
     }
+
+    @Nested
+    @TestMetadata("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt")
+    @TestDataPath("$PROJECT_ROOT")
+    public class Smart_reflekt {
+        @Test
+        public void testAllFilesPresentInSmart_reflekt() throws Exception {
+            KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+        }
+
+        @Nested
+        @TestMetadata("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/classes")
+        @TestDataPath("$PROJECT_ROOT")
+        public class Classes {
+            @Test
+            public void testAllFilesPresentInClasses() throws Exception {
+                KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/classes"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+            }
+
+            @Test
+            @TestMetadata("classes-1.kt")
+            public void testClasses_1() throws Exception {
+                runTest("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/classes/classes-1.kt");
+            }
+
+            @Test
+            @TestMetadata("classes-2.kt")
+            public void testClasses_2() throws Exception {
+                runTest("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/classes/classes-2.kt");
+            }
+        }
+
+        @Nested
+        @TestMetadata("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/functions")
+        @TestDataPath("$PROJECT_ROOT")
+        public class Functions {
+            @Test
+            public void testAllFilesPresentInFunctions() throws Exception {
+                KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/functions"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+            }
+
+            @Test
+            @TestMetadata("functions-1.kt")
+            public void testFunctions_1() throws Exception {
+                runTest("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/functions/functions-1.kt");
+            }
+
+            @Test
+            @TestMetadata("functions-2.kt")
+            public void testFunctions_2() throws Exception {
+                runTest("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/functions/functions-2.kt");
+            }
+        }
+
+        @Nested
+        @TestMetadata("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/objects")
+        @TestDataPath("$PROJECT_ROOT")
+        public class Objects {
+            @Test
+            public void testAllFilesPresentInObjects() throws Exception {
+                KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/objects"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+            }
+
+            @Test
+            @TestMetadata("objects-1.kt")
+            public void testObjects_1() throws Exception {
+                runTest("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/objects/objects-1.kt");
+            }
+
+            @Test
+            @TestMetadata("objects-2.kt")
+            public void testObjects_2() throws Exception {
+                runTest("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/general-calling/smart-reflekt/objects/objects-2.kt");
+            }
+        }
+    }
 }
