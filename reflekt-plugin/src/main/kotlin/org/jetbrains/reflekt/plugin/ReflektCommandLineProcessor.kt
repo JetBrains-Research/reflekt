@@ -1,6 +1,5 @@
 package org.jetbrains.reflekt.plugin
 
-import com.google.auto.service.AutoService
 import org.jetbrains.kotlin.compiler.plugin.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -23,7 +22,6 @@ import java.io.File
  *  Should match up with the options returned from the ReflektSubPlugin.applyToCompilation in the gradle-plugin module.
  *  Should also have matching 'when'-branches for each option in the [processOption] function
  */
-@AutoService(CommandLineProcessor::class)
 class ReflektCommandLineProcessor : CommandLineProcessor {
     override val pluginId: String = PLUGIN_ID
     override val pluginOptions: Collection<CliOption> =

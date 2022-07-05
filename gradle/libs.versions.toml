@@ -7,7 +7,6 @@
 # Also, you should change the version in two places in the build.gradle.kts file in the example project
 kotlin = "1.8.0-dev-6"
 
-auto-service = "1.0.1"
 buildconfig = "3.0.3"
 detekt = "1.20.0"
 dokka = "1.6.21"
@@ -24,8 +23,6 @@ tomlj = "1.0.0"
 zip4j = "2.10.0"
 
 [libraries]
-auto-service = { module = "com.google.auto.service:auto-service", version.ref = "auto-service" }
-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service" }
 detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 diktat-gradle-plugin = { module = "org.cqfn.diktat:diktat-gradle-plugin", version.ref = "diktat" }
 # -------Tests-------
@@ -56,6 +53,5 @@ zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kosogor = { id = "tanvd.kosogor", version.ref = "kosogor" }
