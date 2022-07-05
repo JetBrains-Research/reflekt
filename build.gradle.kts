@@ -1,7 +1,5 @@
 import org.jetbrains.reflekt.buildutils.*
 
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
-
 group = "org.jetbrains.reflekt"
 version = libs.versions.kotlin.asProvider().get()
 
@@ -22,13 +20,16 @@ allprojects {
         }
     }
 
-    tasks.withType<KotlinJvmCompile> {
-        kotlinOptions.jvmTarget = "11"
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+        kotlinOptions {
+            jvmTarget = "11"
+        }
     }
 
     repositories {
         mavenCentral()
         google()
+        maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
         // Uncomment it for using the last kotlin compiler version
         // The full list of the build can be found here:
         // https://teamcity.jetbrains.com/buildConfiguration/Kotlin_KotlinPublic_BuildNumber?mode=builds&tag=bootstrap
@@ -42,7 +43,7 @@ allprojects {
     // We should publish the project in the local maven repository before the tests running
     @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
     tasks.withType<Test> {
-        dependsOn(tasks.withType<PublishToMavenLocal> {})
+        dependsOn(tasks.withType<PublishToMavenLocal> {}, ":reflekt-plugin:jar", ":reflekt-dsl:jar")
     }
 
     configureDiktat()

@@ -44,8 +44,9 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
 
         with(project) {
             afterEvaluate {
+                // TODO: check if it works correctly
                 project.sourceSets.apply {
-                    this.getAt("main").kotlin.srcDir(generationPath)
+                    this.getAt("main").allSource.srcDir(generationPath)
                 }
             }
         }
@@ -60,10 +61,10 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
         }
     }
 
-    // TODO: should we scan all dependencies or the user can set it up?
+    // TODO: should we scan all dependencies or the user can set up it?
     private fun Project.getReflektMetaFilesFromLibraries(): MutableSet<File> {
         val reflektMetaFilesFromLibraries: MutableSet<File> = HashSet()
-        // We should skip all kotlinCompiler configuration since they will be resolved later by the Kotlin compiler
+        // We should miss all kotlinCompiler configuration since they wiil be resolved later by the Kotlin compiler
         for (conf in this.configurations.filter { it.isCanBeResolved && !("kotlinCompiler" in it.name) }) {
             val files = reflektMetaFilesFromLibrariesMap.getOrPut(conf.name) { getReflektMetaFiles(getJarFilesToIntrospect(conf)) }
             reflektMetaFilesFromLibraries.addAll(files)

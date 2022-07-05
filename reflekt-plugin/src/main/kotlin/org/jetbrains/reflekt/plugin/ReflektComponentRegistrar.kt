@@ -2,8 +2,8 @@
 
 package org.jetbrains.reflekt.plugin
 
+import com.intellij.mock.MockProject
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
-import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
@@ -38,6 +38,8 @@ import java.io.File
  */
 @Suppress("TOO_LONG_FUNCTION")
 class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false) : ComponentRegistrar {
+    override val supportsK2: Boolean = false
+
     /**
      * Tne main plugin's function that parses all compiler arguments and runs all Kotlin compiler's extensions.
      * All extensions will be called multiple times (for each project module),

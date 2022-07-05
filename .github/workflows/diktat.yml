@@ -16,8 +16,6 @@ jobs:
         with:
           java-version: 11
           distribution: liberica
-      - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v1.0.4
       - uses: gradle/gradle-build-action@v2.1.5
         with:
           arguments: diktatCheckAll --stacktrace

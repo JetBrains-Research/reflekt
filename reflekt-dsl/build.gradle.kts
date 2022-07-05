@@ -5,7 +5,7 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
-    api(kotlin("compiler-embeddable"))
+    api(kotlin("compiler"))
 }
 
 publishJar {}

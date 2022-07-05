@@ -11,11 +11,11 @@ fun main() {
 //    tmp.a = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class).toList()
 //    println(tmp.a)
 //
-//    val objects = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
-//    println(objects)
-//    val objects1 = Reflekt.objects().withSuperType<AInterface>()
-//        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
-//    println(objects1)
+    val objects = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+    println(objects)
+    val objects1 = Reflekt.objects().withSuperType<AInterface>()
+        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+    println(objects1)
 //
 //    val objects2 = Reflekt.objects().withSuperTypes(AInterface::class, A1::class)
 //        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
@@ -52,28 +52,28 @@ fun main() {
 
 
 
-    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData }.resolve()
-    println(smartClasses)
-
-    val smartObjects = SmartReflekt.objects<Any>().filter { it.isCompanion }.resolve()
-    println(smartObjects)
-
-    val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name.asString() == "foo" }.resolve()
-    println(smartFunctions)
-    for (it in smartFunctions) it()
-
-    val fooBoolean = SmartReflekt.functions<() -> Boolean>().filter { it.isTopLevel && it.name.asString() == "fooBoolean" }.resolve().onEach { it() }
-        .map { it.toString() }.toSet()
-    println("fooBoolean: $fooBoolean")
-
-    val fooStar = SmartReflekt.functions<(List<*>) -> Unit>().filter { it.isTopLevel && it.name.asString() == "withStar" }.resolve().onEach { it(listOf(1)) }
-        .map { it.toString() }.toSet()
-    println("fooStar: $fooStar")
-
-    // TODO: support generics with bounds later. Currently this result will be empty
-    val fooBound = SmartReflekt.functions<(Number) -> Unit>().filter { it.isTopLevel && it.name.asString() == "withBound" }.resolve().onEach { it(1) }
-        .map { it.toString() }.toSet()
-    println("fooBound: $fooBound")
+//    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData }.resolve()
+//    println(smartClasses)
+//
+//    val smartObjects = SmartReflekt.objects<Any>().filter { it.isCompanion }.resolve()
+//    println(smartObjects)
+//
+//    val smartFunctions = SmartReflekt.functions<() -> Unit>().filter { it.isTopLevel && it.name.asString() == "foo" }.resolve()
+//    println(smartFunctions)
+//    for (it in smartFunctions) it()
+//
+//    val fooBoolean = SmartReflekt.functions<() -> Boolean>().filter { it.isTopLevel && it.name.asString() == "fooBoolean" }.resolve().onEach { it() }
+//        .map { it.toString() }.toSet()
+//    println("fooBoolean: $fooBoolean")
+//
+//    val fooStar = SmartReflekt.functions<(List<*>) -> Unit>().filter { it.isTopLevel && it.name.asString() == "withStar" }.resolve().onEach { it(listOf(1)) }
+//        .map { it.toString() }.toSet()
+//    println("fooStar: $fooStar")
+//
+//    // TODO: support generics with bounds later. Currently this result will be empty
+//    val fooBound = SmartReflekt.functions<(Number) -> Unit>().filter { it.isTopLevel && it.name.asString() == "withBound" }.resolve().onEach { it(1) }
+//        .map { it.toString() }.toSet()
+//    println("fooBound: $fooBound")
 
     /*
      * Such calls still fail, but it seems it's not a Reflekt problem since Kotlin doesn't consider our functions as subtypes of the given signature.

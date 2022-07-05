@@ -1,16 +1,14 @@
 package org.jetbrains.reflekt.plugin.scripting
 
 import org.jetbrains.reflekt.plugin.analysis.models.Import
-import org.jetbrains.reflekt.plugin.util.MavenLocalUtil.getReflektProjectJars
+import org.jetbrains.reflekt.plugin.util.ReflektClasspathProvider
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertEquals
 
-@Tag("scripting")
 class KotlinScriptRunnerTest {
     @Test
     fun simpleEval() {
         val script = KotlinScriptRunner("30 + 12")
-        assertEquals(42, script.eval())
+        Assertions.assertEquals(42, script.eval())
     }
 
     @Test
@@ -19,7 +17,8 @@ class KotlinScriptRunnerTest {
             properties = listOf("a" to IntArray::class, "b" to String::class),
             code = "a.size.toString() + b",
         )
-        assertEquals("42",
+        Assertions.assertEquals(
+            "42",
             script.eval(listOf(intArrayOf(1, 2, 3, 4), "2")),
         )
     }
@@ -34,14 +33,17 @@ class KotlinScriptRunnerTest {
         assertDoesNotThrow {
             KotlinScriptRunner(
                 code = code,
-                classpath = getReflektProjectJars().toList(),
+                classpath = listOf(ReflektClasspathProvider.REFLEKT_PLUGIN, ReflektClasspathProvider.REFLEKT_DSL)
+                    .map {
+                        ReflektClasspathProvider.findJar(it)
+                    },
             ).run()
         }
     }
 
     @Test
     fun scriptWithImports() {
-        assertEquals(
+        Assertions.assertEquals(
             "kotlin.String",
             KotlinScriptRunner(
                 code = """
@@ -57,6 +59,7 @@ class KotlinScriptRunnerTest {
     companion object {
         // Equals private val with same name from org.jetbrains.kotlin.scripting.compiler.plugin.impl
         private const val SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY = "script.compilation.disable.plugins"
+
         @BeforeAll
         @JvmStatic
         fun disableCompilerTestingPlugin() {
