@@ -33,4 +33,10 @@ public class HelpersTestGenerated extends AbstractHelpersTest {
     public void testSimple_helpers() throws Exception {
         runTest("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/helpers-test/simple-helpers.kt");
     }
+
+    @Test
+    @TestMetadata("simple-helpers.kt")
+    public void testSimple_helper_copy() throws Exception {
+        runTest("reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/code-gen/helpers-test/simple-helpers.kt");
+    }
 }
