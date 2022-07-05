@@ -45,6 +45,7 @@ class SmartReflektIrTransformer(
 ) : BaseReflektIrTransformer(messageCollector) {
     private val importChecker = ImportChecker(classpath)
     private val sources = HashMap<String, SourceFile>()
+
     // TODO: check with real project: should we get it only for tests or not
     private val kotlinCompilerJar = getKotlinCompilerJar()
 
