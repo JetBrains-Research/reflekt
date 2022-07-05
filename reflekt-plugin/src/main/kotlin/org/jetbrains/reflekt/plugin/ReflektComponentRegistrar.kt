@@ -2,7 +2,6 @@
 
 package org.jetbrains.reflekt.plugin
 
-import com.google.auto.service.AutoService
 import com.intellij.mock.MockProject
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
@@ -23,8 +22,8 @@ import java.io.File
 /**
  * Registers the plugin and applies it to the project.
  * We have two main cases to interact with Reflekt:
- *  a) the project case
- *  b) the library case
+ *  a) the project case,
+ *  b) the library case.
  *
  * The project case means that we search for Reflekt and SmartReflekt queries only in the current project,
  *  and replace their IR.
@@ -37,7 +36,6 @@ import java.io.File
  *
  * @property isTestConfiguration indicates if the plugin is used in tests
  */
-@AutoService(ComponentRegistrar::class)
 @Suppress("TOO_LONG_FUNCTION")
 class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false) : ComponentRegistrar {
     override val supportsK2: Boolean = false
