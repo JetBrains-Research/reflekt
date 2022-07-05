@@ -71,4 +71,3 @@ open class AbstractTest : BaseTestRunner(), RunnerWithTargetBackendForTestGenera
         )
     }
 }
-

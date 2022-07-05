@@ -9,6 +9,3 @@ class HelperTestBoxProvider(
     testServices: TestServices,
     helpersPath: String = "reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler/additional-sources/helpers",
 ) : CommonFilesProvider(testServices, helpersPath)
-
-
-
