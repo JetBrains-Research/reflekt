@@ -21,3 +21,9 @@ dependencies {
     implementation(libs.gradle.plugin.diktat)
     implementation(libs.gradle.plugin.detekt)
 }
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
