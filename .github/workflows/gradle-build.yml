@@ -15,7 +15,9 @@ jobs:
           distribution: liberica
       - uses: gradle/gradle-build-action@v2.2.1
         with:
-          arguments: build --stacktrace
+          arguments: build --stacktrace -x test
+      - name: Gradle Test
+        run: ./gradlew test
       - name: Upload Test Report
         uses: actions/upload-artifact@v3.1.0
         if: ${{ always() }}
@@ -23,3 +25,4 @@ jobs:
           name: test-report
           path: |
             reflekt-plugin/build/reports/tests/**/*
+            
