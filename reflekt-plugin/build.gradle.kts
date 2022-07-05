@@ -5,7 +5,6 @@ version = rootProject.version
 
 plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
-    id(libs.plugins.kotlin.kapt.get().pluginId)
 }
 
 dependencies {
@@ -13,9 +12,6 @@ dependencies {
     implementation(kotlin("scripting-common"))
     implementation(kotlin("scripting-jvm"))
     implementation(kotlin("scripting-jvm-host"))
-
-    implementation(libs.auto.service.annotations)
-    kapt(libs.auto.service)
 
     implementation(project(":reflekt-core"))
     implementation(project(":reflekt-dsl"))
@@ -52,10 +48,6 @@ tasks.create("analysis", Test::class.java) {
     testLogging {
         events("passed", "skipped", "failed")
     }
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>> {
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 }
 
 tasks.processTestResources.configure {
