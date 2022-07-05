@@ -13,8 +13,6 @@ jobs:
         with:
           java-version: 11
           distribution: adopt-openj9
-      - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v1.0.4
       - uses: gradle/gradle-build-action@v2.2.1
         with:
           arguments: build --stacktrace

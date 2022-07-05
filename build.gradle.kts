@@ -9,12 +9,15 @@ plugins {
     alias(libs.plugins.buildconfig) apply false
     alias(libs.plugins.dokka)
     id(libs.plugins.kotlin.jvm.get().pluginId)
-    id(libs.plugins.kotlin.kapt.get().pluginId)
 }
 
 allprojects {
     apply {
         plugin("kotlin")
+
+        tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>> {
+            kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+        }
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {

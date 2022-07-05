@@ -4,7 +4,6 @@ group = rootProject.group
 version = rootProject.version
 
 plugins {
-    kotlin("kapt")
     `kotlin-dsl`
     alias(libs.plugins.kotlin.plugin.serialization)
 }

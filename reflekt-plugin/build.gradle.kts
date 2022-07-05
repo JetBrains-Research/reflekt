@@ -5,16 +5,12 @@ version = rootProject.version
 
 plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
-    id(libs.plugins.kotlin.kapt.get().pluginId)
 }
 
 dependencies {
     implementation(kotlin("scripting-common"))
     implementation(kotlin("scripting-jvm"))
     implementation(kotlin("scripting-jvm-host-unshaded"))
-
-    implementation(libs.auto.service.annotations)
-    kapt(libs.auto.service)
 
     implementation(project(":reflekt-core"))
     implementation(project(":reflekt-dsl"))

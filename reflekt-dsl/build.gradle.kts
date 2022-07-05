@@ -9,7 +9,3 @@ dependencies {
 }
 
 publishJar {}
-
-tasks.withType<KotlinCompile<*>> {
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-}
