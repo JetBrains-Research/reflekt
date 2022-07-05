@@ -1,46 +1,29 @@
-name: Kotlin build
+name: Gradle Build
 
 on: [push]
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3.0.2
-      # Setup Java 11 environment for the next steps
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3.4.0
-        with:
-          java-version: 11
-
   build:
-    needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+
     steps:
-      # Setup Java 11 environment for the next steps
-      - name: Setup Java
-        uses: actions/setup-java@v3.4.0
+      - uses: actions/checkout@v3.0.0
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3.0.0
         with:
           java-version: 11
-
-      - uses: actions/checkout@v3.0.2
-      - run: ./gradlew build -x test
-
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      # Setup Java 11 environment for the next steps
-      - name: Setup Java
-        uses: actions/setup-java@v3.4.0
+          distribution: liberica
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1.0.4
+      - uses: gradle/gradle-build-action@v2.1.5
         with:
-          java-version: 11
-      - uses: actions/checkout@v3.0.2
-      - run: ./gradlew test
+          arguments: build --stacktrace -x test
+      - name: Gradle Wrapper Validation
+        run: ./gradlew test
       - name: Upload Test Report
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
           name: test-report
           path: |
-            reflekt-plugin/build/reports/tests/**/*  
+            reflekt-plugin/build/reports/tests/**/*
