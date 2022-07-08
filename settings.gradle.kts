@@ -1,9 +1,13 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = "reflekt"
 
-include(":reflekt-core")
-include(":reflekt-dsl")
-include(":reflekt-plugin")
-include(":gradle-plugin")
+include(
+    ":reflekt-core",
+    ":reflekt-dsl",
+    ":reflekt-plugin",
+    ":gradle-plugin",
+)
 
 pluginManagement {
     repositories {
@@ -20,5 +24,3 @@ pluginManagement {
         // }
     }
 }
-
-enableFeaturePreview("VERSION_CATALOGS")

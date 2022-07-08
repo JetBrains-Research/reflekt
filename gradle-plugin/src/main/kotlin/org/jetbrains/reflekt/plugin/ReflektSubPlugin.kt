@@ -15,15 +15,12 @@ import org.jetbrains.reflekt.util.Util.REFLEKT_META_FILE_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.REFLEKT_META_FILE_PATH
 import org.jetbrains.reflekt.util.Util.SAVE_METADATA_OPTION_INFO
 import org.jetbrains.reflekt.util.Util.VERSION
-import org.jetbrains.reflekt.util.file.extractAllFiles
 import java.io.File
 
 typealias ReflektMetaFilesFromLibrariesMap = HashMap<String, Set<File>>
 
 @Suppress("TooManyFunctions")
 class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
-    private val reflektMetaFile = "ReflektMeta"
-    private val metaInfDir = "META-INF"
     private lateinit var reflektMetaFilesFromLibrariesMap: ReflektMetaFilesFromLibrariesMap
 
     @Suppress("TYPE_ALIAS")
@@ -46,7 +43,7 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
             afterEvaluate {
                 // TODO: check if it works correctly
                 project.sourceSets.apply {
-                    this.getAt("main").allSource.srcDir(generationPath)
+                    getAt("main").allSource.srcDir(generationPath)
                 }
             }
         }
@@ -62,20 +59,17 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
     }
 
     // TODO: should we scan all dependencies or the user can set up it?
-    private fun Project.getReflektMetaFilesFromLibraries(): MutableSet<File> {
-        val reflektMetaFilesFromLibraries: MutableSet<File> = HashSet()
-        // We should miss all kotlinCompiler configuration since they wiil be resolved later by the Kotlin compiler
-        for (conf in this.configurations.filter { it.isCanBeResolved && !("kotlinCompiler" in it.name) }) {
-            val files = reflektMetaFilesFromLibrariesMap.getOrPut(conf.name) { getReflektMetaFiles(getJarFilesToIntrospect(conf)) }
-            reflektMetaFilesFromLibraries.addAll(files)
+    private fun Project.getReflektMetaFilesFromLibraries(): MutableSet<File> = configurations.asSequence()
+        .filter { it.isCanBeResolved }
+        .filterNot { "kotlinCompiler" in it.name }  // We should miss all kotlinCompiler configuration since they will be resolved later by the Kotlin compiler
+        .flatMapTo(HashSet()) {
+            reflektMetaFilesFromLibrariesMap.getOrPut(it.name) { getReflektMetaFiles(getJarFilesToIntrospect(it)) }
         }
-        return reflektMetaFilesFromLibraries
-    }
 
     private fun createReflektMeta(resourcesDir: String): File {
-        val metaInfDir = File("$resourcesDir/$metaInfDir")
+        val metaInfDir = File("$resourcesDir/$META_INF_DIR")
         metaInfDir.mkdirs()
-        return File("${metaInfDir.path}/$reflektMetaFile")
+        return File(metaInfDir, REFLEKT_META_FILE)
     }
 
     @Suppress("ForbiddenComment")
@@ -96,32 +90,24 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
         version = VERSION,
     )
 
-    private fun getReflektMetaFile(jarFile: File) = jarFile.extractAllFiles().find { it.name == reflektMetaFile }
+    private fun Project.getReflektMetaFile(jarFile: File) = zipTree(jarFile).files.find { it.name == REFLEKT_META_FILE }
 
-    private fun getReflektMetaFiles(jarFiles: Set<File>): Set<File> {
-        val files: MutableSet<File> = mutableSetOf()
-        for (jar in jarFiles) {
-            getLibJarWithoutSources(jar)?.let { f ->
-                getReflektMetaFile(f)?.let {
-                    files.add(it)
-                }
-            }
-        }
-        return files
-    }
+    private fun Project.getReflektMetaFiles(jarFiles: Set<File>): Set<File> =
+        jarFiles.mapNotNull { getLibJarWithoutSources(it) }.mapNotNull { getReflektMetaFile(it) }.toSet()
 
     private fun getLibJarWithoutSources(jarFile: File): File? {
         val jarName = "${jarFile.name.substringBeforeLast('.', "")}.jar"
         // TODO: make sure each jar has the same file structure and it's safe to call jarFile.parentFile.parentFile.listFiles()
-        jarFile.parentFile.parentFile.listFiles()?.filter { it.isDirectory }?.forEach { folder ->
-            folder.listFiles()?.find { it.name == jarName }.let {
-                return it
-            }
-        }
-        return null
+        return jarFile.parentFile.parentFile.listFiles()?.firstOrNull { it.isDirectory }?.listFiles()
+            ?.find { it.name == jarName }
     }
 
     @Suppress("SpreadOperator")
-    private fun getJarFilesToIntrospect(configuration: Configuration) =
+    private fun getJarFilesToIntrospect(configuration: Configuration): Set<File> =
         configuration.files(*configuration.dependencies.toTypedArray()).toSet()
+
+    private companion object {
+        private const val META_INF_DIR = "META-INF"
+        private const val REFLEKT_META_FILE = "ReflektMeta"
+    }
 }

@@ -9,7 +9,7 @@ import org.gradle.api.Project
  *   // ... set other members on the ReflektGradleExtension class
  * }
  */
-@Suppress("CUSTOM_GETTERS_SETTERS")
+@PublishedApi
 internal val Project.reflekt: ReflektGradleExtension
     get() = project.extensions.findByType(ReflektGradleExtension::class.java) ?: run {
         extensions.create("reflekt", ReflektGradleExtension::class.java)
@@ -41,6 +41,6 @@ open class ReflektGradleExtension {
  *
  * @param configure
  */
-fun Project.reflekt(configure: ReflektGradleExtension.() -> Unit) {
+inline fun Project.reflekt(configure: ReflektGradleExtension.() -> Unit) {
     reflekt.apply(configure)
 }

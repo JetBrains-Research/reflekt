@@ -21,24 +21,21 @@ object Util {
         valueDescription = "<true|false>",
         description = "Whether to enable the Reflekt plugin or not",
     )
-    val DEPENDENCY_JAR_OPTION_INFO =
-        MyCliOption(
-            name = "dependencyJar",
-            valueDescription = "<dependency jar>",
-            description = "Project dependency jar file",
-        )
-    val REFLEKT_META_FILE_OPTION_INFO =
-        MyCliOption(
-            name = "reflektMetaFile",
-            valueDescription = "<file's path>",
-            description = "File's path from the library with Reflekt meta information",
-        )
-    val OUTPUT_DIR_OPTION_INFO =
-        MyCliOption(
-            name = "outputDir",
-            valueDescription = "<path>",
-            description = "Resulting generated files",
-        )
+    val DEPENDENCY_JAR_OPTION_INFO = MyCliOption(
+        name = "dependencyJar",
+        valueDescription = "<dependency jar>",
+        description = "Project dependency jar file",
+    )
+    val REFLEKT_META_FILE_OPTION_INFO = MyCliOption(
+        name = "reflektMetaFile",
+        valueDescription = "<file's path>",
+        description = "File's path from the library with Reflekt meta information",
+    )
+    val OUTPUT_DIR_OPTION_INFO = MyCliOption(
+        name = "outputDir",
+        valueDescription = "<path>",
+        description = "Resulting generated files",
+    )
     val SAVE_METADATA_OPTION_INFO = MyCliOption(
         name = "toSaveMetadata",
         valueDescription = "<true|false>",
