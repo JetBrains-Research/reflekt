@@ -21,53 +21,48 @@ import org.jetbrains.kotlin.test.model.FrontendKinds
 import org.jetbrains.kotlin.test.runners.RunnerWithTargetBackendForTestGeneratorMarker
 import org.jetbrains.kotlin.test.runners.codegen.commonConfigurationForCodegenTest
 import org.jetbrains.kotlin.test.runners.codegen.configureCommonHandlersForBoxTest
-import org.jetbrains.reflekt.plugin.compiler.providers.reflekt.ReflektPluginProvider
-import org.jetbrains.reflekt.plugin.compiler.providers.reflekt.ReflektRuntimeClasspathProvider
 
-open class AbstractTest : BaseTestRunner(), RunnerWithTargetBackendForTestGeneratorMarker {
+abstract class AbstractTest : BaseTestRunner(), RunnerWithTargetBackendForTestGeneratorMarker {
     override val targetBackend: TargetBackend
         get() = TargetBackend.JVM_IR
 
 
     override fun TestConfigurationBuilder.configuration() {
-        commonConfigurationForCodegenTest(
-            FrontendKinds.ClassicFrontend,
-            ::ClassicFrontendFacade,
-            ::ClassicFrontend2IrConverter,
-            ::JvmIrBackendFacade
-        )
+        baseOldFrontEndIrBackEndBoxConfiguration()
+    }
+}
 
-        globalDefaults {
-            targetBackend = TargetBackend.JVM_IR
-            targetPlatform = JvmPlatforms.defaultJvmPlatform
-            dependencyKind = DependencyKind.Binary
-            frontend = FrontendKinds.ClassicFrontend
-        }
+fun TestConfigurationBuilder.baseOldFrontEndIrBackEndBoxConfiguration() {
+    commonConfigurationForCodegenTest(
+        FrontendKinds.ClassicFrontend,
+        ::ClassicFrontendFacade,
+        ::ClassicFrontend2IrConverter,
+        ::JvmIrBackendFacade
+    )
 
-        defaultDirectives {
-            +DUMP_IR
-            +WITH_STDLIB
-            JVM_TARGET with JvmTarget.JVM_11
-            +IGNORE_DEXING
-            +FULL_JDK
-            +WITH_REFLECT
-        }
+    globalDefaults {
+        targetBackend = TargetBackend.JVM_IR
+        targetPlatform = JvmPlatforms.defaultJvmPlatform
+        dependencyKind = DependencyKind.Binary
+        frontend = FrontendKinds.ClassicFrontend
+    }
 
-        configureClassicFrontendHandlersStep {
-            useHandlers(
-                ::DiagnosticMessagesTextHandler,
-            )
-        }
+    defaultDirectives {
+        +DUMP_IR
+        +WITH_STDLIB
+        JVM_TARGET with JvmTarget.JVM_11
+        +IGNORE_DEXING
+        +FULL_JDK
+        +WITH_REFLECT
+    }
 
-        configureCommonHandlersForBoxTest()
-        useAfterAnalysisCheckers(::BlackBoxCodegenSuppressor)
-        enableMetaInfoHandler()
-
-        useConfigurators(
-            ::ReflektPluginProvider,
-        )
-        useCustomRuntimeClasspathProviders(
-            ::ReflektRuntimeClasspathProvider,
+    configureClassicFrontendHandlersStep {
+        useHandlers(
+            ::DiagnosticMessagesTextHandler,
         )
     }
+
+    configureCommonHandlersForBoxTest()
+    useAfterAnalysisCheckers(::BlackBoxCodegenSuppressor)
+    enableMetaInfoHandler()
 }

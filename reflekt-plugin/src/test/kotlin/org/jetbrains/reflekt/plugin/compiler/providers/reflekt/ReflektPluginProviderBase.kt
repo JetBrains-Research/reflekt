@@ -13,7 +13,7 @@ import org.jetbrains.reflekt.plugin.util.ReflektClasspathProvider.REFLEKT_PLUGIN
 import org.jetbrains.reflekt.plugin.utils.Util.getKotlinCompilerJar
 import org.jetbrains.reflekt.plugin.util.ReflektClasspathProvider.findJar
 
-class ReflektPluginProvider(testServices: TestServices) : EnvironmentConfigurator(testServices) {
+abstract class ReflektPluginProviderBase(testServices: TestServices) : EnvironmentConfigurator(testServices) {
     override fun registerCompilerExtensions(project: Project, module: TestModule, configuration: CompilerConfiguration) {
         ReflektComponentRegistrar(true).registerProjectComponents(project as MockProject, configuration)
     }
