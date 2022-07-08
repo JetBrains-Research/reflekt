@@ -16,33 +16,33 @@ import org.jetbrains.reflekt.plugin.generation.common.*
 class GenerationSymbols(private val pluginContext: IrPluginContext) {
     private val irBuiltIns = pluginContext.irBuiltIns
     val anyConstructor = irBuiltIns.anyClass.constructors.single()
-    val jvmSyntheticConstructor = pluginContext.referenceConstructors(JvmNames.JVM_SYNTHETIC_ANNOTATION_FQ_NAME).first()
-    val jvmFieldConstructor = pluginContext.referenceConstructors(FqName("kotlin.jvm.JvmField")).first()
-    val listOf = funCollectionOf("kotlin.collections.listOf")
+    val jvmSyntheticConstructor = referenceConstructorsOrFail(JvmNames.JVM_SYNTHETIC_ANNOTATION_FQ_NAME).first()
+    val jvmFieldConstructor = referenceConstructorsOrFail(FqName("kotlin.jvm.JvmField")).first()
+    val listOf = referenceVarargCollectionFunction("kotlin.collections.listOf")
     val mapGet = irBuiltIns.mapClass.owner.functions.first { it.name.asString() == "get" && it.valueParameters.size == 1 }.symbol
-    val setOf = funCollectionOf("kotlin.collections.setOf")
-    val hashMapClass = pluginContext.referenceTypeAlias(FqName("kotlin.collections.HashMap"))!!.owner.expandedType
-        .classOrNull!!
-    val hashMapOf = funCollectionOf("kotlin.collections.hashMapOf")
-    val hashSetOf = funCollectionOf("kotlin.collections.hashSetOf")
-    private val hashSetClass = pluginContext.referenceTypeAlias(FqName("kotlin.collections.HashSet"))!!.owner.expandedType
-        .classOrNull!!
-    private val mutableSetClass = pluginContext.referenceClass(FqName("kotlin.collections.MutableSet"))!!
+    val setOf = referenceVarargCollectionFunction("kotlin.collections.setOf")
+    val hashMapClass = referenceTypeAliasOrFail("kotlin.collections.HashMap").owner.expandedType.classOrNull!!
+    val hashMapOf = referenceVarargCollectionFunction("kotlin.collections.hashMapOf")
+    val hashSetOf = referenceVarargCollectionFunction("kotlin.collections.hashSetOf")
+    private val hashSetClass = referenceTypeAliasOrFail("kotlin.collections.HashSet").owner.expandedType.classOrNull!!
+    private val mutableSetClass = referenceClassOrFail("kotlin.collections.MutableSet")
     val mutableSetAdd = mutableSetClass.functionByName("add")
     val hashSetConstructor = hashSetClass.constructors.first { it.owner.valueParameters.isEmpty() }
-    val pairClass = pluginContext.referenceClass(FqName("kotlin.Pair"))!!
-    val to = pluginContext.referenceFunctions(FqName("kotlin.to")).first()
-    val reflektClassClass = pluginContext.referenceClass(FqName("org.jetbrains.reflekt.ReflektClass"))!!
-    val reflektClassImplClass = pluginContext.referenceClass(FqName("org.jetbrains.reflekt.ReflektClassImpl"))!!
+    val pairClass = referenceClassOrFail("kotlin.Pair")
+    val to = checkNotNull(pluginContext.referenceFunctions(FqName("kotlin.to")).takeIf { it.isNotEmpty() }) {
+        "Can't reference functions named ${"kotlin.to"}, Kotlin standard library or Reflekt DSL aren't available"
+    }.first()
+    val reflektClassClass = referenceClassOrFail("org.jetbrains.reflekt.ReflektClass")
+    val reflektClassImplClass = referenceClassOrFail("org.jetbrains.reflekt.ReflektClassImpl")
     val reflektClassImplConstructor = reflektClassImplClass.constructors.first()
     val reflektClassImplGetSealedSubclasses = reflektClassImplClass.getPropertyGetter("sealedSubclasses")!!
     val reflektClassImplGetSuperclasses = reflektClassImplClass.getPropertyGetter("superclasses")!!
-    val reflektVisibilityClass = pluginContext.referenceClass(FqName("org.jetbrains.reflekt.ReflektVisibility"))!!
+    val reflektVisibilityClass = referenceClassOrFail("org.jetbrains.reflekt.ReflektVisibility")
 
-    private fun funCollectionOf(fqName: String) = pluginContext.referenceFunctions(FqName(fqName)).first {
+    private fun referenceVarargCollectionFunction(fqName: String) = pluginContext.referenceFunctions(FqName(fqName)).firstOrNull {
         val parameters = it.owner.valueParameters
         parameters.size == 1 && parameters[0].isVararg
-    }
+    } ?: error("Can't reference function $fqName, Kotlin standard library or Reflekt DSL aren't available")
 
     /**
      * Generates IR for the Reflekt terminal function (toList/toSet/etc).
@@ -59,4 +59,17 @@ class GenerationSymbols(private val pluginContext: IrPluginContext) {
             SmartReflektTerminalFunction.RESOLVE -> listOf
         }
     }
+
+    private fun referenceClassOrFail(fqNameString: String) = checkNotNull(pluginContext.referenceClass(FqName(fqNameString))) {
+        "Can't reference class $fqNameString, Kotlin standard library or Reflekt DSL aren't available"
+    }
+
+    private fun referenceTypeAliasOrFail(fqNameString: String) = checkNotNull(pluginContext.referenceTypeAlias(FqName(fqNameString))) {
+        "Can't reference class $fqNameString, Kotlin standard library or Reflekt DSL aren't available"
+    }
+
+    private fun referenceConstructorsOrFail(fqName: FqName) =
+        checkNotNull(pluginContext.referenceConstructors(fqName).takeIf { it.isNotEmpty() }) {
+            "Can't reference constructors of $fqName, Kotlin standard library or Reflekt DSL aren't available"
+        }
 }

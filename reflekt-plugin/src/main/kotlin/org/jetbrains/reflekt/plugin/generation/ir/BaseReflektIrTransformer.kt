@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.fields
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.reflekt.plugin.analysis.common.ReflektClassRegistry
+import org.jetbrains.reflekt.plugin.analysis.common.StorageClassProperties
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.ir.isSubtypeOf
 import org.jetbrains.reflekt.plugin.analysis.ir.toParameterizedType
@@ -81,7 +81,7 @@ open class BaseReflektIrTransformer(
                                     generationSymbols.mapGet,
                                     dispatchReceiver = irGetField(
                                         irGetObject(storageClass),
-                                        storageClass.fields.map { it.owner }.first { it.name == ReflektClassRegistry.REFLEKT_CLASSES.propertyNameName },
+                                        storageClass.fields.map { it.owner }.first { it.name == StorageClassProperties.REFLEKT_CLASSES.propertyNameName },
                                     ),
                                     valueArguments = listOf(irClassReference(classSymbol)),
                                 ),

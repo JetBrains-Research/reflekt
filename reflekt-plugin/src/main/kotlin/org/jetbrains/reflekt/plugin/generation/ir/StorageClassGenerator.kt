@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.Variance
-import org.jetbrains.reflekt.plugin.analysis.common.ReflektClassRegistry
+import org.jetbrains.reflekt.plugin.analysis.common.StorageClassProperties
 import org.jetbrains.reflekt.plugin.analysis.processor.toReflektVisibility
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.getImmediateSuperclasses
@@ -63,7 +63,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
             }
 
             irClass.addField {
-                name = ReflektClassRegistry.REFLEKT_CLASSES.propertyNameName
+                name = StorageClassProperties.REFLEKT_CLASSES.propertyNameName
                 type = irBuiltIns.mapClass.createType(
                     false,
                     listOf(irBuiltIns.kClassClass.starProjectedType, generationSymbols.reflektClassClass.starProjectedType),
@@ -213,7 +213,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
 
                 +irSetField(
                     irGet(storageClass.thisReceiver!!),
-                    storageClass.fields.first { it.name == ReflektClassRegistry.REFLEKT_CLASSES.propertyNameName },
+                    storageClass.fields.first { it.name == StorageClassProperties.REFLEKT_CLASSES.propertyNameName },
                     irGet(mVariable),
                 )
             }

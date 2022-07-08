@@ -56,7 +56,7 @@ enum class ReflektNestedClass(val className: String) {
 /**
  * @property propertyNameString
  */
-enum class ReflektClassRegistry(val propertyNameString: String) {
+enum class StorageClassProperties(val propertyNameString: String) {
     REFLEKT_CLASSES("reflektClasses"),
     ;
 
