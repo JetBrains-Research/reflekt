@@ -31,12 +31,12 @@ typealias ModuleStorageClassesMap = MutableMap<Name, Pair<IrClassSymbol, Mutable
  * @property pluginContext
  * @property messageCollector
  */
-open class BaseReflektIrTransformer(
+abstract class BaseReflektIrTransformer(
     final override val pluginContext: IrPluginContext,
     private val messageCollector: MessageCollector?,
     private val storageClassGenerator: StorageClassGenerator = StorageClassGenerator(pluginContext),
 ) : IrElementTransformerVoidWithContext(), IrBuilderExtension {
-    private val generationSymbols = GenerationSymbols(pluginContext)
+    override val generationSymbols = GenerationSymbols(pluginContext)
 
     /**
      * Map of stored class data: keys are module fragments, values are pairs of storage class and data need to be stored in it afterward.
@@ -77,13 +77,12 @@ open class BaseReflektIrTransformer(
                         irTypeCast(
                             itemType,
                             irCheckNotNull(
-                                irCall(
-                                    generationSymbols.mapGet,
-                                    dispatchReceiver = irGetField(
+                                irMapGet(
+                                    map = irGetField(
                                         irGetObject(storageClass),
                                         storageClass.fields.map { it.owner }.first { it.name == StorageClassProperties.REFLEKT_CLASSES.propertyNameName },
                                     ),
-                                    valueArguments = listOf(irClassReference(classSymbol)),
+                                    key = irClassReference(classSymbol),
                                 ),
                             ),
                         )

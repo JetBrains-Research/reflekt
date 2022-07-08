@@ -2,6 +2,7 @@ package org.jetbrains.reflekt.plugin.generation.ir
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
+import org.jetbrains.kotlin.backend.jvm.fieldByName
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.EmptyPackageFragmentDescriptor
 import org.jetbrains.kotlin.ir.builders.*
@@ -17,18 +18,15 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.reflekt.plugin.analysis.common.StorageClassProperties
-import org.jetbrains.reflekt.plugin.analysis.processor.toReflektVisibility
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.getImmediateSuperclasses
-import org.jetbrains.reflekt.plugin.utils.getValueArguments
 
 /**
  * @property pluginContext
  */
 class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBuilderExtension {
     private val irFactory = pluginContext.irFactory
-    private val generationSymbols = GenerationSymbols(pluginContext)
-    private val kClassAndReflektClassStarProjections = listOf(irBuiltIns.kClassClass.starProjectedType, generationSymbols.reflektClassClass.starProjectedType)
+    override val generationSymbols = GenerationSymbols(pluginContext)
     private val mVariableName = Name.identifier("m")
 
     private fun syntheticFile(packageFragmentDescriptor: PackageFragmentDescriptor, name: String, module: IrModuleFragment): IrFile =
@@ -70,8 +68,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
                 )
             }.also { field ->
                 val irBuilder = DeclarationIrBuilder(pluginContext, field.symbol, field.startOffset, field.endOffset)
-                field.annotations =
-                    listOf(irBuilder.irCall(generationSymbols.jvmSyntheticConstructor), irBuilder.irCall(generationSymbols.jvmFieldConstructor))
+                field.annotations = listOf(irBuilder.irCall(generationSymbols.jvmSyntheticConstructor), irBuilder.irCall(generationSymbols.jvmFieldConstructor))
             }
         }.symbol
     }
@@ -81,93 +78,43 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
         storageClasses.values.asSequence().map { (a, b) -> a.owner to b.map { it.owner } }.forEach { (storageClass, storedClasses) ->
             storageClass.contributeAnonymousInitializer {
                 val mVariable = irVariableVal(
-                    parent = storageClass, name = mVariableName, type = generationSymbols.hashMapClass.createType(false, kClassAndReflektClassStarProjections),
-                    isConst = false, isLateinit = false,
+                    parent = storageClass,
+                    name = mVariableName,
+                    type = generationSymbols.hashMapClass.createType(
+                        false,
+                        listOf(irBuiltIns.kClassClass.starProjectedType, generationSymbols.reflektClassClass.starProjectedType)
+                    ),
+                    isConst = false,
+                    isLateinit = false,
                 ).also { variable ->
-                    variable.initializer = irCall(
-                        generationSymbols.hashMapOf,
-                        typeArguments = kClassAndReflektClassStarProjections,
-                        valueArguments = listOf(
-                            irVarargOut(
-                                generationSymbols.pairClass.createType(false, kClassAndReflektClassStarProjections),
-                                storedClasses.map { storedClass ->
-                                    irCall(
-                                        generationSymbols.to,
-                                        typeArguments = kClassAndReflektClassStarProjections,
-                                        extensionReceiver = irClassReference(storedClass.symbol),
-                                        valueArguments = listOf(
-                                            irCall(
-                                                generationSymbols.reflektClassImplConstructor,
-                                                typeArguments = listOf(storedClass.symbol.defaultType),
-                                                valueArguments = listOf(
-                                                    irClassReference(storedClass.symbol),
-                                                    irCall(
-                                                        generationSymbols.hashSetOf,
-                                                        typeArguments = listOf(irBuiltIns.annotationType),
-                                                        valueArguments = listOf(
-                                                            irVarargOut(
-                                                                irBuiltIns.annotationType,
-                                                                storedClass.annotations.map { irCall(it.symbol, valueArguments = it.getValueArguments()) }),
-                                                        ),
-                                                    ),
-                                                    irBoolean(storedClass.modality == Modality.ABSTRACT),
-                                                    irBoolean(storedClass.isCompanion),
-                                                    irBoolean(storedClass.isData),
-                                                    irBoolean(storedClass.modality == Modality.FINAL),
-                                                    irBoolean(storedClass.isFun),
-                                                    irBoolean(storedClass.isInner),
-                                                    irBoolean(storedClass.modality == Modality.OPEN),
-                                                    irBoolean(storedClass.modality == Modality.SEALED),
-                                                    irBoolean(storedClass.isValue),
-                                                    irString(storedClass.kotlinFqName.toString()),
-                                                    irCall(generationSymbols.hashSetConstructor),
-                                                    irCall(generationSymbols.hashSetConstructor),
-                                                    irString(storedClass.kotlinFqName.shortName().toString()),
-                                                    irGetEnumValue(
-                                                        generationSymbols.reflektVisibilityClass.defaultType,
-                                                        generationSymbols.reflektVisibilityClass.owner.declarations.filterIsInstance<IrEnumEntry>()
-                                                            .first { it.name == Name.identifier(storedClass.visibility.toReflektVisibility()!!.name) }
-                                                            .symbol,
-                                                    ),
-                                                ),
-                                            ),
-                                        ),
-                                    )
-                                },
-                            ),
-                        )
+                    variable.initializer = irHashMapOf(
+                        keyType = irBuiltIns.kClassClass.starProjectedType,
+                        valueType = generationSymbols.reflektClassClass.starProjectedType,
+                        pairs = storedClasses.map { storedClass ->
+                            irTo(left = irClassReference(storedClass.symbol), right = irReflektClassImplConstructor(storedClass.symbol))
+                        },
                     )
                 }
                 +mVariable
                 for (storedClass in storedClasses) {
                     storedClass.getImmediateSuperclasses().forEach { superclass ->
-                        +irCall(
-                            generationSymbols.mutableSetAdd,
-                            dispatchReceiver = irCall(
+                        +irMutableSetAdd(
+                            mutableSet = irCall(
                                 generationSymbols.reflektClassImplGetSuperclasses,
                                 dispatchReceiver = irTypeCast(
                                     generationSymbols.reflektClassImplClass.createType(false, listOf(storedClass.defaultType)),
-                                    irCheckNotNull(
-                                        irCall(
-                                            generationSymbols.mapGet,
-                                            dispatchReceiver = irGet(mVariable),
-                                            valueArguments = listOf(irClassReference(storedClass.symbol)),
-                                        ),
-                                    ),
+                                    irCheckNotNull(irMapGet(map = irGet(mVariable), key = irClassReference(storedClass.symbol))),
                                 ),
                             ),
-                            valueArguments = listOf(
-                                irTypeCast(
-                                    generationSymbols.reflektClassClass.createType(
-                                        false,
-                                        listOf(makeTypeProjection(storedClass.defaultType, Variance.IN_VARIANCE)),
-                                    ),
-                                    irCheckNotNull(
-                                        irCall(
-                                            generationSymbols.mapGet,
-                                            dispatchReceiver = irGet(mVariable),
-                                            valueArguments = listOf(irClassReference(superclass)),
-                                        ),
+                            element = irTypeCast(
+                                generationSymbols.reflektClassClass.createType(
+                                    false,
+                                    listOf(makeTypeProjection(storedClass.defaultType, Variance.IN_VARIANCE)),
+                                ),
+                                irCheckNotNull(
+                                    value = irMapGet(
+                                        map = irGet(mVariable),
+                                        key = irClassReference(superclass),
                                     ),
                                 ),
                             ),
@@ -177,33 +124,28 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
 
                 for (storedClass in storedClasses) {
                     storedClass.sealedSubclasses.forEach { subclass ->
-                        +irCall(
-                            generationSymbols.mutableSetAdd,
-                            dispatchReceiver = irCall(
+                        +irMutableSetAdd(
+                            mutableSet = irCall(
                                 generationSymbols.reflektClassImplGetSealedSubclasses,
                                 dispatchReceiver = irTypeCast(
-                                    generationSymbols.reflektClassImplClass.createType(false, listOf(storedClass.defaultType)),
-                                    irCheckNotNull(
-                                        irCall(
-                                            generationSymbols.mapGet,
-                                            dispatchReceiver = irGet(mVariable),
-                                            valueArguments = listOf(irClassReference(storedClass.symbol)),
+                                    type = generationSymbols.reflektClassImplClass.createType(false, listOf(storedClass.defaultType)),
+                                    castTo = irCheckNotNull(
+                                        value = irMapGet(
+                                            map = irGet(mVariable),
+                                            key = irClassReference(storedClass.symbol),
                                         ),
                                     ),
                                 ),
                             ),
-                            valueArguments = listOf(
-                                irTypeCast(
-                                    generationSymbols.reflektClassClass.createType(
-                                        false,
-                                        listOf(makeTypeProjection(storedClass.defaultType, Variance.OUT_VARIANCE)),
-                                    ),
-                                    irCheckNotNull(
-                                        irCall(
-                                            generationSymbols.mapGet,
-                                            dispatchReceiver = irGet(mVariable),
-                                            valueArguments = listOf(irClassReference(subclass)),
-                                        ),
+                            element = irTypeCast(
+                                type = generationSymbols.reflektClassClass.createType(
+                                    false,
+                                    listOf(makeTypeProjection(storedClass.defaultType, Variance.OUT_VARIANCE)),
+                                ),
+                                castTo = irCheckNotNull(
+                                    value = irMapGet(
+                                        map = irGet(mVariable),
+                                        key = irClassReference(subclass),
                                     ),
                                 ),
                             ),
@@ -213,7 +155,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
 
                 +irSetField(
                     irGet(storageClass.thisReceiver!!),
-                    storageClass.fields.first { it.name == StorageClassProperties.REFLEKT_CLASSES.propertyNameName },
+                    storageClass.symbol.fieldByName(StorageClassProperties.REFLEKT_CLASSES.propertyNameString).owner,
                     irGet(mVariable),
                 )
             }
@@ -222,6 +164,6 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
 
     private companion object {
         private const val ORG_JETBRAINS_REFLECT = "org.jetbrains.reflekt"
-        private val orgJetbrainsReflektFqName = FqName("org.jetbrains.reflekt")
+        private val orgJetbrainsReflektFqName = FqName(ORG_JETBRAINS_REFLECT)
     }
 }
