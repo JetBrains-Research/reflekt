@@ -114,13 +114,7 @@ fun IrClass.getReflectionKnownHierarchy(): Set<IrClassSymbol> {
             continue
         }
 
-        for (irClass in last.owner.getImmediateSuperclasses()) {
-            if (irClass.owner.visibility != DescriptorVisibilities.PRIVATE && result.add(irClass)) {
-                deque.addLast(irClass)
-            }
-        }
-
-        for (irClass in last.owner.sealedSubclasses) {
+        for (irClass in last.owner.getImmediateSuperclasses() + last.owner.sealedSubclasses) {
             if (irClass.owner.visibility != DescriptorVisibilities.PRIVATE && result.add(irClass)) {
                 deque.addLast(irClass)
             }
