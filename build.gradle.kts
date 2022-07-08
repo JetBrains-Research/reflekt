@@ -1,3 +1,7 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektPlugin
+import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import org.jetbrains.reflekt.buildutils.*
 
 group = "org.jetbrains.reflekt"
@@ -9,6 +13,10 @@ plugins {
     alias(libs.plugins.buildconfig) apply false
     alias(libs.plugins.dokka)
     id(libs.plugins.kotlin.jvm.get().pluginId)
+}
+
+val detektReportMerge by tasks.registering(ReportMergeTask::class) {
+    output.set(rootProject.buildDir.resolve("reports/detekt/merge.sarif"))
 }
 
 allprojects {
@@ -28,7 +36,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        google()
         maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
         // Uncomment it for using the last kotlin compiler version
         // The full list of the build can be found here:
@@ -41,17 +48,27 @@ allprojects {
     }
 
     // We should publish the project in the local maven repository before the tests running
-    @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
     tasks.withType<Test> {
         dependsOn(tasks.withType<PublishToMavenLocal> {}, ":reflekt-plugin:jar", ":reflekt-dsl:jar")
     }
 
     configureDiktat()
-    configureDetekt()
+    apply<DetektPlugin>()
+
+    configure<DetektExtension> {
+        config = rootProject.files("detekt.yml")
+        buildUponDefaultConfig = true
+        debug = true
+    }
+
+    tasks.withType<Detekt> {
+        finalizedBy(detektReportMerge)
+        reports.sarif.required.set(true)
+        detektReportMerge.get().input.from(sarifReportFile)
+    }
 }
 
 createDiktatTask()
-createDetektTask()
 
 subprojects {
     apply(plugin = "maven-publish")
