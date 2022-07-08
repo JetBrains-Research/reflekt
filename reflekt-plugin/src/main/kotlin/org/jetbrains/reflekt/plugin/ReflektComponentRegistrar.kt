@@ -70,7 +70,7 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
 
         @Suppress("COMMENT_WHITE_SPACE")
         // TODO: separate cases and accept use Reflekt in both cases in the same time?
-        //  e.g. a part of queries for the current project and IR replacement
+        //  e.g., a part of queries for the current project and IR replacement
         //  and another part with ReflektImpl approach??
         // The Reflekt compiler plugin considers two possible scenarios.
         // (I) The first scenario is searching for entities in a project that uses Reflekt.

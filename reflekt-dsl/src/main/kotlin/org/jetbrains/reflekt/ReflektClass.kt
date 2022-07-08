@@ -14,7 +14,8 @@ interface ReflektClass<T : Any> {
     val kClass: KClass<T>
 
     /**
-     * Annotations which are present on this class.
+     * Annotations which are present on this class. An important difference from [KClass.annotations] is that instances in this set are not the same as the
+     * ones on the actual classes, so, can't be validly compared by using [Any.equals].
      */
     val annotations: Set<Annotation>
 
