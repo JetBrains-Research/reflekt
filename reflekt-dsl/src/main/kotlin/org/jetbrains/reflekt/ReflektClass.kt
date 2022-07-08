@@ -117,6 +117,7 @@ enum class ReflektVisibility {
     ;
 }
 
+@InternalReflektApi
 data class ReflektClassImpl<T : Any>(
     override val kClass: KClass<T>,
     override val annotations: MutableSet<Annotation> = HashSet(),

@@ -1,10 +1,9 @@
 // FILE: TestCase.kt
-import org.jetbrains.reflekt.Reflekt
-import org.jetbrains.reflekt.ReflektClassImpl
-import org.jetbrains.reflekt.ReflektVisibility
+import org.jetbrains.reflekt.*
 import org.jetbrains.reflekt.test.helpers.checkClassesCallResultDetailed
 import org.jetbrains.reflekt.test.common.*
 
+@OptIn(InternalReflektApi::class)
 fun box(): String {
     val any = ReflektClassImpl(
         kClass = Any::class,
