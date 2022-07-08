@@ -24,3 +24,11 @@ object ReflektClasspathProvider {
 
     private fun failMessage(moduleName: String) = "Jar with Reflekt for the module: $moduleName does not exist. Please run :$moduleName:jar"
 }
+
+object CodeGenTestPaths{
+    private const val ROOT_COMPILER_TEST_FOLDER = "reflekt-plugin/src/test/resources/org/jetbrains/reflekt/plugin/compiler"
+    private val additionalSourcesFolder = "$ROOT_COMPILER_TEST_FOLDER/additional-sources"
+    val additionalSourcesCommonFilesFolder = "$additionalSourcesFolder/common-files"
+    val additionalSourcesHelpersFolder = "$additionalSourcesFolder/helpers"
+    val codeGenResourcesFolder = "$ROOT_COMPILER_TEST_FOLDER/code-gen"
+}

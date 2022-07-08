@@ -17,7 +17,8 @@ class ReflektImplGeneratorExtension(
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         messageCollector?.log("Start generation ReflektImpl. Base generation path: $generationPath")
-        val reflektImplFile = File(generationPath, "io/reflekt/ReflektImpl.kt")
+        // TODO: use the base path from consts
+        val reflektImplFile = File(generationPath, "org/jetbrains/reflek/ReflektImpl.kt")
         messageCollector?.log("ReflektImpl generation path: ${reflektImplFile.absolutePath}")
         with(reflektImplFile) {
             delete()

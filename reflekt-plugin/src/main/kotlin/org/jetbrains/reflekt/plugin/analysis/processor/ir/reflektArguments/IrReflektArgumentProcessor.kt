@@ -10,10 +10,11 @@ import org.jetbrains.reflekt.plugin.generation.common.ReflektInvokeParts
 
 import org.jetbrains.kotlin.backend.jvm.codegen.AnnotationCodegen.Companion.annotationClass
 import org.jetbrains.kotlin.ir.IrElement
-import org.jetbrains.kotlin.ir.declarations.IrDeclaration
-import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import java.util.*
+import kotlin.collections.HashMap
 
 typealias ReflektArgumentsToFileSet<T> = ResultToFileSet<T>
 typealias ReflektArgumentsCache<T, E> = ResultToFilteredInstances<T, E>
@@ -117,7 +118,7 @@ abstract class IrReflektArgumentProcessor<R : ReflektQueryArguments, T : IrDecla
  * @return
  */
 fun IrCall.getReflektInvokeParts(): ReflektInvokeParts? {
-    val function = this.symbol.owner
-    val expressionFqName = function.fqNameWhenAvailable?.toString() ?: return null
+    val owner = this.symbol.owner
+    val expressionFqName = owner.fqNameWhenAvailable?.toString() ?: return null
     return ReflektInvokeParts.parse(expressionFqName)
 }
