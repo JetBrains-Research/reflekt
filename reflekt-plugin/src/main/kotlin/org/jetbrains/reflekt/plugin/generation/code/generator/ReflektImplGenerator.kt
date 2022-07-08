@@ -12,6 +12,8 @@ import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.types.isPrimitiveType
 import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.reflekt.ReflektClass
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektPackage
+import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryQueriesResults
 import org.jetbrains.reflekt.plugin.analysis.processor.toReflektVisibility
 import org.jetbrains.reflekt.plugin.generation.code.generator.models.*
@@ -30,7 +32,7 @@ import java.util.*
  * */
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResults) : FileGenerator() {
-    override val packageName = "org.jetbrains.reflekt"
+    override val packageName = ReflektPackage.PACKAGE_NAME
     override val fileName = "ReflektImpl"
 
     /**
@@ -90,7 +92,7 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
         @Suppress("LongMethod", "TOO_LONG_FUNCTION")
         private fun addReflektClasses() {
             builder.addProperty(
-                "reflektClasses",
+                StorageClassNames.REFLEKT_CLASSES,
                 MAP.parameterizedBy(ClassName("kotlin.reflect", "KClass").parameterizedBy(STAR), ReflektClass::class.asTypeName().parameterizedBy(STAR)),
             )
 
@@ -117,7 +119,7 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                                 "superclasses = HashSet(), " +
                                 "sealedSubclasses = HashSet(), " +
                                 "simpleName = \"${kotlinFqName.shortName()}\", " +
-                                "visibility = ${reflektVisibility?.let { "org.jetbrains.reflekt.ReflektVisibility.${it.name}" } ?: "null"})"
+                                "visibility = ${reflektVisibility?.let { "ReflektVisibility.${it.name}" } ?: "null"})"
                         )
                     }
                 }
@@ -140,7 +142,7 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                     }
                 }
 
-                addStatement("reflektClasses = m")
+                addStatement("${StorageClassNames.REFLEKT_CLASSES} = m")
             })
         }
     }

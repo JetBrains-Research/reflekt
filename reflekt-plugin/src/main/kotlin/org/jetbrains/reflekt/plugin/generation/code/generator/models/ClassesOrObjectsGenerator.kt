@@ -5,6 +5,7 @@ package org.jetbrains.reflekt.plugin.generation.code.generator.models
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.jetbrains.reflekt.ReflektClass
+import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
 import org.jetbrains.reflekt.plugin.analysis.models.ir.*
 import org.jetbrains.reflekt.plugin.generation.code.generator.emptyListCode
 
@@ -59,7 +60,7 @@ class ClassesGenerator(enclosingClassName: ClassName, libraryQueriesResults: Cla
     override val returnParameter = ReflektClass::class.asClassName().parameterizedBy(typeVariable)
 
     override fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String): CodeBlock =
-        super.listOfWhenRightPart(uses) { "reflektClasses[${getEntityName(it)}::class]" }
+        super.listOfWhenRightPart(uses) { "${StorageClassNames.REFLEKT_CLASSES}[${getEntityName(it)}::class]" }
 }
 
 /**

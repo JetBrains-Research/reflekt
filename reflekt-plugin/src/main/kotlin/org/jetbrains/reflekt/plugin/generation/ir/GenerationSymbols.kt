@@ -6,8 +6,7 @@ import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.JvmNames
-import org.jetbrains.reflekt.plugin.analysis.common.ReflektTerminalFunction
-import org.jetbrains.reflekt.plugin.analysis.common.SmartReflektTerminalFunction
+import org.jetbrains.reflekt.plugin.analysis.common.*
 import org.jetbrains.reflekt.plugin.generation.common.*
 
 /**
@@ -25,19 +24,18 @@ class GenerationSymbols(private val pluginContext: IrPluginContext) {
     val hashMapOf = referenceVarargCollectionFunction("kotlin.collections.hashMapOf")
     val hashSetOf = referenceVarargCollectionFunction("kotlin.collections.hashSetOf")
     private val hashSetClass = referenceTypeAliasOrFail("kotlin.collections.HashSet").owner.expandedType.classOrNull!!
-    private val mutableSetClass = referenceClassOrFail("kotlin.collections.MutableSet")
-    val mutableSetAdd = mutableSetClass.functionByName("add")
+    val mutableSetAdd = irBuiltIns.mutableSetClass.functionByName("add")
     val hashSetConstructor = hashSetClass.constructors.first { it.owner.valueParameters.isEmpty() }
     val pairClass = referenceClassOrFail("kotlin.Pair")
     val to = checkNotNull(pluginContext.referenceFunctions(FqName("kotlin.to")).takeIf { it.isNotEmpty() }) {
         "Can't reference functions named ${"kotlin.to"}, Kotlin standard library or Reflekt DSL aren't available"
     }.first()
-    val reflektClassClass = referenceClassOrFail("org.jetbrains.reflekt.ReflektClass")
-    val reflektClassImplClass = referenceClassOrFail("org.jetbrains.reflekt.ReflektClassImpl")
+    val reflektClassClass = referenceClassOrFail("${ReflektPackage.PACKAGE_NAME}.ReflektClass")
+    val reflektClassImplClass = referenceClassOrFail("${ReflektPackage.PACKAGE_NAME}.ReflektClassImpl")
     val reflektClassImplConstructor = reflektClassImplClass.constructors.first()
     val reflektClassImplGetSealedSubclasses = reflektClassImplClass.getPropertyGetter("sealedSubclasses")!!
     val reflektClassImplGetSuperclasses = reflektClassImplClass.getPropertyGetter("superclasses")!!
-    val reflektVisibilityClass = referenceClassOrFail("org.jetbrains.reflekt.ReflektVisibility")
+    val reflektVisibilityClass = referenceClassOrFail("${ReflektPackage.PACKAGE_NAME}.ReflektVisibility")
 
     private fun referenceVarargCollectionFunction(fqName: String) = pluginContext.referenceFunctions(FqName(fqName)).firstOrNull {
         val parameters = it.owner.valueParameters

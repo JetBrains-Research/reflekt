@@ -17,7 +17,8 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.Variance
-import org.jetbrains.reflekt.plugin.analysis.common.StorageClassProperties
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektPackage
+import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.getImmediateSuperclasses
 
@@ -33,8 +34,8 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
         IrFileImpl(NaiveSourceBasedFileEntryImpl(name), packageFragmentDescriptor, module).also { module.files += it }
 
     fun createStorageClass(moduleFragment: IrModuleFragment): IrClassSymbol {
-        val idx = generateSequence(0) { it + 1 }.first { pluginContext.referenceClass(FqName("$ORG_JETBRAINS_REFLECT.Storage_$it")) == null }
-        val file = syntheticFile(EmptyPackageFragmentDescriptor(moduleFragment.descriptor, orgJetbrainsReflektFqName), "Storage_$idx", moduleFragment)
+        val idx = generateSequence(0) { it + 1 }.first { pluginContext.referenceClass(FqName("${ReflektPackage.PACKAGE_NAME}.Storage_$it")) == null }
+        val file = syntheticFile(EmptyPackageFragmentDescriptor(moduleFragment.descriptor, ReflektPackage.PACKAGE_FQ_NAME), "Storage_$idx", moduleFragment)
 
         return irFactory.buildClass {
             visibility = DescriptorVisibilities.INTERNAL
@@ -61,7 +62,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
             }
 
             irClass.addField {
-                name = StorageClassProperties.REFLEKT_CLASSES.propertyNameName
+                name = StorageClassNames.REFLEKT_CLASSES_NAME
                 type = irBuiltIns.mapClass.createType(
                     false,
                     listOf(irBuiltIns.kClassClass.starProjectedType, generationSymbols.reflektClassClass.starProjectedType),
@@ -155,15 +156,10 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
 
                 +irSetField(
                     irGet(storageClass.thisReceiver!!),
-                    storageClass.symbol.fieldByName(StorageClassProperties.REFLEKT_CLASSES.propertyNameString).owner,
+                    storageClass.symbol.fieldByName(StorageClassNames.REFLEKT_CLASSES).owner,
                     irGet(mVariable),
                 )
             }
         }
-    }
-
-    private companion object {
-        private const val ORG_JETBRAINS_REFLECT = "org.jetbrains.reflekt"
-        private val orgJetbrainsReflektFqName = FqName(ORG_JETBRAINS_REFLECT)
     }
 }
