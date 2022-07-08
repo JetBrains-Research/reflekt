@@ -21,6 +21,6 @@ class SmartReflektIrGenerationExtension(
     override fun getTransformer(
         pluginContext: IrPluginContext,
         irInstances: IrInstances,
-        storageClassGenerator: StorageClassGenerator
+        storageClassGenerator: StorageClassGenerator,
     ): BaseReflektIrTransformer = SmartReflektIrTransformer(irInstances, pluginContext, classpath, messageCollector, storageClassGenerator)
 }

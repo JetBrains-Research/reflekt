@@ -72,7 +72,10 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
             addReflektClasses()
         }
 
-        fun IrElement.annotationInstantiationString(): String = when (this) {
+        /**
+         * Creates string for constructor call of provided annotation in the form [IrConstructorCall] like `MyAnnotation(1, "321", OtherAnnotation())`.
+         */
+        private fun IrElement.annotationInstantiationString(): String = when (this) {
             is IrConstructorCall -> annotationClass.kotlinFqName.toString() + "(" + getValueArguments().filterNotNull()
                 .joinToString(", ") { argument -> argument.annotationInstantiationString() } + ")"
             is IrConst<*> -> value.toString()

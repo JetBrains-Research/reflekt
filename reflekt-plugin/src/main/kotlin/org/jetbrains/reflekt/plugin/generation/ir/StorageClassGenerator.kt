@@ -23,6 +23,10 @@ import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.getImmediateSuperclasses
 
 /**
+ * Generates `object` classes to store instances of [org.jetbrains.reflekt.ReflektClass]. The generation is done in two steps:
+ * 1. A blank storage class is created with [createStorageClass].
+ * 2. Then it is filled by [contributeInitializer] provided classes data about which are stored.
+ *
  * @property pluginContext
  */
 class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBuilderExtension {
@@ -34,9 +38,13 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
         IrFileImpl(NaiveSourceBasedFileEntryImpl(name), packageFragmentDescriptor, module).also { module.files += it }
 
     fun createStorageClass(moduleFragment: IrModuleFragment): IrClassSymbol {
+        // Names of storage class are chosen to avoid duplication.
         val idx = generateSequence(0) { it + 1 }.first { pluginContext.referenceClass(FqName("${ReflektPackage.PACKAGE_NAME}.Storage_$it")) == null }
         val file = syntheticFile(EmptyPackageFragmentDescriptor(moduleFragment.descriptor, ReflektPackage.PACKAGE_FQ_NAME), "Storage_$idx", moduleFragment)
 
+        // Initially, storage class contains:
+        // 1. thisReceiver and typical constructor
+        // 2. Field storing Map<KClass<*>, ReflektClass<*>>
         return irFactory.buildClass {
             visibility = DescriptorVisibilities.INTERNAL
             kind = ClassKind.OBJECT
@@ -75,91 +83,96 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
     }
 
     @Suppress("LongMethod", "TOO_LONG_FUNCTION")
-    fun contributeInitializers(storageClasses: ModuleStorageClassesMap) {
-        storageClasses.values.asSequence().map { (a, b) -> a.owner to b.map { it.owner } }.forEach { (storageClass, storedClasses) ->
-            storageClass.contributeAnonymousInitializer {
-                val mVariable = irVariableVal(
-                    parent = storageClass,
-                    name = mVariableName,
-                    type = generationSymbols.hashMapClass.createType(
-                        false,
-                        listOf(irBuiltIns.kClassClass.starProjectedType, generationSymbols.reflektClassClass.starProjectedType)
-                    ),
-                    isConst = false,
-                    isLateinit = false,
-                ).also { variable ->
-                    variable.initializer = irHashMapOf(
-                        keyType = irBuiltIns.kClassClass.starProjectedType,
-                        valueType = generationSymbols.reflektClassClass.starProjectedType,
-                        pairs = storedClasses.map { storedClass ->
-                            irTo(left = irClassReference(storedClass.symbol), right = irReflektClassImplConstructor(storedClass.symbol))
-                        },
+    fun contributeInitializer(storageClassSymbol: IrClassSymbol, storedClassesSymbols: Collection<IrClassSymbol>) {
+        val storageClass = storageClassSymbol.owner
+        val storedClasses = storedClassesSymbols.map { it.owner }
+
+        // Adding an anonymous initializer filling storage field with data from storedClassesSymbols.
+        storageClass.contributeAnonymousInitializer {
+            // At the first, ReflektClassImpl is instantiated for each stored class without superclasses and sealed subclasses data and is stored to HashMap.
+            val mVariable = irVariableVal(
+                parent = storageClass,
+                name = mVariableName,
+                type = generationSymbols.hashMapClass.createType(
+                    false,
+                    listOf(irBuiltIns.kClassClass.starProjectedType, generationSymbols.reflektClassClass.starProjectedType)
+                ),
+                isConst = false,
+                isLateinit = false,
+            ).also { variable ->
+                variable.initializer = irHashMapOf(
+                    keyType = irBuiltIns.kClassClass.starProjectedType,
+                    valueType = generationSymbols.reflektClassClass.starProjectedType,
+                    pairs = storedClasses.map { storedClass ->
+                        irTo(left = irClassReference(storedClass.symbol), right = irReflektClassImplConstructor(storedClass.symbol))
+                    },
+                )
+            }
+            +mVariable
+            // Then, add calls are generated to set up superclasses and sealed subclasses for each stored class.
+            for (storedClass in storedClasses) {
+                storedClass.getImmediateSuperclasses().forEach { superclass ->
+                    +irMutableSetAdd(
+                        mutableSet = irCall(
+                            generationSymbols.reflektClassImplGetSuperclasses,
+                            dispatchReceiver = irTypeCast(
+                                generationSymbols.reflektClassImplClass.createType(false, listOf(storedClass.defaultType)),
+                                irCheckNotNull(irMapGet(map = irGet(mVariable), key = irClassReference(storedClass.symbol))),
+                            ),
+                        ),
+                        element = irTypeCast(
+                            generationSymbols.reflektClassClass.createType(
+                                false,
+                                listOf(makeTypeProjection(storedClass.defaultType, Variance.IN_VARIANCE)),
+                            ),
+                            irCheckNotNull(
+                                value = irMapGet(
+                                    map = irGet(mVariable),
+                                    key = irClassReference(superclass),
+                                ),
+                            ),
+                        ),
                     )
                 }
-                +mVariable
-                for (storedClass in storedClasses) {
-                    storedClass.getImmediateSuperclasses().forEach { superclass ->
-                        +irMutableSetAdd(
-                            mutableSet = irCall(
-                                generationSymbols.reflektClassImplGetSuperclasses,
-                                dispatchReceiver = irTypeCast(
-                                    generationSymbols.reflektClassImplClass.createType(false, listOf(storedClass.defaultType)),
-                                    irCheckNotNull(irMapGet(map = irGet(mVariable), key = irClassReference(storedClass.symbol))),
-                                ),
-                            ),
-                            element = irTypeCast(
-                                generationSymbols.reflektClassClass.createType(
-                                    false,
-                                    listOf(makeTypeProjection(storedClass.defaultType, Variance.IN_VARIANCE)),
-                                ),
-                                irCheckNotNull(
-                                    value = irMapGet(
-                                        map = irGet(mVariable),
-                                        key = irClassReference(superclass),
-                                    ),
-                                ),
-                            ),
-                        )
-                    }
-                }
+            }
 
-                for (storedClass in storedClasses) {
-                    storedClass.sealedSubclasses.forEach { subclass ->
-                        +irMutableSetAdd(
-                            mutableSet = irCall(
-                                generationSymbols.reflektClassImplGetSealedSubclasses,
-                                dispatchReceiver = irTypeCast(
-                                    type = generationSymbols.reflektClassImplClass.createType(false, listOf(storedClass.defaultType)),
-                                    castTo = irCheckNotNull(
-                                        value = irMapGet(
-                                            map = irGet(mVariable),
-                                            key = irClassReference(storedClass.symbol),
-                                        ),
-                                    ),
-                                ),
-                            ),
-                            element = irTypeCast(
-                                type = generationSymbols.reflektClassClass.createType(
-                                    false,
-                                    listOf(makeTypeProjection(storedClass.defaultType, Variance.OUT_VARIANCE)),
-                                ),
+            for (storedClass in storedClasses) {
+                storedClass.sealedSubclasses.forEach { subclass ->
+                    +irMutableSetAdd(
+                        mutableSet = irCall(
+                            generationSymbols.reflektClassImplGetSealedSubclasses,
+                            dispatchReceiver = irTypeCast(
+                                type = generationSymbols.reflektClassImplClass.createType(false, listOf(storedClass.defaultType)),
                                 castTo = irCheckNotNull(
                                     value = irMapGet(
                                         map = irGet(mVariable),
-                                        key = irClassReference(subclass),
+                                        key = irClassReference(storedClass.symbol),
                                     ),
                                 ),
                             ),
-                        )
-                    }
+                        ),
+                        element = irTypeCast(
+                            type = generationSymbols.reflektClassClass.createType(
+                                false,
+                                listOf(makeTypeProjection(storedClass.defaultType, Variance.OUT_VARIANCE)),
+                            ),
+                            castTo = irCheckNotNull(
+                                value = irMapGet(
+                                    map = irGet(mVariable),
+                                    key = irClassReference(subclass),
+                                ),
+                            ),
+                        ),
+                    )
                 }
-
-                +irSetField(
-                    irGet(storageClass.thisReceiver!!),
-                    storageClass.symbol.fieldByName(StorageClassNames.REFLEKT_CLASSES).owner,
-                    irGet(mVariable),
-                )
             }
+
+            // Created HashMap is stored to the data field.
+            +irSetField(
+                irGet(storageClass.thisReceiver!!),
+                storageClass.symbol.fieldByName(StorageClassNames.REFLEKT_CLASSES).owner,
+                irGet(mVariable),
+            )
         }
     }
 }

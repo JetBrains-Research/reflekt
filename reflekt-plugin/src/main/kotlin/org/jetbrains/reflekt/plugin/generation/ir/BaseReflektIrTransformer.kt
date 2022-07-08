@@ -23,6 +23,10 @@ import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.Util.log
 import org.jetbrains.reflekt.plugin.utils.getReflectionKnownHierarchy
 
+/**
+ * Contains data stored by Reflekt for each module. The keys are module names, and the values are [IrClassSymbol] for which instances of
+ * [org.jetbrains.reflekt.ReflektClass] should be stored.
+ */
 typealias ModuleStorageClassesMap = MutableMap<Name, Pair<IrClassSymbol, MutableSet<IrClassSymbol>>>
 
 /**
