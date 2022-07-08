@@ -41,7 +41,7 @@ class LibraryQueriesResultsCollector(
     irInstancesAnalyzer: IrInstancesAnalyzer,
     private val libraryQueriesResults: LibraryQueriesResults,
     messageCollector: MessageCollector? = null,
-) : IrGenerationExtension, ILibraryQueriesResultsCollectorBase(irInstancesAnalyzer, messageCollector) {
+) : IrGenerationExtension, IlibraryQueriesResultsCollectorBase(irInstancesAnalyzer, messageCollector) {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         generate(pluginContext, libraryQueriesResults)
     }
@@ -54,7 +54,7 @@ class LibraryQueriesResultsCollectorForTests(
     private val libraryArguments: LibraryArguments,
     private val libraryQueriesResults: LibraryQueriesResults,
     messageCollector: MessageCollector? = null,
-) : IrGenerationExtension, ILibraryQueriesResultsCollectorBase(irInstancesAnalyzer, messageCollector) {
+) : IrGenerationExtension, IlibraryQueriesResultsCollectorBase(irInstancesAnalyzer, messageCollector) {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         libraryQueriesResults.merge(LibraryQueriesResults.fromLibraryArguments(libraryArguments))
         generate(pluginContext, libraryQueriesResults)
