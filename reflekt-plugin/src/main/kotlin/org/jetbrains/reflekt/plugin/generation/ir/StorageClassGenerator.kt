@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrFileImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrInstanceInitializerCallImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.*
@@ -82,6 +83,41 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
         }.symbol
     }
 
+    private fun IrBlockBodyBuilder.setupStoredClassRelations(
+        storedClass: IrClassSymbol,
+        relatedClasses: Iterable<IrClassSymbol>,
+        mapVariable: IrValueDeclaration,
+        getMutableSetToFill: IrFunctionSymbol,
+        variance: Variance,
+    ) = relatedClasses.forEach { subclass ->
+        +irMutableSetAdd(
+            mutableSet = irCall(
+                getMutableSetToFill,
+                dispatchReceiver = irTypeCast(
+                    type = generationSymbols.reflektClassImplClass.createType(false, listOf(storedClass.owner.defaultType)),
+                    castTo = irCheckNotNull(
+                        value = irMapGet(
+                            map = irGet(mapVariable),
+                            key = irClassReference(storedClass),
+                        ),
+                    ),
+                ),
+            ),
+            element = irTypeCast(
+                type = generationSymbols.reflektClassClass.createType(
+                    false,
+                    listOf(makeTypeProjection(storedClass.defaultType, variance)),
+                ),
+                castTo = irCheckNotNull(
+                    value = irMapGet(
+                        map = irGet(mapVariable),
+                        key = irClassReference(subclass),
+                    ),
+                ),
+            ),
+        )
+    }
+
     @Suppress("LongMethod", "TOO_LONG_FUNCTION")
     fun contributeInitializer(storageClassSymbol: IrClassSymbol, storedClassesSymbols: Collection<IrClassSymbol>) {
         val storageClass = storageClassSymbol.owner
@@ -111,60 +147,23 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
             +mVariable
             // Then, add calls are generated to set up superclasses and sealed subclasses for each stored class.
             for (storedClass in storedClasses) {
-                storedClass.getImmediateSuperclasses().forEach { superclass ->
-                    +irMutableSetAdd(
-                        mutableSet = irCall(
-                            generationSymbols.reflektClassImplGetSuperclasses,
-                            dispatchReceiver = irTypeCast(
-                                generationSymbols.reflektClassImplClass.createType(false, listOf(storedClass.defaultType)),
-                                irCheckNotNull(irMapGet(map = irGet(mVariable), key = irClassReference(storedClass.symbol))),
-                            ),
-                        ),
-                        element = irTypeCast(
-                            generationSymbols.reflektClassClass.createType(
-                                false,
-                                listOf(makeTypeProjection(storedClass.defaultType, Variance.IN_VARIANCE)),
-                            ),
-                            irCheckNotNull(
-                                value = irMapGet(
-                                    map = irGet(mVariable),
-                                    key = irClassReference(superclass),
-                                ),
-                            ),
-                        ),
-                    )
-                }
+                setupStoredClassRelations(
+                    storedClass = storedClass.symbol,
+                    relatedClasses = storedClass.getImmediateSuperclasses(),
+                    mapVariable = mVariable,
+                    getMutableSetToFill = generationSymbols.reflektClassImplGetSealedSubclasses,
+                    variance = Variance.IN_VARIANCE,
+                )
             }
 
             for (storedClass in storedClasses) {
-                storedClass.sealedSubclasses.forEach { subclass ->
-                    +irMutableSetAdd(
-                        mutableSet = irCall(
-                            generationSymbols.reflektClassImplGetSealedSubclasses,
-                            dispatchReceiver = irTypeCast(
-                                type = generationSymbols.reflektClassImplClass.createType(false, listOf(storedClass.defaultType)),
-                                castTo = irCheckNotNull(
-                                    value = irMapGet(
-                                        map = irGet(mVariable),
-                                        key = irClassReference(storedClass.symbol),
-                                    ),
-                                ),
-                            ),
-                        ),
-                        element = irTypeCast(
-                            type = generationSymbols.reflektClassClass.createType(
-                                false,
-                                listOf(makeTypeProjection(storedClass.defaultType, Variance.OUT_VARIANCE)),
-                            ),
-                            castTo = irCheckNotNull(
-                                value = irMapGet(
-                                    map = irGet(mVariable),
-                                    key = irClassReference(subclass),
-                                ),
-                            ),
-                        ),
-                    )
-                }
+                setupStoredClassRelations(
+                    storedClass = storedClass.symbol,
+                    relatedClasses = storedClass.sealedSubclasses,
+                    mapVariable = mVariable,
+                    getMutableSetToFill = generationSymbols.reflektClassImplGetSealedSubclasses,
+                    variance = Variance.OUT_VARIANCE,
+                )
             }
 
             // Created HashMap is stored to the data field.
