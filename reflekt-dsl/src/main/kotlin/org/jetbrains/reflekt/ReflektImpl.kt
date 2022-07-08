@@ -1,11 +1,7 @@
 package org.jetbrains.reflekt
 
-import kotlin.reflect.KClass
-
 @Suppress("UNUSED_PARAMETER")
 object ReflektImpl {
-    val reflektClasses: Map<KClass<*>, ReflektClass<*>> = error("This value should be replaced during compilation")
-
     fun objects() = Objects()
     fun classes() = Classes()
     fun functions() = Functions()

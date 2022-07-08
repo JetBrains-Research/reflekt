@@ -34,10 +34,9 @@ open class IlibraryQueriesResultsCollectorBase(
         libraryQueriesResults.classes.filterInstances(analyzer, ReflektEntity.CLASSES)
 
         val mentionedClasses = libraryQueriesResults.classes.values
-            .asSequence()
-            .flatMap { it.asSequence().flatMap { clazz -> clazz.getReflectionKnownHierarchy() } }
+            .flatten()
+            .flatMap { clazz -> clazz.getReflectionKnownHierarchy() }
             .map { it.owner }
-            .distinct()
 
         libraryQueriesResults.objects.filterInstances(analyzer, ReflektEntity.OBJECTS)
         libraryQueriesResults.functions.filterInstances(analyzer, ReflektEntity.FUNCTIONS)

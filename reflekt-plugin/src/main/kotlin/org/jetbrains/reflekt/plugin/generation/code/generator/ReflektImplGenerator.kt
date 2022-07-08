@@ -69,7 +69,9 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
 
             addNestedTypes(innerGenerators.map { it.generate() })
 
-            addReflektClasses()
+            if (libraryQueriesResults.mentionedClasses.isNotEmpty()) {
+                addReflektClasses()
+            }
         }
 
         /**
@@ -78,11 +80,16 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
         private fun IrElement.annotationInstantiationString(): String = when (this) {
             is IrConstructorCall -> annotationClass.kotlinFqName.toString() + "(" + getValueArguments().filterNotNull()
                 .joinToString(", ") { argument -> argument.annotationInstantiationString() } + ")"
-            is IrConst<*> -> value.toString()
+
+            is IrConst<*> -> when (kind) {
+                IrConstKind.String -> "\"$value\""
+                else -> value.toString()
+            }
+
             is IrVararg -> elements.joinToString(
                 ", ",
                 prefix = if (varargElementType.isPrimitiveType()) {
-                    "${varargElementType.classFqName!!.shortName()}ArrayOf("
+                    "${varargElementType.classFqName!!.shortName().toString().lowercase()}ArrayOf("
                 } else {
                     "arrayOf("
                 },
@@ -119,8 +126,6 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                                 "isSealed = ${modality == Modality.SEALED}, " +
                                 "isValue = $isValue, " +
                                 "qualifiedName = \"$kotlinFqName\", " +
-                                "superclasses = HashSet(), " +
-                                "sealedSubclasses = HashSet(), " +
                                 "simpleName = \"${kotlinFqName.shortName()}\", " +
                                 "visibility = ${reflektVisibility?.let { "ReflektVisibility.${it.name}" } ?: "null"})"
                         )

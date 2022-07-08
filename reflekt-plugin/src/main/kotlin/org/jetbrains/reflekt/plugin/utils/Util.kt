@@ -103,24 +103,30 @@ fun IrClass.getImmediateSuperclasses(): List<IrClassSymbol> = superTypes.mapNotN
  * all sealed subclasses of all elements of the set. Private classes are excluded.
  */
 fun IrClass.getReflectionKnownHierarchy(): Set<IrClassSymbol> {
-    val deque = ArrayDeque<IrClass>()
-    deque += this
-    val result = HashSet<IrClassSymbol>()
+    val deque = ArrayDeque<IrClassSymbol>()
+    deque += symbol
+    val result = LinkedHashSet<IrClassSymbol>()
 
     while (deque.isNotEmpty()) {
         val last = deque.removeLast()
 
-        if (last.visibility == DescriptorVisibilities.PRIVATE) {
+        if (last.owner.visibility == DescriptorVisibilities.PRIVATE) {
             continue
         }
 
-        for (irClass in (last.getImmediateSuperclasses().asSequence().map { it.owner } + last.sealedSubclasses.asSequence().map { it.owner })) {
-            if (irClass.visibility != DescriptorVisibilities.PRIVATE && result.add(irClass.symbol)) {
+        for (irClass in last.owner.getImmediateSuperclasses()) {
+            if (irClass.owner.visibility != DescriptorVisibilities.PRIVATE && result.add(irClass)) {
                 deque.addLast(irClass)
             }
         }
 
-        result += last.symbol
+        for (irClass in last.owner.sealedSubclasses) {
+            if (irClass.owner.visibility != DescriptorVisibilities.PRIVATE && result.add(irClass)) {
+                deque.addLast(irClass)
+            }
+        }
+
+        result += last
     }
 
     return result
