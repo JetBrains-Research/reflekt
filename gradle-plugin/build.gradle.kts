@@ -10,8 +10,8 @@ plugins {
 
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
-    implementation(project(":reflekt-core"))
-    api(project(":reflekt-dsl"))
+    implementation(projects.reflektCore)
+    api(projects.reflektDsl)
     implementation(libs.kotlinx.serialization.protobuf)
 }
 

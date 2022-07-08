@@ -4,7 +4,6 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
-    implementation(libs.zip4j)
     implementation(libs.tomlj)
 }
 

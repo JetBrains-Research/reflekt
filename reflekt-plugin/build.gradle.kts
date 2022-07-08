@@ -12,8 +12,8 @@ dependencies {
     implementation(kotlin("scripting-jvm"))
     implementation(kotlin("scripting-jvm-host-unshaded"))
 
-    implementation(project(":reflekt-core"))
-    implementation(project(":reflekt-dsl"))
+    implementation(projects.reflektCore)
+    implementation(projects.reflektDsl)
 
     implementation(libs.kotlinpoet)
     implementation(libs.reflections)
@@ -33,7 +33,6 @@ dependencies {
 
     testImplementation(libs.kotlin.reflect)
     testImplementation(libs.kotlin.compiler.internal.test.framework)
-    testImplementation("junit:junit:4.12")
 
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
