@@ -27,7 +27,6 @@ fun Project.configureDiktat() {
  */
 fun Project.createDiktatTask() {
     if (this == rootProject) {
-        apply<DiktatGradlePlugin>()
         configure<DiktatExtension> {
             diktatConfigFile = rootProject.file("diktat-analysis.yml")
             inputs {

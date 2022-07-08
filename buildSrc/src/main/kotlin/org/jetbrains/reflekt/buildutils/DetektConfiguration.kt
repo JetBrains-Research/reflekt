@@ -4,6 +4,7 @@
 
 package org.jetbrains.reflekt.buildutils
 
+import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Project
@@ -19,6 +20,14 @@ fun Project.configureDetekt() {
         config = rootProject.files("detekt.yml")
         buildUponDefaultConfig = true
         debug = true
+    }
+
+    tasks.withType(Detekt::class.java).all {
+        this.reports {
+            sarif {
+                required.set(true)
+            }
+        }
     }
 }
 
