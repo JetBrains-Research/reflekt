@@ -83,7 +83,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
         }.symbol
     }
 
-    private fun IrBlockBodyBuilder.setupStoredClassRelations(
+    private fun IrBlockBodyBuilder.addStoredClassRelations(
         storedClass: IrClassSymbol,
         relatedClasses: Iterable<IrClassSymbol>,
         mapVariable: IrValueDeclaration,
@@ -147,17 +147,17 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
             +mVariable
             // Then, add calls are generated to set up superclasses and sealed subclasses for each stored class.
             for (storedClass in storedClasses) {
-                setupStoredClassRelations(
+                addStoredClassRelations(
                     storedClass = storedClass.symbol,
                     relatedClasses = storedClass.getImmediateSuperclasses(),
                     mapVariable = mVariable,
-                    getMutableSetToFill = generationSymbols.reflektClassImplGetSealedSubclasses,
+                    getMutableSetToFill = generationSymbols.reflektClassImplGetSuperclasses,
                     variance = Variance.IN_VARIANCE,
                 )
             }
 
             for (storedClass in storedClasses) {
-                setupStoredClassRelations(
+                addStoredClassRelations(
                     storedClass = storedClass.symbol,
                     relatedClasses = storedClass.sealedSubclasses,
                     mapVariable = mVariable,
