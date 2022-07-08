@@ -6,7 +6,7 @@ import org.jetbrains.reflekt.plugin.compiler.providers.commonFiles.CommonFilesPr
 /**
  * Tests with both helpers methods and common files provided.
  */
-open class AbstractCommonFilesTest : AbstractHelpersTest() {
+abstract class AbstractCommonFilesTest : AbstractHelpersTest() {
     override fun configure(builder: TestConfigurationBuilder) {
         super.configure(builder)
         builder.useAdditionalSourceProviders({ CommonFilesProvider(it, COMMON_FILES_PATH) })

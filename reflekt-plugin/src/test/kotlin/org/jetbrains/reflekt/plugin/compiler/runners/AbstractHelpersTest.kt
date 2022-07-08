@@ -6,7 +6,7 @@ import org.jetbrains.reflekt.plugin.compiler.providers.commonFiles.HelperTestBox
 /**
  * Tests with helper methods added as an aditional source, so they can be used from the box tests.
  */
-open class AbstractHelpersTest : AbstractTest() {
+abstract class AbstractHelpersTest : AbstractTest() {
     override fun configure(builder: TestConfigurationBuilder) {
         super.configure(builder)
         builder.useAdditionalSourceProviders({ HelperTestBoxProvider(it) })
