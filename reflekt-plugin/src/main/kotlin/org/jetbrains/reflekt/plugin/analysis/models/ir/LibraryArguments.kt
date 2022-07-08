@@ -118,10 +118,15 @@ data class SerializableLibraryArgumentsWithInstances(
  */
 // TODO: think about name
 data class LibraryQueriesResults(
-    val classes: ClassOrObjectLibraryQueriesResults = HashMap(),
-    val objects: ClassOrObjectLibraryQueriesResults = HashMap(),
-    val functions: FunctionLibraryQueriesResults = HashMap(),
+    var classes: ClassOrObjectLibraryQueriesResults = HashMap(),
+    var objects: ClassOrObjectLibraryQueriesResults = HashMap(),
+    var functions: FunctionLibraryQueriesResults = HashMap(),
 ) {
+    fun merge(second: LibraryQueriesResults) {
+        classes = classes.merge(second.classes) { HashSet() }
+        objects = objects.merge(second.objects) { HashSet() }
+        functions = functions.merge(second.functions) { HashSet() }
+    }
     companion object {
         fun fromLibraryArguments(libraryArguments: LibraryArguments) = LibraryQueriesResults(
             classes = libraryArguments.classes.flatten(),

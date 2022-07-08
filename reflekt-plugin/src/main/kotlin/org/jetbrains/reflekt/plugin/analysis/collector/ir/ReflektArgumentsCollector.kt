@@ -9,17 +9,17 @@ import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
 import org.jetbrains.reflekt.plugin.analysis.models.SignatureToAnnotations
 import org.jetbrains.reflekt.plugin.analysis.models.SupertypesToAnnotations
-import org.jetbrains.reflekt.plugin.analysis.processor.fullName
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.getReflektInvokeParts
 import org.jetbrains.reflekt.plugin.generation.common.ReflektInvokeParts
 import org.jetbrains.reflekt.plugin.utils.Util.log
-import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
+import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 
 /**
  * Visits all [IrCall]s to extract all Reflekt queries arguments in the [org.jetbrains.kotlin.ir.declarations.IrFile].
@@ -29,22 +29,27 @@ class ReflektArgumentsCollector(
     irInstances: IrInstances,
     private val reflektQueriesArguments: LibraryArguments,
     private val messageCollector: MessageCollector? = null,
-) : IrElementTransformerVoidWithContext() {
+) : IrElementVisitorVoid {
     private val analyzer = IrReflektQueriesAnalyzer(irInstances, pluginContext)
 
-    override fun visitCall(expression: IrCall): IrExpression {
-        val invokeParts = expression.getReflektInvokeParts() ?: return super.visitCall(expression)
+    override fun visitElement(element: IrElement) {
+        element.acceptChildrenVoid(this)
+    }
+
+    override fun visitCall(expression: IrCall, data: Nothing?) {
+        val invokeParts = expression.getReflektInvokeParts() ?: return
         messageCollector?.log("[IR] INVOKE PARTS: $invokeParts")
         expression.collectReflektQueriesArgument(invokeParts)
-        return super.visitCall(expression)
     }
 
     private fun IrCall.collectReflektQueriesArgument(invokeParts: ReflektInvokeParts) {
+        // TODO: add real file?
+        val libraryFile = "DEFAULT_FILE"
         analyzer.parseReflektQueriesArguments(this)?.let { args ->
             when (invokeParts.entityType) {
-                ReflektEntity.OBJECTS -> reflektQueriesArguments.objects.getOrPut(currentFile.fullName) { HashSet() }.add(args as SupertypesToAnnotations)
-                ReflektEntity.CLASSES -> reflektQueriesArguments.classes.getOrPut(currentFile.fullName) { HashSet() }.add(args as SupertypesToAnnotations)
-                ReflektEntity.FUNCTIONS -> reflektQueriesArguments.functions.getOrPut(currentFile.fullName) { HashSet() }.add(args as SignatureToAnnotations)
+                ReflektEntity.OBJECTS -> reflektQueriesArguments.objects.getOrPut(libraryFile) { HashSet() }.add(args as SupertypesToAnnotations)
+                ReflektEntity.CLASSES -> reflektQueriesArguments.classes.getOrPut(libraryFile) { HashSet() }.add(args as SupertypesToAnnotations)
+                ReflektEntity.FUNCTIONS -> reflektQueriesArguments.functions.getOrPut(libraryFile) { HashSet() }.add(args as SignatureToAnnotations)
             }
         }
     }
@@ -61,6 +66,6 @@ class ReflektArgumentsCollectorExtension(
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         val irInstances = irInstancesAnalyzer.getIrInstances()
-        moduleFragment.transform(ReflektArgumentsCollector(pluginContext, irInstances, reflektQueriesArguments, messageCollector), null)
+        moduleFragment.acceptChildrenVoid(ReflektArgumentsCollector(pluginContext, irInstances, reflektQueriesArguments, messageCollector))
     }
 }

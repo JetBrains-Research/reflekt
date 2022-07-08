@@ -12,7 +12,7 @@ import java.io.File
  *
  * @param configuration the current Kotlin compiler configuration or null
  * @param logFilePath path to the file with logs. By default is pathToKotlin/daemon/reflekt-log.log
- * @param isTestConfiguration indicates if the plugin is used in tests
+ * @param testConfiguration indicates if the plugin is used in tests and set up the Kotlin compiler configuration
  *
  * @property enabled indicates if the plugin is enabled
  * @property reflektMetaFilesFromLibraries stores the absolute file's path from the library with Reflekt meta information
@@ -45,8 +45,8 @@ class PluginConfig(
             configuration.initMessageCollector(logFilePath)
             messageCollector = configuration[CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY]
 
-            enabled = configuration[Keys.ENABLED] ?: false
-            outputDir = configuration[Keys.OUTPUT_DIR] ?: File("build/kotlin-gen")
+            enabled = configuration[Keys.ENABLED] ?: isTestConfiguration
+            outputDir = configuration[Keys.OUTPUT_DIR] ?: File(DEFAULT_GEN_FOLDER_PATH)
 
             toSaveMetadata = configuration[Keys.TO_SAVE_METADATA] ?: false
             reflektMetaFileRelativePath = configuration[Keys.REFLEKT_META_PATH]
@@ -80,4 +80,8 @@ class PluginConfig(
      * Builds and logs pretty string of the current configuration.
      */
     private fun MessageCollector.logConfiguration() = this.log(prettyString())
+
+    companion object {
+        const val DEFAULT_GEN_FOLDER_PATH = "build/kotlin-gen"
+    }
 }
