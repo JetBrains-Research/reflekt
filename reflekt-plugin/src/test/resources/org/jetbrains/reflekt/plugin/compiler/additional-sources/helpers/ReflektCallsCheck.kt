@@ -4,16 +4,8 @@ import kotlin.reflect.KClass
 import kotlin.Function
 import org.jetbrains.reflekt.ReflektClass
 
-inline fun checkClassesCallResult(
-    call: () -> Iterable<ReflektClass<*>>,
-    expected: List<String>,
-    basePackage: String? = null,
-): String {
-    val actual = call().map { it.qualifiedName ?: "Undefined name" }
-    return extendExpectedAndCompareResults(actual, expected, basePackage)
-}
 
-inline fun checkClassesCallResultDetailed(
+inline fun checkClassesCallResult(
     call: () -> Collection<ReflektClass<*>>,
     expected: Collection<ReflektClass<*>>,
 ): String {

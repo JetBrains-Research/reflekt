@@ -1,13 +1,13 @@
 package org.jetbrains.reflekt.test.common
 
-object A1: AInterface {
+object A1 : AInterface {
     override fun description(): String {
         return "HELLO A1"
     }
 }
 
 @SecondAnnotation("Test")
-object A2: AInterface {
+object A2 : AInterface {
     override fun description(): String {
         return "HELLO A2"
     }

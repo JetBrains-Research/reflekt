@@ -5,6 +5,5 @@ import org.jetbrains.reflekt.test.common.*
 
 fun box(): String = checkClassesCallResult(
     { SmartReflekt.classes<BInterface>().filter { it.isData }.resolve() },
-    listOf("B2"),
-    "org.jetbrains.reflekt.test.common",
+    listOf(expectedReflektClass[B2::class]!!),
 )

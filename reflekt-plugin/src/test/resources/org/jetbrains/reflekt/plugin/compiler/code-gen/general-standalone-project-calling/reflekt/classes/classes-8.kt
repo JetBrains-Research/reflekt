@@ -5,6 +5,12 @@ import org.jetbrains.reflekt.test.common.*
 
 fun box(): String = checkClassesCallResult(
     { Reflekt.classes().withSuperType<Any>().toList() },
-    listOf("B1", "B2", "B3", "B3.B4", "TestFunctions", "MyInClass"),
-    "org.jetbrains.reflekt.test.common",
+    listOf(
+        expectedReflektClass[B1::class]!!,
+        expectedReflektClass[B2::class]!!,
+        expectedReflektClass[B3::class]!!,
+        expectedReflektClass[B3.B4::class]!!,
+        expectedReflektClass[TestFunctions::class]!!,
+        expectedReflektClass[MyInClass::class]!!
+    ),
 )
