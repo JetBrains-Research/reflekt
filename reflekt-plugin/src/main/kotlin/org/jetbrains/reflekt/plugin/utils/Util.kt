@@ -19,7 +19,7 @@ import java.io.PrintStream
  * @property messageCollector get [MessageCollector] from the [CompilerConfiguration]
  */
 object Util {
-    private const val KOTLIN_COMPILER_PROP = "org.jetbrains.kotlin.compiler"
+    const val KOTLIN_COMPILER_PROP = "org.jetbrains.kotlin.compiler"
 
     val CompilerConfiguration.messageCollector: MessageCollector
         get() = this.get(
@@ -27,10 +27,10 @@ object Util {
             MessageCollector.NONE,
         )
 
-    fun getKotlinCompilerJar(): File = System.getProperty(KOTLIN_COMPILER_PROP)
+    fun getJarBySystemPropertyName(property: String): File = System.getProperty(property)
         ?.let(::File)
         ?.takeIf { it.exists() }
-        ?: error("Property $KOTLIN_COMPILER_PROP is not set or file under it not found")
+        ?: error("Property $property is not set or file under it not found")
 
     /**
      * Creates new empty file for the new instance of [MessageCollector].
