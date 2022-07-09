@@ -8,7 +8,7 @@ import org.jetbrains.reflekt.plugin.generation.common.SmartReflektInvokeParts
 import org.jetbrains.reflekt.plugin.scripting.ImportChecker
 import org.jetbrains.reflekt.plugin.scripting.KotlinScriptRunner
 import org.jetbrains.reflekt.plugin.utils.Util.log
-import org.jetbrains.reflekt.plugin.utils.Util.getKotlinCompilerJar
+import org.jetbrains.reflekt.plugin.utils.Util.getJarBySystemPropertyName
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import org.jetbrains.kotlin.ir.PsiIrFileEntry
+import org.jetbrains.reflekt.plugin.utils.Util.KOTLIN_COMPILER_PROP
 
 import java.io.File
 
@@ -47,7 +48,7 @@ class SmartReflektIrTransformer(
     private val sources = HashMap<String, SourceFile>()
 
     // TODO: check with real project: should we get it only for tests or not
-    private val kotlinCompilerJar = getKotlinCompilerJar()
+    private val kotlinCompilerJar = getJarBySystemPropertyName(KOTLIN_COMPILER_PROP)
 
     /**
      * Visit [IrCall] and replace IR to found entities if it is a SmartReflekt query
