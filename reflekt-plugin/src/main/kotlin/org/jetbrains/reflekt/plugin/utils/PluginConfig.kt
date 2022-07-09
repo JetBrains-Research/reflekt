@@ -12,7 +12,7 @@ import java.io.File
  *
  * @param configuration the current Kotlin compiler configuration or null
  * @param logFilePath path to the file with logs. By default is pathToKotlin/daemon/reflekt-log.log
- * @param testConfiguration indicates if the plugin is used in tests and set up the Kotlin compiler configuration
+ * @param isTestConfiguration indicates if the plugin is used in tests
  *
  * @property enabled indicates if the plugin is enabled
  * @property reflektMetaFilesFromLibraries stores the absolute file's path from the library with Reflekt meta information
