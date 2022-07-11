@@ -18,4 +18,4 @@ jobs:
           distribution: liberica
       - uses: gradle/gradle-build-action@v2.1.5
         with:
-          arguments: diktatCheckAll --stacktrace
+          arguments: diktatCheckAll -Ddiktat.githubActions=true --stacktrace
