@@ -12,6 +12,7 @@ import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.models.ReflektQueryArguments
 import org.jetbrains.reflekt.plugin.analysis.models.ir.*
 import org.jetbrains.reflekt.plugin.utils.Util.log
+import org.jetbrains.reflekt.plugin.utils.getReflectionKnownHierarchy
 
 open class IlibraryQueriesResultsCollectorBase(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,
@@ -31,8 +32,16 @@ open class IlibraryQueriesResultsCollectorBase(
         val analyzer = IrReflektQueriesAnalyzer(irInstances, pluginContext)
         messageCollector?.log("Start filtering instances for the ReflektImpl file")
         libraryQueriesResults.classes.filterInstances(analyzer, ReflektEntity.CLASSES)
+
+        val mentionedClasses = libraryQueriesResults.classes.values
+            .flatten()
+            .flatMap { clazz -> clazz.getReflectionKnownHierarchy() }
+            .map { it.owner }
+
         libraryQueriesResults.objects.filterInstances(analyzer, ReflektEntity.OBJECTS)
         libraryQueriesResults.functions.filterInstances(analyzer, ReflektEntity.FUNCTIONS)
+        libraryQueriesResults.mentionedClasses += mentionedClasses
+
         messageCollector?.log("Finish filtering instances for the ReflektImpl file")
     }
 }

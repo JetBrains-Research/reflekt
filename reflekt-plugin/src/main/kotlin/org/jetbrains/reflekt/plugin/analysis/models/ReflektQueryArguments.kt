@@ -1,9 +1,8 @@
 package org.jetbrains.reflekt.plugin.analysis.models
 
-import org.jetbrains.reflekt.plugin.analysis.processor.FileId
-import org.jetbrains.kotlin.ir.types.IrType
-
 import kotlinx.serialization.Serializable
+import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.reflekt.plugin.analysis.processor.FileId
 
 typealias ClassOrObjectQueryArguments = MutableSet<SupertypesToAnnotations>
 typealias FunctionQueryArguments = MutableSet<SignatureToAnnotations>

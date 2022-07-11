@@ -2,21 +2,18 @@ package org.jetbrains.reflekt.test.helpers
 
 import kotlin.reflect.KClass
 import kotlin.Function
+import org.jetbrains.reflekt.ReflektClass
 
-private fun compareResults(actual: List<String>, expected: List<String>): String {
-    return if (actual.sorted() == expected.sorted()) "OK"  else "Fail:\nactual: $actual\nexpected: $expected"
-}
 
-fun checkClassesCallResult(
-    call: () -> List<KClass<*>>,
-    expected: List<String>,
-    basePackage: String? = null,
+inline fun checkClassesCallResult(
+    call: () -> Collection<ReflektClass<*>>,
+    expected: Collection<ReflektClass<*>>,
 ): String {
-    val actual = call().map { it.qualifiedName ?: "Undefined name" }
-    return extendExpectedAndCompareResults(actual, expected, basePackage)
+    val actual = call()
+    return extendExpectedAndCompareResults(actual, expected)
 }
 
-fun checkObjectsCallResult(
+inline fun checkObjectsCallResult(
     call: () -> List<Any>,
     expected: List<String>,
     basePackage: String? = null,
@@ -25,7 +22,7 @@ fun checkObjectsCallResult(
     return extendExpectedAndCompareResults(actual, expected, basePackage)
 }
 
-fun checkFinctionsCallResult(
+inline fun checkFunctionsCallResult(
     call: () -> List<Function<*>>,
     expected: List<String>,
 ): String {
@@ -33,11 +30,18 @@ fun checkFinctionsCallResult(
     return extendExpectedAndCompareResults(actual, expected)
 }
 
-private fun extendExpectedAndCompareResults(
+@PublishedApi
+internal fun extendExpectedAndCompareResults(
     actual: List<String>,
     expected: List<String>,
     basePackage: String? = null,
 ): String {
-    val expectedWithPackage = basePackage?.let{ expected.map{ "$basePackage.$it" } } ?: expected
-    return compareResults(actual, expectedWithPackage)
+    val expectedWithPackage = basePackage?.let { expected.map { "$basePackage.$it" } } ?: expected
+    return if (actual.sorted() == expectedWithPackage.sorted()) "OK" else "Fail:\nactual: $actual\nexpected: $expectedWithPackage"
 }
+
+@PublishedApi
+internal fun extendExpectedAndCompareResults(
+    actual: Collection<ReflektClass<*>>,
+    expected: Collection<ReflektClass<*>>,
+): String = if (actual.map { it.toString() }.containsAll(expected.map { it.toString() })) "OK" else "Fail:\nactual: $actual\nexpected: $expected"

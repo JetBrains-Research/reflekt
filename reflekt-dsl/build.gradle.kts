@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import tanvd.kosogor.proxy.publishJar
 
 group = rootProject.group

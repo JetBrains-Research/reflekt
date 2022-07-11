@@ -3,7 +3,7 @@ package org.jetbrains.reflekt.test.common
 class B1: BInterface
 
 @FirstAnnotation
-@SecondAnnotation("Test")
+@SecondAnnotation("Test", FirstAnnotation(int = 42, array = [false, true]))
 data class B2(val x: Int): BInterface
 
 @FirstAnnotation

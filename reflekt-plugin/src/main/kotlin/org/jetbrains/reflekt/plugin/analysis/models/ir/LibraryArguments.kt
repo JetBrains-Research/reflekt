@@ -115,18 +115,22 @@ data class SerializableLibraryArgumentsWithInstances(
  * @property classes
  * @property objects
  * @property functions
+ * @property mentionedClasses Information about all resulting classes, their superclasses, etc.
  */
 // TODO: think about name
 data class LibraryQueriesResults(
-    var classes: ClassOrObjectLibraryQueriesResults = HashMap(),
+    var classes: ClassOrObjectLibraryQueriesResults = LinkedHashMap(),
     var objects: ClassOrObjectLibraryQueriesResults = HashMap(),
     var functions: FunctionLibraryQueriesResults = HashMap(),
+    var mentionedClasses: MutableSet<IrClass> = LinkedHashSet(),
 ) {
     fun merge(second: LibraryQueriesResults) {
         classes = classes.merge(second.classes) { HashSet() }
         objects = objects.merge(second.objects) { HashSet() }
         functions = functions.merge(second.functions) { HashSet() }
+        mentionedClasses = mentionedClasses.toMutableSet().also { it += second.mentionedClasses }
     }
+
     companion object {
         fun fromLibraryArguments(libraryArguments: LibraryArguments) = LibraryQueriesResults(
             classes = libraryArguments.classes.flatten(),

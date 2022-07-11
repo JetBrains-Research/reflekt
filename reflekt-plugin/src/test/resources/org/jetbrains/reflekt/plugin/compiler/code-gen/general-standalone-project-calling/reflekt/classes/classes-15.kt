@@ -5,6 +5,5 @@ import org.jetbrains.reflekt.test.common.*
 
 fun box(): String = checkClassesCallResult(
     { Reflekt.classes().withSuperType<B2>().withAnnotations<B2>(FirstAnnotation::class, MyAnnotation::class).toList() },
-    listOf("B2"),
-    "org.jetbrains.reflekt.test.common",
+    listOf(expectedReflektClass[B2::class]!!),
 )

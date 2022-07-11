@@ -1,5 +1,7 @@
 package org.jetbrains.reflekt.plugin.analysis.common
 
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.reflekt.Reflekt
 import org.jetbrains.reflekt.SmartReflekt
 
@@ -67,4 +69,14 @@ enum class ReflektTerminalFunction(val functionName: String) {
 enum class SmartReflektTerminalFunction(val functionName: String) {
     RESOLVE("resolve"),
     ;
+}
+
+object ReflektPackage {
+    const val PACKAGE_NAME = "org.jetbrains.reflekt"
+    val PACKAGE_FQ_NAME = FqName(PACKAGE_NAME)
+}
+
+object StorageClassNames {
+    const val REFLEKT_CLASSES = "reflektClasses"
+    val REFLEKT_CLASSES_NAME = Name.identifier(REFLEKT_CLASSES)
 }

@@ -11,7 +11,7 @@ import java.io.File
  * Parses and stores the command line arguments from the plugin.
  *
  * @param configuration the current Kotlin compiler configuration or null
- * @param logFilePath path to the file with logs. By default is pathToKotlin/daemon/reflekt-log.log
+ * @param logFilePath path to the file with logs. By default, it is pathToKotlin/daemon/reflekt-log.log
  * @param isTestConfiguration indicates if the plugin is used in tests
  *
  * @property enabled indicates if the plugin is enabled

@@ -1,11 +1,11 @@
 import tanvd.kosogor.proxy.publishJar
 
-group = rootProject.group
-version = rootProject.version
-
 plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
 }
+
+group = rootProject.group
+version = rootProject.version
 
 dependencies {
     implementation(kotlin("scripting-common"))

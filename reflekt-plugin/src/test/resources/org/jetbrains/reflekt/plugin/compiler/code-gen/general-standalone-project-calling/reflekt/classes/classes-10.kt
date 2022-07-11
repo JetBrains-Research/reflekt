@@ -5,6 +5,5 @@ import org.jetbrains.reflekt.test.common.*
 
 fun box(): String = checkClassesCallResult(
     { Reflekt.classes().withAnnotations<BInterface>(FirstAnnotation::class).toList() },
-    listOf("B2", "B3"),
-    "org.jetbrains.reflekt.test.common",
+    listOf(expectedReflektClass[B2::class]!!, expectedReflektClass[B3::class]!!),
 )

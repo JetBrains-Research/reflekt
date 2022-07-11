@@ -2,14 +2,16 @@
 
 package org.jetbrains.reflekt.plugin.utils
 
-import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
-
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
+import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.types.checker.SimpleClassicTypeSystemContext.isStarProjection
-
+import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
 import java.io.File
 import java.io.PrintStream
 
@@ -88,6 +90,40 @@ fun IrType.stringRepresentation(): String {
         }
     } ?: emptyList()
     return TypeStringRepresentationUtil.getStringRepresentation(fqName, typeArguments)
+}
+
+fun IrMemberAccessExpression<*>.getValueArguments() = (0 until valueArgumentsCount).map {
+    getValueArgument(it)
+}
+
+fun IrClass.getImmediateSuperclasses(): List<IrClassSymbol> = superTypes.mapNotNull { it.classOrNull }
+
+/**
+ * Returns set of all classes related to [this] class with reflection. Resulting set consists of: [this class], all superclasses of all elements of the set,
+ * all sealed subclasses of all elements of the set. Private classes are excluded.
+ */
+fun IrClass.getReflectionKnownHierarchy(): Set<IrClassSymbol> {
+    val deque = ArrayDeque<IrClassSymbol>()
+    deque += symbol
+    val result = LinkedHashSet<IrClassSymbol>()
+
+    while (deque.isNotEmpty()) {
+        val last = deque.removeLast()
+
+        if (last.owner.visibility == DescriptorVisibilities.PRIVATE) {
+            continue
+        }
+
+        for (irClass in last.owner.getImmediateSuperclasses() + last.owner.sealedSubclasses) {
+            if (irClass.owner.visibility != DescriptorVisibilities.PRIVATE && result.add(irClass)) {
+                deque.addLast(irClass)
+            }
+        }
+
+        result += last
+    }
+
+    return result
 }
 
 /**

@@ -4,7 +4,6 @@ import kotlin.Any
 import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Set
-import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 public object ReflektImpl {
@@ -55,20 +54,20 @@ public object ReflektImpl {
         public class WithSuperTypes<T : Any>(
             public val fqNames: Set<String>,
         ) {
-            public fun toList(): List<KClass<T>> = emptyList()
+            public fun toList(): List<ReflektClass<T>> = emptyList()
 
-            public fun toSet(): Set<KClass<T>> = toList().toSet()
+            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
 
         public class WithAnnotations<T : Any>(
             public val annotationFqNames: Set<String>,
             public val supertypeFqNames: Set<String>,
         ) {
-            public fun toList(): List<KClass<T>> = when (annotationFqNames) {
+            public fun toList(): List<ReflektClass<T>> = when (annotationFqNames) {
                 else -> emptyList()
             }
 
-            public fun toSet(): Set<KClass<T>> = toList().toSet()
+            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
     }
 

@@ -4,10 +4,10 @@ package org.jetbrains.reflekt.plugin.generation.code.generator.models
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import org.jetbrains.reflekt.plugin.analysis.models.ir.ClassOrObjectLibraryQueriesResults
-import org.jetbrains.reflekt.plugin.analysis.models.ir.toSupertypesToFqNamesMap
+import org.jetbrains.reflekt.ReflektClass
+import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
+import org.jetbrains.reflekt.plugin.analysis.models.ir.*
 import org.jetbrains.reflekt.plugin.generation.code.generator.emptyListCode
-import kotlin.reflect.KClass
 
 /**
  * An abstract class to generate a top level classes for Classes or Objects in the ReflektImpl.kt
@@ -57,10 +57,10 @@ class ClassesGenerator(enclosingClassName: ClassName, libraryQueriesResults: Cla
     ClassesOrObjectsGenerator(libraryQueriesResults) {
     override val typeName: ClassName = enclosingClassName.nestedClass("Classes")
     override val typeVariable = TypeVariableName("T", Any::class)
-    override val returnParameter = KClass::class.asClassName().parameterizedBy(typeVariable)
+    override val returnParameter = ReflektClass::class.asClassName().parameterizedBy(typeVariable)
 
     override fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String): CodeBlock =
-        super.listOfWhenRightPart(uses) { getEntityName(it) + "::class" }
+        super.listOfWhenRightPart(uses) { "${StorageClassNames.REFLEKT_CLASSES}[${getEntityName(it)}::class]" }
 }
 
 /**

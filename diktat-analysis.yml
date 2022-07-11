@@ -79,7 +79,6 @@
 - name: WRONG_DECLARATIONS_ORDER
   enabled: true
   configuration:
-    sortEnum: true
     sortProperty: true
 - name: COMMENT_WHITE_SPACE
   enabled: true
@@ -89,11 +88,11 @@
 - name: TYPE_ALIAS
   enabled: true
   configuration:
-    typeReferenceLength: 25
+    typeReferenceLength: 34
 - name: TOO_LONG_FUNCTION
   enabled: true
   configuration:
-    maxFunctionLength: 35 # max length of function
+    maxFunctionLength: 60 # max length of function
     isIncludeHeader: false # count function's header
 - name: TOO_MANY_PARAMETERS
   enabled: true

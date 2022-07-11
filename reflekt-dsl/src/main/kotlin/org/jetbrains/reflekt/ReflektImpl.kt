@@ -1,7 +1,5 @@
 package org.jetbrains.reflekt
 
-import kotlin.reflect.KClass
-
 @Suppress("UNUSED_PARAMETER")
 object ReflektImpl {
     fun objects() = Objects()
@@ -40,16 +38,16 @@ object ReflektImpl {
          */
         @JvmInline
         value class WithSuperTypes<T : Any>(val fqNames: Set<String>) {
-            fun toList(): List<KClass<T>> = error("This method should be replaced during compilation")
-            fun toSet(): Set<KClass<T>> = toList().toSet()
+            fun toList(): List<ReflektClass<T>> = error("This method should be replaced during compilation")
+            fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
 
         /**
          * @property annotationFqNames
          */
         class WithAnnotations<T : Any>(val annotationFqNames: Set<String>, supertypeFqNames: Set<String>) {
-            fun toList(): List<KClass<T>> = error("This method should be replaced during compilation")
-            fun toSet(): Set<KClass<T>> = toList().toSet()
+            fun toList(): List<ReflektClass<T>> = error("This method should be replaced during compilation")
+            fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
     }
 

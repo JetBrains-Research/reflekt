@@ -63,7 +63,6 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
      * @param configurationKey the key of the command line option (should be a list)
      * @param value new value to add
      */
-    @Suppress("TYPE_ALIAS")
     private fun <T> CompilerConfiguration.addToList(configurationKey: CompilerConfigurationKey<List<T>>, value: T) {
         val values = get(configurationKey) ?: emptyList()
         put(configurationKey, values + value)

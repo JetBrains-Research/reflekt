@@ -1,12 +1,12 @@
 import tanvd.kosogor.proxy.publishPlugin
 
-group = rootProject.group
-version = rootProject.version
-
 plugins {
     `kotlin-dsl`
     alias(libs.plugins.kotlin.plugin.serialization)
 }
+
+group = rootProject.group
+version = rootProject.version
 
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
