@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt.example
 
-import org.jetbrains.kotlin.backend.common.ir.isTopLevel
+import org.jetbrains.kotlin.ir.util.isTopLevel
 import org.jetbrains.reflekt.SmartReflekt
 import org.jetbrains.reflekt.Reflekt
 
@@ -12,9 +12,10 @@ fun main() {
 //    println(tmp.a)
 //
     val objects = Reflekt.objects().withSuperType<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+        .map { it.objectInstance }
     println(objects)
     val objects1 = Reflekt.objects().withSuperType<AInterface>()
-        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
+        .withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList().map { it.objectInstance }
     println(objects1)
 //
 //    val objects2 = Reflekt.objects().withSuperTypes(AInterface::class, A1::class)
@@ -49,7 +50,6 @@ fun main() {
     // TODO: fix functions
     val functions = Reflekt.functions().withAnnotations<() -> Unit>(FirstAnnotation::class).toList()
     println(functions)
-
 
 
 //    val smartClasses = SmartReflekt.classes<BInterface>().filter { it.isData }.resolve()

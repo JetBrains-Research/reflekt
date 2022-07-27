@@ -98,7 +98,7 @@ abstract class BaseReflektIrTransformer(
                                         itemType.safeAs<IrSimpleType>()
                                             ?.arguments
                                             ?.get(0)
-                                            ?.typeOrNull
+                                            ?.typeOrNull,
                                     ),
                                     valueArguments = listOf(reflektClassFromMap),
                                 )

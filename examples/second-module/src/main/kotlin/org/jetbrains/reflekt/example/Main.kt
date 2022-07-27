@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt.example
 
-import org.jetbrains.kotlin.backend.common.ir.isTopLevel
+import org.jetbrains.kotlin.ir.util.isTopLevel
 import org.jetbrains.reflekt.SmartReflekt
 
 fun main() {
