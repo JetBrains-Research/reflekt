@@ -15,10 +15,16 @@ import org.jetbrains.reflekt.plugin.generation.code.generator.emptyListCode
  * @property uses stores entities that satisfy all Reflekt queries arguments (invokes)
  */
 abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectLibraryQueriesResults) : HelperClassGenerator() {
+    final override val typeVariable = TypeVariableName("T", Any::class)
+    final override val returnParameter = ReflektClass::class.asClassName().parameterizedBy(typeVariable)
+
+    final override fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String): CodeBlock =
+        super.listOfWhenRightPart(uses) { "${StorageClassNames.REFLEKT_CLASSES}[${getEntityName(it)}::class]" }
+
     /**
      * The main function to generate Classes or Objects class in the ReflektImpl.kt.
      */
-    override fun generateImpl() {
+    final override fun generateImpl() {
         generateWithSupertypesFunction()
         generateWithAnnotationsFunction()
 
@@ -56,11 +62,6 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectLibrar
 class ClassesGenerator(enclosingClassName: ClassName, libraryQueriesResults: ClassOrObjectLibraryQueriesResults) :
     ClassesOrObjectsGenerator(libraryQueriesResults) {
     override val typeName: ClassName = enclosingClassName.nestedClass("Classes")
-    override val typeVariable = TypeVariableName("T", Any::class)
-    override val returnParameter = ReflektClass::class.asClassName().parameterizedBy(typeVariable)
-
-    override fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String): CodeBlock =
-        super.listOfWhenRightPart(uses) { "${StorageClassNames.REFLEKT_CLASSES}[${getEntityName(it)}::class]" }
 }
 
 /**
@@ -76,6 +77,4 @@ class ClassesGenerator(enclosingClassName: ClassName, libraryQueriesResults: Cla
 class ObjectsGenerator(enclosingClassName: ClassName, libraryQueriesResults: ClassOrObjectLibraryQueriesResults) :
     ClassesOrObjectsGenerator(libraryQueriesResults) {
     override val typeName: ClassName = enclosingClassName.nestedClass("Objects")
-    override val typeVariable = TypeVariableName("T")
-    override val returnParameter = typeVariable
 }

@@ -35,7 +35,7 @@ class ReflektImplCompilationHandler(testServices: TestServices) : ReflektImplBas
         val commonTestFiles =
             testServices.moduleStructure.modules.first().files.filter { CodeGenTestPaths.additionalSourcesCommonFilesFolder in it.originalFile.path }
                 .map { it.originalFile }
-        sources.addAll(commonTestFiles)
+        sources += commonTestFiles
         for (source in sources) {
             source.copyRecursively(srcDir, overwrite = true)
         }

@@ -32,14 +32,13 @@ open class IlibraryQueriesResultsCollectorBase(
         val analyzer = IrReflektQueriesAnalyzer(irInstances, pluginContext)
         messageCollector?.log("Start filtering instances for the ReflektImpl file")
         libraryQueriesResults.classes.filterInstances(analyzer, ReflektEntity.CLASSES)
-
+        libraryQueriesResults.objects.filterInstances(analyzer, ReflektEntity.OBJECTS)
+        libraryQueriesResults.functions.filterInstances(analyzer, ReflektEntity.FUNCTIONS)
         val mentionedClasses = libraryQueriesResults.classes.values
+            .union(libraryQueriesResults.objects.values)
             .flatten()
             .flatMap { clazz -> clazz.getReflectionKnownHierarchy() }
             .map { it.owner }
-
-        libraryQueriesResults.objects.filterInstances(analyzer, ReflektEntity.OBJECTS)
-        libraryQueriesResults.functions.filterInstances(analyzer, ReflektEntity.FUNCTIONS)
         libraryQueriesResults.mentionedClasses += mentionedClasses
 
         messageCollector?.log("Finish filtering instances for the ReflektImpl file")

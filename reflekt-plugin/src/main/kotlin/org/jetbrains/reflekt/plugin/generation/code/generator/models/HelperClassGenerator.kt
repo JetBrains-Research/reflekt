@@ -97,7 +97,8 @@ abstract class HelperClassGenerator : ClassGenerator() {
      */
     @Suppress("SpreadOperator")
     protected open fun <T> listOfWhenRightPart(uses: List<T>, getEntityName: (T) -> String) =
-        statement("listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)} as %T" }})",
+        statement(
+            "listOf(${uses.joinToString(separator = ", ") { "${getEntityName(it)} as %T" }})",
             *List(uses.size) { returnParameter }.toTypedArray(),
         )
 
@@ -139,10 +140,11 @@ abstract class HelperClassGenerator : ClassGenerator() {
      * @param rightPart [CodeBlock] for a right part of the 'when' option
      * @return generated [CodeBlock]: [leftPart] -> [rightPart]
      */
-    private fun getWhenOption(leftPart: String, rightPart: CodeBlock) = CodeBlock.builder()
-        .add("$leftPart -> ")
-        .add(rightPart)
-        .build()
+    private fun getWhenOption(leftPart: String, rightPart: CodeBlock) = buildCodeBlock {
+        add(leftPart)
+        add(" -> ")
+        add(rightPart)
+    }
 
     /**
      * An internal function to generate the full 'when' body.
@@ -165,18 +167,16 @@ abstract class HelperClassGenerator : ClassGenerator() {
         conditionVariable: String,
         toAddReturn: Boolean = true,
         generateBranchForWhenOption: (T) -> CodeBlock,
-    ): CodeBlock {
-        val builder = CodeBlock.builder()
+    ): CodeBlock = buildCodeBlock {
         if (toAddReturn) {
-            builder.add("return ")
+            add("return ")
         }
-        builder.beginControlFlow("when (%N)", conditionVariable)
-        for (it in invokesWithUses) {
-            builder.add(generateBranchForWhenOption(it))
+        beginControlFlow("when (%N)", conditionVariable)
+        for (invoke in invokesWithUses) {
+            add(generateBranchForWhenOption(invoke))
         }
-        builder.addStatement("else -> emptyList()")
-        builder.endControlFlow()
-        return builder.build()
+        addStatement("else -> emptyList()")
+        endControlFlow()
     }
 
     /**

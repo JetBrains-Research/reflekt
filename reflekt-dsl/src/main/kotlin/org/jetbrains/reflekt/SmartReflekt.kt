@@ -59,7 +59,7 @@ object SmartReflekt {
         /*
          * Resolve user's condition - find all objects that satisfy the condition from the filter function.
          */
-        fun resolve(): List<T> = compileTime()
+        fun resolve(): List<ReflektObject<T>> = compileTime()
     }
 
     class FunctionCompileTimeExpression<T : Function<*>> {

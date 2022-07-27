@@ -9,6 +9,7 @@ import kotlin.reflect.typeOf
  * The main Reflekt DSL for `multi-module` projects
  */
 @Suppress("KDOC_WITHOUT_RETURN_TAG")
+@OptIn(InternalReflektApi::class)
 object Reflekt {
     /**
      * The main function for searching objects. The chain of calls has to end with toList() or toSet() function.
@@ -77,13 +78,17 @@ object Reflekt {
              * Each item in the list\set with result will be cast to [T] type.
              *
              */
-            fun toList(): List<T> = ReflektImpl.objects().withSuperTypes<T>(fqNames).toList()
+            fun toList(): List<ReflektObject<T>> = ReflektImpl
+                .objects()
+                .withSuperTypes<T>(fqNames)
+                .toList()
+                .map { ReflektObject(it) }
 
             /**
              * Get set of objects with [fqNames] supertypes.
              * Each item in the list\set with result will be cast to [T] type.
              */
-            fun toSet(): Set<T> = toList().toSet()
+            fun toSet(): Set<ReflektObject<T>> = toList().toSet()
 
             /**
              * Filter objects with [fqNames] supertypes by several annotations.
@@ -99,20 +104,24 @@ object Reflekt {
          * The class represents DSL for searching objects with several annotations.
          * Each item in the list\set with result will be cast to [T] type.
          */
-        class WithAnnotations<out T : Any>(private val annotationFqNames: Set<String>, private val supertypeFqNames: Set<String>) {
+        class WithAnnotations<T : Any>(private val annotationFqNames: Set<String>, private val supertypeFqNames: Set<String>) {
             /**
              * Get list of objects with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
              * Each item in the list\set with result will be cast to [T] type.
              *
              */
-            fun toList(): List<T> = ReflektImpl.objects().withAnnotations<T>(annotationFqNames, supertypeFqNames).toList()
+            fun toList(): List<ReflektObject<T>> = ReflektImpl
+                .objects()
+                .withAnnotations<T>(annotationFqNames, supertypeFqNames)
+                .toList()
+                .map { ReflektObject(it) }
 
             /**
              * Get set of objects with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
              * Each item in the list\set with result will be cast to [T] type.
              *
              */
-            fun toSet(): Set<T> = toList().toSet()
+            fun toSet(): Set<ReflektObject<T>> = toList().toSet()
 
             /**
              * Filter objects with [annotationFqNames] annotations by one supertype. All objects will be cast to [T] type.

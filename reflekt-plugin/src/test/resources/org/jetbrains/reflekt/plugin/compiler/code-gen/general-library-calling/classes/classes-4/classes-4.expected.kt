@@ -1,3 +1,4 @@
+
 package org.jetbrains.reflekt
 
 import kotlin.Any
@@ -18,7 +19,7 @@ public object ReflektImpl {
                 isAbstract = true, isCompanion = false, isData = false, isFinal = false, isFun =
                 false, isInner = false, isOpen = false, isSealed = false, isValue = false,
                 qualifiedName = "org.jetbrains.reflekt.test.common.BInterface", simpleName =
-                "BInterface", visibility = ReflektVisibility.PUBLIC)
+                "BInterface", visibility = ReflektVisibility.PUBLIC, objectInstance = null)
         m[org.jetbrains.reflekt.test.common.B2::class] = ReflektClassImpl(kClass =
                 org.jetbrains.reflekt.test.common.B2::class, annotations =
                 hashSetOf(org.jetbrains.reflekt.test.common.FirstAnnotation(),
@@ -27,12 +28,12 @@ public object ReflektImpl {
                 true)))), isAbstract = false, isCompanion = false, isData = true, isFinal = true,
                 isFun = false, isInner = false, isOpen = false, isSealed = false, isValue = false,
                 qualifiedName = "org.jetbrains.reflekt.test.common.B2", simpleName = "B2",
-                visibility = ReflektVisibility.PUBLIC)
+                visibility = ReflektVisibility.PUBLIC, objectInstance = null)
         m[kotlin.Any::class] = ReflektClassImpl(kClass = kotlin.Any::class, annotations =
                 hashSetOf(), isAbstract = false, isCompanion = false, isData = false, isFinal =
                 false, isFun = false, isInner = false, isOpen = true, isSealed = false, isValue =
                 false, qualifiedName = "kotlin.Any", simpleName = "Any", visibility =
-                ReflektVisibility.PUBLIC)
+                ReflektVisibility.PUBLIC, objectInstance = null)
         (m[org.jetbrains.reflekt.test.common.BInterface::class]!! as
                 ReflektClassImpl<org.jetbrains.reflekt.test.common.BInterface>).superclasses +=
                 m[kotlin.Any::class] as ReflektClass<in
@@ -51,29 +52,29 @@ public object ReflektImpl {
     public fun functions() = Functions()
 
     public class Objects {
-        public fun <T> withSuperTypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
+        public fun <T : Any> withSuperTypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
 
-        public fun <T> withAnnotations(annotationFqNames: Set<String>,
+        public fun <T : Any> withAnnotations(annotationFqNames: Set<String>,
                 supertypeFqNames: Set<String>) = WithAnnotations<T>(annotationFqNames,
                 supertypeFqNames)
 
-        public class WithSuperTypes<T>(
+        public class WithSuperTypes<T : Any>(
             public val fqNames: Set<String>,
         ) {
-            public fun toList(): List<T> = emptyList()
+            public fun toList(): List<ReflektClass<T>> = emptyList()
 
-            public fun toSet(): Set<T> = toList().toSet()
+            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
 
-        public class WithAnnotations<T>(
+        public class WithAnnotations<T : Any>(
             public val annotationFqNames: Set<String>,
             public val supertypeFqNames: Set<String>,
         ) {
-            public fun toList(): List<T> = when (annotationFqNames) {
+            public fun toList(): List<ReflektClass<T>> = when (annotationFqNames) {
                 else -> emptyList()
             }
 
-            public fun toSet(): Set<T> = toList().toSet()
+            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
     }
 

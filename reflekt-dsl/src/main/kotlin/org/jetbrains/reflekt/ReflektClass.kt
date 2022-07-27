@@ -89,6 +89,11 @@ interface ReflektClass<T : Any> {
      * Visibility of this class, or `null` if its visibility cannot be represented in Kotlin.
      */
     val visibility: ReflektVisibility?
+
+    /**
+     * The instance of the object declaration, or `null` if this class is not an object declaration.
+     */
+    val objectInstance: T?
 }
 
 /**
@@ -136,6 +141,7 @@ data class ReflektClassImpl<T : Any>(
     override val sealedSubclasses: MutableSet<ReflektClass<out T>> = HashSet(),
     override val simpleName: String?,
     override val visibility: ReflektVisibility? = ReflektVisibility.PUBLIC,
+    override val objectInstance: T? = null,
 ) : ReflektClass<T> {
     override fun toString(): String = "ReflektClassImpl(" +
         "kClass=$kClass, " +
@@ -153,6 +159,24 @@ data class ReflektClassImpl<T : Any>(
         "superclasses=$superclasses, " +
         "sealedSubclasses=${sealedSubclasses.map { it.qualifiedName }}, " +
         "simpleName=$simpleName, " +
-        "visibility=$visibility" +
+        "visibility=$visibility, " +
+        "objectInstance=$objectInstance" +
         ")"
+}
+
+/**
+ * Represents a [ReflektClass], which definitely describes an `object` declaration.
+ *
+ * @param reflektClass The delegated [ReflektClass], [ReflektClass.objectInstance] of it must not be `null`.
+ */
+@JvmInline
+value class ReflektObject<T : Any> @InternalReflektApi constructor(private val reflektClass: ReflektClass<T>) : ReflektClass<T> by reflektClass {
+    override val objectInstance: T
+        get() = checkNotNull(reflektClass.objectInstance) { "Object instance of $reflektClass isn't available" }
+
+    init {
+        requireNotNull(reflektClass.objectInstance) { "There must be an object instance in $reflektClass" }
+    }
+
+    override fun toString(): String = reflektClass.toString()
 }

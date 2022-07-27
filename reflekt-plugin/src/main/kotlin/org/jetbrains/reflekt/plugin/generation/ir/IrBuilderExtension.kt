@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.ir.expressions.IrFunctionAccessExpression
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.impl.IrAnonymousInitializerSymbolImpl
 import org.jetbrains.kotlin.ir.types.*
+import org.jetbrains.kotlin.ir.util.isObject
 import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.reflekt.plugin.analysis.ir.makeTypeProjection
@@ -98,9 +99,18 @@ interface IrBuilderExtension {
                 irString(irClass.kotlinFqName.shortName().toString()),
                 irGetEnumValue(
                     generationSymbols.reflektVisibilityClass.defaultType,
-                    generationSymbols.reflektVisibilityClass.owner.declarations.filterIsInstance<IrEnumEntry>()
-                        .first { it.name == Name.identifier(irClass.visibility.toReflektVisibility()!!.name) }.symbol,
+                    generationSymbols.reflektVisibilityClass
+                        .owner
+                        .declarations
+                        .filterIsInstance<IrEnumEntry>()
+                        .first {
+                            it.name == Name.identifier(
+                                checkNotNull(irClass.visibility.toReflektVisibility()) { "Unsupported visibility of IrClass: ${irClass.visibility}" }.name,
+                            )
+                        }
+                        .symbol,
                 ),
+                if (irClass.isObject) irGetObject(irClassSymbol) else irNull(),
             ),
         )
     }
