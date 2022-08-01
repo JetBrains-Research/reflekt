@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.fields
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
 import org.jetbrains.reflekt.plugin.analysis.ir.isSubtypeOf
@@ -72,24 +73,39 @@ abstract class BaseReflektIrTransformer(
             .map { pluginContext.referenceClass(FqName(it)) ?: throw ReflektGenerationException("Failed to find class $it") }
             .map { classSymbol ->
                 when (invokeParts.entityType) {
-                    ReflektEntity.OBJECTS -> irGetObject(classSymbol)
-                    ReflektEntity.CLASSES -> {
+                    ReflektEntity.OBJECTS, ReflektEntity.CLASSES -> {
                         val (storageClass, storageClassData) =
                             storageClasses.getOrPut(moduleFragment.name) { storageClassGenerator.createStorageClass(moduleFragment) to HashSet() }
                         storageClassData += classSymbol.owner.getReflectionKnownHierarchy()
 
-                        irTypeCast(
-                            itemType,
-                            irCheckNotNull(
-                                irMapGet(
-                                    map = irGetField(
-                                        irGetObject(storageClass),
-                                        storageClass.fields.map { it.owner }.first { it.name == StorageClassNames.REFLEKT_CLASSES_NAME },
-                                    ),
-                                    key = irClassReference(classSymbol),
+                        val reflektClassFromMap = irCheckNotNull(
+                            irMapGet(
+                                map = irGetField(
+                                    irGetObject(storageClass),
+                                    storageClass.fields.map { it.owner }.first { it.name == StorageClassNames.REFLEKT_CLASSES_NAME },
                                 ),
+                                key = irClassReference(classSymbol),
                             ),
                         )
+
+                        if (invokeParts.entityType == ReflektEntity.OBJECTS) {
+                            // Boxing to ReflektObject only if needed
+                            irTypeCast(
+                                itemType,
+                                irCall(
+                                    generationSymbols.reflektObjectConstructor,
+                                    typeArguments = listOf(
+                                        itemType.safeAs<IrSimpleType>()
+                                            ?.arguments
+                                            ?.get(0)
+                                            ?.typeOrNull,
+                                    ),
+                                    valueArguments = listOf(reflektClassFromMap),
+                                )
+                            )
+                        } else {
+                            irTypeCast(itemType, reflektClassFromMap)
+                        }
                     }
 
                     ReflektEntity.FUNCTIONS -> error("Use functionResultIrCall")

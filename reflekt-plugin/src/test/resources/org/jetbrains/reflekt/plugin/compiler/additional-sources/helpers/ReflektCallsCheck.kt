@@ -2,7 +2,7 @@ package org.jetbrains.reflekt.test.helpers
 
 import kotlin.reflect.KClass
 import kotlin.Function
-import org.jetbrains.reflekt.ReflektClass
+import org.jetbrains.reflekt.*
 
 
 inline fun checkClassesCallResult(
@@ -14,13 +14,9 @@ inline fun checkClassesCallResult(
 }
 
 inline fun checkObjectsCallResult(
-    call: () -> List<Any>,
-    expected: List<String>,
-    basePackage: String? = null,
-): String {
-    val actual = call().map { it::class.qualifiedName ?: "Undefined name" }
-    return extendExpectedAndCompareResults(actual, expected, basePackage)
-}
+    call: () -> List<ReflektClass<*>>,
+    expected: List<ReflektClass<*>>,
+): String = checkClassesCallResult(call, expected)
 
 inline fun checkFunctionsCallResult(
     call: () -> List<Function<*>>,

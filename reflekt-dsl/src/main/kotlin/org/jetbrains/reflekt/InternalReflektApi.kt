@@ -10,6 +10,7 @@ package org.jetbrains.reflekt
     AnnotationTarget.FUNCTION,
     AnnotationTarget.TYPEALIAS,
     AnnotationTarget.PROPERTY,
+    AnnotationTarget.CONSTRUCTOR,
 )
 @RequiresOptIn(
     level = RequiresOptIn.Level.ERROR,

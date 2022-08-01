@@ -14,29 +14,29 @@ public object ReflektImpl {
     public fun functions() = Functions()
 
     public class Objects {
-        public fun <T> withSuperTypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
+        public fun <T : Any> withSuperTypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
 
-        public fun <T> withAnnotations(annotationFqNames: Set<String>,
+        public fun <T : Any> withAnnotations(annotationFqNames: Set<String>,
                 supertypeFqNames: Set<String>) = WithAnnotations<T>(annotationFqNames,
                 supertypeFqNames)
 
-        public class WithSuperTypes<T>(
+        public class WithSuperTypes<T : Any>(
             public val fqNames: Set<String>,
         ) {
-            public fun toList(): List<T> = emptyList()
+            public fun toList(): List<ReflektClass<T>> = emptyList()
 
-            public fun toSet(): Set<T> = toList().toSet()
+            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
 
-        public class WithAnnotations<T>(
+        public class WithAnnotations<T : Any>(
             public val annotationFqNames: Set<String>,
             public val supertypeFqNames: Set<String>,
         ) {
-            public fun toList(): List<T> = when (annotationFqNames) {
+            public fun toList(): List<ReflektClass<T>> = when (annotationFqNames) {
                 else -> emptyList()
             }
 
-            public fun toSet(): Set<T> = toList().toSet()
+            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
     }
 

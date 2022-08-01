@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.types.isPrimitiveType
-import org.jetbrains.kotlin.ir.util.kotlinFqName
+import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.reflekt.ReflektClass
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektPackage
 import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
@@ -111,7 +111,7 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
 
                 for (irClass in libraryQueriesResults.mentionedClasses) {
                     with(irClass) {
-                        val reflektVisibility = visibility.toReflektVisibility()
+                        val reflektVisibility = checkNotNull(visibility.toReflektVisibility()) { "Unsupported visibility of IrClass: $visibility" }
 
                         addStatement(
                             "m[$kotlinFqName::class] = ReflektClassImpl(kClass = $kotlinFqName::class, " +
@@ -127,7 +127,9 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                                 "isValue = $isValue, " +
                                 "qualifiedName = \"$kotlinFqName\", " +
                                 "simpleName = \"${kotlinFqName.shortName()}\", " +
-                                "visibility = ${reflektVisibility?.let { "ReflektVisibility.${it.name}" } ?: "null"})"
+                                "visibility = ReflektVisibility.${reflektVisibility.name}, " +
+                                "objectInstance = ${if (isObject) kotlinFqName.toString() else null}" +
+                                ")"
                         )
                     }
                 }
