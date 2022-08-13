@@ -96,8 +96,7 @@ object Reflekt {
              *
              * @param klasses
              */
-            inline fun <reified Q : T> withAnnotations(vararg klasses: KClass<out Annotation>) =
-                WithAnnotations<Q>(klasses.mapNotNull { it.qualifiedName }.toSet(), fqNames)
+            fun withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet(), fqNames)
         }
 
         /**
@@ -193,8 +192,7 @@ object Reflekt {
              *
              * @param klasses
              */
-            inline fun <reified Q : T> withAnnotations(vararg klasses: KClass<out Annotation>) =
-                WithAnnotations<Q>(klasses.mapNotNull { it.qualifiedName }.toSet(), fqNames)
+            fun withAnnotations(vararg klasses: KClass<out Annotation>) = WithAnnotations<T>(klasses.mapNotNull { it.qualifiedName }.toSet(), fqNames)
         }
 
         /**
