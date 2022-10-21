@@ -1,66 +1,67 @@
 package org.jetbrains.reflekt
 
 @Suppress("UNUSED_PARAMETER")
-object ReflektImpl {
-    fun objects() = Objects()
-    fun classes() = Classes()
-    fun functions() = Functions()
-    class Objects {
-        fun <T : Any> withSuperTypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
-        fun <T : Any> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>) =
-            WithAnnotations<T>(annotationFqNames, supertypeFqNames)
+@InternalReflektApi
+public object ReflektImpl {
+    public fun objects(): Objects = Objects()
+    public fun classes(): Classes = Classes()
+    public fun functions(): Functions = Functions()
+    public class Objects {
+        public fun <T : Any> withSuperTypes(fqNames: Set<String>): WithSuperTypes<T> = WithSuperTypes(fqNames)
+        public fun <T : Any> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>): WithAnnotations<T> =
+            WithAnnotations(annotationFqNames, supertypeFqNames)
 
         /**
          * @property fqNames
          */
         @JvmInline
-        value class WithSuperTypes<T : Any>(val fqNames: Set<String>) {
-            fun toList(): List<ReflektObject<T>> = error("This method should be replaced during compilation")
-            fun toSet(): Set<ReflektObject<T>> = toList().toSet()
+        public value class WithSuperTypes<T : Any>(public val fqNames: Set<String>) {
+            public fun toList(): List<ReflektObject<T>> = error("This method should be replaced during compilation")
+            public fun toSet(): Set<ReflektObject<T>> = toList().toSet()
         }
 
         /**
          * @property annotationFqNames
          */
-        class WithAnnotations<T : Any>(val annotationFqNames: Set<String>, supertypeFqNames: Set<String>) {
-            fun toList(): List<ReflektObject<T>> = error("This method should be replaced during compilation")
-            fun toSet(): Set<ReflektObject<T>> = toList().toSet()
+        public class WithAnnotations<T : Any>(public val annotationFqNames: Set<String>, supertypeFqNames: Set<String>) {
+            public fun toList(): List<ReflektObject<T>> = error("This method should be replaced during compilation")
+            public fun toSet(): Set<ReflektObject<T>> = toList().toSet()
         }
     }
 
-    class Classes {
-        fun <T : Any> withSuperTypes(fqNames: Set<String>) = WithSuperTypes<T>(fqNames)
-        fun <T : Any> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>) =
-            WithAnnotations<T>(annotationFqNames, supertypeFqNames)
+    public class Classes {
+        public fun <T : Any> withSuperTypes(fqNames: Set<String>): WithSuperTypes<T> = WithSuperTypes(fqNames)
+        public fun <T : Any> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>): WithAnnotations<T> =
+            WithAnnotations(annotationFqNames, supertypeFqNames)
 
         /**
          * @property fqNames
          */
         @JvmInline
-        value class WithSuperTypes<T : Any>(val fqNames: Set<String>) {
-            fun toList(): List<ReflektClass<T>> = error("This method should be replaced during compilation")
-            fun toSet(): Set<ReflektClass<T>> = toList().toSet()
+        public value class WithSuperTypes<T : Any>(public val fqNames: Set<String>) {
+            public fun toList(): List<ReflektClass<T>> = error("This method should be replaced during compilation")
+            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
 
         /**
          * @property annotationFqNames
          */
-        class WithAnnotations<T : Any>(val annotationFqNames: Set<String>, supertypeFqNames: Set<String>) {
-            fun toList(): List<ReflektClass<T>> = error("This method should be replaced during compilation")
-            fun toSet(): Set<ReflektClass<T>> = toList().toSet()
+        public class WithAnnotations<T : Any>(public val annotationFqNames: Set<String>, supertypeFqNames: Set<String>) {
+            public fun toList(): List<ReflektClass<T>> = error("This method should be replaced during compilation")
+            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
     }
 
-    class Functions {
-        fun <T : Function<*>> withAnnotations(annotationFqNames: Set<String>, signature: String) = WithAnnotations<T>(annotationFqNames, signature)
+    public class Functions {
+        public fun <T : Function<*>> withAnnotations(annotationFqNames: Set<String>, signature: String): WithAnnotations<T> = WithAnnotations(annotationFqNames, signature)
 
         /**
          * @param T returned class
          * @property annotationFqNames
          */
-        class WithAnnotations<out T : Function<*>>(val annotationFqNames: Set<String>, signature: String) {
-            fun toList(): List<T> = error("This method should be replaced during compilation")
-            fun toSet(): Set<T> = toList().toSet()
+        public class WithAnnotations<out T : Function<*>>(public val annotationFqNames: Set<String>, signature: String) {
+            public fun toList(): List<T> = error("This method should be replaced during compilation")
+            public fun toSet(): Set<T> = toList().toSet()
         }
     }
 }

@@ -8,3 +8,7 @@ dependencies {
 }
 
 publishJar {}
+
+kotlin {
+    explicitApi()
+}

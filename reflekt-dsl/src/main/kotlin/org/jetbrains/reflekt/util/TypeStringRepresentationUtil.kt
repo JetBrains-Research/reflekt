@@ -1,5 +1,6 @@
 package org.jetbrains.reflekt.util
 
+import org.jetbrains.reflekt.InternalReflektApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter
@@ -8,12 +9,13 @@ import kotlin.reflect.KTypeParameter
 * This object has util functions for converting in the same String representation
 * for different types in Kotlin compiler, e.g. KType, KotlinType
 * */
-object TypeStringRepresentationUtil {
+@InternalReflektApi
+public object TypeStringRepresentationUtil {
     private const val SEPARATOR = ", "
     private const val NULLABLE_SYMBOL = "?"
-    const val STAR_SYMBOL = "*"
+    public const val STAR_SYMBOL: String = "*"
 
-    fun getStringRepresentation(classifierName: String, arguments: List<String>): String {
+    public fun getStringRepresentation(classifierName: String, arguments: List<String>): String {
         val argumentsStr = if (arguments.isNotEmpty()) {
             "<${arguments.joinToString(separator = SEPARATOR)}>"
         } else {
@@ -22,7 +24,7 @@ object TypeStringRepresentationUtil {
         return "$classifierName$argumentsStr"
     }
 
-    fun markAsNullable(type: String, isNullable: Boolean): String = if (isNullable) {
+    public fun markAsNullable(type: String, isNullable: Boolean): String = if (isNullable) {
         "$type$NULLABLE_SYMBOL"
     } else {
         type
@@ -32,7 +34,8 @@ object TypeStringRepresentationUtil {
 /**
  * @return human-readable string for this [KType]
  */
-fun KType.stringRepresentation(): String {
+@InternalReflektApi
+public fun KType.stringRepresentation(): String {
     // Get simple classifier name, e.g. kotlin.Function1
     val classifierName = (classifier as? KClass<*>)?.qualifiedName ?: (classifier as? KTypeParameter)?.name ?: ""
     // If type is null it means we have star projection
@@ -50,5 +53,6 @@ fun KType.stringRepresentation(): String {
  * @param classifierName
  * @return human-readable string for `this` [KType] and classifier name
  */
+@InternalReflektApi
 internal fun KType.stringRepresentation(classifierName: String) =
     TypeStringRepresentationUtil.getStringRepresentation(classifierName, arguments.mapNotNull { it.type?.stringRepresentation() })

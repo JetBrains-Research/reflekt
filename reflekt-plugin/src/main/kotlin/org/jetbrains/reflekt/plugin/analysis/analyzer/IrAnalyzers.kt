@@ -26,7 +26,7 @@ abstract class IrAnalyzer {
     abstract val processors: List<IrElementProcessor>
 
     /**
-     * Filter processors that should be run on the [element] and process it.
+     * Filters processors that should be run on the [element] and process it.
      *
      * @param element
      * @param file [IrFile] with [element]
