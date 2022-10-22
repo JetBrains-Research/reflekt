@@ -3,9 +3,21 @@ package org.jetbrains.reflekt
 @Suppress("UNUSED_PARAMETER")
 @InternalReflektApi
 public object ReflektImpl {
+    /**
+     * Returns an instance of [Objects].
+     */
     public fun objects(): Objects = Objects()
+
+    /**
+     * Returns an instance of [Classes].
+     */
     public fun classes(): Classes = Classes()
+
+    /**
+     * Returns an instance of [Functions].
+     */
     public fun functions(): Functions = Functions()
+
     public class Objects {
         public fun <T : Any> withSuperTypes(fqNames: Set<String>): WithSuperTypes<T> = WithSuperTypes(fqNames)
         public fun <T : Any> withAnnotations(annotationFqNames: Set<String>, supertypeFqNames: Set<String>): WithAnnotations<T> =
@@ -56,7 +68,7 @@ public object ReflektImpl {
         public fun <T : Function<*>> withAnnotations(annotationFqNames: Set<String>, signature: String): WithAnnotations<T> = WithAnnotations(annotationFqNames, signature)
 
         /**
-         * @param T returned class
+         * @param T the returned class.
          * @property annotationFqNames
          */
         public class WithAnnotations<out T : Function<*>>(public val annotationFqNames: Set<String>, signature: String) {

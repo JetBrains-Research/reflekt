@@ -50,8 +50,9 @@ public fun KType.stringRepresentation(): String {
 }
 
 /**
+ * @receiver the [KType].
  * @param classifierName
- * @return human-readable string for `this` [KType] and classifier name
+ * @return human-readable string for this [KType] and classifier name
  */
 @InternalReflektApi
 internal fun KType.stringRepresentation(classifierName: String) =

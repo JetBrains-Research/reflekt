@@ -1,5 +1,8 @@
 package org.jetbrains.reflekt
 
+/**
+ * Represents a callable entity, such as a function or a property.
+ */
 public interface ReflektCallable : ReflektAnnotatedElement {
     /**
      * The name of this callable as it was declared in the source code.

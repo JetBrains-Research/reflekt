@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.types.checker.SimpleClassicTypeSystemContext.isStarProjection
+import org.jetbrains.reflekt.InternalReflektApi
 import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
 import java.io.File
 import java.io.PrintStream
@@ -78,6 +79,7 @@ inline fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> Stri
  *
  * @return [String]
  */
+@OptIn(InternalReflektApi::class)
 fun IrType.stringRepresentation(): String {
     val fqName = this.classFqName?.asString() ?: error("IrType does not have classFqName")
     val typeArguments = (this as? IrSimpleType)?.arguments?.map {
