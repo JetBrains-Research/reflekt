@@ -4,7 +4,6 @@ import kotlin.reflect.KClass
 import kotlin.Function
 import org.jetbrains.reflekt.*
 
-
 inline fun checkClassesCallResult(
     call: () -> Collection<ReflektClass<*>>,
     expected: Collection<ReflektClass<*>>,
@@ -19,7 +18,7 @@ inline fun checkObjectsCallResult(
 ): String = checkClassesCallResult(call, expected)
 
 inline fun checkFunctionsCallResult(
-    call: () -> List<Function<*>>,
+    call: () -> List<ReflektFunction<Function<*>>>,
     expected: List<String>,
 ): String {
     val actual = call().map { it.toString() ?: "Undefined name" }
@@ -28,16 +27,6 @@ inline fun checkFunctionsCallResult(
 
 @PublishedApi
 internal fun extendExpectedAndCompareResults(
-    actual: List<String>,
-    expected: List<String>,
-    basePackage: String? = null,
-): String {
-    val expectedWithPackage = basePackage?.let { expected.map { "$basePackage.$it" } } ?: expected
-    return if (actual.sorted() == expectedWithPackage.sorted()) "OK" else "Fail:\nactual: $actual\nexpected: $expectedWithPackage"
-}
-
-@PublishedApi
-internal fun extendExpectedAndCompareResults(
-    actual: Collection<ReflektClass<*>>,
-    expected: Collection<ReflektClass<*>>,
+    actual: Collection<Any>,
+    expected: Collection<Any>,
 ): String = if (actual.map { it.toString() }.containsAll(expected.map { it.toString() })) "OK" else "Fail:\nactual: $actual\nexpected: $expected"

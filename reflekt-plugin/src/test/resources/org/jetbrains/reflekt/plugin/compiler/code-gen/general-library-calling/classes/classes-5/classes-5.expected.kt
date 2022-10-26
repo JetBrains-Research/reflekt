@@ -24,8 +24,6 @@ public object ReflektImpl {
             public val fqNames: Set<String>,
         ) {
             public fun toList(): List<ReflektClass<T>> = emptyList()
-
-            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
 
         public class WithAnnotations<T : Any>(
@@ -35,8 +33,6 @@ public object ReflektImpl {
             public fun toList(): List<ReflektClass<T>> = when (annotationFqNames) {
                 else -> emptyList()
             }
-
-            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
     }
 
@@ -54,8 +50,6 @@ public object ReflektImpl {
                 setOf("org.jetbrains.reflekt.test.common.AInterface") -> listOf()
                 else -> emptyList()
             }
-
-            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
 
         public class WithAnnotations<T : Any>(
@@ -65,8 +59,6 @@ public object ReflektImpl {
             public fun toList(): List<ReflektClass<T>> = when (annotationFqNames) {
                 else -> emptyList()
             }
-
-            public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
         }
     }
 
@@ -81,8 +73,6 @@ public object ReflektImpl {
             public fun toList(): List<KFunction<T>> = when (annotationFqNames) {
                 else -> emptyList()
             }
-
-            public fun toSet(): Set<KFunction<T>> = toList().toSet()
         }
     }
 }

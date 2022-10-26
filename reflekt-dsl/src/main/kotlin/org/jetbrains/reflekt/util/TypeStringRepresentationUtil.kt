@@ -34,8 +34,9 @@ public object TypeStringRepresentationUtil {
 /**
  * @return human-readable string for this [KType]
  */
-@InternalReflektApi
-public fun KType.stringRepresentation(): String {
+@OptIn(InternalReflektApi::class)
+@PublishedApi
+internal fun KType.stringRepresentation(): String {
     // Get simple classifier name, e.g. kotlin.Function1
     val classifierName = (classifier as? KClass<*>)?.qualifiedName ?: (classifier as? KTypeParameter)?.name ?: ""
     // If type is null it means we have star projection

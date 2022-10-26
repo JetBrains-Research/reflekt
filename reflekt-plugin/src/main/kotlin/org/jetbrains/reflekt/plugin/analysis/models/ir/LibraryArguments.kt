@@ -5,8 +5,7 @@ package org.jetbrains.reflekt.plugin.analysis.models.ir
 import kotlinx.serialization.Serializable
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrElement
-import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 import org.jetbrains.reflekt.plugin.analysis.models.*
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
@@ -16,13 +15,14 @@ import org.jetbrains.reflekt.plugin.analysis.serialization.SerializationUtils.to
 typealias LibraryArgumentsMap<T> = MutableMap<FileId, MutableSet<T>>
 typealias TypeLibraryQueriesResults<K, V> = MutableMap<K, MutableSet<V>>
 typealias ClassOrObjectLibraryQueriesResults = TypeLibraryQueriesResults<SupertypesToAnnotations, IrClass>
-typealias FunctionLibraryQueriesResults = TypeLibraryQueriesResults<SignatureToAnnotations, IrFunction>
+typealias FunctionLibraryQueriesResults = TypeLibraryQueriesResults<SignatureToAnnotations, IrSimpleFunction>
 
 /**
- * Stores all Reflekt queries arguments from the library.
- * @property classes
- * @property objects
- * @property functions
+ * Stores all Reflekt queries' arguments from the library.
+ *
+ * @property classes The classes' arguments.
+ * @property objects The objects' arguments.
+ * @property functions The functions' arguments.
  */
 data class LibraryArguments(
     override val classes: LibraryArgumentsMap<SupertypesToAnnotations> = HashMap(),
@@ -112,9 +112,9 @@ data class SerializableLibraryArgumentsWithInstances(
 /**
  * Stores for each Reflekt query from libraries a set of [IrElement], that satisfies this query.
  *
- * @property classes
- * @property objects
- * @property functions
+ * @property classes The classes queries results.
+ * @property objects The objects queries results.
+ * @property functions The functions queries results.
  * @property mentionedClasses Information about all resulting classes, their superclasses, etc.
  */
 // TODO: think about name

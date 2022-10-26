@@ -12,7 +12,8 @@ import kotlin.reflect.typeOf
 @OptIn(InternalReflektApi::class)
 public object Reflekt {
     /**
-     * The main function for searching objects. The chain of calls has to end with toList() or toSet() function.
+     * The main function for searching objects.
+     * The chain of calls has to end with toList() or toSet() function.
      *
      * For example:
      *  Reflekt.objects().withSupertype<AInterface>().withAnnotations<AInterface>(FirstAnnotation::class, SecondAnnotation::class).toList()
@@ -30,16 +31,19 @@ public object Reflekt {
     public fun classes(): Classes = Classes()
 
     /**
-     * The main function for searching functions. The chain of calls has to end with toList() or toSet() function.
+     * The main function for searching functions.
+     * The chain of calls has to end with toList() or toSet() function.
      *
      * For example:
-     *  Reflekt.functions().withAnnotations<() -> Unit>().toList()
-     *  Reflekt.functions().withAnnotations<(Int, String) -> List<Int>>().toSet()
+     * ```
+     * Reflekt.functions().withAnnotations<() -> Unit>().toList()
+     * Reflekt.functions().withAnnotations<(Int, String) -> List<Int>>().toSet()
+     * ```
      */
     public fun functions(): Functions = Functions()
 
     /**
-     * Find all objects in the project's modules and external libraries (that was marked as libraries to introspect)
+     * Finds all objects in the project's modules and external libraries (that was marked as libraries to introspect)
      * and filter them by different conditions.
      */
     public class Objects {
@@ -50,16 +54,18 @@ public object Reflekt {
         public inline fun <reified T : Any> withSuperType(): WithSuperTypes<T> = WithSuperTypes(setOf(T::class.qualifiedName!!))
 
         /**
-         * Filters objects by several supertypes. All objects will be cast to [Any] type.
-         * If [klasses] was not passed the list\set with result will be empty.
+         * Filters objects to several supertypes.
+         * All objects will be cast to [Any] type.
+         * If [klasses] was not passed the list or set with result will be empty.
          *
          * @param klasses
          */
         public fun withSuperTypes(vararg klasses: KClass<out Any>): WithSuperTypes<Any> = WithSuperTypes(klasses.mapNotNull { it.qualifiedName }.toSet())
 
         /**
-         * Filters objects by several annotations and supertype [T]. All objects will be cast to [T] type.
-         * If [klasses] was not passed the list\set with result will contain only objects with supertype [T].
+         * Filters objects by several annotations and supertype [T].
+         * All objects will be cast to [T] type.
+         * If [klasses] was not passed the list or set with result will contain only objects with supertype [T].
          *
          * @param klasses
          */
@@ -68,7 +74,7 @@ public object Reflekt {
 
         /**
          * This class represents DSL for searching objects with several supertypes.
-         * Each item in the list\set with result will be cast to [T] type.
+         * Each item in the list or set with result will be cast to [T] type.
          * @property fqNames
          */
         @JvmInline
@@ -85,14 +91,14 @@ public object Reflekt {
                 .map { ReflektObject(it) }
 
             /**
-             * Gets set of objects with [fqNames] supertypes.
+             * Gets the set of objects with [fqNames] supertypes.
              * Each item in the set with result will be cast to [T] type.
              */
             public fun toSet(): Set<ReflektObject<T>> = toList().toSet()
 
             /**
              * Filters objects with [fqNames] supertypes by several annotations.
-             * If [klasses] was not passed the list\set with result will contain only objects with [fqNames] supertypes.
+             * If [klasses] was not passed the list or set with result will contain only objects with [fqNames] supertypes.
              *
              * @param klasses
              */
@@ -102,19 +108,17 @@ public object Reflekt {
 
         /**
          * The class represents DSL for searching objects with several annotations.
-         * Each item in the list\set with result will be cast to [T] type.
+         * Each item in the list or set with result will be cast to [T] type.
          */
         public class WithAnnotations<T : Any>(private val annotationFqNames: Set<String>, private val supertypeFqNames: Set<String>) {
             /**
              * Get the list of objects with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
              * Each item in the list will be cast to [T] type.
-             *
              */
             public fun toList(): List<ReflektObject<T>> = ReflektImpl
                 .objects()
                 .withAnnotations<T>(annotationFqNames, supertypeFqNames)
                 .toList()
-                .map { ReflektObject(it) }
 
             /**
              * Gets the set of objects with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
@@ -151,45 +155,45 @@ public object Reflekt {
 
         /**
          * Filters classes by several supertypes. All classes will be cast to [Any] type.
-         * If [klasses] was not passed the list\set with result will be empty.
+         * If [klasses] was not passed the list or set with result will be empty.
          *
          * @param klasses
          */
-        public fun withSuperTypes(vararg klasses: KClass<out Any>): WithSuperTypes<Any> = WithSuperTypes(klasses.mapNotNull { it.qualifiedName }.toSet())
+        public fun withSuperTypes(vararg klasses: KClass<out Any>): WithSuperTypes<Any> =
+            WithSuperTypes(klasses.mapNotNullTo(mutableSetOf()) { it.qualifiedName })
 
         /**
-         * Filters classes by several annotations and supertype [T]. All classes will be cast to [T] type.
-         * If [klasses] was not passed the list\set with result will contain only classes with supertype [T].
+         * Filters classes by several annotations and supertype [T].
+         * All classes will be cast to [T] type.
+         * If [klasses] was not passed the list or set with result will contain only classes with supertype [T].
          *
          * @param klasses
          */
         public inline fun <reified T : Any> withAnnotations(vararg klasses: KClass<out Annotation>): WithAnnotations<T> =
-            WithAnnotations(klasses.mapNotNull { it.qualifiedName }.toSet(), setOf(T::class.qualifiedName!!))
+            WithAnnotations(klasses.mapNotNullTo(mutableSetOf()) { it.qualifiedName }, setOf(T::class.qualifiedName!!))
 
         /**
          * The class represents DSL for searching classes with several supertypes.
-         * Each item in the list\set with result will be cast to [T] type.
+         * Each item in the list or set with result will be cast to [T] type.
          * @property fqNames
          */
         @JvmInline
         public value class WithSuperTypes<T : Any>(public val fqNames: Set<String>) {
             /**
-             * Get list of classes with [fqNames] supertypes.
-             * Each item in the list\set with result will be cast to [T] type.
-             *
+             * Get the list of classes with [fqNames] supertypes.
+             * Each item in the list with result will be cast to [T] type.
              */
             public fun toList(): List<ReflektClass<T>> = ReflektImpl.classes().withSuperTypes<T>(fqNames).toList()
 
             /**
-             * Get set of classes with [fqNames] supertypes.
-             * Each item in the list\set with result will be cast to [T] type.
-             *
+             * Get the set of classes with [fqNames] supertypes.
+             * Each item in the set with result will be cast to [T] type.
              */
             public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
 
             /**
              * Filters classes with [fqNames] supertypes by several annotations.
-             * If [klasses] was not passed the list\set with result will contain only classes with [fqNames] supertypes.
+             * If [klasses] was not passed the list or set with result will contain only classes with [fqNames] supertypes.
              *
              * @param klasses
              */
@@ -199,21 +203,20 @@ public object Reflekt {
 
         /**
          * The class represents DSL for searching classes with several annotations.
-         * Each item in the list\set with result will be cast to [T] type.
+         * Each item in the list or set with result will be cast to [T] type.
+         *
          * @property supertypeFqNames
          */
         public class WithAnnotations<T : Any>(private val annotationFqNames: Set<String>, public val supertypeFqNames: Set<String>) {
             /**
              * Gets the list of classes with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
              * Each item in the list or set with result will be cast to [T] type.
-             *
              */
             public fun toList(): List<ReflektClass<T>> = ReflektImpl.classes().withAnnotations<T>(annotationFqNames, supertypeFqNames).toList()
 
             /**
-             * Gets set of classes with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
-             * Each item in the list\set with result will be cast to [T] type.
-             *
+             * Gets the set of classes with [supertypeFqNames] supertypes and [annotationFqNames] annotations.
+             * Each item in the list or set with result will be cast to [T] type.
              */
             public fun toSet(): Set<ReflektClass<T>> = toList().toSet()
 
@@ -232,13 +235,13 @@ public object Reflekt {
     }
 
     /**
-     * Find all functions in the project's modules and external libraries (that was marked as libraries to introspect)
+     * Finds all functions in the project's modules and external libraries (that was marked as libraries to introspect)
      * and filter them by different conditions.
      */
     public class Functions {
         /**
          * Filters functions with [T] signature by several annotations.
-         * If [klasses] was not passed the list\set with result will contain only functions with [T] signature.
+         * If [klasses] was not passed the list or set with a result, will contain only functions with [T] signature.
          *
          * @param klasses
          */
@@ -251,15 +254,13 @@ public object Reflekt {
         public class WithAnnotations<out T : Function<*>>(private val annotationFqNames: Set<String>, private val signature: String) {
             /**
              * Gets the list of functions with [T] signature and [annotationFqNames] annotations.
-             *
              */
-            public fun toList(): List<T> = ReflektImpl.functions().withAnnotations<T>(annotationFqNames, signature).toList()
+            public fun toList(): List<ReflektFunction<T>> = ReflektImpl.functions().withAnnotations<T>(annotationFqNames, signature).toList()
 
             /**
-             * Gets set of functions with [T] signature and [annotationFqNames] annotations.
-             *
+             * Gets the set of functions with [T] signature and [annotationFqNames] annotations.
              */
-            public fun toSet(): Set<T> = toList().toSet()
+            public fun toSet(): Set<ReflektFunction<T>> = toList().toSet()
         }
     }
 }

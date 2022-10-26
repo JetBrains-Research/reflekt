@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 */
 @Suppress("UNUSED_PARAMETER")
 public object SmartReflekt {
-    private fun <T> compileTime(): T = error("This method should be replaced during compilation")
+    private fun compileTime(): Nothing = error("This method should be replaced during compilation")
 
     /**
      * The main function for searching classes.
@@ -44,7 +44,7 @@ public object SmartReflekt {
     public fun <T : Function<*>> functions(): FunctionCompileTimeExpression<T> = compileTime()
 
     /**
-     * Find all classes in the project's modules and external libraries (that was marked as libraries to introspect)
+     * Finds all classes in the project's modules and external libraries (that was marked as libraries to introspect)
      * and filter them by user's condition.
      */
     public class ClassCompileTimeExpression<T : Any> {
@@ -54,7 +54,7 @@ public object SmartReflekt {
         public fun filter(filter: (IrClass) -> Boolean): ClassCompileTimeExpression<T> = compileTime()
 
         /**
-         * Resolve user's condition - find all classes that satisfy the condition from the filter function.
+         * Resolves user's condition - find all classes that satisfy the condition from the filter function.
          */
         public fun resolve(): List<ReflektClass<T>> = compileTime()
     }
@@ -80,6 +80,6 @@ public object SmartReflekt {
         /**
          * Resolves user's condition - find all functions that satisfy the condition from the filter function.
          */
-        public fun resolve(): List<T> = compileTime()
+        public fun resolve(): List<ReflektFunction<T>> = compileTime()
     }
 }

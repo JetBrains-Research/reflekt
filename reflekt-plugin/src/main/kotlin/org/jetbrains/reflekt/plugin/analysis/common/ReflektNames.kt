@@ -79,4 +79,7 @@ object ReflektPackage {
 object StorageClassNames {
     const val REFLEKT_CLASSES = "reflektClasses"
     val REFLEKT_CLASSES_NAME = Name.identifier(REFLEKT_CLASSES)
+
+    const val REFLEKT_FUNCTIONS = "reflektFunctions"
+    val REFLEKT_FUNCTIONS_NAME = Name.identifier(REFLEKT_FUNCTIONS)
 }

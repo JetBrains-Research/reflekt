@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.types.isPrimitiveType
 import org.jetbrains.kotlin.ir.util.*
+import org.jetbrains.kotlin.utils.addToStdlib.flattenTo
 import org.jetbrains.reflekt.ReflektClass
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektPackage
 import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
@@ -72,31 +73,35 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
             if (libraryQueriesResults.mentionedClasses.isNotEmpty()) {
                 addReflektClasses()
             }
+
+            if (libraryQueriesResults.functions.isNotEmpty()) {
+                addReflektFunctions()
+            }
         }
 
         /**
          * Creates string for constructor call of provided annotation in the form [IrConstructorCall] like `MyAnnotation(1, "321", OtherAnnotation())`.
          */
-        private fun IrElement.annotationInstantiationString(): String = when (this) {
-            is IrConstructorCall -> annotationClass.kotlinFqName.toString() + "(" + getValueArguments().filterNotNull()
-                .joinToString(", ") { argument -> argument.annotationInstantiationString() } + ")"
+        private fun annotationInstantiationString(irElement: IrElement): String = when (irElement) {
+            is IrConstructorCall -> irElement.annotationClass.kotlinFqName.toString() + "(" + irElement.getValueArguments().filterNotNull()
+                .joinToString(", ") { argument -> annotationInstantiationString(argument) } + ")"
 
-            is IrConst<*> -> when (kind) {
-                IrConstKind.String -> "\"$value\""
-                else -> value.toString()
+            is IrConst<*> -> when (irElement.kind) {
+                IrConstKind.String -> "\"${irElement.value}\""
+                else -> irElement.value.toString()
             }
 
-            is IrVararg -> elements.joinToString(
+            is IrVararg -> irElement.elements.joinToString(
                 ", ",
-                prefix = if (varargElementType.isPrimitiveType()) {
-                    "${varargElementType.classFqName!!.shortName().toString().lowercase()}ArrayOf("
+                prefix = if (irElement.varargElementType.isPrimitiveType()) {
+                    "${irElement.varargElementType.classFqName!!.shortName().toString().lowercase()}ArrayOf("
                 } else {
                     "arrayOf("
                 },
                 postfix = ")",
-            ) { it.annotationInstantiationString() }
+            ) { annotationInstantiationString(it) }
 
-            else -> error("Unsupported annotation argument: $this")
+            else -> error("Unsupported annotation argument: $irElement")
         }
 
         @Suppress("LongMethod", "TOO_LONG_FUNCTION")
@@ -115,8 +120,7 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
 
                         addStatement(
                             "m[$kotlinFqName::class] = ReflektClassImpl(kClass = $kotlinFqName::class, " +
-                                "annotations = hashSetOf(" +
-                                annotations.joinToString(", ") { call -> call.annotationInstantiationString() } + "), " +
+                                "annotations = hashSetOf(${annotations.joinToString(", ") { call -> annotationInstantiationString(call) }}), " +
                                 "isAbstract = ${modality == Modality.ABSTRACT}, " +
                                 "isCompanion = $isCompanion, " +
                                 "isData = $isData, " +
@@ -128,8 +132,7 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                                 "qualifiedName = \"$kotlinFqName\", " +
                                 "simpleName = \"${kotlinFqName.shortName()}\", " +
                                 "visibility = ReflektVisibility.${reflektVisibility.name}, " +
-                                "objectInstance = ${if (isObject) kotlinFqName.toString() else null}" +
-                                ")"
+                                "objectInstance = ${if (isObject) kotlinFqName.toString() else null})"
                         )
                     }
                 }
@@ -153,6 +156,44 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                 }
 
                 addStatement("${StorageClassNames.REFLEKT_CLASSES} = m")
+            })
+        }
+
+
+        @Suppress("LongMethod", "TOO_LONG_FUNCTION")
+        private fun addReflektFunctions() {
+            builder.addProperty(
+                StorageClassNames.REFLEKT_FUNCTIONS,
+                MAP.parameterizedBy(ClassName("kotlin.reflect", "KClass").parameterizedBy(STAR), ReflektClass::class.asTypeName().parameterizedBy(STAR)),
+            )
+
+            builder.addInitializerBlock(buildCodeBlock {
+                addStatement("val m = HashMap<Function<*>, ReflektFunctionImpl<*>>()")
+
+                for (irFunction in libraryQueriesResults.functions.values.flattenTo(mutableSetOf())) {
+                    with(irFunction) {
+                        val reference = FunctionsGenerator.functionReference(this@ReflektImplGenerator, this)
+                        val reflektVisibility = checkNotNull(visibility.toReflektVisibility()) { "Unsupported visibility of IrFunction: $visibility" }
+
+                        addStatement(
+                            "m[$reference] = ReflektFunctionImpl(\n" +
+                                "function = $reference,\n" +
+                                "annotations = hashSetOf(${annotations.joinToString(", ") { call -> annotationInstantiationString(call) }}), " +
+                                "name = \"a\",\n" +
+                                "visibility = ReflektVisibility.${reflektVisibility.name}, " +
+                                "isFinal = ${modality == Modality.FINAL},\n" +
+                                "isOpen = ${modality == Modality.OPEN},\n" +
+                                "isAbstract = ${modality == Modality.ABSTRACT},\n" +
+                                "isInline = $isInline, " +
+                                "isExternal = $isExternal, " +
+                                "isOperator = $isOperator, " +
+                                "isInfix = $isInfix, " +
+                                "isSuspend = $isSuspend)"
+                        )
+                    }
+                }
+
+                addStatement("${StorageClassNames.REFLEKT_FUNCTIONS} = m")
             })
         }
     }

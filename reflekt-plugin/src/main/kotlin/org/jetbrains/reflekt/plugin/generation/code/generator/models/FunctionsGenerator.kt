@@ -55,25 +55,26 @@ class FunctionsGenerator(
         generateWithAnnotationsFunction()
 
         addNestedTypes(object : WithAnnotationsGenerator() {
-            override val toListFunctionBody = run {
-                generateNestedWhenBodyForFunctions(libraryQueriesResults, ::functionReference)
-            }
+            override val toListFunctionBody = generateNestedWhenBodyForFunctions(libraryQueriesResults) { functionReference(fileGenerator, it) }
         }.generate())
     }
 
-    /**
-     * Generates a function reference for the generated file.
-     *
-     * @param function
-     * @return a string representation of the function reference
-     */
-    private fun functionReference(function: IrFunction): String =
-        if (function.isTopLevel) {
-            val packageName = function.fqNameWhenAvailable!!.parent().toString()
-            val name = function.name.toString()
-            val memberName = MemberName(packageName, name)
-            "::${fileGenerator.addUniqueAliasedImport(memberName)}"
-        } else {
-            "${function.fqNameWhenAvailable!!.parent()}::${function.name}"
-        }
+    companion object {
+        /**
+         * Generates a function reference for the generated file.
+         *
+         * @param fileGenerator the file generator to add import into.
+         * @param function the function.
+         * @return a string representation of the function reference.
+         */
+        fun functionReference(fileGenerator: FileGenerator, function: IrFunction): String =
+            if (function.isTopLevel) {
+                val packageName = function.fqNameWhenAvailable!!.parent().toString()
+                val name = function.name.toString()
+                val memberName = MemberName(packageName, name)
+                "::${fileGenerator.addUniqueAliasedImport(memberName)}"
+            } else {
+                "${function.fqNameWhenAvailable!!.parent()}::${function.name}"
+            }
+    }
 }

@@ -1,6 +1,6 @@
 package org.jetbrains.reflekt
 
-public interface ReflektFunction<T : Function<*>> : ReflektCallable {
+public interface ReflektFunction<out T : Function<*>> : ReflektCallable {
     /**
      * Actual function instance.
      */
@@ -40,7 +40,7 @@ public interface ReflektFunction<T : Function<*>> : ReflektCallable {
     public override val isSuspend: Boolean
 }
 
-public data class ReflektFunctionImpl<T : Function<*>>(
+public data class ReflektFunctionImpl<out T : Function<*>>(
     override val function: T,
     override val annotations: Set<Annotation>,
     override val name: String,

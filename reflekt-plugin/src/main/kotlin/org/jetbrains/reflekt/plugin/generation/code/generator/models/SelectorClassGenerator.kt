@@ -39,20 +39,12 @@ abstract class SelectorClassGenerator : ClassGenerator() {
     /**
      * Generates two functions in the class: toList() and toSet().
      */
-    override fun generateImpl() {
-        generateToListFunction()
-        generateToSetFunction()
-    }
+    override fun generateImpl() = generateToListFunction()
 
     /**
      * Generates toList() function.
      */
     private fun generateToListFunction() = generateConversionFunction(List::class, toListFunctionBody)
-
-    /**
-     * Generates toSet() function.
-     */
-    private fun generateToSetFunction() = generateConversionFunction(Set::class, toSetFunctionBody)
 
     /**
      * A common function to generate toList() or toSet() functions.
@@ -63,12 +55,11 @@ abstract class SelectorClassGenerator : ClassGenerator() {
     private fun generateConversionFunction(
         klass: KClass<*>,
         body: CodeBlock,
-    ) =
-        addFunctions(
-            generateFunction(
-                name = "to${klass.simpleName}",
-                body = body,
-                returnType = klass.asClassName().parameterizedBy(returnParameter),
-            ),
-        )
+    ) = addFunctions(
+        generateFunction(
+            name = "to${klass.simpleName}",
+            body = body,
+            returnType = klass.asClassName().parameterizedBy(returnParameter),
+        ),
+    )
 }

@@ -24,11 +24,12 @@ import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.getImmediateSuperclasses
 
 /**
- * Generates `object` classes to store instances of [org.jetbrains.reflekt.ReflektClass]. The generation is done in two steps:
+ * Generates `object` classes to store instances of Reflekt data classes.
+ * The generation is done in two steps:
  * 1. A blank storage class is created with [createStorageClass].
  * 2. Then it is filled by [contributeInitializer] provided classes data about which are stored.
  *
- * @property pluginContext
+ * @property pluginContext the plugin context.
  */
 class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBuilderExtension {
     private val irFactory = pluginContext.irFactory
@@ -39,7 +40,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
         IrFileImpl(NaiveSourceBasedFileEntryImpl(name), packageFragmentDescriptor, module).also { module.files += it }
 
     fun createStorageClass(moduleFragment: IrModuleFragment): IrClassSymbol {
-        // Names of storage class are chosen to avoid duplication.
+        // Names of storage class are iteratively chosen to avoid duplication.
         val idx = generateSequence(0) { it + 1 }.first { pluginContext.referenceClass(FqName("${ReflektPackage.PACKAGE_NAME}.Storage_$it")) == null }
         val file = syntheticFile(EmptyPackageFragmentDescriptor(moduleFragment.descriptor, ReflektPackage.PACKAGE_FQ_NAME), "Storage_$idx", moduleFragment)
 

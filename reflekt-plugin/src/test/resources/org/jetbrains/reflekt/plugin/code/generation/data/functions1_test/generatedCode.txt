@@ -27,8 +27,6 @@ public object ReflektImpl {
             public val fqNames: Set<String>,
         ) {
             public fun toList(): List<T> = emptyList()
-
-            public fun toSet(): Set<T> = toList().toSet()
         }
 
         public class WithAnnotations<T>(
@@ -38,8 +36,6 @@ public object ReflektImpl {
             public fun toList(): List<T> = when (annotationFqNames) {
                 else -> emptyList()
             }
-
-            public fun toSet(): Set<T> = toList().toSet()
         }
     }
 
@@ -54,8 +50,6 @@ public object ReflektImpl {
             public val fqNames: Set<String>,
         ) {
             public fun toList(): List<KClass<T>> = emptyList()
-
-            public fun toSet(): Set<KClass<T>> = toList().toSet()
         }
 
         public class WithAnnotations<T : Any>(
@@ -65,8 +59,6 @@ public object ReflektImpl {
             public fun toList(): List<KClass<T>> = when (annotationFqNames) {
                 else -> emptyList()
             }
-
-            public fun toSet(): Set<KClass<T>> = toList().toSet()
         }
     }
 
@@ -88,8 +80,6 @@ public object ReflektImpl {
                 }
                 else -> emptyList()
             }
-
-            public fun toSet(): Set<KFunction<T>> = toList().toSet()
         }
     }
 }
