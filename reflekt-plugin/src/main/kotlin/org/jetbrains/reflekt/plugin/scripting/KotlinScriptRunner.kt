@@ -68,7 +68,7 @@ class KotlinScriptRunner(
      * Executes [source].
      *
      * @param arguments list of arguments to execute [source], for each name from [argumentNames]
-     * @return raw result from the KotlinScript
+     * @return a raw result from the KotlinScript
      */
     private fun execute(arguments: List<*>): ResultWithDiagnostics.Success<EvaluationResult> {
         val evaluationConfiguration = ScriptEvaluationConfiguration {

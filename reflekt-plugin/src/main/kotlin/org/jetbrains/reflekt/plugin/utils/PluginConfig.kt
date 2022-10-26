@@ -66,14 +66,14 @@ class PluginConfig(
      * @return [String]
      */
     private fun prettyString() = buildString {
-        append("REFLEKT CONFIGURATION:\n")
-        append("ENABLED: $enabled\n")
-        append("REFLEKT META FILES FROM LIBRARIES: ${reflektMetaFilesFromLibraries.map { it.absolutePath }}\n")
-        append("OUTPUT DIRECTORY: $outputDir\n")
-        append("TO SAVE METADATA: $toSaveMetadata\n")
-        append("REFLEKT METADATA RELATIVE PATH: $reflektMetaFileRelativePath\n")
-        append("DEPENDENCY JARS: ${dependencyJars.map { it.absolutePath }}\n")
-        append("_____________________________________________\n")
+        appendLine("REFLEKT CONFIGURATION:")
+        appendLine("ENABLED: $enabled")
+        appendLine("REFLEKT META FILES FROM LIBRARIES: ${reflektMetaFilesFromLibraries.joinToString { it.absolutePath }}")
+        appendLine("OUTPUT DIRECTORY: $outputDir")
+        appendLine("TO SAVE METADATA: $toSaveMetadata")
+        appendLine("REFLEKT METADATA RELATIVE PATH: $reflektMetaFileRelativePath")
+        appendLine("DEPENDENCY JARS: ${dependencyJars.joinToString { it.absolutePath }}")
+        appendLine("_____________________________________________")
     }
 
     /**

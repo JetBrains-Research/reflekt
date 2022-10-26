@@ -25,15 +25,12 @@ object Util {
     const val KOTLIN_COMPILER_PROP = "org.jetbrains.kotlin.compiler"
 
     val CompilerConfiguration.messageCollector: MessageCollector
-        get() = this.get(
-            CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-            MessageCollector.NONE,
-        )
+        get() = this.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
 
     fun getJarBySystemPropertyName(property: String): File = System.getProperty(property)
         ?.let(::File)
         ?.takeIf { it.exists() }
-        ?: error("Property $property is not set or file under it not found")
+        ?: error("Property $property is not set or the corresponding file doesn't exist")
 
     /**
      * Creates new empty file for the new instance of [MessageCollector].
@@ -41,41 +38,67 @@ object Util {
      * @param filePath
      */
     fun CompilerConfiguration.initMessageCollector(filePath: String) {
-        val file = File(filePath)
-        file.createNewFile()
         this.put(
             CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
-            PrintingMessageCollector(PrintStream(file.outputStream()), MessageRenderer.PLAIN_FULL_PATHS, true),
+            FilePrintingMessageCollector(filePath, MessageRenderer.PLAIN_FULL_PATHS, true),
         )
     }
 
     /**
-     * Logs new message by [MessageCollector].
+     * Logs a new message by [MessageCollector].
      *
      * @param message
      */
     fun MessageCollector.log(message: String) {
-        this.report(
-            CompilerMessageSeverity.LOGGING,
-            "Reflekt: $message",
-            CompilerMessageLocation.create(null),
-        )
+        this.report(CompilerMessageSeverity.LOGGING, "Reflekt: $message", CompilerMessageLocation.create(null))
     }
 }
 
 /**
- * Converts string enum value into an instance of this enum class using [transform] function.
+ * Converts string enum value into an instance of this enum class using [transform] function, throws exception if no values correspond to the provided string.
  *
- * @param values possible enum values
- * @param transform
- * @return [T]
+ * @param values possible enum values.
+ * @param transform the transformation function for enum values.
+ * @return an instance of [T].
  */
 inline fun <T : Enum<T>> String.toEnum(values: Array<T>, transform: T.() -> String): T =
     values.first { it.transform() == this }
 
 /**
+ * Converts string enum value into an instance of this enum class using [transform] function, throws exception if no values correspond to the provided string.
+ *
+ * All enum constants of [T] are considered.
+ *
+ * @param transform the transformation function for enum values.
+ * @return an instance of [T].
+ */
+inline fun <reified T : Enum<T>> String.toEnum(transform: T.() -> String): T =
+    toEnum(T::class.java.enumConstants, transform)
+
+/**
+ * Converts string enum value into regex options using [transform] function.
+ *
+ * @param values possible enum values
+ * @param transform
+ * @return [String]
+ */
+inline fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, crossinline transform: T.() -> String): String =
+    "(${values.joinToString(separator = "|") { Regex.escape(it.transform()) }})"
+
+/**
+ * Converts string enum value into regex options using [transform] function.
+ *
+ * All enum constants of [T] are considered.
+ *
+ * @param transform
+ * @return [String]
+ */
+inline fun <reified T : Enum<T>> enumToRegexOptions(crossinline transform: T.() -> String): String =
+    enumToRegexOptions(T::class.java.enumConstants, transform)
+
+/**
  * String representation for [IrType].
- * Should be the same as the string representation for KType.
+ * Should be the same as the string representation for [kotlin.reflect.KType].
  *
  * @return [String]
  */
@@ -98,11 +121,15 @@ fun IrMemberAccessExpression<*>.getValueArguments() = (0 until valueArgumentsCou
     getValueArgument(it)
 }
 
+/**
+ * Returns immediate superclasses of the class by filtering them from its [IrClass.superTypes].
+ */
 fun IrClass.getImmediateSuperclasses(): List<IrClassSymbol> = superTypes.mapNotNull { it.classOrNull }
 
 /**
- * Returns set of all classes related to [this] class with reflection. Resulting set consists of: [this class], all superclasses of all elements of the set,
- * all sealed subclasses of all elements of the set. Private classes are excluded.
+ * Returns the set of all classes related to [this] class with reflection.
+ * The resulting set consists of: [this class], all superclasses of all elements of the set, all sealed subclasses of all elements of the set.
+ * Private classes are excluded.
  */
 fun IrClass.getReflectionKnownHierarchy(): Set<IrClassSymbol> {
     val deque = ArrayDeque<IrClassSymbol>()
@@ -118,7 +145,7 @@ fun IrClass.getReflectionKnownHierarchy(): Set<IrClassSymbol> {
 
         for (irClass in last.owner.getImmediateSuperclasses() + last.owner.sealedSubclasses) {
             if (irClass.owner.visibility != DescriptorVisibilities.PRIVATE && result.add(irClass)) {
-                deque.addLast(irClass)
+                deque += irClass
             }
         }
 
@@ -127,13 +154,3 @@ fun IrClass.getReflectionKnownHierarchy(): Set<IrClassSymbol> {
 
     return result
 }
-
-/**
- * Converts string enum value into regex options using [transform] function.
- *
- * @param values possible enum values
- * @param transform
- * @return [String]
- */
-fun <T : Enum<T>> enumToRegexOptions(values: Array<T>, transform: T.() -> String): String =
-    "(${values.joinToString(separator = "|") { it.transform() }})"

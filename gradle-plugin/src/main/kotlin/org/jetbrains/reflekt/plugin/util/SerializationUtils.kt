@@ -28,7 +28,6 @@ object SerializationUtils {
     fun serializeReflektMetaFilesFromLibrariesMap(map: ReflektMetaFilesFromLibrariesMap, buildDir: String) {
         File(getAbsoluteCacheFolderPath(buildDir)).mkdirs()
         val file = getAbsoluteCacheFile(buildDir)
-        file.createNewFile()
         file.writeBytes(protoBuf.encodeToByteArray(map.toSerializableReflektMetaFilesFromLibrariesMap()))
     }
 

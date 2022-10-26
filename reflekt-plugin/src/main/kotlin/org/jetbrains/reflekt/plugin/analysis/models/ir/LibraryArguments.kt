@@ -43,12 +43,12 @@ data class LibraryArguments(
         objects = objects,
         classes = classes,
         functions = functions.mapValuesTo(HashMap()) { fileToArgs ->
-            fileToArgs.value.map {
+            fileToArgs.value.mapTo(HashSet()) {
                 SerializableSignatureToAnnotations(
                     annotations = it.annotations,
                     irSignature = it.irSignature?.toSerializableIrType(),
                 )
-            }.toHashSet()
+            }
         },
     )
 }
@@ -97,12 +97,12 @@ data class SerializableLibraryArgumentsWithInstances(
                 objects = libraryArguments.objects,
                 classes = libraryArguments.classes,
                 functions = libraryArguments.functions.mapValuesTo(HashMap()) { fileToInvokes ->
-                    fileToInvokes.value.map {
+                    fileToInvokes.value.mapTo(HashSet()) {
                         SignatureToAnnotations(
                             annotations = it.annotations,
                             irSignature = it.irSignature?.toIrType(pluginContext),
                         )
-                    }.toHashSet()
+                    }
                 },
             ),
             instances,

@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.ir.types.isPrimitiveType
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.utils.addToStdlib.flattenTo
 import org.jetbrains.reflekt.ReflektClass
+import org.jetbrains.reflekt.ReflektFunction
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektPackage
 import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryQueriesResults
@@ -21,6 +22,7 @@ import org.jetbrains.reflekt.plugin.generation.code.generator.models.*
 import org.jetbrains.reflekt.plugin.utils.getImmediateSuperclasses
 import org.jetbrains.reflekt.plugin.utils.getValueArguments
 import java.util.*
+import kotlin.reflect.KClass
 
 /**
  * Generates ReflektImpl.kt file.
@@ -108,7 +110,7 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
         private fun addReflektClasses() {
             builder.addProperty(
                 StorageClassNames.REFLEKT_CLASSES,
-                MAP.parameterizedBy(ClassName("kotlin.reflect", "KClass").parameterizedBy(STAR), ReflektClass::class.asTypeName().parameterizedBy(STAR)),
+                MAP.parameterizedBy(KClass::class.asTypeName().parameterizedBy(STAR), ReflektClass::class.asTypeName().parameterizedBy(STAR)),
             )
 
             builder.addInitializerBlock(buildCodeBlock {
@@ -132,7 +134,7 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                                 "qualifiedName = \"$kotlinFqName\", " +
                                 "simpleName = \"${kotlinFqName.shortName()}\", " +
                                 "visibility = ReflektVisibility.${reflektVisibility.name}, " +
-                                "objectInstance = ${if (isObject) kotlinFqName.toString() else null})"
+                                "objectInstance = ${if (isObject) kotlinFqName.toString() else null})",
                         )
                     }
                 }
@@ -141,7 +143,7 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                     mentionedClass.getImmediateSuperclasses().map { it.owner }.forEach { superclass ->
                         addStatement(
                             "(m[${mentionedClass.kotlinFqName}::class]!! as ReflektClassImpl<${mentionedClass.kotlinFqName}>).superclasses += " +
-                                "m[${superclass.kotlinFqName}::class] as ReflektClass<in ${mentionedClass.kotlinFqName}>"
+                                "m[${superclass.kotlinFqName}::class] as ReflektClass<in ${mentionedClass.kotlinFqName}>",
                         )
                     }
                 }
@@ -150,7 +152,7 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                     mentionedClass.sealedSubclasses.map { it.owner }.forEach { subclass ->
                         addStatement(
                             "(m[${mentionedClass.kotlinFqName}::class]!! as ReflektClassImpl<${mentionedClass.kotlinFqName}>).sealedSubclasses += " +
-                                "m[${subclass.kotlinFqName}::class] as ReflektClass<out ${mentionedClass.kotlinFqName}>"
+                                "m[${subclass.kotlinFqName}::class] as ReflektClass<out ${mentionedClass.kotlinFqName}>",
                         )
                     }
                 }
@@ -159,12 +161,10 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
             })
         }
 
-
-        @Suppress("LongMethod", "TOO_LONG_FUNCTION")
         private fun addReflektFunctions() {
             builder.addProperty(
                 StorageClassNames.REFLEKT_FUNCTIONS,
-                MAP.parameterizedBy(ClassName("kotlin.reflect", "KClass").parameterizedBy(STAR), ReflektClass::class.asTypeName().parameterizedBy(STAR)),
+                MAP.parameterizedBy(Function::class.asTypeName().parameterizedBy(STAR), ReflektFunction::class.asTypeName().parameterizedBy(STAR)),
             )
 
             builder.addInitializerBlock(buildCodeBlock {
@@ -176,19 +176,19 @@ class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResu
                         val reflektVisibility = checkNotNull(visibility.toReflektVisibility()) { "Unsupported visibility of IrFunction: $visibility" }
 
                         addStatement(
-                            "m[$reference] = ReflektFunctionImpl(\n" +
-                                "function = $reference,\n" +
+                            "m[$reference] = ReflektFunctionImpl(" +
+                                "function = $reference, " +
                                 "annotations = hashSetOf(${annotations.joinToString(", ") { call -> annotationInstantiationString(call) }}), " +
-                                "name = \"a\",\n" +
+                                "name = \"a\", " +
                                 "visibility = ReflektVisibility.${reflektVisibility.name}, " +
-                                "isFinal = ${modality == Modality.FINAL},\n" +
-                                "isOpen = ${modality == Modality.OPEN},\n" +
-                                "isAbstract = ${modality == Modality.ABSTRACT},\n" +
+                                "isFinal = ${modality == Modality.FINAL}, " +
+                                "isOpen = ${modality == Modality.OPEN}, " +
+                                "isAbstract = ${modality == Modality.ABSTRACT}, " +
                                 "isInline = $isInline, " +
                                 "isExternal = $isExternal, " +
                                 "isOperator = $isOperator, " +
                                 "isInfix = $isInfix, " +
-                                "isSuspend = $isSuspend)"
+                                "isSuspend = $isSuspend)",
                         )
                     }
                 }

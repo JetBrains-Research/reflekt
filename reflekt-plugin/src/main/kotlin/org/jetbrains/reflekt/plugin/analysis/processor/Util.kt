@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.descriptors.DescriptorVisibility
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.utils.addToStdlib.flattenTo
 import org.jetbrains.reflekt.ReflektVisibility
 
 // TODO: is it enough to identify a file?
@@ -26,7 +27,7 @@ internal fun DescriptorVisibility.toReflektVisibility() = when (this) {
 }
 
 internal fun <K, V : MutableSet<K>> getInvokesGroupedByFiles(fileToInvokes: Map<FileId, V>): MutableSet<K> =
-    groupFilesByInvokes(fileToInvokes).keys.flatten().toHashSet()
+    groupFilesByInvokes(fileToInvokes).keys.flattenTo(HashSet())
 
 internal fun getNameWithPackage(packageFqName: FqName, name: String? = null): FileId {
     val postfix = name?.let { ".$name" } ?: ""

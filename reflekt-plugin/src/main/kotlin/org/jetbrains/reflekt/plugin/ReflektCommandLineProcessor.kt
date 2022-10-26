@@ -18,7 +18,7 @@ import java.io.File
  *
  * @property pluginId the compiler plugin id. Just needs to be consistent
  *  with the key for ReflektSubPlugin.getCompilerPluginId from the gradle-plugin module.
- * @property pluginOptions the collection of the command line options for the kotlin compiler plugin.
+ * @property pluginOptions the collection of the command line options for the Kotlin compiler plugin.
  *  Should match up with the options returned from the ReflektSubPlugin.applyToCompilation in the gradle-plugin module.
  *  Should also have matching 'when'-branches for each option in the [processOption] function
  */
@@ -39,7 +39,7 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
      *
      * @param option the current command line option that should be handled
      * @param value of the current option, that will be converted into the right type required by [configuration]
-     * @param configuration the kotlin compiler configuration that should be updated,
+     * @param configuration the Kotlin compiler configuration that should be updated,
      *  the option will be added to the configuration
      */
     override fun processOption(
@@ -69,7 +69,7 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
     }
 
     /**
-     * Possible kotlin compiler command line options.
+     * Possible Kotlin compiler command line options.
      *
      * @property ENABLED_OPTION indicates if the plugin is enabled
      * @property DEPENDENCY_JAR_OPTION stores the absolute
@@ -82,51 +82,45 @@ class ReflektCommandLineProcessor : CommandLineProcessor {
      *  TODO: delete this option since we can indicate these libraries by checking if the ReflektMeta file exists
      */
     companion object {
-        val ENABLED_OPTION =
-            CliOption(
-                optionName = ENABLED_OPTION_INFO.name,
-                valueDescription = ENABLED_OPTION_INFO.valueDescription,
-                description = ENABLED_OPTION_INFO.description,
-            )
-        val DEPENDENCY_JAR_OPTION =
-            CliOption(
-                optionName = DEPENDENCY_JAR_OPTION_INFO.name,
-                valueDescription = DEPENDENCY_JAR_OPTION_INFO.valueDescription,
-                description = DEPENDENCY_JAR_OPTION_INFO.description,
-                allowMultipleOccurrences = true,
-                required = false,
-            )
-        val REFLEKT_META_FILE_FROM_LIBRARY_OPTION =
-            CliOption(
-                optionName = REFLEKT_META_FILE_OPTION_INFO.name,
-                valueDescription = REFLEKT_META_FILE_OPTION_INFO.valueDescription,
-                description = REFLEKT_META_FILE_OPTION_INFO.description,
-                allowMultipleOccurrences = true,
-                required = false,
-            )
-        val OUTPUT_DIR_OPTION =
-            CliOption(
-                optionName = OUTPUT_DIR_OPTION_INFO.name,
-                valueDescription = OUTPUT_DIR_OPTION_INFO.valueDescription,
-                description = OUTPUT_DIR_OPTION_INFO.description,
-                required = false,
-                allowMultipleOccurrences = false,
-            )
-        val SAVE_METADATA_OPTION =
-            CliOption(
-                optionName = SAVE_METADATA_OPTION_INFO.name,
-                valueDescription = SAVE_METADATA_OPTION_INFO.valueDescription,
-                description = SAVE_METADATA_OPTION_INFO.description,
-                required = false,
-                allowMultipleOccurrences = false,
-            )
-        val REFLEKT_META_FILE_PATH_OPTION =
-            CliOption(
-                optionName = REFLEKT_META_FILE_PATH.name,
-                valueDescription = REFLEKT_META_FILE_PATH.valueDescription,
-                description = REFLEKT_META_FILE_PATH.description,
-                required = false,
-                allowMultipleOccurrences = false,
-            )
+        val ENABLED_OPTION = CliOption(
+            optionName = ENABLED_OPTION_INFO.name,
+            valueDescription = ENABLED_OPTION_INFO.valueDescription,
+            description = ENABLED_OPTION_INFO.description,
+        )
+        val DEPENDENCY_JAR_OPTION = CliOption(
+            optionName = DEPENDENCY_JAR_OPTION_INFO.name,
+            valueDescription = DEPENDENCY_JAR_OPTION_INFO.valueDescription,
+            description = DEPENDENCY_JAR_OPTION_INFO.description,
+            allowMultipleOccurrences = true,
+            required = false,
+        )
+        val REFLEKT_META_FILE_FROM_LIBRARY_OPTION = CliOption(
+            optionName = REFLEKT_META_FILE_OPTION_INFO.name,
+            valueDescription = REFLEKT_META_FILE_OPTION_INFO.valueDescription,
+            description = REFLEKT_META_FILE_OPTION_INFO.description,
+            allowMultipleOccurrences = true,
+            required = false,
+        )
+        val OUTPUT_DIR_OPTION = CliOption(
+            optionName = OUTPUT_DIR_OPTION_INFO.name,
+            valueDescription = OUTPUT_DIR_OPTION_INFO.valueDescription,
+            description = OUTPUT_DIR_OPTION_INFO.description,
+            required = false,
+            allowMultipleOccurrences = false,
+        )
+        val SAVE_METADATA_OPTION = CliOption(
+            optionName = SAVE_METADATA_OPTION_INFO.name,
+            valueDescription = SAVE_METADATA_OPTION_INFO.valueDescription,
+            description = SAVE_METADATA_OPTION_INFO.description,
+            required = false,
+            allowMultipleOccurrences = false,
+        )
+        val REFLEKT_META_FILE_PATH_OPTION = CliOption(
+            optionName = REFLEKT_META_FILE_PATH.name,
+            valueDescription = REFLEKT_META_FILE_PATH.valueDescription,
+            description = REFLEKT_META_FILE_PATH.description,
+            required = false,
+            allowMultipleOccurrences = false,
+        )
     }
 }

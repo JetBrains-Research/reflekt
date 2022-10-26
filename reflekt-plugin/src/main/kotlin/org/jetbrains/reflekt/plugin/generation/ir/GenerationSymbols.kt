@@ -28,7 +28,7 @@ class GenerationSymbols(private val pluginContext: IrPluginContext) {
     val hashSetConstructor = hashSetClass.constructors.first { it.owner.valueParameters.isEmpty() }
     val pairClass = referenceClassOrFail("kotlin.Pair")
     val to = checkNotNull(pluginContext.referenceFunctions(FqName("kotlin.to")).takeIf { it.isNotEmpty() }) {
-        "Can't reference functions named ${"kotlin.to"}, Kotlin standard library or Reflekt DSL aren't available"
+        "Can't reference function kotlin.to, because Kotlin standard library or Reflekt DSL aren't available"
     }.first()
     val reflektClassClass = referenceClassOrFail("${ReflektPackage.PACKAGE_NAME}.ReflektClass")
     val reflektClassImplClass = referenceClassOrFail("${ReflektPackage.PACKAGE_NAME}.ReflektClassImpl")
@@ -61,15 +61,14 @@ class GenerationSymbols(private val pluginContext: IrPluginContext) {
     }
 
     private fun referenceClassOrFail(fqNameString: String) = checkNotNull(pluginContext.referenceClass(FqName(fqNameString))) {
-        "Can't reference class $fqNameString, Kotlin standard library or Reflekt DSL aren't available"
+        "Can't reference class $fqNameString, because Kotlin standard library or Reflekt DSL aren't available"
     }
 
     private fun referenceTypeAliasOrFail(fqNameString: String) = checkNotNull(pluginContext.referenceTypeAlias(FqName(fqNameString))) {
-        "Can't reference class $fqNameString, Kotlin standard library or Reflekt DSL aren't available"
+        "Can't reference class $fqNameString, because Kotlin standard library or Reflekt DSL aren't available"
     }
 
-    private fun referenceConstructorsOrFail(fqName: FqName) =
-        checkNotNull(pluginContext.referenceConstructors(fqName).takeIf { it.isNotEmpty() }) {
-            "Can't reference constructors of $fqName, Kotlin standard library or Reflekt DSL aren't available"
-        }
+    private fun referenceConstructorsOrFail(fqName: FqName) = checkNotNull(pluginContext.referenceConstructors(fqName).takeIf { it.isNotEmpty() }) {
+        "Can't reference constructors of $fqName, because Kotlin standard library or Reflekt DSL aren't available"
+    }
 }

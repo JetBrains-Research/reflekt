@@ -41,9 +41,9 @@ data class ReflektInvokeParts(
          */
         private fun getReflektFullNameRegex(): Regex {
             val reflektFqName = Reflekt::class.qualifiedName!!
-            val entityTypes = enumToRegexOptions(ReflektEntity.values(), ReflektEntity::className)
-            val nestedClasses = enumToRegexOptions(ReflektNestedClass.values(), ReflektNestedClass::className)
-            val terminalFunctions = enumToRegexOptions(ReflektTerminalFunction.values(), ReflektTerminalFunction::functionName)
+            val entityTypes = enumToRegexOptions(ReflektEntity::className)
+            val nestedClasses = enumToRegexOptions(ReflektNestedClass::className)
+            val terminalFunctions = enumToRegexOptions(ReflektTerminalFunction::functionName)
             return Regex("$reflektFqName\\.$entityTypes\\.$nestedClasses\\.$terminalFunctions")
         }
 
@@ -57,9 +57,9 @@ data class ReflektInvokeParts(
             val matchResult = getReflektFullNameRegex().matchEntire(fqName) ?: return null
             val (_, klass, nestedClass, terminalFunction) = matchResult.groupValues
             return ReflektInvokeParts(
-                klass.toEnum(ReflektEntity.values(), ReflektEntity::className),
-                nestedClass.toEnum(ReflektNestedClass.values(), ReflektNestedClass::className),
-                terminalFunction.toEnum(ReflektTerminalFunction.values(), ReflektTerminalFunction::functionName),
+                klass.toEnum(ReflektEntity::className),
+                nestedClass.toEnum(ReflektNestedClass::className),
+                terminalFunction.toEnum(ReflektTerminalFunction::functionName),
             )
         }
     }
@@ -85,8 +85,8 @@ data class SmartReflektInvokeParts(
          */
         private fun getSmartReflektFullNameRegex(): Regex {
             val smartReflektFqName = SmartReflekt::class.qualifiedName!!
-            val entityClasses = enumToRegexOptions(ReflektEntity.values(), ReflektEntity::smartClassName)
-            val terminalFunctions = enumToRegexOptions(SmartReflektTerminalFunction.values(), SmartReflektTerminalFunction::functionName)
+            val entityClasses = enumToRegexOptions(ReflektEntity::smartClassName)
+            val terminalFunctions = enumToRegexOptions(SmartReflektTerminalFunction::functionName)
             return Regex("$smartReflektFqName\\.$entityClasses\\.$terminalFunctions")
         }
 
@@ -100,8 +100,8 @@ data class SmartReflektInvokeParts(
             val matchResult = getSmartReflektFullNameRegex().matchEntire(fqName) ?: return null
             val (_, entityClass, terminalFunction) = matchResult.groupValues
             return SmartReflektInvokeParts(
-                entityClass.toEnum(ReflektEntity.values(), ReflektEntity::smartClassName),
-                terminalFunction.toEnum(SmartReflektTerminalFunction.values(), SmartReflektTerminalFunction::functionName),
+                entityClass.toEnum(ReflektEntity::smartClassName),
+                terminalFunction.toEnum(SmartReflektTerminalFunction::functionName),
             )
         }
     }

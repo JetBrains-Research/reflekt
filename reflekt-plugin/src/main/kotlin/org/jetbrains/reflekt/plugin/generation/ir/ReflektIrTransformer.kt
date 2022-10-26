@@ -46,6 +46,7 @@ class ReflektIrTransformer(
         messageCollector?.log("[IR] FILTERED INSTANCES: $filteredInstances")
         val invokeParts = expression.getReflektInvokeParts() ?: return super.visitCall(expression)
         messageCollector?.log("[IR] INVOKE PARTS: $invokeParts")
+
         // TODO: delete duplicate with SmartReflektIrTransformer
         val call = when (invokeParts.entityType) {
             ReflektEntity.OBJECTS, ReflektEntity.CLASSES -> resultIrCall(
@@ -60,6 +61,7 @@ class ReflektIrTransformer(
                 expression.type,
             )
         }
+
         messageCollector?.log("[IR] FOUND CALL (${invokeParts.entityType}):\n${expression.dump()}")
         messageCollector?.log("[IR] GENERATE CALL:\n${call.dump()}")
         return call

@@ -156,10 +156,12 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         instancesAnalyzer: IrInstancesAnalyzer,
         libraryArguments: LibraryArguments,
     ) {
-        if (libraryArguments.isNotEmpty() && config.outputDir == null) {
-            error("The output path for the ReflektImpl file was not specified")
+        check(libraryArguments.isEmpty() || config.outputDir != null) {
+            "The output path for the ReflektImpl file was not specified"
         }
+
         val libraryQueriesResults = LibraryQueriesResults.fromLibraryArguments(libraryArguments)
+
         IrGenerationExtension.registerExtension(
             this,
             LibraryQueriesResultsCollector(
@@ -168,6 +170,7 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
                 messageCollector = config.messageCollector,
             ),
         )
+
         IrGenerationExtension.registerExtension(
             this,
             ReflektImplGeneratorExtension(
