@@ -48,6 +48,7 @@ enum class SmartReflektFunction(val functionName: String) {
 /**
  * @property className
  */
+@Suppress("unused")
 enum class ReflektNestedClass(val className: String) {
     WITH_ANNOTATIONS(ReflektFunction.WITH_ANNOTATIONS.functionName.replaceFirstChar(Char::titlecase)),
     WITH_SUPERTYPES(ReflektFunction.WITH_SUPERTYPES.functionName.replaceFirstChar(Char::titlecase)),

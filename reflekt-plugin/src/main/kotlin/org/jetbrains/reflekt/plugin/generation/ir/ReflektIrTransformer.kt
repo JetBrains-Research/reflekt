@@ -5,10 +5,10 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.reflekt.plugin.analysis.analyzer.IrReflektQueriesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
-import org.jetbrains.reflekt.plugin.analysis.ir.toFunctionInfo
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrInstances
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArguments
 import org.jetbrains.reflekt.plugin.analysis.processor.ir.reflektArguments.getReflektInvokeParts
@@ -37,28 +37,30 @@ class ReflektIrTransformer(
     /**
      * Visit [IrCall] and replace IR to found entities if it is a Reflekt query
      *
-     * @param expression [IrCall]
+     * @param expression the call.
      */
     @Suppress("ReturnCount")
     override fun visitCall(expression: IrCall): IrExpression {
         messageCollector?.log("[IR] CURRENT EXPRESSION:\n${expression.dump()}")
-        val filteredInstances = expression.filterInstances()
-        messageCollector?.log("[IR] FILTERED INSTANCES: $filteredInstances")
+        val filteredDeclarations = expression.filterInstances()
+        messageCollector?.log("[IR] FILTERED DECLARATIONS: $filteredDeclarations")
         val invokeParts = expression.getReflektInvokeParts() ?: return super.visitCall(expression)
         messageCollector?.log("[IR] INVOKE PARTS: $invokeParts")
 
         // TODO: delete duplicate with SmartReflektIrTransformer
         val call = when (invokeParts.entityType) {
-            ReflektEntity.OBJECTS, ReflektEntity.CLASSES -> resultIrCall(
+            ReflektEntity.OBJECTS, ReflektEntity.CLASSES -> classOrObjectResultIrCall(
                 currentFile.module,
                 invokeParts,
-                filteredInstances.mapNotNull { (it as? IrClass)?.fqNameWhenAvailable?.asString() },
-                expression.type,
+                filteredDeclarations.filterIsInstance<IrClass>(),
+                expression.type as? IrSimpleType ?: error("Expression with not IrSimpleType"),
             )
+
             ReflektEntity.FUNCTIONS -> functionResultIrCall(
+                currentFile.module,
                 invokeParts,
-                filteredInstances.mapNotNull { (it as? IrFunction)?.toFunctionInfo() },
-                expression.type,
+                filteredDeclarations.filterIsInstance<IrSimpleFunction>(),
+                expression.type as? IrSimpleType ?: error("Expression with not IrSimpleType"),
             )
         }
 

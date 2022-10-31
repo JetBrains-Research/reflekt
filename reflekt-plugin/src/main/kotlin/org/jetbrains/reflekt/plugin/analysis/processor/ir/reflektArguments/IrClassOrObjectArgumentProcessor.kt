@@ -26,7 +26,7 @@ abstract class IrClassOrObjectArgumentProcessor(private val irInstances: List<Ir
     /**
      * Check if the [IrClass] is subtype of at least one type from [superTypes].
      *
-     * @param superTypes
+     * @param superTypes set of possible supertypes for [IrClass].
      */
     private fun IrClass.isSubtypeOfAny(superTypes: Set<String>): Boolean {
         require(superTypes.isNotEmpty()) { "The set of super types is empty" }

@@ -64,14 +64,13 @@ fun IrBuilder.irClassReference(symbol: IrClassSymbol) = IrClassReferenceImpl(
 )
 
 /**
- * Generates IR for FunctionN.
+ * Generates IR of function reference.
  *
  * @param type function types (e.g. return type, arguments type, etc)
  * @param symbol [IrFunctionSymbol]
+ * @return a new function reference.
  */
-@Suppress("FUNCTION_NAME_INCORRECT_CASE")
-fun IrBuilder.irKFunction(type: IrType, symbol: IrFunctionSymbol): IrFunctionReferenceImpl {
-    require(type is IrSimpleType)
+fun IrBuilder.irFunctionReference(type: IrSimpleType, symbol: IrFunctionSymbol): IrFunctionReferenceImpl {
     val kFunctionType = IrSimpleTypeImpl(
         context.irBuiltIns.kFunctionN(type.arguments.size - 1).symbol,
         false,

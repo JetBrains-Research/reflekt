@@ -10,8 +10,7 @@ import org.jetbrains.kotlin.ir.builders.declarations.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrFileImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrInstanceInitializerCallImpl
-import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
+import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.*
@@ -27,7 +26,7 @@ import org.jetbrains.reflekt.plugin.utils.getImmediateSuperclasses
  * Generates `object` classes to store instances of Reflekt data classes.
  * The generation is done in two steps:
  * 1. A blank storage class is created with [createStorageClass].
- * 2. Then it is filled by [contributeInitializer] provided classes data about which are stored.
+ * 2. Then it is filled by [contributeInitializerOfClasses] provided classes data about which are stored.
  *
  * @property pluginContext the plugin context.
  */
@@ -53,6 +52,8 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
             name = Name.identifier("Storage_$idx")
         }.also { irClass ->
             file.addChild(irClass)
+            val irBuilder = DeclarationIrBuilder(pluginContext, irClass.symbol, irClass.startOffset, irClass.endOffset)
+            irClass.annotations += irBuilder.irCall(generationSymbols.jvmSyntheticConstructor)
 
             irClass.thisReceiver =
                 buildReceiverParameter(irClass, IrDeclarationOrigin.INSTANCE_RECEIVER, irClass.symbol.typeWithParameters(irClass.typeParameters))
@@ -64,8 +65,8 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
                 returnType = irClass.symbol.createType(false, listOf())
                 isPrimary = true
             }.also { constructor ->
-                val irBuilder = DeclarationIrBuilder(pluginContext, constructor.symbol, constructor.startOffset, constructor.endOffset)
-                constructor.body = irBuilder.irBlockBody {
+                val irBuilder2 = DeclarationIrBuilder(pluginContext, constructor.symbol, constructor.startOffset, constructor.endOffset)
+                constructor.body = irBuilder2.irBlockBody {
                     +irDelegatingConstructorCall(generationSymbols.anyConstructor.owner)
                     +IrInstanceInitializerCallImpl(startOffset, endOffset, irClass.symbol, constructor.returnType)
                 }
@@ -78,8 +79,19 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
                     listOf(irBuiltIns.kClassClass.starProjectedType, generationSymbols.reflektClassClass.starProjectedType),
                 )
             }.also { field ->
-                val irBuilder = DeclarationIrBuilder(pluginContext, field.symbol, field.startOffset, field.endOffset)
-                field.annotations = listOf(irBuilder.irCall(generationSymbols.jvmSyntheticConstructor), irBuilder.irCall(generationSymbols.jvmFieldConstructor))
+                val irBuilder2 = DeclarationIrBuilder(pluginContext, field.symbol, field.startOffset, field.endOffset)
+                field.annotations += irBuilder2.irCall(generationSymbols.jvmFieldConstructor)
+            }
+
+            irClass.addField {
+                name = StorageClassNames.REFLEKT_FUNCTIONS_NAME
+                type = irBuiltIns.mapClass.createType(
+                    false,
+                    listOf(irBuiltIns.functionClass.starProjectedType, generationSymbols.reflektFunctionClass.starProjectedType),
+                )
+            }.also { field ->
+                val irBuilder2 = DeclarationIrBuilder(pluginContext, field.symbol, field.startOffset, field.endOffset)
+                field.annotations += irBuilder2.irCall(generationSymbols.jvmFieldConstructor)
             }
         }.symbol
     }
@@ -120,7 +132,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
     }
 
     @Suppress("LongMethod", "TOO_LONG_FUNCTION")
-    fun contributeInitializer(storageClassSymbol: IrClassSymbol, storedClassesSymbols: Collection<IrClassSymbol>) {
+    fun contributeInitializerOfClasses(storageClassSymbol: IrClassSymbol, storedClassesSymbols: Collection<IrClassSymbol>) {
         val storageClass = storageClassSymbol.owner
         val storedClasses = storedClassesSymbols.map { it.owner }
 
@@ -132,7 +144,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
                 name = mVariableName,
                 type = generationSymbols.hashMapClass.createType(
                     false,
-                    listOf(irBuiltIns.kClassClass.starProjectedType, generationSymbols.reflektClassClass.starProjectedType)
+                    listOf(irBuiltIns.kClassClass.starProjectedType, generationSymbols.reflektClassClass.starProjectedType),
                 ),
                 isConst = false,
                 isLateinit = false,
@@ -141,7 +153,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
                     keyType = irBuiltIns.kClassClass.starProjectedType,
                     valueType = generationSymbols.reflektClassClass.starProjectedType,
                     pairs = storedClasses.map { storedClass ->
-                        irTo(left = irClassReference(storedClass.symbol), right = irReflektClassImplConstructor(storedClass.symbol))
+                        irTo(first = irClassReference(storedClass.symbol), second = irReflektClassImplConstructor(storedClass.symbol))
                     },
                 )
             }
@@ -169,9 +181,51 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
 
             // Created HashMap is stored to the data field.
             +irSetField(
-                irGet(storageClass.thisReceiver!!),
-                storageClass.symbol.fieldByName(StorageClassNames.REFLEKT_CLASSES).owner,
-                irGet(mVariable),
+                receiver = irGet(storageClass.thisReceiver!!),
+                field = storageClass.symbol.fieldByName(StorageClassNames.REFLEKT_CLASSES).owner,
+                value = irGet(mVariable),
+            )
+        }
+    }
+
+    @Suppress("LongMethod", "TOO_LONG_FUNCTION")
+    fun contributeInitializerOfFunctions(
+        storageClassSymbol: IrClassSymbol,
+        storedFunctionsSymbols: Collection<IrSimpleFunctionSymbol>,
+    ) {
+        // Very similar to contributeInitializerOfClasses
+        val storageClass = storageClassSymbol.owner
+        val storedFunctions = storedFunctionsSymbols.map { it.owner }
+
+        storageClass.contributeAnonymousInitializer {
+            val mVariable = irVariableVal(
+                parent = storageClass,
+                name = mVariableName,
+                type = generationSymbols.hashMapClass.createType(
+                    false,
+                    listOf(irBuiltIns.functionClass.starProjectedType, generationSymbols.reflektFunctionClass.starProjectedType),
+                ),
+                isConst = false,
+                isLateinit = false,
+            ).also { variable ->
+                variable.initializer = irHashMapOf(
+                    keyType = irBuiltIns.functionClass.starProjectedType,
+                    valueType = generationSymbols.reflektFunctionClass.starProjectedType,
+                    pairs = storedFunctions.map { storedFunction ->
+                        irTo(
+                            first = createFunctionReference(pluginContext, storedFunction, TODO()),
+                            second = irReflektFunctionImplConstructor(storedFunction.symbol, TODO()),
+                        )
+                    },
+                )
+            }
+            +mVariable
+
+            // Created HashMap is stored to the data field.
+            +irSetField(
+                receiver = irGet(storageClass.thisReceiver!!),
+                field = storageClass.symbol.fieldByName(StorageClassNames.REFLEKT_FUNCTIONS).owner,
+                value = irGet(mVariable),
             )
         }
     }

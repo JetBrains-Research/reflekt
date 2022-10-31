@@ -6,18 +6,17 @@ import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.IrBuiltIns
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.builders.*
-import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrEnumEntry
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.IrFunctionAccessExpression
+import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.impl.IrAnonymousInitializerSymbolImpl
 import org.jetbrains.kotlin.ir.types.*
-import org.jetbrains.kotlin.ir.util.isObject
-import org.jetbrains.kotlin.ir.util.kotlinFqName
+import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.reflekt.plugin.analysis.ir.makeTypeProjection
+import org.jetbrains.reflekt.plugin.analysis.ir.*
 import org.jetbrains.reflekt.plugin.analysis.processor.toReflektVisibility
+import org.jetbrains.reflekt.plugin.generation.common.ReflektGenerationException
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.generation.ir.util.irCall
 import org.jetbrains.reflekt.plugin.utils.getValueArguments
@@ -49,13 +48,14 @@ interface IrBuilderExtension {
     fun IrBuilderWithScope.irMapGet(map: IrExpression, key: IrExpression) =
         irCall(generationSymbols.mapGet, dispatchReceiver = map, valueArguments = listOf(key))
 
-    fun IrBuilderWithScope.irTo(left: IrExpression, right: IrExpression) =
-        irCall(generationSymbols.to, typeArguments = listOf(left.type, right.type), extensionReceiver = left, valueArguments = listOf(right))
+    fun IrBuilderWithScope.irTo(first: IrExpression, second: IrExpression) =
+        irCall(generationSymbols.to, typeArguments = listOf(first.type, second.type), extensionReceiver = first, valueArguments = listOf(second))
 
     fun IrBuilderWithScope.irHashMapOf(keyType: IrType, valueType: IrType, pairs: List<IrExpression>) = irCall(
         generationSymbols.hashMapOf,
         typeArguments = listOf(keyType, valueType),
         valueArguments = listOf(
+            /* pairs = */
             irVarargOut(
                 generationSymbols.pairClass.createType(
                     false,
@@ -75,33 +75,34 @@ interface IrBuilderExtension {
             generationSymbols.reflektClassImplConstructor,
             typeArguments = listOf(irClassSymbol.defaultType),
             valueArguments = listOf(
-                irClassReference(irClassSymbol),
+                /* kClass = */ irClassReference(irClassSymbol),
+                /* annotations = */
                 irCall(
                     generationSymbols.hashSetOf,
                     typeArguments = listOf(irBuiltIns.annotationType),
                     valueArguments = listOf(
+                        /* elements = */
                         irVarargOut(irBuiltIns.annotationType,
                             irClass.annotations.map { irCall(it.symbol, valueArguments = it.getValueArguments()) }),
                     ),
                 ),
-                irBoolean(irClass.modality == Modality.ABSTRACT),
-                irBoolean(irClass.isCompanion),
-                irBoolean(irClass.isData),
-                irBoolean(irClass.modality == Modality.FINAL),
-                irBoolean(irClass.isFun),
-                irBoolean(irClass.isInner),
-                irBoolean(irClass.modality == Modality.OPEN),
-                irBoolean(irClass.modality == Modality.SEALED),
-                irBoolean(irClass.isValue),
-                irString(irClass.kotlinFqName.toString()),
-                irCall(generationSymbols.hashSetConstructor),
-                irCall(generationSymbols.hashSetConstructor),
-                irString(irClass.kotlinFqName.shortName().toString()),
+                /* isAbstract = */ irBoolean(irClass.modality == Modality.ABSTRACT),
+                /* isCompanion = */ irBoolean(irClass.isCompanion),
+                /* isData = */ irBoolean(irClass.isData),
+                /* isFinal = */ irBoolean(irClass.modality == Modality.FINAL),
+                /* isFun = */ irBoolean(irClass.isFun),
+                /* isInner = */ irBoolean(irClass.isInner),
+                /* isOpen = */ irBoolean(irClass.modality == Modality.OPEN),
+                /* isSealed = */ irBoolean(irClass.modality == Modality.SEALED),
+                /* isValue = */ irBoolean(irClass.isValue),
+                /* qualifiedName = */ irString(irClass.kotlinFqName.toString()),
+                /* superclasses = */ irCall(generationSymbols.hashSetConstructor),
+                /* sealedSubclasses = */ irCall(generationSymbols.hashSetConstructor),
+                /* simpleName = */ irString(irClass.kotlinFqName.shortName().toString()),
+                /* visibility = */
                 irGetEnumValue(
                     generationSymbols.reflektVisibilityClass.defaultType,
-                    generationSymbols.reflektVisibilityClass
-                        .owner
-                        .declarations
+                    generationSymbols.reflektVisibilityClass.owner.declarations
                         .filterIsInstance<IrEnumEntry>()
                         .first {
                             it.name == Name.identifier(
@@ -110,7 +111,78 @@ interface IrBuilderExtension {
                         }
                         .symbol,
                 ),
-                if (irClass.isObject) irGetObject(irClassSymbol) else irNull(),
+                /* objectInstance = */ if (irClass.isObject) irGetObject(irClassSymbol) else irNull(),
+            ),
+        )
+    }
+
+    @OptIn(ObsoleteDescriptorBasedAPI::class)
+    fun IrBuilderWithScope.createFunctionReference(
+        pluginContext: IrPluginContext,
+        irFunction: IrFunction,
+        itemType: IrSimpleType,
+    ): IrFunctionReference {
+        val functionSymbol = pluginContext.referenceFunctions(irFunction.fqNameWhenAvailable!!)
+            .find { symbol -> symbol.owner.isSubtypeOf(itemType, pluginContext) }
+            ?: throw ReflektGenerationException("Failed to find function ${irFunction.fqNameWhenAvailable!!} with signature ${itemType.toKotlinType()}")
+
+        return irFunctionReference(itemType, functionSymbol).also { call ->
+            irFunction.receiverType()!!.classFqName?.let {
+                if (irFunction.receiverType()?.getClass()?.isObject != null) {
+                    val dispatchSymbol = pluginContext.referenceClass(it)
+                        ?: throw ReflektGenerationException("Failed to find receiver class $it")
+
+                    call.dispatchReceiver = irGetObject(dispatchSymbol)
+                }
+            }
+        }
+    }
+
+    fun IrBuilderWithScope.irReflektFunctionImplConstructor(
+        irSimpleFunctionSymbol: IrSimpleFunctionSymbol,
+        itemType: IrSimpleType,
+    ): IrFunctionAccessExpression {
+        val irFunction = irSimpleFunctionSymbol.owner
+        val reference = createFunctionReference(pluginContext, irFunction, itemType)
+
+        return irCall(
+            generationSymbols.reflektFunctionImplConstructor,
+            typeArguments = listOf(itemType),
+            valueArguments = listOf(
+                /* function = */ reference,
+                /* annotations = */
+                irCall(
+                    generationSymbols.hashSetOf,
+                    typeArguments = listOf(irBuiltIns.annotationType),
+                    valueArguments = listOf(
+                        /* elements = */
+                        irVarargOut(irBuiltIns.annotationType,
+                            irFunction.annotations.map { irCall(it.symbol, valueArguments = it.getValueArguments()) }),
+                    ),
+                ),
+                /* name = */ irString(irFunction.kotlinFqName.shortName().toString()),
+                /* visibility = */
+                irGetEnumValue(
+                    generationSymbols.reflektVisibilityClass.defaultType,
+                    generationSymbols.reflektVisibilityClass.owner.declarations
+                        .filterIsInstance<IrEnumEntry>()
+                        .first {
+                            it.name == Name.identifier(
+                                checkNotNull(irFunction.visibility.toReflektVisibility()) {
+                                    "Unsupported visibility of IrSimpleFunction: ${irFunction.visibility}"
+                                }.name,
+                            )
+                        }
+                        .symbol,
+                ),
+                /* isFinal = */ irBoolean(irFunction.modality == Modality.FINAL),
+                /* isOpen = */ irBoolean(irFunction.modality == Modality.OPEN),
+                /* isAbstract = */ irBoolean(irFunction.modality == Modality.ABSTRACT),
+                /* isInline = */ irBoolean(irFunction.isInline),
+                /* isExternal = */ irBoolean(irFunction.isExternal),
+                /* isOperator = */ irBoolean(irFunction.isOperator),
+                /* isInfix = */ irBoolean(irFunction.isInfix),
+                /* isSuspend = */ irBoolean(irFunction.isSuspend),
             ),
         )
     }

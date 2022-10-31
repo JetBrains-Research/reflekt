@@ -38,6 +38,9 @@ class GenerationSymbols(private val pluginContext: IrPluginContext) {
     val reflektObjectClass = referenceClassOrFail("${ReflektPackage.PACKAGE_NAME}.ReflektObject")
     val reflektObjectConstructor = reflektObjectClass.constructors.first()
     val reflektVisibilityClass = referenceClassOrFail("${ReflektPackage.PACKAGE_NAME}.ReflektVisibility")
+    val reflektFunctionClass = referenceClassOrFail("${ReflektPackage.PACKAGE_NAME}.ReflektFunction")
+    val reflektFunctionImplClass = referenceClassOrFail("${ReflektPackage.PACKAGE_NAME}.ReflektFunctionImpl")
+    val reflektFunctionImplConstructor = reflektFunctionImplClass.constructors.first()
 
     private fun referenceVarargCollectionFunction(fqName: String) = pluginContext.referenceFunctions(FqName(fqName)).firstOrNull {
         val parameters = it.owner.valueParameters

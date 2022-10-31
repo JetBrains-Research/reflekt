@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import org.jetbrains.kotlin.ir.PsiIrFileEntry
+import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.reflekt.plugin.utils.Util.KOTLIN_COMPILER_PROP
 
 import java.io.File
@@ -70,19 +71,21 @@ class SmartReflektIrTransformer(
                 } else {
                     filterInstances(irInstances.classes, invokeArguments)
                 }
-                resultIrCall(
+                classOrObjectResultIrCall(
                     currentFile.module,
                     invokeParts,
-                    filteredInstances.mapNotNull { (it as? IrClass)?.fqNameWhenAvailable?.asString() },
-                    expression.type,
+                    filteredInstances.filterIsInstance<IrClass>(),
+                    expression.type as? IrSimpleType ?: error("Expression with not IrSimpleType"),
                 )
             }
+
             ReflektEntity.FUNCTIONS -> {
                 val filteredInstances = filterInstances(irInstances.functions, invokeArguments)
                 functionResultIrCall(
+                    currentFile.module,
                     invokeParts,
-                    filteredInstances.mapNotNull { (it as? IrFunction)?.toFunctionInfo() },
-                    expression.type,
+                    filteredInstances.filterIsInstance<IrSimpleFunction>(),
+                    expression.type as? IrSimpleType ?: error("Expression with not IrSimpleType"),
                 )
             }
         }
@@ -119,11 +122,11 @@ class SmartReflektIrTransformer(
     }
 
     /**
-     * Check if instance [T] satisfies list of [filters]
+     * Check if instance [T] satisfies the list of [filters]
      *
      * @param imports for KotlinScript running
      * @param filters
-     * @return {@code true} if instance [T] satisfies list of [filters]
+     * @return `true` if instance [T] satisfies the list of [filters]
      */
     // TODO: union filters and run KotlinScript one time
     private fun <T : IrElement> T.isEvaluatedFilterBody(
@@ -146,7 +149,7 @@ class SmartReflektIrTransformer(
     }
 
     /**
-     * Get [SourceFile] by [IrFile]
+     * Gets [SourceFile] for [IrFile].
      *
      * @param irFile
      * @return [SourceFile]

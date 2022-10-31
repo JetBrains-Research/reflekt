@@ -24,8 +24,9 @@ abstract class BaseReflektIrGenerationExtension(private val irInstancesAnalyzer:
         val storageClassGenerator = StorageClassGenerator(pluginContext)
         val transformer = getTransformer(pluginContext, irInstances, storageClassGenerator)
         moduleFragment.transform(transformer, null)
-        transformer.storageClasses.values.forEach { (storageClass, storedClasses) ->
-            storageClassGenerator.contributeInitializer(storageClass, storedClasses)
+        transformer.storageClassesData.values.forEach { (storageClass, storedClasses, storedFunctions) ->
+            storageClassGenerator.contributeInitializerOfClasses(storageClass, storedClasses)
+            storageClassGenerator.contributeInitializerOfFunctions(storageClass, storedFunctions)
         }
     }
 }

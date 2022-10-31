@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.collector.ir.*
 import org.jetbrains.reflekt.plugin.analysis.models.ir.*
-import org.jetbrains.reflekt.plugin.analysis.models.isNotEmpty
 import org.jetbrains.reflekt.plugin.generation.ReflektMetaFileGenerator
 import org.jetbrains.reflekt.plugin.generation.code.generator.ReflektImplGeneratorExtension
 import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
@@ -29,7 +28,7 @@ import java.io.File
  *  and replace their IR.
  * The library case means that we search for Reflekt queries (SmartReflekt queries are not supported yet) in this project,
  *  but don't replace their IR and save ReflektMeta file to the META-INF folder of the current project.
- *  Next, when another project include this project as a library we extract all information from the ReflektMeta file,
+ *  Next, when another project includes this project as a library, we extract all information from the ReflektMeta file,
  *  and next for these queries will generate the ReflektImpl.kt file with the results for these queries.
  *  It allows replacing run-time reflection even for libraries where we don't know the search result during its compilation,
  *  but we know the full information during compilation the project with this library.
