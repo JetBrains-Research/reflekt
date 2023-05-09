@@ -54,7 +54,6 @@ abstract class ClassesOrObjectsGenerator(protected val uses: ClassOrObjectLibrar
  *
  * @param enclosingClassName
  * @param libraryQueriesResults stores entities that satisfy all Reflekt queries arguments (invokes)
- *
  * @property typeName a fully-qualified class name
  * @property typeVariable a generic variable to parametrize functions in the generated class
  * @property returnParameter a type for casting the results (all found entities) to
@@ -69,7 +68,6 @@ class ClassesGenerator(enclosingClassName: ClassName, libraryQueriesResults: Cla
  *
  * @param enclosingClassName
  * @param libraryQueriesResults stores entities that satisfy all Reflekt queries arguments (invokes)
- *
  * @property typeName a fully-qualified class name
  * @property typeVariable a generic variable to parametrize functions in the generated class
  * @property returnParameter a type for casting the results (all found entities) to

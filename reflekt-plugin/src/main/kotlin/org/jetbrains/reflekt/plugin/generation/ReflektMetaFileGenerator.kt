@@ -23,11 +23,11 @@ class ReflektMetaFileGenerator(
     private val messageCollector: MessageCollector? = null,
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        val instancesFqNames = instancesAnalyzer.getInstancesFqNames()
+        val instancesFqNames = instancesAnalyzer.getInstancesIds()
         saveMetaData(reflektQueriesArguments, instancesFqNames)
     }
 
-    private fun saveMetaData(libraryArguments: LibraryArguments, instancesFqNames: IrInstancesFqNames) {
+    private fun saveMetaData(libraryArguments: LibraryArguments, instancesFqNames: IrInstancesIds) {
         messageCollector?.log("Save Reflekt meta data: ${reflektMetaFile.path}")
         reflektMetaFile.createNewFile()
         reflektMetaFile.writeBytes(
@@ -37,5 +37,5 @@ class ReflektMetaFileGenerator(
         )
     }
 
-    private fun IrInstancesAnalyzer.getInstancesFqNames() = IrInstancesFqNames.fromIrInstances(this.getIrInstances())
+    private fun IrInstancesAnalyzer.getInstancesIds() = IrInstancesIds.fromIrInstances(this.getIrInstances())
 }

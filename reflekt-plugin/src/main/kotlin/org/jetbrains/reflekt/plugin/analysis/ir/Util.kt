@@ -10,22 +10,25 @@ import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.*
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.reflekt.plugin.analysis.models.ir.IrFunctionInfo
+import org.jetbrains.reflekt.plugin.utils.callableId
 
-fun IrCall.getFqNamesOfTypeArguments(): List<String> {
-    val result = ArrayList<String>()
+fun IrCall.getClassIdsOfTypeArguments(): List<ClassId> {
+    val result = ArrayList<ClassId>()
     for (i in 0 until typeArgumentsCount) {
         val type = getTypeArgument(i)
         require(type is IrSimpleType) { "Type argument is not IrSimpleType" }
-        result += type.classFqName.toString()
+        result += type.classOrNull?.owner?.classId ?: continue
     }
     return result
 }
 
-fun IrCall.getFqNamesOfClassReferenceValueArguments(): List<String> =
-    (getValueArgument(0) as? IrVararg)?.elements?.map {
-        (it as IrClassReference).classType.classFqName.toString()
+fun IrCall.getClassIdsOfClassReferenceValueArguments(): List<ClassId> =
+    (getValueArgument(0) as? IrVararg)?.elements?.mapNotNull {
+        (it as IrClassReference).classType.classOrNull?.owner
+            ?.classId
     } ?: emptyList()
 
 @OptIn(ObsoleteDescriptorBasedAPI::class)
@@ -35,13 +38,9 @@ fun IrClass.isSubtypeOf(type: IrType, pluginContext: IrPluginContext) = this.def
 
 fun IrType.makeTypeProjection() = makeTypeProjection(this, if (this is IrTypeProjection) this.variance else Variance.INVARIANT)
 
-fun IrFunction.toFunctionInfo(): IrFunctionInfo {
-    fqNameWhenAvailable ?: error("Can not get FqName for function $this")
-    return IrFunctionInfo(
-        fqNameWhenAvailable.toString(),
-        receiverFqName = receiverType()?.classFqName?.asString(),
-        isObjectReceiver = receiverType()?.getClass()?.isObject ?: false,
-    )
-}
+fun IrFunction.toFunctionInfo(): IrFunctionInfo = IrFunctionInfo(
+    callableId,
+    isObjectReceiver = receiverType()?.getClass()?.isObject ?: false,
+)
 
 fun IrFunction.receiverType(): IrType? = extensionReceiverParameter?.type ?: dispatchReceiverParameter?.type

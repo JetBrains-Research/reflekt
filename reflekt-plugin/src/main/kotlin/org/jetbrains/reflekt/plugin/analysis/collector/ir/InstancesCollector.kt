@@ -9,19 +9,16 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.util.file
-import org.jetbrains.kotlin.ir.util.nameForIrSerialization
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
-import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.*
 
 import java.io.File
 
 /**
  * A collector for searching and collecting all classes, objects, and functions in the project.
  *
- * @param irInstancesAnalyzer analyzer that check if the current IR element satisfy a condition,
- *  e.g. is a top level function
+ * @param irInstancesAnalyzer the analyzer that checks if the current IR element satisfies to a condition like being a top level function.
  * @param messageCollector
  */
 class InstancesCollector(
@@ -29,15 +26,15 @@ class InstancesCollector(
     messageCollector: MessageCollector? = null,
 ) : BaseCollector(irInstancesAnalyzer, messageCollector) {
     override fun visitDeclaration(declaration: IrDeclarationBase) {
-        messageCollector?.log("Start checking declaration: ${declaration.nameForIrSerialization}")
+        messageCollector?.log("Start checking declaration: ${(declaration as? IrDeclarationWithName)?.name}")
         irInstancesAnalyzer.process(declaration, declaration.file)
-        messageCollector?.log("Finish checking declaration: ${declaration.nameForIrSerialization}")
+        messageCollector?.log("Finish checking declaration: ${(declaration as? IrDeclarationWithName)?.name}")
         super.visitDeclaration(declaration)
     }
 }
 
 /**
- * A compiler plugin extension for searching and collection all classes, objects, and functions.
+ * A compiler plugin extension for searching and collecting all classes, objects, and functions.
  */
 class InstancesCollectorExtension(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,
@@ -47,7 +44,7 @@ class InstancesCollectorExtension(
 ) : IrGenerationExtension {
     // TODO: can we avoid making a copy here? (using var and make a copy later, e.g. 60-61 code rows)
     private var libraryArguments = LibraryArguments()
-    private var irInstancesFqNames = IrInstancesFqNames()
+    private var irInstancesIds = IrInstancesIds()
 
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         extractInstancesFromLibraries(pluginContext)
@@ -58,32 +55,28 @@ class InstancesCollectorExtension(
         for (metaFile in reflektMetaFilesFromLibraries) {
             val currentLibraryArgumentsWithInstances = SerializationUtils.decodeArguments(metaFile.readBytes(), pluginContext)
             libraryArguments = libraryArguments.merge(currentLibraryArgumentsWithInstances.libraryArguments)
-            irInstancesFqNames = irInstancesFqNames.merge(currentLibraryArgumentsWithInstances.instances)
+            irInstancesIds = irInstancesIds.merge(currentLibraryArgumentsWithInstances.instances)
         }
-        libraryArgumentsWithInstances.replace(libraryArguments, irInstancesFqNames)
+        libraryArgumentsWithInstances.replace(libraryArguments, irInstancesIds)
     }
 }
 
 class ExternalLibraryInstancesCollectorExtension(
     private val irInstancesAnalyzer: IrInstancesAnalyzer,
-    private val irInstancesFqNames: IrInstancesFqNames,
+    private val irInstancesIds: IrInstancesIds,
 ) : IrGenerationExtension {
     private val externalLibraryId = "EXTERNAL_LIBRARY"
 
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        val classes = findIrClasses(irInstancesFqNames.classes, pluginContext::referenceClass)
-        val objects = findIrClasses(irInstancesFqNames.objects, pluginContext::referenceClass)
-        val functions = findIrFunctions(irInstancesFqNames.functions, pluginContext::referenceFunctions)
+        val classes = findIrClasses(irInstancesIds.classes, pluginContext)
+        val objects = findIrClasses(irInstancesIds.objects, pluginContext)
+        val functions = findIrFunctions(irInstancesIds.functions, pluginContext)
         irInstancesAnalyzer.addDeclarations(externalLibraryId, classes, objects, functions)
     }
 
-    private fun findIrClasses(
-        fqNamesStr: List<String>,
-        referenceDeclaration: (FqName) -> IrClassSymbol?,
-    ) = fqNamesStr.mapNotNull { referenceDeclaration(FqName(it))?.owner }
+    private fun findIrClasses(fqNamesStr: List<ClassId>, pluginContext: IrPluginContext) =
+        fqNamesStr.mapNotNull { pluginContext.referenceClass(it)?.owner }
 
-    private fun findIrFunctions(
-        fqNamesStr: List<String>,
-        referenceDeclaration: (FqName) -> Collection<IrFunctionSymbol>?,
-    ) = fqNamesStr.mapNotNull { referenceDeclaration(FqName(it)) }.flatten().map { it.owner }
+    private fun findIrFunctions(fqNamesStr: List<CallableId>, pluginContext: IrPluginContext) =
+        fqNamesStr.map { pluginContext.referenceFunctions(it) }.flatten().map { it.owner }
 }

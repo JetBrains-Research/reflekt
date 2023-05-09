@@ -3,10 +3,6 @@ package org.jetbrains.reflekt.util
 import org.tomlj.Toml
 
 object Util {
-    private val versionCatalog by lazy {
-        Toml.parse(javaClass.getResource("/libs.versions.toml")!!.readText())
-    }
-
     /** Global constant with plugin identifier */
     const val PLUGIN_ID = "org.jetbrains.reflekt"
     const val GRADLE_GROUP_ID = "org.jetbrains.reflekt"
@@ -15,6 +11,9 @@ object Util {
      * Just needs to be consistent with the artifactId in reflekt-plugin build.gradle.kts#publishJar
      */
     const val GRADLE_ARTIFACT_ID = "reflekt-plugin"
+    private val versionCatalog by lazy {
+        Toml.parse(javaClass.getResource("/libs.versions.toml")!!.readText())
+    }
     val VERSION = versionCatalog.getString("versions.kotlin")!!
     val ENABLED_OPTION_INFO = MyCliOption(
         name = "enabled",

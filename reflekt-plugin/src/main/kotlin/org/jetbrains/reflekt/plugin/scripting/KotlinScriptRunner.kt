@@ -23,7 +23,6 @@ typealias KotlinScriptProperties = List<Pair<String, KClass<*>>>
  *  e.g. for code <a.size.toString() + b> properties can be listOf("a" to Array::class, "b" to String::class)
  *  It means the KotlinScript expects Array for the <a> variable and String for the <b> variable
  * @param classpath the list of files that should be added into the KotlinScript classpath
- *
  * @property argumentNames the list of names from the properties list
  * @property source the full Kotlin source file that should be run (imports + code fragment)
  * @property compilationConfiguration configuration that works with extended classpath and KotlinScript properties

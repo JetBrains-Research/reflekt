@@ -2,7 +2,9 @@ package org.jetbrains.reflekt.plugin.analysis.models
 
 import kotlinx.serialization.Serializable
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.reflekt.plugin.analysis.processor.FileId
+import org.jetbrains.reflekt.plugin.analysis.serialization.ClassIdSerializer
 
 typealias ClassOrObjectQueryArguments = MutableSet<SupertypesToAnnotations>
 typealias FunctionQueryArguments = MutableSet<SignatureToAnnotations>
@@ -19,8 +21,8 @@ interface ReflektQueryArguments
  */
 @Serializable
 data class SupertypesToAnnotations(
-    val supertypes: Set<String> = emptySet(),
-    val annotations: Set<String> = emptySet(),
+    val supertypes: Set<@Serializable(with = ClassIdSerializer::class) ClassId> = emptySet(),
+    val annotations: Set<@Serializable(with = ClassIdSerializer::class) ClassId> = emptySet(),
 ) : ReflektQueryArguments
 
 /**
@@ -29,7 +31,7 @@ data class SupertypesToAnnotations(
  */
 data class SignatureToAnnotations(
     val irSignature: IrType?,
-    val annotations: Set<String> = emptySet(),
+    val annotations: Set<ClassId> = emptySet(),
 ) : ReflektQueryArguments
 
 /**
@@ -39,7 +41,7 @@ data class SignatureToAnnotations(
 @Serializable
 data class SerializableSignatureToAnnotations(
     val irSignature: SerializableIrType?,
-    val annotations: Set<String> = emptySet(),
+    val annotations: Set<@Serializable(with = ClassIdSerializer::class) ClassId> = emptySet(),
 )
 
 /**

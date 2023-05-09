@@ -3,18 +3,16 @@ package org.jetbrains.reflekt.plugin.generation.ir
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.descriptors.Modality
-import org.jetbrains.kotlin.ir.IrBuiltIns
-import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
+import org.jetbrains.kotlin.ir.*
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrEnumEntry
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.IrFunctionAccessExpression
+import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.impl.IrAnonymousInitializerSymbolImpl
 import org.jetbrains.kotlin.ir.types.*
-import org.jetbrains.kotlin.ir.util.isObject
-import org.jetbrains.kotlin.ir.util.kotlinFqName
+import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.reflekt.plugin.analysis.ir.makeTypeProjection
 import org.jetbrains.reflekt.plugin.analysis.processor.toReflektVisibility
@@ -33,11 +31,16 @@ interface IrBuilderExtension {
 
     @OptIn(ObsoleteDescriptorBasedAPI::class)
     fun IrClass.contributeAnonymousInitializer(body: IrBlockBodyBuilder.() -> Unit) {
-        factory.createAnonymousInitializer(startOffset, endOffset, origin, IrAnonymousInitializerSymbolImpl(descriptor)).also {
-            it.parent = this
-            declarations += it
-            it.body = DeclarationIrBuilder(pluginContext, it.symbol, startOffset, endOffset).irBlockBody(startOffset, endOffset, body)
-        }
+        factory.createAnonymousInitializer(startOffset, endOffset, origin, IrAnonymousInitializerSymbolImpl(descriptor))
+            .also {
+                it.parent = this
+                declarations += it
+                it.body = DeclarationIrBuilder(pluginContext, it.symbol, startOffset, endOffset).irBlockBody(
+                    startOffset,
+                    endOffset,
+                    body
+                )
+            }
     }
 
     fun IrBuilderWithScope.irCheckNotNull(value: IrExpression) = irCall(
@@ -50,7 +53,12 @@ interface IrBuilderExtension {
         irCall(generationSymbols.mapGet, dispatchReceiver = map, valueArguments = listOf(key))
 
     fun IrBuilderWithScope.irTo(left: IrExpression, right: IrExpression) =
-        irCall(generationSymbols.to, typeArguments = listOf(left.type, right.type), extensionReceiver = left, valueArguments = listOf(right))
+        irCall(
+            generationSymbols.to,
+            typeArguments = listOf(left.type, right.type),
+            extensionReceiver = left,
+            valueArguments = listOf(right)
+        )
 
     fun IrBuilderWithScope.irHashMapOf(keyType: IrType, valueType: IrType, pairs: List<IrExpression>) = irCall(
         generationSymbols.hashMapOf,
@@ -81,7 +89,11 @@ interface IrBuilderExtension {
                     typeArguments = listOf(irBuiltIns.annotationType),
                     valueArguments = listOf(
                         irVarargOut(irBuiltIns.annotationType,
-                            irClass.annotations.map { irCall(it.symbol, valueArguments = it.getValueArguments()) }),
+                            irClass.annotations.map {
+                                irCall(
+                                    it.symbol,
+                                    valueArguments = it.getValueArguments().map { arg -> arg?.shallowCopyUndefinedOffset() })
+                            }),
                     ),
                 ),
                 irBoolean(irClass.modality == Modality.ABSTRACT),
@@ -115,3 +127,64 @@ interface IrBuilderExtension {
         )
     }
 }
+
+private fun IrExpression.shallowCopyUndefinedOffset(): IrExpression =
+    shallowCopyOrNullUndefinedOffset()
+        ?: error("Not a copyable expression: ${render()}")
+
+private fun <T> IrConst<T>.shallowCopyUndefinedOffset() = IrConstImpl(
+    UNDEFINED_OFFSET,
+    UNDEFINED_OFFSET,
+    type,
+    kind,
+    value
+)
+
+private fun IrExpression.shallowCopyOrNullUndefinedOffset(): IrExpression? =
+    when (this) {
+        is IrConst<*> -> shallowCopyUndefinedOffset()
+        is IrGetEnumValue -> IrGetEnumValueImpl(
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET,
+            type,
+            symbol
+        )
+
+        is IrGetObjectValue -> IrGetObjectValueImpl(
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET,
+            type,
+            symbol
+        )
+
+        is IrGetValueImpl -> IrGetValueImpl(
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET,
+            type,
+            symbol,
+            origin
+        )
+
+        is IrErrorExpressionImpl -> IrErrorExpressionImpl(
+            UNDEFINED_OFFSET,
+            UNDEFINED_OFFSET,
+            type,
+            description
+        )
+
+        is IrConstructorCall -> IrConstructorCallImpl(
+            startOffset,
+            endOffset,
+            type,
+            symbol,
+            typeArgumentsCount,
+            constructorTypeArgumentsCount,
+            valueArgumentsCount,
+            origin,
+            source,
+        ).also {
+            it.copyTypeAndValueArgumentsFrom(this)
+        }
+
+        else -> null
+    }

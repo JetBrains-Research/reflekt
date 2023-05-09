@@ -1,11 +1,15 @@
 package org.jetbrains.reflekt.plugin.analysis.models.ir
 
-import org.jetbrains.reflekt.plugin.analysis.models.BaseCollectionReflektData
-
-import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
-
 import kotlinx.serialization.Serializable
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.util.classId
+import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.reflekt.plugin.analysis.models.BaseCollectionReflektData
+import org.jetbrains.reflekt.plugin.analysis.serialization.CallableIdSerializer
+import org.jetbrains.reflekt.plugin.analysis.serialization.ClassIdSerializer
+import org.jetbrains.reflekt.plugin.utils.callableId
 
 /**
  * Stores all [classes], [objects], and [functions] from the project.
@@ -33,12 +37,12 @@ data class IrInstances(
 // TODO: We can not inherit from BaseCollectionReflektData since this issue:
 // https://github.com/Kotlin/kotlinx.serialization/issues/1264
 @Serializable
-data class IrInstancesFqNames(
-    val objects: List<String> = ArrayList(),
-    val classes: List<String> = ArrayList(),
-    val functions: List<String> = ArrayList(),
+data class IrInstancesIds(
+    val objects: List<@Serializable(with = ClassIdSerializer::class) ClassId> = ArrayList(),
+    val classes: List<@Serializable(with = ClassIdSerializer::class) ClassId> = ArrayList(),
+    val functions: List<@Serializable(with = CallableIdSerializer::class) CallableId> = ArrayList(),
 ) {
-    fun merge(second: IrInstancesFqNames) = IrInstancesFqNames(
+    fun merge(second: IrInstancesIds) = IrInstancesIds(
         classes = classes.plus(second.classes),
         objects = objects.plus(second.objects),
         functions = functions.plus(second.functions),
@@ -46,18 +50,16 @@ data class IrInstancesFqNames(
 
     companion object {
         /**
-         * Converts [IrInstances] into [IrInstancesFqNames].
-         * For each IrElement, e.g. IrClass or IrFunction, collects its fqName if it is possible.
+         * Converts [IrInstances] into [IrInstancesIds].
+         * For each IrElement, e.g., IrClass or IrFunction, collects its fqName if it is possible.
          *
          * @param irInstances
-         * @return [IrInstancesFqNames]
+         * @return [IrInstancesIds]
          */
-        fun fromIrInstances(irInstances: IrInstances) = IrInstancesFqNames(
-            classes = irInstances.classes.fqNameWhenAvailable(),
-            objects = irInstances.objects.fqNameWhenAvailable(),
-            functions = irInstances.functions.fqNameWhenAvailable(),
+        fun fromIrInstances(irInstances: IrInstances) = IrInstancesIds(
+            classes = irInstances.classes.mapNotNull { it.classId },
+            objects = irInstances.objects.mapNotNull { it.classId },
+            functions = irInstances.functions.map { it.callableId },
         )
-
-        private fun <T : IrDeclarationWithName> List<T>.fqNameWhenAvailable() = this.mapNotNull { it.fqNameWhenAvailable?.asString() }
     }
 }

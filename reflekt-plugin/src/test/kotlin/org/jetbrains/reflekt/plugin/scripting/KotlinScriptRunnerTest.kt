@@ -55,15 +55,4 @@ class KotlinScriptRunnerTest {
             ).eval(listOf("hello")),
         )
     }
-
-    companion object {
-        // Equals private val with same name from org.jetbrains.kotlin.scripting.compiler.plugin.impl
-        private const val SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY = "script.compilation.disable.plugins"
-
-        @BeforeAll
-        @JvmStatic
-        fun disableCompilerTestingPlugin() {
-            System.setProperty(SCRIPT_COMPILATION_DISABLE_PLUGINS_PROPERTY, "com.tschuchort.compiletesting.MainComponentRegistrar")
-        }
-    }
 }

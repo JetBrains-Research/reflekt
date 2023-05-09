@@ -22,12 +22,20 @@ typealias ReflektMetaFilesFromLibrariesMap = HashMap<String, Set<File>>
 @Suppress("TooManyFunctions")
 class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
     private lateinit var reflektMetaFilesFromLibrariesMap: ReflektMetaFilesFromLibrariesMap
+    private lateinit var extension: ReflektGradleExtension
+
+    override fun apply(target: Project) {
+        extension = target.extensions.create("reflekt", ReflektGradleExtension::class.java)
+    }
 
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
-        println("ReflektSubPlugin loaded")
         val project = kotlinCompilation.target.project
-        val extension = project.reflekt
-        val buildDir = project.buildDir.absolutePath
+        val buildDir = project
+            .layout
+            .buildDirectory
+            .asFile
+            .get()
+            .absolutePath
 
         reflektMetaFilesFromLibrariesMap = SerializationUtils.deserializeReflektMetaFilesFromLibrariesMap(buildDir)
         val reflektMetaFilesFromLibraries = if (extension.toSaveMetadata) emptyList() else project.getReflektMetaFilesFromLibraries()
@@ -97,7 +105,12 @@ class ReflektSubPlugin : KotlinCompilerPluginSupportPlugin {
     private fun getLibJarWithoutSources(jarFile: File): File? {
         val jarName = "${jarFile.name.substringBeforeLast('.', "")}.jar"
         // TODO: make sure each jar has the same file structure and it's safe to call jarFile.parentFile.parentFile.listFiles()
-        return jarFile.parentFile.parentFile.listFiles()?.firstOrNull { it.isDirectory }?.listFiles()
+        return jarFile
+            .parentFile
+            .parentFile
+            .listFiles()
+            ?.firstOrNull { it.isDirectory }
+            ?.listFiles()
             ?.find { it.name == jarName }
     }
 

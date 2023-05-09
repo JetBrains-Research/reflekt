@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.test.frontend.classic.handlers.DiagnosticMessagesTex
 import org.jetbrains.kotlin.test.model.DependencyKind
 import org.jetbrains.kotlin.test.model.FrontendKinds
 import org.jetbrains.kotlin.test.runners.RunnerWithTargetBackendForTestGeneratorMarker
-import org.jetbrains.kotlin.test.runners.codegen.commonConfigurationForCodegenTest
+import org.jetbrains.kotlin.test.runners.codegen.commonConfigurationForTest
 
 abstract class AbstractTest : BaseTestRunner(), RunnerWithTargetBackendForTestGeneratorMarker {
     override val targetBackend: TargetBackend
@@ -32,7 +32,7 @@ abstract class AbstractTest : BaseTestRunner(), RunnerWithTargetBackendForTestGe
 }
 
 fun TestConfigurationBuilder.baseOldFrontEndIrBackEndBoxConfiguration() {
-    commonConfigurationForCodegenTest(
+    commonConfigurationForTest(
         FrontendKinds.ClassicFrontend,
         ::ClassicFrontendFacade,
         ::ClassicFrontend2IrConverter,

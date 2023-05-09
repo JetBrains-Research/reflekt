@@ -24,5 +24,5 @@ jobs:
       - uses: github/codeql-action/upload-sarif@v2
         if: ${{ always() }}
         with:
-          sarif_file: ./build/reflekt/reports/detekt/merge.sarif
+          sarif_file: ./build/reports/detekt/merge.sarif
           category: detekt

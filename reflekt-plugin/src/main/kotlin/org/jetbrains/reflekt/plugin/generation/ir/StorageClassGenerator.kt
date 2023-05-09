@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.fieldByName
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.EmptyPackageFragmentDescriptor
+import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.*
 import org.jetbrains.kotlin.ir.declarations.*
@@ -15,10 +16,9 @@ import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.*
-import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.Variance
-import org.jetbrains.reflekt.plugin.analysis.common.ReflektPackage
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektNames
 import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
 import org.jetbrains.reflekt.plugin.generation.ir.util.*
 import org.jetbrains.reflekt.plugin.utils.getImmediateSuperclasses
@@ -36,12 +36,18 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
     private val mVariableName = Name.identifier("m")
 
     private fun syntheticFile(packageFragmentDescriptor: PackageFragmentDescriptor, name: String, module: IrModuleFragment): IrFile =
-        IrFileImpl(NaiveSourceBasedFileEntryImpl(name), packageFragmentDescriptor, module).also { module.files += it }
+        IrFileImpl(NaiveSourceBasedFileEntryImpl(name, maxOffset = UNDEFINED_OFFSET), packageFragmentDescriptor, module).also {
+            module.files += it
+        }
 
     fun createStorageClass(moduleFragment: IrModuleFragment): IrClassSymbol {
         // Names of storage class are chosen to avoid duplication.
-        val idx = generateSequence(0) { it + 1 }.first { pluginContext.referenceClass(FqName("${ReflektPackage.PACKAGE_NAME}.Storage_$it")) == null }
-        val file = syntheticFile(EmptyPackageFragmentDescriptor(moduleFragment.descriptor, ReflektPackage.PACKAGE_FQ_NAME), "Storage_$idx", moduleFragment)
+        val idx = generateSequence(0) { it + 1 }.first { pluginContext.referenceClass(StorageClassNames.getStorageClassId(it)) == null }
+        val file = syntheticFile(
+            EmptyPackageFragmentDescriptor(moduleFragment.descriptor, ReflektNames.PACKAGE_FQ_NAME),
+            StorageClassNames.getStorageClass(idx),
+            moduleFragment,
+        )
 
         // Initially, storage class contains:
         // 1. thisReceiver and typical constructor
@@ -49,7 +55,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
         return irFactory.buildClass {
             visibility = DescriptorVisibilities.INTERNAL
             kind = ClassKind.OBJECT
-            name = Name.identifier("Storage_$idx")
+            name = StorageClassNames.getStorageClassName(idx)
         }.also { irClass ->
             file.addChild(irClass)
 
@@ -166,7 +172,7 @@ class StorageClassGenerator(override val pluginContext: IrPluginContext) : IrBui
                 )
             }
 
-            // Created HashMap is stored to the data field.
+            // Created HashMap is stored in the data field.
             +irSetField(
                 irGet(storageClass.thisReceiver!!),
                 storageClass.symbol.fieldByName(StorageClassNames.REFLEKT_CLASSES).owner,

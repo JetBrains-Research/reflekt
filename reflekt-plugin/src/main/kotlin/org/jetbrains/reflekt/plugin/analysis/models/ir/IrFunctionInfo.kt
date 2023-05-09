@@ -1,14 +1,14 @@
 package org.jetbrains.reflekt.plugin.analysis.models.ir
 
+import org.jetbrains.kotlin.name.CallableId
+
 /**
  * Stores enough information to generate function reference IR
  *
- * @property fqName
- * @property receiverFqName
+ * @property callableId The callable ID of function.
  * @property isObjectReceiver
  */
 data class IrFunctionInfo(
-    val fqName: String,
-    val receiverFqName: String?,
+    val callableId: CallableId,
     val isObjectReceiver: Boolean,
 )

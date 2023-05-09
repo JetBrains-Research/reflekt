@@ -134,10 +134,10 @@ for Java and Kotlin in the `build.gradle.kts` file:
 ```kotlin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+kotlin.jvmToolchain(11)
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        useIR = true
-        jvmTarget = "11"
         // Current Reflekt version does not support incremental compilation process
         incremental = false
     }

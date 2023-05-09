@@ -15,3 +15,5 @@ style:
     active: false
   ReturnCount:
     max: 3
+  DestructuringDeclarationWithTooManyEntries:
+    active: false
