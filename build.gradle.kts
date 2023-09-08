@@ -2,8 +2,11 @@ import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.reflekt.buildutils.*
+import java.net.URL
 
+@Suppress("DSL_SCOPE_VIOLATION") // https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     `maven-publish`
     alias(libs.plugins.kosogor)
@@ -72,6 +75,22 @@ createDiktatTask()
 
 subprojects {
     apply(plugin = "maven-publish")
+
+    if (this@subprojects.name != "reflekt-plugin") {
+        apply(plugin = "org.jetbrains.dokka")
+
+        tasks.withType<DokkaTaskPartial> {
+            dokkaSourceSets.configureEach {
+                sourceLink {
+                    localDirectory.set(this@subprojects.file("src/main/kotlin"))
+
+                    remoteUrl.set(
+                        URL("https://github.com/JetBrains-Research/${rootProject.name}/tree/master/${this@subprojects.name}/src/main/kotlin/")
+                    )
+                }
+            }
+        }
+    }
 
     publishing {
         repositories {
