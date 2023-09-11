@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.types.isPrimitiveType
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.reflekt.ReflektClass
-import org.jetbrains.reflekt.plugin.analysis.common.ReflektPackage
+import org.jetbrains.reflekt.plugin.analysis.common.ReflektNames
 import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
 import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryQueriesResults
 import org.jetbrains.reflekt.plugin.analysis.processor.toReflektVisibility
@@ -32,7 +32,7 @@ import java.util.*
  * */
 @Suppress("KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER", "KDOC_EXTRA_PROPERTY")
 class ReflektImplGenerator(private val libraryQueriesResults: LibraryQueriesResults) : FileGenerator() {
-    override val packageName = ReflektPackage.PACKAGE_NAME
+    override val packageName = ReflektNames.PACKAGE_NAME
     override val fileName = "ReflektImpl"
 
     /**

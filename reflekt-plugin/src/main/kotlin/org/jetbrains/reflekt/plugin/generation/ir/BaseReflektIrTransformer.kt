@@ -10,9 +10,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.fields
-import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.utils.addToStdlib.safeAs
+import org.jetbrains.kotlin.name.*
 import org.jetbrains.reflekt.plugin.analysis.common.ReflektEntity
 import org.jetbrains.reflekt.plugin.analysis.common.StorageClassNames
 import org.jetbrains.reflekt.plugin.analysis.ir.isSubtypeOf
@@ -61,7 +59,7 @@ abstract class BaseReflektIrTransformer(
     protected fun resultIrCall(
         moduleFragment: IrModuleFragment,
         invokeParts: BaseReflektInvokeParts,
-        resultValues: List<String>,
+        resultValues: List<ClassId>,
         resultType: IrType,
     ): IrExpression = IrBuilderWithCurrentScope().run {
         require(resultType is IrSimpleType) { "resultType is not IrSimpleType" }
@@ -70,7 +68,7 @@ abstract class BaseReflektIrTransformer(
             ?: throw ReflektGenerationException("Return type must have one type argument (e. g. List<T>, Set<T>)")
 
         val items = resultValues
-            .map { pluginContext.referenceClass(FqName(it)) ?: throw ReflektGenerationException("Failed to find class $it") }
+            .map { pluginContext.referenceClass(it) ?: throw ReflektGenerationException("Failed to find class $it") }
             .map { classSymbol ->
                 when (invokeParts.entityType) {
                     ReflektEntity.OBJECTS, ReflektEntity.CLASSES -> {
@@ -95,7 +93,7 @@ abstract class BaseReflektIrTransformer(
                                 irCall(
                                     generationSymbols.reflektObjectConstructor,
                                     typeArguments = listOf(
-                                        itemType.safeAs<IrSimpleType>()
+                                        (itemType as? IrSimpleType)
                                             ?.arguments
                                             ?.get(0)
                                             ?.typeOrNull,
@@ -144,19 +142,19 @@ abstract class BaseReflektIrTransformer(
         messageCollector?.log("RES ARGS: ${itemType.arguments.map { (it as IrSimpleType).classFqName }}")
         messageCollector?.log("size of result values ${resultValues.size}")
         val items = resultValues.map { irFunctionInfo ->
-            val functionSymbol = pluginContext.referenceFunctions(FqName(irFunctionInfo.fqName)).firstOrNull { symbol ->
+            val functionSymbol = pluginContext.referenceFunctions(irFunctionInfo.callableId).firstOrNull { symbol ->
                 symbol.owner.isSubtypeOf(itemType, pluginContext).also { messageCollector?.log("${symbol.owner.isSubtypeOf(itemType, pluginContext)}") }
             }
             messageCollector?.log("function symbol is $functionSymbol")
             functionSymbol ?: run {
                 messageCollector?.log("function symbol is null")
-                throw ReflektGenerationException("Failed to find function ${irFunctionInfo.fqName} with signature ${itemType.toParameterizedType()}")
+                throw ReflektGenerationException("Failed to find function ${irFunctionInfo.callableId} with signature ${itemType.toParameterizedType()}")
             }
             irKFunction(itemType, functionSymbol).also { call ->
-                irFunctionInfo.receiverFqName?.let {
+                irFunctionInfo.callableId.classId?.let {
                     if (irFunctionInfo.isObjectReceiver) {
-                        val dispatchSymbol = pluginContext.referenceClass(FqName(irFunctionInfo.receiverFqName))
-                            ?: throw ReflektGenerationException("Failed to find receiver class ${irFunctionInfo.receiverFqName}")
+                        val dispatchSymbol = pluginContext.referenceClass(it)
+                            ?: throw ReflektGenerationException("Failed to find receiver class ${irFunctionInfo.callableId.classId}")
                         call.dispatchReceiver = irGetObject(dispatchSymbol)
                     }
                 }

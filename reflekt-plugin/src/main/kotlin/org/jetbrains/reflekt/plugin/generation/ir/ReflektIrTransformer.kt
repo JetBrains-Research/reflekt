@@ -51,7 +51,7 @@ class ReflektIrTransformer(
             ReflektEntity.OBJECTS, ReflektEntity.CLASSES -> resultIrCall(
                 currentFile.module,
                 invokeParts,
-                filteredInstances.mapNotNull { (it as? IrClass)?.fqNameWhenAvailable?.asString() },
+                filteredInstances.mapNotNull { (it as? IrClass)?.classId },
                 expression.type,
             )
             ReflektEntity.FUNCTIONS -> functionResultIrCall(

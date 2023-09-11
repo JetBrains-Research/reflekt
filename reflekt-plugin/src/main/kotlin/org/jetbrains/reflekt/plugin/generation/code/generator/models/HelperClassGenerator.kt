@@ -6,6 +6,7 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.reflekt.plugin.analysis.models.SignatureToAnnotations
 import org.jetbrains.reflekt.plugin.analysis.models.SupertypesToAnnotations
 import org.jetbrains.reflekt.plugin.analysis.models.ir.ClassOrObjectLibraryQueriesResults
@@ -112,11 +113,11 @@ abstract class HelperClassGenerator : ClassGenerator() {
      *   setOf("invokes[0]", "invokes[1]" ...) -> listOf({uses[0] with typeSuffix} as %T, {uses[1] with typeSuffix} as %T)
      *   the right part of this option should be generated earlier and passed into this function as [rightPart]
      */
-    fun getWhenOptionForSet(invokes: Set<String>, rightPart: CodeBlock): CodeBlock {
+    fun getWhenOptionForSet(invokes: Set<ClassId>, rightPart: CodeBlock): CodeBlock {
         val setOfBlock = if (invokes.isEmpty()) {
             "emptySet<String>()"
         } else {
-            "setOf(${invokes.joinToString(separator = ", ") { "\"$it\"" }})"
+            "setOf(${invokes.joinToString(separator = ", ") { "\"${it.asFqNameString()}\"" }})"
         }
         return getWhenOption(setOfBlock, rightPart)
     }

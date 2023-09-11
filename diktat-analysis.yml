@@ -154,3 +154,5 @@
   enabled: false
 - name: IDENTIFIER_LENGTH
   enabled: false
+- name: KDOC_DUPLICATE_PROPERTY
+  enabled: false

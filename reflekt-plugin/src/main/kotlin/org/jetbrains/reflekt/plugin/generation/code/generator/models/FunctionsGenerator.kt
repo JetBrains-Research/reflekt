@@ -18,7 +18,6 @@ import kotlin.reflect.KFunction
  * @param enclosingClassName
  * @param libraryQueriesResults stores entities that satisfy all Reflekt queries arguments (invokes)
  * @param fileGenerator a generator that can generate new unique aliased imports for functions
- *
  * @property typeName a fully-qualified class name
  * @property typeVariable a generic variable to parametrize functions in the generated class
  * @property returnParameter a type for casting the results (all found entities) to

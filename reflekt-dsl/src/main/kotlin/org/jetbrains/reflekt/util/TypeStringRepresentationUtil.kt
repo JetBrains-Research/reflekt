@@ -34,7 +34,7 @@ object TypeStringRepresentationUtil {
  */
 fun KType.stringRepresentation(): String {
     // Get simple classifier name, e.g. kotlin.Function1
-    val classifierName = (classifier as? KClass<*>)?.qualifiedName ?: (classifier as? KTypeParameter)?.name ?: ""
+    val classifierName = (classifier as? KClass<*>)?.qualifiedName ?: (classifier as? KTypeParameter)?.name.orEmpty()
     // If type is null it means we have star projection
     return TypeStringRepresentationUtil.getStringRepresentation(
         classifierName,

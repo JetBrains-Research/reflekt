@@ -12,7 +12,9 @@ import org.jetbrains.kotlin.backend.jvm.codegen.AnnotationCodegen.Companion.anno
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.util.classId
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.kotlin.name.ClassId
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -92,20 +94,22 @@ abstract class IrReflektArgumentProcessor<R : ReflektQueryArguments, T : IrDecla
     } ?: false
 
     /**
-     * Check if the [T] element has at least one annotation from the [annotationsFqNames].
-     * If the [annotationsFqNames] is empty the Reflekt query does not have this argument, and we should return {@code true}
+     * Check if the [T] element has at least one annotation from the [annotationsClassIds].
+     * If the [annotationsClassIds] is empty the Reflekt query does not have this argument, and we should return {@code true}
      *
-     * @param annotationsFqNames
+     * @param annotationsClassIds
      * @return
      */
-    protected fun T.hasAnnotationFrom(annotationsFqNames: Set<String>): Boolean {
-        if (annotationsFqNames.isEmpty()) {
+    protected fun T.hasAnnotationFrom(annotationsClassIds: Set<ClassId>): Boolean {
+        if (annotationsClassIds.isEmpty()) {
             return true
         }
-        if (this.annotations.isEmpty()) {
+        if (annotations.isEmpty()) {
             return false
         }
-        return annotationsFqNames.any { name -> name in this.annotations.mapNotNull { it.annotationClass.fqNameWhenAvailable?.toString() } }
+        return annotationsClassIds.any { name ->
+            name in annotations.mapNotNull { it.annotationClass.classId }
+        }
     }
 }
 

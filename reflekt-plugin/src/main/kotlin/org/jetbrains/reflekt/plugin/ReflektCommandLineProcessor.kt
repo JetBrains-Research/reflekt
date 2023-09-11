@@ -22,6 +22,7 @@ import java.io.File
  *  Should match up with the options returned from the ReflektSubPlugin.applyToCompilation in the gradle-plugin module.
  *  Should also have matching 'when'-branches for each option in the [processOption] function
  */
+@OptIn(ExperimentalCompilerApi::class)
 class ReflektCommandLineProcessor : CommandLineProcessor {
     override val pluginId: String = PLUGIN_ID
     override val pluginOptions: Collection<CliOption> =

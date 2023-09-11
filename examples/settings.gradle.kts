@@ -9,7 +9,7 @@ pluginManagement {
         maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
         // add the dependency to Reflekt Maven repository
         // Uncomment to use a released version
-        // maven(url = uri("https://packages.jetbrains.team/maven/p/reflekt/reflekt"))
+        // maven("https://packages.jetbrains.team/maven/p/reflekt/reflekt")
         gradlePluginPortal()
     }
 }

@@ -55,28 +55,28 @@ data class LibraryArguments(
 
 /**
  * Stores all Reflekt queries arguments from the library with all instances of classes, objects, and functions.
- * @property libraryArguments_
- * @property instances_
+ * @property _libraryArguments
+ * @property _instances
  */
 @Suppress("ConstructorParameterNaming")
 data class LibraryArgumentsWithInstances(
-    private var libraryArguments_: LibraryArguments = LibraryArguments(),
-    private var instances_: IrInstancesFqNames = IrInstancesFqNames(),
+    private var _libraryArguments: LibraryArguments = LibraryArguments(),
+    private var _instances: IrInstancesIds = IrInstancesIds(),
 ) {
     val libraryArguments: LibraryArguments
-        get() = libraryArguments_
+        get() = _libraryArguments
 
-    val instances: IrInstancesFqNames
-        get() = instances_
+    val instances: IrInstancesIds
+        get() = _instances
 
     fun toSerializableLibraryArgumentsWithInstances() = SerializableLibraryArgumentsWithInstances(
         libraryArguments = libraryArguments.toSerializableLibraryArguments(),
         instances = instances,
     )
 
-    fun replace(newLibraryArguments: LibraryArguments, newInstances: IrInstancesFqNames) {
-        libraryArguments_ = newLibraryArguments
-        instances_ = newInstances
+    fun replace(newLibraryArguments: LibraryArguments, newInstances: IrInstancesIds) {
+        _libraryArguments = newLibraryArguments
+        _instances = newInstances
     }
 }
 
@@ -89,7 +89,7 @@ data class LibraryArgumentsWithInstances(
 @Serializable
 data class SerializableLibraryArgumentsWithInstances(
     val libraryArguments: SerializableReflektQueryArguments,
-    val instances: IrInstancesFqNames,
+    val instances: IrInstancesIds,
 ) {
     fun toLibraryArgumentsWithInstances(pluginContext: IrPluginContext) =
         LibraryArgumentsWithInstances(
@@ -138,7 +138,6 @@ data class LibraryQueriesResults(
             functions = libraryArguments.functions.flatten(),
         )
 
-        @Suppress("IDENTIFIER_LENGTH", "TYPE_ALIAS")
         private fun <T, V : IrElement> LibraryArgumentsMap<T>.flatten(): TypeLibraryQueriesResults<T, V> {
             val queriesResults: TypeLibraryQueriesResults<T, V> = HashMap()
             for ((_, arguments) in this) {

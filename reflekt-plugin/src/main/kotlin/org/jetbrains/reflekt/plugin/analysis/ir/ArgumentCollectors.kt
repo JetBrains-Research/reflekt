@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrFunctionExpression
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
+import org.jetbrains.kotlin.name.ClassId
 
 open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
     override fun visitElement(element: IrElement, data: Nothing?) {
@@ -23,18 +24,18 @@ open class IrRecursiveVisitor : IrElementVisitor<Unit, Nothing?> {
  * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct [SupertypesToAnnotations].
  */
 class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
-    private val supertypes = HashSet<String>()
-    private val annotations = HashSet<String>()
+    private val supertypes = HashSet<ClassId>()
+    private val annotations = HashSet<ClassId>()
 
     override fun visitCall(expression: IrCall, data: Nothing?) {
         super.visitCall(expression, data)
         val function = expression.symbol.owner
         when (function.name.asString()) {
-            ReflektFunction.WITH_SUPERTYPE.functionName -> supertypes.addAll(expression.getFqNamesOfTypeArguments())
-            ReflektFunction.WITH_SUPERTYPES.functionName -> supertypes.addAll(expression.getFqNamesOfClassReferenceValueArguments())
+            ReflektFunction.WITH_SUPERTYPE.functionName -> supertypes.addAll(expression.getClassIdsOfTypeArguments())
+            ReflektFunction.WITH_SUPERTYPES.functionName -> supertypes.addAll(expression.getClassIdsOfClassReferenceValueArguments())
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
-                annotations.addAll(expression.getFqNamesOfClassReferenceValueArguments())
-                supertypes.addAll(expression.getFqNamesOfTypeArguments())
+                annotations.addAll(expression.getClassIdsOfClassReferenceValueArguments())
+                supertypes.addAll(expression.getClassIdsOfTypeArguments())
             }
         }
     }
@@ -56,7 +57,7 @@ class ReflektInvokeArgumentsCollector : IrRecursiveVisitor() {
  * Traverses subtree of expression and collects arguments of withSupertype, withSupertypes and withAnnotations calls to construct [SignatureToAnnotations].
  */
 class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
-    private val annotations = HashSet<String>()
+    private val annotations = HashSet<ClassId>()
     private var irSignature: IrType? = null
 
     override fun visitCall(expression: IrCall, data: Nothing?) {
@@ -64,7 +65,7 @@ class ReflektFunctionInvokeArgumentsCollector : IrRecursiveVisitor() {
         val function = expression.symbol.owner
         when (function.name.asString()) {
             ReflektFunction.WITH_ANNOTATIONS.functionName -> {
-                annotations.addAll(expression.getFqNamesOfClassReferenceValueArguments())
+                annotations.addAll(expression.getClassIdsOfClassReferenceValueArguments())
                 irSignature = expression.getTypeArgument(0)
             }
         }

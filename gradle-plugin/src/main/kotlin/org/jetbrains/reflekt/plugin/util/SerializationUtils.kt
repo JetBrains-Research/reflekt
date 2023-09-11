@@ -11,7 +11,7 @@ internal typealias SerializableReflektMetaFilesFromLibrariesMap = HashMap<String
 
 @Suppress("UnnecessaryOptInAnnotation")
 @OptIn(ExperimentalSerializationApi::class)
-object SerializationUtils {
+internal object SerializationUtils {
     private const val RELATIVE_CACHE_FILE_NAME = "reflektMetaFilesFromLibrariesMap"
     private const val RELATIVE_CACHE_FOLDER_NAME = "reflekt-cache"
     private val protoBuf = ProtoBuf

@@ -1,20 +1,17 @@
 package org.jetbrains.reflekt.plugin.analysis.serialization
 
-import org.jetbrains.reflekt.plugin.analysis.models.SerializableIrType
-import org.jetbrains.reflekt.plugin.analysis.models.SerializableIrTypeArgument
-import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
-import org.jetbrains.reflekt.plugin.analysis.models.ir.SerializableLibraryArgumentsWithInstances
-
+import kotlinx.serialization.*
+import kotlinx.serialization.protobuf.ProtoBuf
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.*
-import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
+import org.jetbrains.kotlin.ir.util.classId
 import org.jetbrains.kotlin.types.Variance
-
-import kotlinx.serialization.*
-import kotlinx.serialization.protobuf.ProtoBuf
+import org.jetbrains.reflekt.plugin.analysis.models.SerializableIrType
+import org.jetbrains.reflekt.plugin.analysis.models.SerializableIrTypeArgument
+import org.jetbrains.reflekt.plugin.analysis.models.ir.LibraryArgumentsWithInstances
+import org.jetbrains.reflekt.plugin.analysis.models.ir.SerializableLibraryArgumentsWithInstances
 
 @Suppress("UnnecessaryOptInAnnotation")
 @OptIn(ExperimentalSerializationApi::class)
@@ -36,9 +33,9 @@ object SerializationUtils {
                 variance = Variance.INVARIANT,
             )
         }
-        val fqName = typeOrNull?.classFqName?.asString() ?: error("Can not get class fq name for IrTypeProjection")
+        val classId = typeOrNull?.classOrNull?.owner?.classId ?: error("Can not get class fq name for IrTypeProjection")
         return SerializableIrTypeArgument(
-            fqName = fqName,
+            classId = classId,
             isStarProjection = false,
             variance = (this as IrTypeProjection).variance,
         )
@@ -51,12 +48,12 @@ object SerializationUtils {
 
     @OptIn(ObsoleteDescriptorBasedAPI::class)
     fun IrSimpleType.toSerializableIrType(): SerializableIrType {
-        val classifierFqName = this.classifier.descriptor.fqNameOrNull()?.asString() ?: error("Can not get class fq name for ClassifierDescriptor")
-        val arguments = this.arguments.map { it.toSerializableIrTypeArgument() }
+        val classifierClassId = this.classOrNull?.owner?.classId ?: error("Can not get class ID for type")
+        val arguments = arguments.map { it.toSerializableIrTypeArgument() }
         // TODO: should we serialize it?
         val abbreviation = null
         return SerializableIrType(
-            classifierFqName = classifierFqName,
+            classifierClassId = classifierClassId,
             nullability = nullability,
             arguments = arguments,
             // We use serialization only for functions signatures, they don't have annotations
@@ -67,7 +64,7 @@ object SerializationUtils {
     }
 
     fun SerializableIrType.toIrType(pluginContext: IrPluginContext) = IrSimpleTypeBuilder().also {
-        it.classifier = pluginContext.referenceClass(FqName(classifierFqName))
+        it.classifier = pluginContext.referenceClass(classifierClassId)
         it.nullability = this.nullability
         it.arguments = this.arguments.map { argument -> argument.toIrTypeArgument(pluginContext) }
         // TODO: should we deserialize it?
@@ -80,9 +77,8 @@ object SerializationUtils {
         if (this.isStarProjection) {
             return IrStarProjectionImpl
         }
-        requireNotNull(this.fqName) { "Empty fqName for IrTypeProjection" }
         return IrSimpleTypeBuilder().also {
-            it.classifier = pluginContext.referenceClass(FqName(this.fqName))
+            it.classifier = pluginContext.referenceClass(requireNotNull(this.classId) { "Empty classId for IrTypeProjection" })
         }.buildTypeProjection()
     }
 }

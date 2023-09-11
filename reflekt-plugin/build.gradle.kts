@@ -1,4 +1,3 @@
-import tanvd.kosogor.proxy.publishJar
 
 @Suppress("DSL_SCOPE_VIOLATION") // https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
@@ -9,8 +8,6 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
-    implementation(kotlin("scripting-common"))
-    implementation(kotlin("scripting-jvm"))
     implementation(kotlin("scripting-jvm-host-unshaded"))
 
     implementation(projects.reflektCore)
@@ -35,7 +32,6 @@ dependencies {
     testImplementation(libs.kotlin.reflect)
     testImplementation(libs.kotlin.compiler.internal.test.framework)
 
-    testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.commons)
     testImplementation(libs.junit.platform.launcher)
@@ -65,8 +61,6 @@ tasks.processTestResources.configure {
     from(rootProject.file("gradle/libs.versions.toml"))
 }
 
-publishJar {}
-
 fun Test.setLibraryProperty(propName: String, jarName: String) {
     val path =
         project.configurations.testRuntimeClasspath
@@ -80,7 +74,7 @@ fun Test.setLibraryProperty(propName: String, jarName: String) {
 
 tasks.create<JavaExec>("generateTests") {
     classpath = sourceSets.test.get().runtimeClasspath
-    mainClass.set("org.jetbrains.reflekt.plugin.compiler.GenerateTestsKt")
+    mainClass = "org.jetbrains.reflekt.plugin.compiler.GenerateTestsKt"
 }
 
 sourceSets {

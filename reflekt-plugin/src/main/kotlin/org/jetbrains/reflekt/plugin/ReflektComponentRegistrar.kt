@@ -2,9 +2,8 @@
 
 package org.jetbrains.reflekt.plugin
 
-import com.intellij.mock.MockProject
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
-import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
+import org.jetbrains.kotlin.compiler.plugin.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.reflekt.plugin.analysis.analyzer.IrInstancesAnalyzer
 import org.jetbrains.reflekt.plugin.analysis.collector.ir.*
@@ -15,8 +14,6 @@ import org.jetbrains.reflekt.plugin.generation.code.generator.ReflektImplGenerat
 import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.utils.PluginConfig
-import org.jetbrains.reflekt.plugin.utils.Util.log
-import org.jetbrains.reflekt.plugin.utils.Util.messageCollector
 import java.io.File
 
 /**
@@ -36,8 +33,9 @@ import java.io.File
  *
  * @property isTestConfiguration indicates if the plugin is used in tests
  */
+@OptIn(ExperimentalCompilerApi::class)
 @Suppress("TOO_LONG_FUNCTION")
-class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false) : ComponentRegistrar {
+class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false) : CompilerPluginRegistrar() {
     override val supportsK2: Boolean = false
 
     /**
@@ -45,21 +43,17 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
      * All extensions will be called multiple times (for each project module),
      * since compilation process runs module by module
      *
-     * @param project current project
-     * @param configuration current compiler configuration, also stores all parsed options form the [ReflektCommandLineProcessor]
+     * @param configuration current compiler configuration, also stores all parsed options from the [ReflektCommandLineProcessor]
      */
-    override fun registerProjectComponents(
-        project: MockProject,
+    override fun ExtensionStorage.registerExtensions(
         configuration: CompilerConfiguration,
     ) {
         val config = PluginConfig(configuration, isTestConfiguration = isTestConfiguration)
-        configuration.messageCollector.log("PROJECT FILE PATH: ${project.projectFilePath}")
 
         val instancesAnalyzer = IrInstancesAnalyzer()
         val libraryArgumentsWithInstances = LibraryArgumentsWithInstances()
         // Collect IR instances for classes, objects, and functions
         IrGenerationExtension.registerExtension(
-            project,
             InstancesCollectorExtension(
                 irInstancesAnalyzer = instancesAnalyzer,
                 reflektMetaFilesFromLibraries = config.reflektMetaFilesFromLibraries,
@@ -86,20 +80,19 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         //    file installed of IR replacement for these queries.
         if (config.toSaveMetadata) {
             // Handle II.a) case
-            project.collectAndStoreReflektArguments(config, instancesAnalyzer)
+            collectAndStoreReflektArguments(config, instancesAnalyzer)
         } else {
             // Handle I case
-            project.replaceReflektQueries(config, instancesAnalyzer, libraryArgumentsWithInstances)
+            replaceReflektQueries(config, instancesAnalyzer, libraryArgumentsWithInstances)
         }
     }
 
-    private fun MockProject.collectAndStoreReflektArguments(
+    private fun ExtensionStorage.collectAndStoreReflektArguments(
         config: PluginConfig,
         instancesAnalyzer: IrInstancesAnalyzer,
     ) {
         val reflektQueriesArguments = LibraryArguments()
         IrGenerationExtension.registerExtension(
-            this,
             ReflektArgumentsCollectorExtension(
                 irInstancesAnalyzer = instancesAnalyzer,
                 reflektQueriesArguments = reflektQueriesArguments,
@@ -108,7 +101,6 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         )
         val reflektMetaFile = config.reflektMetaFileRelativePath?.let { File(it) } ?: error("reflektMetaFileRelativePath is null for the project")
         IrGenerationExtension.registerExtension(
-            this,
             ReflektMetaFileGenerator(
                 instancesAnalyzer,
                 reflektQueriesArguments,
@@ -118,22 +110,20 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         )
     }
 
-    private fun MockProject.replaceReflektQueries(
+    private fun ExtensionStorage.replaceReflektQueries(
         config: PluginConfig,
         instancesAnalyzer: IrInstancesAnalyzer,
         libraryArgumentsWithInstances: LibraryArgumentsWithInstances,
     ) {
         // Extract reflekt arguments from external libraries
         IrGenerationExtension.registerExtension(
-            this,
             ExternalLibraryInstancesCollectorExtension(
                 irInstancesAnalyzer = instancesAnalyzer,
-                irInstancesFqNames = libraryArgumentsWithInstances.instances,
+                irInstancesIds = libraryArgumentsWithInstances.instances,
             ),
         )
         this.generateReflektImpl(config, instancesAnalyzer, libraryArgumentsWithInstances.libraryArguments)
         IrGenerationExtension.registerExtension(
-            this,
             ReflektIrGenerationExtension(
                 irInstancesAnalyzer = instancesAnalyzer,
                 libraryArguments = libraryArgumentsWithInstances.libraryArguments,
@@ -142,7 +132,6 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         )
 
         IrGenerationExtension.registerExtension(
-            this,
             SmartReflektIrGenerationExtension(
                 irInstancesAnalyzer = instancesAnalyzer,
                 classpath = config.dependencyJars,
@@ -151,7 +140,7 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         )
     }
 
-    private fun MockProject.generateReflektImpl(
+    private fun ExtensionStorage.generateReflektImpl(
         config: PluginConfig,
         instancesAnalyzer: IrInstancesAnalyzer,
         libraryArguments: LibraryArguments,
@@ -161,7 +150,6 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         }
         val libraryQueriesResults = LibraryQueriesResults.fromLibraryArguments(libraryArguments)
         IrGenerationExtension.registerExtension(
-            this,
             LibraryQueriesResultsCollector(
                 irInstancesAnalyzer = instancesAnalyzer,
                 libraryQueriesResults = libraryQueriesResults,
@@ -169,7 +157,6 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
             ),
         )
         IrGenerationExtension.registerExtension(
-            this,
             ReflektImplGeneratorExtension(
                 libraryQueriesResults = libraryQueriesResults,
                 generationPath = config.outputDir!!,

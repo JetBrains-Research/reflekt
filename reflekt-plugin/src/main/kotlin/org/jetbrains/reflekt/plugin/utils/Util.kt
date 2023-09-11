@@ -2,18 +2,29 @@
 
 package org.jetbrains.reflekt.plugin.utils
 
+import org.jetbrains.kotlin.backend.jvm.ir.parentClassId
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
-import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.types.*
+import org.jetbrains.kotlin.ir.util.getPackageFragment
+import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.types.checker.SimpleClassicTypeSystemContext.isStarProjection
 import org.jetbrains.reflekt.util.TypeStringRepresentationUtil
 import java.io.File
 import java.io.PrintStream
+
+val IrMemberWithContainerSource.callableId: CallableId
+    get() {
+        val parentClassId = parentClassId
+        return parentClassId?.let {
+            CallableId(parentClassId, name)
+        } ?: CallableId(getPackageFragment().fqName, name)
+    }
 
 /**
  * Common functions and constants for the plugin.
