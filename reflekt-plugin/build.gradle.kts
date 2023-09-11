@@ -1,5 +1,6 @@
 import tanvd.kosogor.proxy.publishJar
 
+@Suppress("DSL_SCOPE_VIOLATION") // https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
 }

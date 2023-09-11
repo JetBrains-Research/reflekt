@@ -2,3 +2,4 @@ build
 .idea
 .gradle
 reflekt-log.log
+*.hprof
