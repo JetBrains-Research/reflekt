@@ -7,5 +7,5 @@ dependencies {
 
 tasks.processResources.configure {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    from(rootProject.file("gradle/libs.versions.toml"))
+    from(rootProject.file("../gradle/libs.versions.toml"))
 }

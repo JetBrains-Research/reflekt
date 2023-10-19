@@ -7,16 +7,12 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import org.jetbrains.kotlin.name.*
 
-@OptIn(ExperimentalSerializationApi::class)
-@Serializer(forClass = FqName::class)
 object FqNameSerializer : KSerializer<FqName> {
     override val descriptor: SerialDescriptor = String.serializer().descriptor
     override fun deserialize(decoder: Decoder): FqName = FqName(decoder.decodeString())
     override fun serialize(encoder: Encoder, value: FqName) = encoder.encodeString(value.asString())
 }
 
-@OptIn(ExperimentalSerializationApi::class)
-@Serializer(forClass = Name::class)
 object NameSerializer : KSerializer<Name> {
     override val descriptor: SerialDescriptor = NameSurrogate.serializer().descriptor
     override fun deserialize(decoder: Decoder): Name {
@@ -32,8 +28,6 @@ object NameSerializer : KSerializer<Name> {
         encoder.encodeSerializableValue(NameSurrogate.serializer(), NameSurrogate(value.asString(), value.isSpecial))
 }
 
-@OptIn(ExperimentalSerializationApi::class)
-@Serializer(forClass = ClassId::class)
 object ClassIdSerializer : KSerializer<ClassId> {
     override val descriptor: SerialDescriptor = ClassIdSurrogate.serializer().descriptor
 
@@ -48,7 +42,6 @@ object ClassIdSerializer : KSerializer<ClassId> {
     }
 }
 
-@OptIn(ExperimentalSerializationApi::class)
 object CallableIdSerializer : KSerializer<CallableId> {
     override val descriptor: SerialDescriptor = CallableIdSurrogate.serializer().descriptor
 
