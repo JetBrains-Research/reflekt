@@ -2,14 +2,17 @@ import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.cqfn.diktat.plugin.gradle.DiktatExtension
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
+import java.net.URL
 
 plugins {
     `maven-publish`
+    alias(libs.plugins.buildconfig) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.diktat)
-    alias(libs.plugins.buildconfig) apply false
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.dokka)
+    `embedded-kotlin`
 }
 
 group = "org.jetbrains.reflekt"
@@ -18,8 +21,9 @@ description = "Reflekt is a compile-time reflection library that leverages the f
         "(singleton classes) or functions by some conditions in compile-time."
 
 allprojects {
-    apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
+    apply(plugin = "kotlin")
+    apply<DiktatGradlePlugin>()
 
     tasks.withType<KotlinCompile<*>> {
         kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
@@ -42,16 +46,11 @@ allprojects {
 
     // We should publish the project in the local maven repository before the tests running
     tasks.withType<Test> {
-        dependsOn(
-            tasks.withType<PublishToMavenLocal>(),
-            ":reflekt-plugin:jar",
-            gradle.includedBuild("using-embedded-kotlin").task(":reflekt-dsl:jar")
-        )
+        dependsOn(tasks.withType<PublishToMavenLocal>(), ":reflekt-plugin:jar", ":reflekt-dsl:jar")
     }
 
-    apply<DiktatGradlePlugin>()
     configure<DiktatExtension> {
-        diktatConfigFile = rootProject.file("diktat-analysis.yml")
+        diktatConfigFile = rootProject.file("../diktat-analysis.yml")
 
         inputs {
             include("src/main/**/*.kt")
@@ -61,8 +60,9 @@ allprojects {
     apply<DetektPlugin>()
 
     configure<DetektExtension> {
-        config.setFrom(rootProject.files("detekt.yml"))
+        config.setFrom(rootProject.files("../detekt.yml"))
         buildUponDefaultConfig = true
+        debug = true
     }
 
     publishing.repositories.maven("https://packages.jetbrains.team/maven/p/reflekt/reflekt") {
@@ -76,63 +76,63 @@ allprojects {
 }
 
 configure<DiktatExtension> {
-    diktatConfigFile = rootProject.file("diktat-analysis.yml")
+    diktatConfigFile = rootProject.file("../diktat-analysis.yml")
     inputs {
         include("./*.kts")
     }
 }
 
 tasks.register("diktatCheckAll") {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-
     allprojects {
         this@register.dependsOn(tasks.getByName("diktatCheck"))
     }
-
-    this@register.dependsOn(gradle.includedBuild("using-embedded-kotlin").task(":diktatCheckAll"))
 }
-
 tasks.register("diktatFixAll") {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-
     allprojects {
         this@register.dependsOn(tasks.getByName("diktatFix"))
     }
-    this@register.dependsOn(gradle.includedBuild("using-embedded-kotlin").task(":diktatFixAll"))
 }
 
 subprojects {
-    publishing.publications.create<MavenPublication>("mavenJava") {
+    if (this@subprojects.name != "reflekt-plugin") {
+        apply(plugin = "org.jetbrains.dokka")
 
-        from(this@subprojects.components["java"])
+        tasks.withType<DokkaTaskPartial> {
+            dokkaSourceSets.configureEach {
+                sourceLink {
+                    localDirectory = this@subprojects.file("src/main/kotlin")
 
-        pom {
-            description = rootProject.description
-            inceptionYear = "2020"
-            url = "https://github.com/JetBrains-Research/reflekt"
-
-            licenses {
-                license {
-                    comments = "Open-source license"
-                    distribution = "repo"
-                    name = "Apache License"
-                    url = "https://github.com/JetBrains-Research/reflekt/blob/master/LICENSE"
+                    remoteUrl =
+                        URL("https://github.com/JetBrains-Research/reflekt/tree/master/using-embedded-kotlin/${this@subprojects.name}/src/main/kotlin/")
                 }
-            }
-
-            scm {
-                connection = "scm:git:git@github.com:JetBrains-Research/reflekt.git"
-                developerConnection = "scm:git:git@github.com:JetBrains-Research/reflekt.git"
-                url = "git@github.com:JetBrains-Research/reflekt.git"
             }
         }
     }
-}
 
-for (it in listOf("publishAllPublicationsToSpacePackagesRepository", "publishToMavenLocal")) {
-    tasks[it].dependsOn(
-        gradle.includedBuild("using-embedded-kotlin").task(":reflekt-core:$it"),
-        gradle.includedBuild("using-embedded-kotlin").task(":reflekt-dsl:$it"),
-        gradle.includedBuild("using-embedded-kotlin").task(":gradle-plugin:$it"),
-    )
+    if (this@subprojects.name != "gradle-plugin") {
+        publishing.publications.create<MavenPublication>("mavenJava") {
+            from(this@subprojects.components["java"])
+
+            pom {
+                description = rootProject.description
+                inceptionYear = "2020"
+                url = "https://github.com/JetBrains-Research/reflekt"
+
+                licenses {
+                    license {
+                        comments = "Open-source license"
+                        distribution = "repo"
+                        name = "Apache License"
+                        url = "https://github.com/JetBrains-Research/reflekt/blob/master/LICENSE"
+                    }
+                }
+
+                scm {
+                    connection = "scm:git:git@github.com:JetBrains-Research/reflekt.git"
+                    developerConnection = "scm:git:git@github.com:JetBrains-Research/reflekt.git"
+                    url = "git@github.com:JetBrains-Research/reflekt.git"
+                }
+            }
+        }
+    }
 }

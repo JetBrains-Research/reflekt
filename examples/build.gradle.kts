@@ -4,14 +4,19 @@ group = rootProject.group
 version = rootProject.version
 
 plugins {
-    id("org.jetbrains.reflekt") version "1.8.21"
-    id("org.jetbrains.kotlin.jvm") version "1.8.21"
+    id("org.jetbrains.reflekt") version "1.8.20"
+    kotlin("jvm") version "1.8.20"
 }
 
 allprojects {
     apply {
         plugin("org.jetbrains.kotlin.jvm")
         plugin("org.jetbrains.reflekt")
+    }
+
+    java {
+        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
     }
 
     tasks.withType<KotlinCompile> {
@@ -23,7 +28,7 @@ allprojects {
     }
 
     dependencies {
-        implementation("org.jetbrains.reflekt", "reflekt-dsl", "1.8.21")
+        implementation("org.jetbrains.reflekt", "reflekt-dsl", "1.8.20")
     }
 
     repositories {
@@ -33,6 +38,4 @@ allprojects {
         // Uncomment to use a released version
         // maven("https://packages.jetbrains.team/maven/p/reflekt/reflekt")
     }
-
-    reflekt.enabled = true
 }

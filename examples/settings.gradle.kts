@@ -1,7 +1,6 @@
 rootProject.name = "example"
 
-include(":first-module")
-include(":second-module")
+include(":first-module", ":second-module")
 
 pluginManagement {
     repositories {

@@ -1,5 +1,3 @@
-
-@Suppress("DSL_SCOPE_VIOLATION") // https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
 }
@@ -8,29 +6,22 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
-    implementation(kotlin("scripting-jvm-host-unshaded"))
+    api(kotlin("scripting-jvm-host-unshaded"))
 
-    implementation(projects.reflektCore)
-    implementation(projects.reflektDsl)
+    api("org.jetbrains.reflekt:reflekt-core:$version")
+    api("org.jetbrains.reflekt:reflekt-dsl:$version")
 
-    implementation(libs.kotlinpoet)
-    implementation(libs.reflections)
+    api(libs.kotlinpoet)
+    api(libs.reflections)
 
-    implementation(libs.kotlinx.serialization.protobuf)
+    api(libs.kotlinx.serialization.protobuf)
 
-    // TODO: disable runtime after deleting kotlin script
-    kotlin("compiler")
-//        .let {
-//        compileOnly(it)
-//        testImplementation(it)
-//    }
+    testRuntimeOnly(kotlin("test"))
+    testRuntimeOnly(kotlin("script-runtime"))
+    testRuntimeOnly(kotlin("annotations-jvm"))
 
-    testRuntimeOnly(libs.kotlin.test)
-    testRuntimeOnly(libs.kotlin.script.runtime)
-    testRuntimeOnly(libs.kotlin.annotations.jvm)
-
-    testImplementation(libs.kotlin.reflect)
-    testImplementation(libs.kotlin.compiler.internal.test.framework)
+    testImplementation(kotlin("reflect"))
+    testImplementation(kotlin("compiler-internal-test-framework"))
 
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.commons)
@@ -62,13 +53,12 @@ tasks.processTestResources.configure {
 }
 
 fun Test.setLibraryProperty(propName: String, jarName: String) {
-    val path =
-        project.configurations.testRuntimeClasspath
-            .get()
-            .files
-            .find { """$jarName-\d.*jar""".toRegex().matches(it.name) }
-            ?.absolutePath
-            ?: return
+    val path = project.configurations.testRuntimeClasspath
+        .get()
+        .files
+        .find { """$jarName-\d.*jar""".toRegex().matches(it.name) }
+        ?.absolutePath
+        ?: return
     systemProperty(propName, path)
 }
 

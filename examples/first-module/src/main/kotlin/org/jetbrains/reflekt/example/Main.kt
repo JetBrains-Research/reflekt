@@ -1,3 +1,5 @@
+@file:Suppress("unused", "UNUSED_PARAMETER")
+
 package org.jetbrains.reflekt.example
 
 import org.jetbrains.kotlin.ir.util.isTopLevel
