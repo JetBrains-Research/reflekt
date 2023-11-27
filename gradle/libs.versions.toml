@@ -7,7 +7,6 @@
 # Also, you should change the version in two places in the build.gradle.kts file in the example project
 kotlin = "1.8.20"
 
-buildconfig = "3.0.3"
 detekt = "1.23.1"
 dokka = "1.8.20"
 diktat = "1.2.5"
@@ -41,7 +40,6 @@ tomlj = { module = "org.tomlj:tomlj", version.ref = "tomlj" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 
 [plugins]
-buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 diktat = { id = "org.cqfn.diktat.diktat-gradle-plugin", version.ref = "diktat" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

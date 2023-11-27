@@ -8,7 +8,6 @@ plugins {
     `maven-publish`
     alias(libs.plugins.detekt)
     alias(libs.plugins.diktat)
-    alias(libs.plugins.buildconfig) apply false
     alias(libs.plugins.kotlin.jvm)
 }
 
