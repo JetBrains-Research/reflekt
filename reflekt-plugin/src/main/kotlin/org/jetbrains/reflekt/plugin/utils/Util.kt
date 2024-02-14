@@ -23,7 +23,7 @@ val IrMemberWithContainerSource.callableId: CallableId
         val parentClassId = parentClassId
         return parentClassId?.let {
             CallableId(parentClassId, name)
-        } ?: CallableId(getPackageFragment().fqName, name)
+        } ?: CallableId(getPackageFragment().packageFqName, name)
     }
 
 /**

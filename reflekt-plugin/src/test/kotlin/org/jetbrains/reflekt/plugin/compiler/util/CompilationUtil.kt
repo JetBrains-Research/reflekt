@@ -1,7 +1,7 @@
 package org.jetbrains.reflekt.plugin.compiler.util
 
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
-import org.jetbrains.kotlin.incremental.makeIncrementally
+import org.jetbrains.kotlin.incremental.makeJvmIncrementally
 import org.jetbrains.reflekt.plugin.utils.Util
 import java.io.File
 
@@ -16,7 +16,7 @@ internal fun createCompilerArguments(destinationDir: File, testDir: File, compil
 internal fun compile(cacheDir: File, sourceRoots: Iterable<File>, args: K2JVMCompilerArguments): TestCompilationResult {
     val reporter = TestICReporter()
     val messageCollector = TestMessageCollector()
-    makeIncrementally(cacheDir, sourceRoots, args, reporter = reporter, messageCollector = messageCollector)
+    makeJvmIncrementally(cacheDir, sourceRoots, args, reporter = reporter, messageCollector = messageCollector)
     return TestCompilationResult(reporter, messageCollector)
 }
 
