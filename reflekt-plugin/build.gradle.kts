@@ -1,4 +1,5 @@
 plugins {
+    id("org.jetbrains.reflekt.conventions")
     alias(libs.plugins.kotlin.plugin.serialization)
 }
 

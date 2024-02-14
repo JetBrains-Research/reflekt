@@ -4,8 +4,8 @@ group = rootProject.group
 version = rootProject.version
 
 plugins {
-    id("org.jetbrains.reflekt") version "1.8.20"
-    kotlin("jvm") version "1.8.20"
+    id("org.jetbrains.reflekt") version "2.0.0-Beta4"
+    kotlin("jvm") version "2.0.0-Beta4"
 }
 
 allprojects {
@@ -28,7 +28,7 @@ allprojects {
     }
 
     dependencies {
-        implementation("org.jetbrains.reflekt", "reflekt-dsl", "1.8.20")
+        implementation("org.jetbrains.reflekt", "reflekt-dsl", "2.0.0-Beta4")
     }
 
     repositories {

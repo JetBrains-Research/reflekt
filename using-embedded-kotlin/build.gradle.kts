@@ -102,7 +102,7 @@ subprojects {
                     localDirectory = this@subprojects.file("src/main/kotlin")
 
                     remoteUrl =
-                        URL("https://github.com/JetBrains-Research/reflekt/tree/master/using-embedded-kotlin/${this@subprojects.name}/src/main/kotlin/")
+                        uri("https://github.com/JetBrains-Research/reflekt/tree/master/using-embedded-kotlin/${this@subprojects.name}/src/main/kotlin/").toURL()
                 }
             }
         }

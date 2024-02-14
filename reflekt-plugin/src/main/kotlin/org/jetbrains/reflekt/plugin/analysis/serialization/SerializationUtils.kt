@@ -4,6 +4,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.protobuf.ProtoBuf
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
+import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.*
 import org.jetbrains.kotlin.ir.util.classId
@@ -26,6 +27,7 @@ object SerializationUtils {
         return decoded.toLibraryArgumentsWithInstances(pluginContext)
     }
 
+    @OptIn(UnsafeDuringIrConstructionAPI::class)
     private fun IrTypeArgument.toSerializableIrTypeArgument(): SerializableIrTypeArgument {
         if (this is IrStarProjection) {
             return SerializableIrTypeArgument(
@@ -46,7 +48,6 @@ object SerializationUtils {
         return this.toSerializableIrType()
     }
 
-    @OptIn(ObsoleteDescriptorBasedAPI::class)
     fun IrSimpleType.toSerializableIrType(): SerializableIrType {
         val classifierClassId = this.classOrNull?.owner?.classId ?: error("Can not get class ID for type")
         val arguments = arguments.map { it.toSerializableIrTypeArgument() }
@@ -69,8 +70,6 @@ object SerializationUtils {
         it.arguments = this.arguments.map { argument -> argument.toIrTypeArgument(pluginContext) }
         // TODO: should we deserialize it?
         it.abbreviation = null
-
-        it.variance = this.variance
     }.buildSimpleType()
 
     private fun SerializableIrTypeArgument.toIrTypeArgument(pluginContext: IrPluginContext): IrTypeArgument {
@@ -79,6 +78,6 @@ object SerializationUtils {
         }
         return IrSimpleTypeBuilder().also {
             it.classifier = pluginContext.referenceClass(requireNotNull(this.classId) { "Empty classId for IrTypeProjection" })
-        }.buildTypeProjection()
+        }.buildTypeProjection(this.variance)
     }
 }
