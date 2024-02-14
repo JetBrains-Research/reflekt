@@ -5,23 +5,26 @@
 #  - two places in the main README.md file (after releasing)
 #
 # Also, you should change the version in two places in the build.gradle.kts file in the example project
-kotlin = "1.9.22"
+kotlin = "2.0.0-Beta4"
 
-detekt = "1.23.1"
+detekt = "1.23.5"
 dokka = "1.9.10"
 diktat = "1.2.5"
-junit-jupiter = "5.10.0"
-junit-platform = "1.10.0"
-kotlinpoet = "1.13.2"
+junit-jupiter = "5.10.2"
+junit-platform = "1.10.2"
+kotlinpoet = "1.16.0"
 kotlinx-serialization-protobuf = "1.6.2"
 reflections = "0.10.2"
-tomlj = "1.1.0"
+tomlj = "1.1.1"
 zip4j = "2.11.5"
 plugin-publish = "1.2.1"
+versions-check = "0.51.0"
 
 [libraries]
 gradle-plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 gradle-plugin-diktat = { module = "org.cqfn.diktat:diktat-gradle-plugin", version.ref = "diktat" }
+# -------Plugins-------
+plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 # -------Tests-------
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
@@ -46,3 +49,4 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "plugin-publish" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versions-check" }

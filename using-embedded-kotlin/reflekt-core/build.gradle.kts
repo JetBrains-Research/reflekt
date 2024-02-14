@@ -1,3 +1,7 @@
+plugins {
+    id("org.jetbrains.reflekt.conventions")
+}
+
 group = rootProject.group
 version = rootProject.version
 

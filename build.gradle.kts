@@ -6,9 +6,12 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
 plugins {
     `maven-publish`
+
     alias(libs.plugins.detekt)
     alias(libs.plugins.diktat)
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.versions)
+    id("org.jetbrains.reflekt.conventions")
 }
 
 group = "org.jetbrains.reflekt"

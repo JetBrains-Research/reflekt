@@ -1,4 +1,5 @@
 plugins {
+    id("org.jetbrains.reflekt.conventions")
     kotlin("plugin.serialization") version embeddedKotlinVersion
     alias(libs.plugins.plugin.publish)
 }
