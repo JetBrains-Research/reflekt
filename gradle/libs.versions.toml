@@ -5,15 +5,15 @@
 #  - two places in the main README.md file (after releasing)
 #
 # Also, you should change the version in two places in the build.gradle.kts file in the example project
-kotlin = "1.8.20"
+kotlin = "1.9.22"
 
 detekt = "1.23.1"
-dokka = "1.8.20"
+dokka = "1.9.10"
 diktat = "1.2.5"
 junit-jupiter = "5.10.0"
 junit-platform = "1.10.0"
 kotlinpoet = "1.13.2"
-kotlinx-serialization-protobuf = "1.5.1"
+kotlinx-serialization-protobuf = "1.6.2"
 reflections = "0.10.2"
 tomlj = "1.1.0"
 zip4j = "2.11.5"

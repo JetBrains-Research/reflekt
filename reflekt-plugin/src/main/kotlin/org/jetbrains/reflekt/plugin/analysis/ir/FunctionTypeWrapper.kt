@@ -3,6 +3,7 @@ package org.jetbrains.reflekt.plugin.analysis.ir
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.jvm.codegen.isExtensionFunctionType
 import org.jetbrains.kotlin.ir.IrBuiltIns
+import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.utils.asString
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.types.*
@@ -152,14 +153,14 @@ fun IrFunction.isSubtypeOf(other: IrType, pluginContext: IrPluginContext): Boole
 } ?: false
 
 fun IrTypeArgument.isSubtypeOf(superType: IrTypeArgument, irBuiltIns: IrBuiltIns): Boolean {
-    this.typeOrNull ?: error("Can not get type from IrTypeArgument: ${this.asString()}")
-    superType.typeOrNull ?: error("Can not get type from IrTypeArgument: ${superType.asString()}")
+    this.typeOrNull ?: error("Can not get type from IrTypeArgument: $this")
+    superType.typeOrNull ?: error("Can not get type from IrTypeArgument: $superType")
     return this.typeOrNull!!.isSubtypeOf(superType.typeOrNull!!, IrTypeSystemContextImpl(irBuiltIns))
 }
 
 // TODO: Move to other util?
-private fun IrTypeArgument.asString(): String = when (this) {
+private fun IrTypeArgument.asString(context: JsIrBackendContext): String = when (this) {
     is IrStarProjection -> "*"
-    is IrTypeProjection -> variance.label + (if (variance != Variance.INVARIANT) " " else "") + type.asString()
+    is IrTypeProjection -> variance.label + (if (variance != Variance.INVARIANT) " " else "") + type.asString(context)
     else -> error("Unexpected kind of IrTypeArgument: ${javaClass.simpleName}")
 }
